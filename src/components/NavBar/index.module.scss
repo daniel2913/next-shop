@@ -1,0 +1,31 @@
+.navbar {
+    height: 75px;
+    width: 100%;
+    display: flex;
+    gap: 2em;
+    align-items: center;
+    padding-inline: 3em;
+    background-color: steelblue;
+
+    div:last-child {
+        margin-left: auto;
+    }
+}
+
+.logo {
+    flex: 0 0 9rem;
+    width: 9rem;
+    aspect-ratio: 3;
+    background-color: crimson;
+}
+
+.navbarContent {
+    flex: 0 1 40%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    a {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,120 @@
+.pageWrapper {
+    padding: 3em;
+    min-height: 100vh;
+    min-height: 100lvh;
+    display: grid;
+    grid-template-areas:
+        'image text'
+        'image comments';
+    column-gap: 2rem;
+    width: fit-content;
+}
+
+.productRating {
+    grid-area: rating;
+}
+
+.productImage {
+    width: 450px;
+    height: 550px;
+    align-self: center;
+    grid-area: image;
+    position: relative;
+}
+
+.discountPos {
+    $size: 5rem;
+    position: absolute;
+    bottom: $size/2;
+    right: $size/2;
+}
+
+.productDiscount {
+    $size: 5rem;
+    position: absolute;
+    bottom: $size/2;
+    right: $size/2;
+    color: wheat;
+    font-weight: 700;
+    font-size: 1.5em;
+    z-index: 1;
+    width: $size;
+    aspect-ratio: 1;
+    border-radius: 50vw;
+    background-color: crimson;
+    transform-origin: center;
+    text-align: center;
+    line-height: 3;
+    transform: rotate(-35deg);
+
+    &::after {
+        content: '';
+        position: absolute;
+        z-index: -2;
+        left: 0;
+        background-color: crimson;
+        width: $size;
+        aspect-ratio: 1;
+        border-radius: 50vw;
+        box-shadow: 0 0 2px 2px crimson;
+        animation: 1.5s ease-in-out alternate infinite pulsing;
+    }
+}
+
+.brandImage {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.text {
+    grid-area: text;
+    display: grid;
+    grid-template-areas:
+        'name name'
+        'rating category'
+        'price ammount'
+        'description description';
+    row-gap: 1.2rem;
+}
+
+.productName {
+    grid-area: name;
+    margin: 0.2em;
+
+    .brandName {
+        margin-left: 1.5em;
+        font-size: 0.7em;
+    }
+}
+
+.productRating {
+    grid-area: rating;
+}
+
+.productCategory {
+    color: rgba(black, 0.8);
+    grid-area: category;
+}
+
+.productPrice {
+    grid-area: price;
+}
+
+.productAmmount {
+    grid-area: ammount;
+}
+
+.productDescription {
+    grid-area: description;
+}
+
+@keyframes pulsing {
+    0% {
+        transform: scale(95%);
+    }
+
+    100% {
+        transform: scale(100%);
+    }
+}

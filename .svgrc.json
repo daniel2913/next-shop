@@ -1,0 +1,6 @@
+{
+	"Icon": "1em",
+	"typescript": true,
+	"expandProps": "end",
+	"prettier": true
+}

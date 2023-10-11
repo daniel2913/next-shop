@@ -1,0 +1,75 @@
+.carousel {
+	position: relative;
+	display: flex;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-content: center;
+}
+
+.carousel img {
+	width: 100%;
+	height: 100%;
+}
+
+.control {
+	$size: 15%;
+	z-index: 10;
+	opacity: 0.7;
+	position: absolute;
+	border-radius: 100vw;
+	border: none;
+	opacity: 0.5;
+	width: $size;
+	aspect-ratio: 1;
+	top: 50%;
+	transform: translateY(-50%);
+
+	&:hover {
+		opacity: 0.65;
+	}
+}
+
+.left {
+	left: 0;
+
+	.arrow {
+		width: 100%;
+		aspect-ratio: 1;
+		transform: rotate(-90deg);
+	}
+}
+
+.right {
+	right: 0;
+
+	.arrow {
+		width: 100%;
+		aspect-ratio: 1;
+		transform: rotate(90deg);
+	}
+}
+
+.pages {
+	position: absolute;
+	display: flex;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 0.5rem;
+}
+
+.page {
+	border-radius: 100vw;
+	z-index: 10;
+	width: 1rem;
+	background-color: rgba(gray, 40%);
+	aspect-ratio: 1;
+
+	&:not(:last-of-type) {
+		margin-right: 0.5em;
+	}
+
+	&[aria-expanded='true'] {
+		background-color: gray;
+	}
+}

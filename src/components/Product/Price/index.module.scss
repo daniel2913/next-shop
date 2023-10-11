@@ -1,0 +1,29 @@
+.productPrice {
+    display: inline;
+    align-items: center;
+
+    s {
+        text-decoration-line: none;
+        position: relative;
+        font-size: 0.9em;
+        color: rgba(black, 0.7);
+        margin-right: 0.7em;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 110%;
+            height: 2px;
+            left: -5%;
+            top: 0.7em;
+            background-color: crimson;
+            transform: rotate(15deg);
+        }
+    }
+
+    span {
+        color: crimson;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+}

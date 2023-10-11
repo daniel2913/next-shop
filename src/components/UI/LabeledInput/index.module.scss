@@ -1,0 +1,33 @@
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    width: max-content;
+    margin-bottom: 1em;
+}
+
+.label {
+    opacity: 0.8;
+    display: block;
+    align-self: flex-start;
+}
+
+.input {
+    width: 15em;
+    align-self: flex-start;
+    display: block;
+    border: 2px solid black;
+
+    &Error {
+        border-color: red;
+    }
+}
+
+.error {
+    color: red;
+    height: 1em;
+    font-size: 0.7em;
+    display: block;
+    align-self: flex-end;
+}

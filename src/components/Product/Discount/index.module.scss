@@ -1,0 +1,127 @@
+.discount {
+   	aspect-ratio: 1;
+	border-radius: 50vw;
+	background-color: crimson;
+	transform-origin: center;
+	text-align: center;
+	line-height: 2.8rem;
+	// transform: rotate(-36deg);
+	color: wheat;
+	font-weight: 700;
+	display: block;
+    width: 5rem;
+    aspect-ratio: 1;
+    border-radius: 100vw;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.none {
+    display: none;
+}
+
+.small {
+    background-color: rebeccapurple;
+}
+
+.medium {
+    background-color: blueviolet;
+
+    &::after {
+        z-index: -1;
+        inset: 0;
+        content: '';
+        position: absolute;
+        width: 5rem;
+        aspect-ratio: 1;
+        background-color: blueviolet;
+        border-radius: 100vw;
+        animation: ease-in-out 1s infinite alternate pulsing;
+
+        @media (prefers-reduced-motion) {
+            animation: none;
+        }
+
+        @keyframes pulsing {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.15);
+            }
+        }
+    }
+}
+
+.high {
+    background-color: tomato;
+    animation: ease-in-out 0.4s infinite alternate shiver;
+
+    @media (prefers-reduced-motion) {
+        animation: none;
+    }
+
+    @keyframes shiver {
+        0% {
+            transform: translate(1px, 0px);
+        }
+
+        25% {
+            transform: translate(0px, 1px);
+        }
+
+        50% {
+            transform: translate(-1px, 1px);
+        }
+
+        75% {
+            transform: translate(0px, 0px);
+        }
+
+        100% {
+            transform: translate(1px, -1px);
+        }
+    }
+}
+
+.insane {
+    background-color: crimson;
+    animation: ease-in-out 0.5s infinite alternate shake;
+
+    @media (prefers-reduced-motion) {
+        animation: none;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translate(1px, -1px);
+        }
+
+        25% {
+            transform: translate(-1px, 1px);
+        }
+
+        50% {
+            transform: translate(1px, -1px);
+        }
+
+        75% {
+            transform: translate(1px, 1px);
+        }
+
+        100% {
+            transform: translate(-1px, 0px);
+        }
+    }
+}
+
+.text {
+    font-weight: 700;
+    font-size: 1.8em;
+    text-align: center;
+    color: wheat;
+    transform: rotate(-35deg);
+}

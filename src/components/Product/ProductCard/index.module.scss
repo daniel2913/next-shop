@@ -1,0 +1,69 @@
+.productCard {
+	margin-inline: auto;
+	margin-bottom: 2rem;
+	background-color: aquamarine;
+	width: 250px;
+	height: 400px;
+	display: grid;
+	position: relative;
+	justify-content: center;
+	padding: 0.5em;
+	grid-template-areas:
+		'image image'
+		'brand-image discount'
+		'name category'
+		'price brand'
+		'description description';
+}
+
+.productImage {
+	width: 230px;
+	height: 230px;
+	align-self: center;
+	grid-area: image;
+	position: relative;
+}
+
+.brand {
+	grid-area: brand;
+}
+
+.productDescription {
+	grid-area: description;
+}
+
+.productTitle {
+	grid-area: name;
+}
+
+.brandImage {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
+
+.productTitle {
+	margin: 0;
+}
+
+.productCategory {
+	color: rgba(black, 0.8);
+	grid-area: category;
+}
+
+.productDiscount {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	z-index: 1;
+}
+
+@keyframes pulsing {
+	0% {
+		transform: scale(95%);
+	}
+
+	100% {
+		transform: scale(100%);
+	}
+}

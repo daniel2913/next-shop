@@ -1,0 +1,39 @@
+.stars {
+    display: flex;
+    gap: 0.2em;
+    width: fit-content;
+}
+
+.button {
+    cursor: pointer;
+    outline: none;
+    border: none;
+    margin: none;
+    padding: 0;
+    width: 1.6em;
+
+    :where(svg) {
+        position: relative;
+        display: flex;
+        gap: 0;
+        width: fit-content;
+        stroke: black;
+
+        &:hover {
+            stroke: gold;
+        }
+    }
+}
+
+.active {
+    fill: magenta;
+}
+
+.rated {
+    fill: gold;
+    stroke: gold;
+}
+
+.active {
+    stroke: magenta;
+}
