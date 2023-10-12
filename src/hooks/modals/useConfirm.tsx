@@ -3,6 +3,7 @@ import { ModalConfirm } from '@/components/modals'
 import { useEffect, useRef } from 'react'
 
 export default function useConfirm(message = 'Are you sure?') {
+	
     const modalState = useModalStore((state) => state.base)
     const confirmModalState = useModalStore((state) => state.confirm)
     const answer = useRef<(ans: boolean) => void>()

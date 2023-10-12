@@ -4,7 +4,6 @@ import styles from './index.module.scss'
 import Price from '../Product/Price'
 import Image from 'next/image'
 import AmmountSelector from '../UI/AmmountSelector'
-import { getCartCache } from '@/hooks/cart/useCartCache'
 import useCartStore from '@/store/cartStore'
 import AddToCart from '../UI/AddToCart'
 
@@ -23,20 +22,13 @@ interface props {
     items: Item[]
 }
 
-export default async function Cart() {
+export default function Cart() {
 	const items = useCartStore(state=>state.items)
-	const addItem = useCartStore(state=>state.addItem)
 	useEffect(()=>{
-		async function loadCache(){
-			const cache = await getCartCache()
-			for (const i of cache){
-				addItem(i)
-			}
-		}
-		loadCache()
-		console.log(items)
-	},[items])
-    return (
+		console.log(useCartStore)
+		if (!useCartStore.persist.hasHydrated()) useCartStore.persist.rehydrate()
+	},[])
+    return <h1>test</h1> || (
         <div className={styles.cartContainer}>
             <div className={styles.cartHeader}></div>
             {items.map((item) => {

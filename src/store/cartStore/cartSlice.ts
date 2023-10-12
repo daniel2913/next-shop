@@ -1,7 +1,4 @@
-import { ProductModel } from '@/lib/DAL/MongoModels'
 import { StateCreator } from 'zustand'
-import { updateCartCache } from '@/hooks/cart/useCartCache'
-
 export interface cartItem {
     id: string
     name: string
@@ -19,13 +16,12 @@ export interface cartSlice{
 
 export const validCartItemProps = ['id', 'name', 'ammount','price','link'] as const
 
-export const createCartSlice: StateCreator<cartSlice> = (set) => ({
+export const createCartSlice: StateCreator<cartSlice> = (set,get) => ({
     items:[],
     addItem: (item: cartItem) => {
 		set((state) => {
 			const newItems = state.items
 			newItems.push(item)
-			updateCartCache(newItems)
 			console.log(newItems)
 			return { items: newItems }
 		})
@@ -33,7 +29,6 @@ export const createCartSlice: StateCreator<cartSlice> = (set) => ({
     discardItem: (id: string) =>{
         set((state) => {
 			const newItems = state.items.filter((item) => item.id != id)
-			updateCartCache(newItems)
 			return {items: newItems }
 		})
 	},
@@ -43,8 +38,7 @@ export const createCartSlice: StateCreator<cartSlice> = (set) => ({
                 if (item.id === id) item.ammount = amnt>0 ? amnt : 0
                 return item
             })
-			updateCartCache(newItems)
-			return {items: newItems}
+		return {items: newItems}
 		})
 	},
 })

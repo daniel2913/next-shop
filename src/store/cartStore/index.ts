@@ -1,8 +1,17 @@
 import { create } from 'zustand'
-import { cartItem, cartSlice, createCartSlice } from './cartSlice'
+import { cartSlice, createCartSlice } from './cartSlice'
+import { persist } from 'zustand/middleware'
 
-const useCartStore = create<cartSlice>()((...a) => ({
-    ...createCartSlice(...a),
-}))
+const useCartStore = create<cartSlice>()(
+	persist(
+		(...a) => ({
+    		...createCartSlice(...a),
+	}),
+	{
+		name:'cart-store',
+		skipHydration: true
+	}
+	)
+)
 
 export default useCartStore

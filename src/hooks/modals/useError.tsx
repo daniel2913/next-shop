@@ -5,7 +5,7 @@ import ModalError from '@/components/modals/Error'
 export default function useError() {
     const modalState = useModalStore((state) => state.base)
 
-    function show(message = 'Fucky-Wacky were made') {
+    function show(message = 'You made Fuky-Wacky') {
         modalState.setModal(<ModalError message={message} />)
         modalState.show()
     }
