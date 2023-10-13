@@ -4,8 +4,11 @@ import mongoose from 'mongoose'
 import { Brand } from './index.ts'
 
 export default class Product {
-    @prop({ required: true, auto: true })
-    public _id: mongoose.Types.ObjectId
+    @prop({
+        auto: true,
+        default: () => new mongoose.Types.ObjectId().toString(),
+    })
+    public _id?: string
 
     @prop({ required: true })
     public name: string

@@ -14,8 +14,11 @@ import { Schema } from './common.ts'
 import { UserType, userProps } from '../DataTypes/User.ts'
 
 export default class User {
-    @prop({ required: true, auto: true })
-    public _id: mongoose.Types.ObjectId
+    @prop({
+        auto: true,
+        default: () => new mongoose.Types.ObjectId().toString(),
+    })
+    public _id?: string
 
     @prop({ required: true, validate: loginValidators })
     public username: string
@@ -29,7 +32,7 @@ export default class User {
     @prop({ required: true, default: 'user' })
     public role?: string
 
-    @prop({required:true, default: JSON.stringify([]) })
+    @prop({ required: true, default: JSON.stringify([]) })
     public cart?: string
 
     // eslint-disable-next-line no-unused-vars
@@ -38,7 +41,7 @@ export default class User {
             user_id: this.id,
             items: [],
         })
-        this.cart = "[]"
+        this.cart = '[]'
         return newCart
     }
 }

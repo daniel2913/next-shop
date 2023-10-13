@@ -27,7 +27,7 @@ interface props {
 async function prepareNewBrand({ name, description, link, image }: props) {
     dbConnect()
     if (await BrandModel.exists({ name })) return 'Brand already exists!'
-    let imageName = 'templage.jpeg'
+    let imageName = 'template.jpeg'
     if (image) {
         const ext = image.type?.split('/').pop()
         if (ext == 'jpeg' || ext == 'png') {

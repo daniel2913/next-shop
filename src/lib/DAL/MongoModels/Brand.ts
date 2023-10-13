@@ -1,8 +1,10 @@
 import { mongoose, prop } from '@typegoose/typegoose'
 
 class Brand {
-    @prop({ auto: true })
-    public _id?: mongoose.Types.ObjectId
+    @prop({
+        default: () => new mongoose.Types.ObjectId().toString(),
+    })
+    public _id?: string
 
     @prop({ required: true, default: () => 'Default brand name' })
     public name: string

@@ -21,7 +21,7 @@ interface props {
 
 async function prepareNewCategory({ name, image }: props) {
     if (await CategoryModel.exists({ name })) return 'Category already exists!'
-    let imageName = 'templage.jpeg'
+    let imageName = 'template.jpeg'
     if (image) {
         const ext = image.type?.split('/').pop()
         if (ext == 'jpeg' || ext == 'png') {

@@ -17,15 +17,13 @@ export default function ImageComponent(props: props) {
     const [image, setImage] = useState(props.src)
     const [error, setError] = useState(false)
     function fallback() {
-        if (image.includes('template.jpeg') && image.includes('/api/'))
-            setError(true)
-        if (image.includes('/api/')) setImage(props.fallback)
-        else setImage('/api' + props.src)
+        if (image.includes('template.jpeg')) setError(true)
+        setImage(props.fallback)
     }
     return error ? (
         <div>Error!</div>
     ) : (
-        <Image
+        <img
             className={props.className}
             src={image}
             onError={() => fallback()}

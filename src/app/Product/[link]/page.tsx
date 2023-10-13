@@ -8,7 +8,7 @@ import Price from '@/components/Product/Price'
 import dbConnect from '@/lib/dbConnect'
 import { BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
 import Discount from '@/components/Product/Discount'
-import AddToCart from '@/components/UI/AddToCart'
+import BuyButton from '@/components/UI/BuyButton'
 
 export async function getProductByLink(adr: string) {
     ///CHANGGGGGGGGGGGGGGGGGE IT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -73,7 +73,7 @@ export default async function Details({
                     price={product.price}
                     discount={product.discount || 0}
                 />
-                <AddToCart {...{...product, id:product._id.toString(), ammount:0}} />
+                <BuyButton {...{...product, id:product._id.toString(), ammount:0}} />
                 <p className={styles.productDescription}>
                     {product.description}
                 </p>

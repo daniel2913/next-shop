@@ -11,8 +11,11 @@ class Item {
 }
 
 export default class Inventory {
-    @prop({ required: true, auto: true })
-    public _id?: mongoose.Types.ObjectId
+    @prop({
+        auto: true,
+        default: () => new mongoose.Types.ObjectId().toString(),
+    })
+    public _id?: string
 
     @prop({ required: true, type: () => [Item], default: [] })
     public item: Item[]

@@ -1,19 +1,18 @@
-import { ProductModel } from '@/lib/DAL/MongoModels'
-import { cartItem, validCartItemProps } from '@/store/cartStore/cartSlice'
+import { Item, ProductModel } from '@/lib/DAL/MongoModels'
 import { NextRequest, NextResponse } from 'next/server'
 
-function isValidCartType(cart: any[]): cart is cartItem[] {
+function isValidCartType(cart: any[]): cart is Item[] {
     if (Array.isArray(cart) && typeof cart[0] === 'object') {
-        const props = Object.entries(cart[0]).map((entry) => entry[0])
+        const props = Object.keys(cart[0])
         let valid = true
 
         for (const prop of props) {
-            if (!(prop in validCartItemProps)) {
+            if (!(prop in Item.prototype)) {
                 valid = false
                 break
             }
         }
-        for (const prop of validCartItemProps) {
+        for (const prop of Object.keys(Item.prototype)) {
             if (!(prop in props)) {
                 valid = false
                 break
@@ -24,8 +23,8 @@ function isValidCartType(cart: any[]): cart is cartItem[] {
     return false
 }
 
-function serverValidation(cart: cartItem[]) {
-    let validCart: cartItem[] = []
+function serverValidation(cart: Item[]) {
+    let validCart: Item[] = []
     for (const i of cart) {
         ProductModel.exists()
     }

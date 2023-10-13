@@ -2,7 +2,7 @@ import authUser from '@/lib/DAL/Controllers/userController/authUser'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-const handler = NextAuth({
+export const authOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -30,6 +30,8 @@ const handler = NextAuth({
         updateAge: 24 * 60 * 60,
     },
     secret: 'FsLlSA0KpXaM7sHNlqrgpO9SlZBsR0/33ndqledspqQ=',
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

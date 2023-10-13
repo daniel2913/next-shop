@@ -1,27 +1,13 @@
-import Image, { StaticImageData } from 'next/image'
 import Carousel from '../../UI/Carousel'
 import styles from './index.module.scss'
 import Price from '../Price'
 import Discount from '../Discount'
 import ImageComponent from '@/components/UI/ImageComponent'
 import Link from 'next/link'
+import { Product } from '../../../lib/DAL/MongoModels'
+import BuyButton from '@/components/UI/BuyButton'
 
-export interface ProductCardI {
-    name: string
-    description: string
-    images: string[]
-    brand: {
-        name: string
-        image: string
-        link: string
-    } | null
-    category: string
-    price: number
-    discount: number
-    link: string
-}
-
-export default function ProductCard(product: ProductCardI) {
+export default function ProductCard(product: Product) {
     return (
         <div className={styles.productCard}>
             <div className={styles.productImage}>
@@ -62,6 +48,7 @@ export default function ProductCard(product: ProductCardI) {
                 price={product.price || 200}
                 discount={product.discount || 0}
             />
+            <BuyButton {...product} />
             <p className={styles.productDescription}>{product.description}</p>
         </div>
     )

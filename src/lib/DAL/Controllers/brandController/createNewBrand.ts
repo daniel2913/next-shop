@@ -1,12 +1,14 @@
 import dbConnect from '@/lib/dbConnect.ts'
 import { newDocument, isMongoError, noFunc } from '../../helpers.ts'
 import { Brand, BrandModel } from '../../MongoModels/index.ts'
+import mongoose from 'mongoose'
 
 export default async function createNewBrand({
     ...args
 }: noFunc<Brand> & { imageName?: string }) {
-    const newBrand = newDocument(Brand, { ...args })
-    console.log(args)
+    const newBrand = newDocument(Brand, {
+        ...args,
+    })
     await dbConnect()
     let err = null
     try {

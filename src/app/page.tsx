@@ -1,16 +1,25 @@
-import ProductCard, { ProductCardI } from '@/components/Product/ProductCard'
-import { ProductModel } from '@/lib/DAL/MongoModels'
+import ProductCard from '@/components/Product/ProductCard'
+import { Brand, BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
 import dbConnect from '@/lib/dbConnect'
 import styles from './page.module.scss'
+import { productSearchQueryFields } from '@/lib/DAL/Controllers/brandController'
+import { Ref } from '@typegoose/typegoose'
 
 export async function getProducts() {
     await dbConnect()
-    const products = (await ProductModel.find()
-        .populate({ path: 'brand' })
+    const products = await ProductModel.find().lean().exec()
+    const brandIds: Set<string> = new Set()
+    for (const product of products) {
+        brandIds.add(product.brand.toString())
+    }
+    const brands = await BrandModel.find({ _id: Array.from(brandIds) })
         .lean()
-        .exec()) as ProductCardI[]
-
-    return products
+        .exec()
+    const brandList = brands.reduce(
+        (prev: any, cur) => ({ ...prev, [cur._id]: cur }),
+        {}
+    ) as { [i: string]: Ref<Brand> }
+    return { products, brandList }
 }
 
 export default async function Browse({
@@ -20,7 +29,7 @@ export default async function Browse({
     params: { link: string }
     searchParams: { [key: string]: string | string[] | undefined }
 }) {
-    const products = await getProducts()
+    const { products, brandList } = await getProducts()
 
     return (
         <div className={styles.pageWrapper}>
@@ -30,7 +39,13 @@ export default async function Browse({
             </div>
             <div className={styles.productGrid}>
                 {products.map((product, i) => (
-                    <ProductCard key={i} {...product} />
+                    <ProductCard
+                        key={i}
+                        {...{
+                            ...product,
+                            brand: brandList[product.brand.toString()],
+                        }}
+                    />
                 ))}
             </div>
         </div>

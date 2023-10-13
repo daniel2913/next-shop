@@ -5,7 +5,7 @@ import LabeledInput from '@/components/UI/LabeledInput'
 import { clientPasswordValidation } from '@/lib/DAL/Validations/User/passwordValidation/clientPasswordValidation'
 import { clientUsernameValidation } from '@/lib/DAL/Validations/User/usernameValidation/clientUsernameValidation'
 
-export default async function Form() {
+export default function Form() {
     return (
         <form action={handleRegistrationForm}>
             <LabeledInput

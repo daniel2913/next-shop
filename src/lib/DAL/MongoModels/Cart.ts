@@ -3,7 +3,7 @@ import type { Ref } from '@typegoose/typegoose'
 import { Product, User } from './index.ts'
 import mongoose from 'mongoose'
 
-class Item {
+export class Item {
     @prop({ required: true, ref: () => Product })
     public product: Ref<Product>
 
@@ -12,8 +12,11 @@ class Item {
 }
 
 export default class Cart {
-    @prop({ required: true, auto: true })
-    public _id?: mongoose.Types.ObjectId
+    @prop({
+        auto: true,
+        default: () => new mongoose.Types.ObjectId().toString(),
+    })
+    public _id?: string
 
     @prop({ ref: () => User, required: true })
     public user_id: Ref<User>

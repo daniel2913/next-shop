@@ -7,7 +7,7 @@ interface formFields {
     image: any
 }
 
-export default async function RegisterPage() {
+export default function RegisterPage() {
     return (
         <div className="">
             <h1 className="">Registration</h1>
