@@ -11,7 +11,7 @@ const useCartStore = create<cartSlice>()(
         {
             name: 'cart-store',
             skipHydration: true,
-            storage: createJSONStorage(() => linkedStorage),
+            //storage: createJSONStorage(() => linkedStorage),
         }
     )
 )

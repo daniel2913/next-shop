@@ -1,5 +1,24 @@
-import { mongoose, prop } from '@typegoose/typegoose'
+import {
+    DocumentType,
+    mongoose,
+    prop,
+    queryMethod,
+    types,
+} from '@typegoose/typegoose'
+import { ObjectId } from 'mongoose'
 
+export interface BrandQueryHelpers {
+    findByName: types.AsQueryMethod<typeof findByName>
+}
+
+function findByName(
+    this: types.QueryHelperThis<typeof Brand, BrandQueryHelpers>,
+    name: string
+) {
+    return this.findOne({ name })
+}
+
+@queryMethod(findByName)
 class Brand {
     @prop({
         default: () => new mongoose.Types.ObjectId().toString(),

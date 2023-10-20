@@ -1,16 +1,22 @@
-import Carousel from '../../UI/Carousel'
+import Carousel from '../../ui/Carousel'
 import styles from './index.module.scss'
 import Price from '../Price'
 import Discount from '../Discount'
-import ImageComponent from '@/components/UI/ImageComponent'
+import ImageComponent from '@/components/ui/ImageComponent'
 import Link from 'next/link'
-import { Product } from '../../../lib/DAL/MongoModels'
-import BuyButton from '@/components/UI/BuyButton'
+import BuyButton from '@/components/ui/BuyButton'
 
-export default function ProductCard(product: Product) {
+import type { Brand, Product } from '../../../lib/DAL/MongoModels'
+
+type props = {
+    product: Product
+    brand: Brand
+}
+
+export default function ProductCard({ product, brand }: props) {
     return (
         <div className={styles.productCard}>
-            <div className={styles.productImage}>
+            <div className={styles.image}>
                 <Carousel>
                     {product.images.map((img, i) => (
                         <ImageComponent
@@ -27,29 +33,27 @@ export default function ProductCard(product: Product) {
                     className={styles.brandImage}
                     height={30}
                     width={30}
-                    alt={product.brand?.name || 'unknown'}
-                    src={`/brands/${product.brand?.image}`}
+                    alt={brand.name || 'unknown'}
+                    src={`/brands/${brand.image}`}
                     fallback="/brands/template.jpeg"
                 />
                 <Discount
                     discount={product.discount || 0}
-                    className={styles.productDiscount}
+                    className={styles.discount}
                 />
             </div>
             <Link href={`./Product/${product.link}`}>
-                <h3 className={styles.productTitle}>{product.name}</h3>
+                <h3 className={styles.name}>{product.name}</h3>
             </Link>
-            <span className={styles.brand}>
-                {product.brand?.name || 'unknown'}
-            </span>
-            <span className={styles.productCategory}>{product.category}</span>
+            <span className={styles.brand}>{brand.name || 'unknown'}</span>
+            <span className={styles.category}>{product.category}</span>
             <Price
-                className={styles.productPrice}
+                className={styles.price}
                 price={product.price || 200}
                 discount={product.discount || 0}
             />
             <BuyButton {...product} />
-            <p className={styles.productDescription}>{product.description}</p>
+            <p className={styles.description}>{product.description}</p>
         </div>
     )
 }

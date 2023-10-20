@@ -1,26 +1,47 @@
+'use client'
+
 import React from 'react'
 import styles from './index.module.scss'
-import { getVariants } from '@/Actions/getVariants'
-interface props {
+
+type props = {
     type: 'category' | 'brand'
     className?: string
     id: string
     label: string
 }
-interface variant {
+
+type Variant = {
+    _id: string
     name: string
-    id: string
 }
 
 export default function Selector({ type, className, id, label }: props) {
-    const [variants, setVariants] = React.useState<variant[]>([])
-    const [selected, setSelected] = React.useState<variant>()
+    const [variants, setVariants] = React.useState<Variant[]>([])
+    const [selected, setSelected] = React.useState<Variant>()
     const [open, setOpen] = React.useState<boolean>(false)
+    function error(text: string) {
+        setVariants([{ name: text, _id: '' }])
+        setSelected({ name: text, _id: '' })
+    }
     React.useEffect(() => {
         async function fetchVariants(type: string) {
-            const variants = await getVariants(type)
-            setVariants(variants)
-            setSelected(variants[0])
+            const data = await fetch('/api/' + type)
+            if (data.status != 200) {
+                error('Network Error')
+            } else {
+                try {
+                    const variants: Variant[] = (await data.json()).map(
+                        (datum: { name: string; _id: string }) => ({
+                            name: datum.name,
+                            _id: datum._id,
+                        })
+                    )
+                    setVariants(variants)
+                    setSelected(variants[0])
+                } catch {
+                    error('DataType Error')
+                }
+            }
         }
         fetchVariants(type)
     }, [type])
@@ -45,7 +66,7 @@ export default function Selector({ type, className, id, label }: props) {
             <div aria-hidden={!open} className={styles.variants}>
                 <ul>
                     {variants.map((variant) => (
-                        <li key={variant.id}>
+                        <li key={variant._id}>
                             <button
                                 onClick={(e) => {
                                     e.preventDefault()

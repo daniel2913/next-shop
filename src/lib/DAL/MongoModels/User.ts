@@ -1,17 +1,8 @@
 import { Cart } from './index.ts'
-import loginValidators from '../Validations/User/usernameValidation/serverUsernameValidation.ts'
+import loginValidators from '../validations/user/usernameValidation/serverUsernameValidation.ts'
 import mongoose from 'mongoose'
-import {
-    prop,
-    DocumentType,
-    queryMethod,
-    getModelForClass,
-    modelOptions,
-} from '@typegoose/typegoose'
-import type { Ref } from '@typegoose/typegoose'
+import { prop, DocumentType } from '@typegoose/typegoose'
 import { newDocument } from '../helpers.ts'
-import { Schema } from './common.ts'
-import { UserType, userProps } from '../DataTypes/User.ts'
 
 export default class User {
     @prop({
@@ -35,7 +26,6 @@ export default class User {
     @prop({ required: true, default: JSON.stringify([]) })
     public cart?: string
 
-    // eslint-disable-next-line no-unused-vars
     public createCart(this: DocumentType<User>) {
         const newCart = newDocument(Cart, {
             user_id: this.id,

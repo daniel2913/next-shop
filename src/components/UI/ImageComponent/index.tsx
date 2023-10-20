@@ -24,6 +24,7 @@ export default function ImageComponent(props: props) {
         <div>Error!</div>
     ) : (
         <img
+            loading="lazy"
             className={props.className}
             src={image}
             onError={() => fallback()}

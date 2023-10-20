@@ -1,5 +1,5 @@
 import styles from './page.module.scss'
-import NewProductForm from '@/components/forms/Product/NewProduct'
+import NewProductForm from '@/components/forms/NewProduct'
 
 export default function AddProductPage() {
     return (

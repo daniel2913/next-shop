@@ -1,7 +1,6 @@
 import ModalBase from '@/components/modals/Base'
-import NavBar from '@comps/NavBar'
 import '@styles/index.scss'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import RootProviders from './providers'
 
 export const metadata = {
@@ -13,7 +12,7 @@ interface LayoutProps {
     children: ReactElement
 }
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function MainLayout({ children }: LayoutProps) {
     return (
         <>
             <html lang="en">
@@ -27,7 +26,6 @@ export default async function Layout({ children }: LayoutProps) {
                 </head>
                 <body>
                     <RootProviders>
-                        <NavBar />
                         {children}
                         <ModalBase />
                     </RootProviders>

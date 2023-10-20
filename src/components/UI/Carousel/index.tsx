@@ -8,6 +8,8 @@ interface props {
     children: ReactNode[]
 }
 
+const getPos = (i: number, len: number) => (i + len) % len
+
 function Carousel({ children }: props) {
     const [current, setCurrent] = useState(0)
     function changeSlide(n: number) {
@@ -17,7 +19,12 @@ function Carousel({ children }: props) {
     }
     return (
         <div className={styles.carousel}>
-            {children[current]}
+            <div className={styles.imageContainer}>
+                {children[current]}
+                {children[getPos(current + 1, children.length)]}
+                {children[getPos(current - 1, children.length)]}
+            </div>
+
             <button
                 onClick={() => changeSlide(current - 1)}
                 className={styles.control + ' ' + styles.left}

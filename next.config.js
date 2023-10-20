@@ -4,7 +4,6 @@ const nextConfig = {
     sassOptions: {},
     experimental: {
         esmExternals: 'loose',
-        appDir: true,
         serverComponentsExternalPackages: ['mongodb', 'mongoose'],
         serverActions: true,
     },

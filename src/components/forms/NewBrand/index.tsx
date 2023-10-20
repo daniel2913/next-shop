@@ -1,20 +1,24 @@
 'use client'
-import LabeledInput from '@/components/UI/LabeledInput'
+import LabeledInput from '@/components/ui/LabeledInput'
 import styles from './index.module.scss'
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import useError from '@/hooks/modals/useError'
-import { handleNewBrandForm } from '@/Actions/newBrand'
 
 export default function NewBrandForm() {
     const [loading, setLoading] = useState(false)
     const error = useError()
     return (
         <form
-            onSubmit={() => setLoading(true)}
-            action={async (formData: FormData) => {
-                const result = await handleNewBrandForm(formData)
+            onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault()
+                setLoading(true)
+
+                const result = await fetch('/api/brand', {
+                    method: 'PUT',
+                    body: new FormData(e.currentTarget),
+                })
                 setLoading(false)
-                error(result)
+                error(await result.text())
             }}
         >
             <LabeledInput

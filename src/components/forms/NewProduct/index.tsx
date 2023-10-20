@@ -1,10 +1,10 @@
 'use client'
 
-import LabeledInput from '@/components/UI/LabeledInput'
+import LabeledInput from '@/components/ui/LabeledInput'
 import styles from './index.module.scss'
-import Selector from '@/components/UI/Selector'
-import { handleProductForm } from '@/Actions/newProduct'
-import { useState } from 'react'
+import Selector from '@/components/ui/Selector'
+import { handleProductForm } from '@/actions/newProduct'
+import { FormEvent, useState } from 'react'
 import useError from '@/hooks/modals/useError'
 
 export default function NewProductForm() {
@@ -12,13 +12,18 @@ export default function NewProductForm() {
     const error = useError()
     return (
         <form
-            action={async (formData: FormData) => {
-                const result = await handleProductForm(formData)
+            onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault()
+                setLoading(true)
+
+                const result = await fetch('/api/product', {
+                    method: 'PUT',
+                    body: new FormData(e.currentTarget),
+                })
                 setLoading(false)
-                error(result)
+                error(await result.text())
             }}
             className={styles.productForm}
-        //onSubmit={()=>setLoading(true)}
         >
             <fieldset>
                 <LabeledInput

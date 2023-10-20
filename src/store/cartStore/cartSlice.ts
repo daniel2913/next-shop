@@ -17,13 +17,23 @@ export const validCartItemProps = [
     'price',
 ] as const
 
+function updateAccount(cart: Item[]) {
+    fetch('api/store', {
+        method: 'PATCH',
+        headers: {
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify(cart),
+    })
+}
+
 export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
     items: [],
     addItem: (item: Product) => {
         set((state) => {
             const newItems = state.items
             newItems.push({ amount: 1, product: item._id as Ref<Product> })
-            console.log(newItems)
+            updateAccount(newItems)
             return { items: newItems }
         })
     },
@@ -37,6 +47,7 @@ export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
             const newItems = state.items.filter(
                 (item) => item.product.toString() != id
             )
+            updateAccount(newItems)
             return { items: newItems }
         })
     },
@@ -47,6 +58,7 @@ export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
                     item.amount = amnt > 0 ? amnt : 0
                 return item
             })
+            updateAccount(newItems)
             return { items: newItems }
         })
     },

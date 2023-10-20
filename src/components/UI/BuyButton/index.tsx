@@ -5,9 +5,14 @@ import AmmountSelector from '../AmmountSelector'
 import { Product } from '@/lib/DAL/MongoModels'
 
 export default function BuyButton(item: Product) {
-    console.log(useCartStore((state) => state.items))
+    console.log(
+        'B====3',
+        useCartStore((state) => state.items)
+    )
+    // eslint-disable-next-line no-debugger
     const cachedItem = useCartStore(
-        (state) => state.items[0] || null //filter((cacheItem) => cacheItem.product === item._id)[0]
+        (state) =>
+            state.items.filter((cacheItem) => cacheItem.product === item._id)[0]
     )
     const addItem = useCartStore((state) => state.addItem)
     if (!cachedItem) {

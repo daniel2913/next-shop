@@ -1,15 +1,13 @@
 import { CategoryModel } from '../../../MongoModels/index.ts'
 
-async function serverCategoryValidation(id: string) {
-    if (await CategoryModel.exists({ id })) return false
-    return 'Category does not exists!'
+async function serverCategoryValidation(name: string) {
+    if (await CategoryModel.exists({ name })) return true
 }
 
 const productCategoryNameValidators = [
     {
-        validator: async (id: string) => {
-            const error = await serverCategoryValidation(id)
-            if (error) return false
+        validator: async (name: string) => {
+            if (!(await serverCategoryValidation(name))) return false
             return true
         },
         msg: 'Category does not exists!',

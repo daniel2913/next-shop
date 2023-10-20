@@ -1,3 +1,4 @@
+'use client'
 import styles from './index.module.scss'
 import React from 'react'
 interface props {

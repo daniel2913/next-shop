@@ -10,7 +10,8 @@ export async function PATCH(req: NextRequest) {
         return new NextResponse('Not OK, Boomer', { status: 404 })
     }
     console.log(session)
-    const cart = (await req.json())['state']['items'] as string
+    const cart = JSON.stringify(await req.json())
+    console.log(cart)
     try {
         const res = await UserModel.updateOne(
             { username: session.user.name },
@@ -35,5 +36,5 @@ export async function GET(req: NextRequest) {
     const cart = (await UserModel.findOne({ username: session.user.name }))
         ?.cart
     if (cart) return new NextResponse(cart, { status: 200 })
-    return new NextResponse('[]', { status: 404 })
+    return new NextResponse(JSON.stringify([]), { status: 404 })
 }

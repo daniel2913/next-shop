@@ -1,41 +1,44 @@
-import { brandProps } from '@/lib/DAL/DataTypes/Brand'
-import { Brand, BrandModel } from '@/lib/DAL/MongoModels'
-import dbConnect from '@/lib/dbConnect'
 import { NextRequest, NextResponse } from 'next/server'
+import getBrands from '@/lib/DAL/controllers/brandController/getBrands'
+import addBrand from '@/lib/DAL/controllers/brandController/addBrand'
+import deleteBrand from '@/lib/DAL/controllers/brandController/deleteBrand'
+import patchBrand from '@/lib/DAL/controllers/brandController/patchBrand'
 
-export async function GET(req:NextRequest){
-	const {searchParams} = new URL(req.url)
-	const id = searchParams.get('id')
-	const name = searchParams.get('name')
-	try {
-		await dbConnect()
-		let brands:any
-		if (id){
-			brands = await BrandModel.findById(id).exec()
-		}
-		else if (name){
-			{
-				brands = await BrandModel.find({name}).exec()
-			}
-		}
-		else {
-			brands = await BrandModel.find().exec()
-		}
+export async function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id') || undefined
+    const name = searchParams.get('name') || undefined
 
-		return NextResponse.json(brands,{
-			status: 200
-		})
-	} catch (error) {
-		return NextResponse.json('Server error',{
-			status: 500
-		})
-	}
+    return getBrands({ name, id })
 }
 
-export async function PUT(req:NextRequest){
-	const form = await req.formData()
-	const props:any = {}
-	for (const i of brandProps){
-		props[i] = form.get(i)
-	}
-}	
+export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
+    const form = await req.formData()
+    const props: { [a: string]: string | undefined | File } = {}
+    for (const [key, value] of form.entries()) {
+        if (key === 'image') {
+            props[key] = value || undefined
+        } else {
+            props[key] = value.toString() || undefined
+        }
+    }
+    return addBrand(props)
+}
+
+export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
+    const { name, id } = await req.json()
+    return deleteBrand({ name, id })
+}
+
+export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
+    const form = await req.formData()
+    const props: { [a: string]: string | undefined | File } = {}
+    for (const [key, value] of form.entries()) {
+        if (key === 'image') {
+            props[key] = value || undefined
+        } else {
+            props[key] = value.toString() || undefined
+        }
+    }
+    return patchBrand(props)
+}

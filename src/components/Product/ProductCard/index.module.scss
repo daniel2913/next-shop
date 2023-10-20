@@ -16,42 +16,46 @@
 		'description description';
 }
 
-.productImage {
-	width: 230px;
-	height: 230px;
+.image {
+	--width: 230px;
+	--height: 230px;
+	display: block;
+	width: var(--width);
+	height: var(--height);
 	align-self: center;
 	grid-area: image;
 	position: relative;
 }
 
+
 .brand {
 	grid-area: brand;
 }
 
-.productDescription {
+.description {
 	grid-area: description;
 }
 
-.productTitle {
+.name {
 	grid-area: name;
 }
 
 .brandImage {
 	position: absolute;
-	top: 20px;
-	left: 20px;
+	top: 10px;
+	left: 10px;
 }
 
-.productTitle {
+.name {
 	margin: 0;
 }
 
-.productCategory {
+.category {
 	color: rgba(black, 0.8);
 	grid-area: category;
 }
 
-.productDiscount {
+.discount {
 	position: absolute;
 	bottom: 20px;
 	right: 20px;
