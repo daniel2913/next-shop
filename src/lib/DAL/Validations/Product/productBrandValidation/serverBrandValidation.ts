@@ -1,14 +1,14 @@
 import { BrandModel } from '../../../MongoModels/index.ts'
 
-async function serverBrandNameValidation(_id: string) {
-    if (await BrandModel.exists({ _id })) return false
+async function serverBrandNameValidation(name: string) {
+    if (await BrandModel.exists({ name })) return false
     return 'Brand does not exists!'
 }
 
 const productBrandNameValidators = [
     {
-        validator: async (_id: string) => {
-            if (await serverBrandNameValidation(_id)) return false
+        validator: async (name: string) => {
+            if (await serverBrandNameValidation(name)) return false
             return true
         },
         msg: 'Brand does not exists!',

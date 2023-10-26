@@ -1,44 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server'
-import getBrands from '@/lib/DAL/controllers/brandController/getBrands'
-import addBrand from '@/lib/DAL/controllers/brandController/addBrand'
-import deleteBrand from '@/lib/DAL/controllers/brandController/deleteBrand'
-import patchBrand from '@/lib/DAL/controllers/brandController/patchBrand'
+
+import { Brand, BrandModel } from '@/lib/DAL/MongoModels'
+import {
+    addController,
+    deleteController,
+    getController,
+    patchController,
+    form,
+    patchImages,
+    collectFromForm,
+} from '@/lib/DAL/controllers/universalControllers'
+
+const config = {
+    DIR_PATH: './public/brands/',
+    model: BrandModel,
+    multImages: false,
+}
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
-    const id = searchParams.get('id') || undefined
+    const _id = searchParams.get('_id') || undefined
     const name = searchParams.get('name') || undefined
 
-    return getBrands({ name, id })
+    return getController<typeof Brand>({ name, _id }, config)
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
     const form = await req.formData()
-    const props: { [a: string]: string | undefined | File } = {}
+    const props: Partial<form> = {}
     for (const [key, value] of form.entries()) {
         if (key === 'image') {
-            props[key] = value || undefined
+            props['image'] = value
         } else {
             props[key] = value.toString() || undefined
         }
     }
-    return addBrand(props)
+    console.log(props)
+    return addController<typeof Brand>(props, config)
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
-    const { name, id } = await req.json()
-    return deleteBrand({ name, id })
+    const { name, _id } = await req.json()
+    return deleteController<typeof Brand>({ name, _id }, config)
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
-    const form = await req.formData()
-    const props: { [a: string]: string | undefined | File } = {}
-    for (const [key, value] of form.entries()) {
-        if (key === 'image') {
-            props[key] = value || undefined
-        } else {
-            props[key] = value.toString() || undefined
-        }
-    }
-    return patchBrand(props)
+    const props: any = collectFromForm(await req.formData(), config)
+    return await patchController<typeof Brand>(props, config)
 }

@@ -3,27 +3,29 @@ import path from 'path'
 import mongoose from 'mongoose'
 
 export type Image = { file: File | null; name: string }
-
-export function handleImages(
-    images: (File | string | undefined)[]
-): Image[] | null {
-    if (!images || (images.length === 1 && !images[0])) {
-        return [{ name: 'template.jpeg', file: null }]
-    }
-
+const template = { name: 'template.jpeg', file: null }
+export function handleImages(images: (File | string)[]): Image[] {
     const result: Image[] = []
-
     for (const i of images) {
         if (!i || typeof i === 'string') {
-            return null
+            result.push(template)
+        } else {
+            const image = handleImage(i)
+            result.push(image ? image : template)
         }
-        const image = handleImage(i)
-        if (!image) {
-            return null
-        }
-        result.push(image)
     }
     return result
+}
+
+export function handleImage(image: File): Image | null {
+    let imageName = 'template.jpeg'
+    const ext = image.type?.split('/').pop()
+    if (ext == 'jpeg' || ext === 'jpg' || ext == 'png') {
+        imageName = new mongoose.Types.ObjectId().toString() + '.' + ext
+        return { name: imageName, file: image }
+    } else {
+        return template
+    }
 }
 
 export async function saveImages(images: Image[], filePath: string) {
@@ -42,21 +44,11 @@ export function deleteImages(names: string[], filePath: string): void {
     }
 }
 
-export function handleImage(image: File): Image | null {
-    let imageName = 'template.jpeg'
-    const ext = image.type?.split('/').pop()
-    if (ext == 'jpeg' || ext === 'jpg' || ext == 'png') {
-        imageName = new mongoose.Types.ObjectId().toString() + '.' + ext
-        return { name: imageName, file: image }
-    } else {
-        return null
-    }
-}
-
 export async function saveImage(
     { name, file }: Image,
     filePath: string
 ): Promise<boolean> {
+    if (name === 'template.jpeg') return true
     if (!file) return false
     try {
         await fs.writeFile(
@@ -71,5 +63,6 @@ export async function saveImage(
 }
 
 export function deleteImage(name: string, filePath: string): void {
+    if (name === 'template.jpeg') return
     fs.rm(path.resolve(filePath + name))
 }

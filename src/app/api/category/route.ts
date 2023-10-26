@@ -1,27 +1,56 @@
-import { brandProps } from '@/lib/DAL/dataTypes/Brand'
-import { Brand, BrandModel, CategoryModel } from '@/lib/DAL/MongoModels'
-import dbConnect from '@/lib/dbConnect'
 import { NextRequest, NextResponse } from 'next/server'
-import { Image, deleteImages, handleImages, saveImages } from '@/helpers/images'
 
-const DIR_PATH = './public/categories/'
+import { Category, CategoryModel } from '@/lib/DAL/MongoModels'
+import {
+    addController,
+    deleteController,
+    getController,
+    patchController,
+    form,
+} from '@/lib/DAL/controllers/universalControllers'
+
+const config = {
+    DIR_PATH: './public/categories/',
+    model: CategoryModel,
+    multImages: false,
+}
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
-    const name = searchParams.get('name') || ''
-    try {
-        await dbConnect()
-        const categories = await CategoryModel.find({
-            name: new RegExp(name),
-        })
-            .lean()
-            .exec()
-        return NextResponse.json(categories, {
-            status: 200,
-        })
-    } catch (error) {
-        return NextResponse.json('Server error', {
-            status: 500,
-        })
+    const _id = searchParams.get('_id') || undefined
+    const name = searchParams.get('name') || undefined
+
+    return getController<typeof Category>({ name, _id }, config)
+}
+
+export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
+    const form = await req.formData()
+    const props: Partial<form> = {}
+    for (const [key, value] of form.entries()) {
+        console.log(key, value)
+        if (key === 'image') {
+            props['image'] = value || undefined
+        } else {
+            props[key] = value.toString() || undefined
+        }
     }
+    return addController<typeof Category>(props, config)
+}
+
+export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
+    const { name, _id } = await req.json()
+    return deleteController<typeof Category>({ name, _id }, config)
+}
+
+export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
+    const form = await req.formData()
+    const props: { [a: string]: string | undefined | File } = {}
+    for (const [key, value] of form.entries()) {
+        if (key === 'image') {
+            props[key] = value || undefined
+        } else {
+            props[key] = value.toString() || undefined
+        }
+    }
+    return patchController<typeof Category>(props, config)
 }

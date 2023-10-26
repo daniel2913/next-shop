@@ -1,6 +1,6 @@
 import { ReturnModelType, getModelForClass } from '@typegoose/typegoose'
 import mongoose from 'mongoose'
-import Brand from './Brand.ts'
+import Brand, { BrandQueryHelpers } from './Brand.ts'
 import Cart, { Item } from './Cart.ts'
 import Category from './Category.ts'
 import Inventory from './Inventory.ts'
@@ -11,8 +11,11 @@ import { BeAnObject } from '@typegoose/typegoose/lib/types'
 export { Brand, Item, Cart, Category, Inventory, Product, User }
 
 export const BrandModel =
-    (mongoose.models.Brand as ReturnModelType<typeof Brand, BeAnObject>) ||
-    getModelForClass(Brand)
+    (mongoose.models.Brand as ReturnModelType<
+        typeof Brand,
+        BrandQueryHelpers
+    >) || getModelForClass<typeof Brand, BrandQueryHelpers>(Brand)
+
 export const UserModel =
     (mongoose.models.User as ReturnModelType<typeof User, BeAnObject>) ||
     getModelForClass(User)

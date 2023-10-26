@@ -1,4 +1,4 @@
-import { prop } from '@typegoose/typegoose'
+import { pre, prop } from '@typegoose/typegoose'
 import type { Ref } from '@typegoose/typegoose'
 import mongoose from 'mongoose'
 import { Brand } from './index.ts'
@@ -6,6 +6,11 @@ import productBrandNameValidators from '../validations/product/productBrandValid
 import productCategoryNameValidators from '../validations/product/productCategoryValidation/serverCategoryValidation.ts'
 import productLinkValidators from '../validations/product/productLinkValidation/serverLinkValidation.ts'
 
+@pre<Product>('save', function () {
+    this.link = encodeURI(
+        this.brand.toString().toLowerCase() + this.name.toString().toLowerCase()
+    )
+})
 export default class Product {
     @prop({
         auto: true,
@@ -21,12 +26,11 @@ export default class Product {
 
     @prop({
         required: true,
-        ref: () => Brand,
         validate: productBrandNameValidators,
     })
-    public brand: Ref<Brand>
+    public brand: string
 
-    @prop({ required: true, validate: productLinkValidators })
+    @prop({ validate: productLinkValidators, unique: true })
     public link: string
 
     @prop({ default: 'This is a default description' })

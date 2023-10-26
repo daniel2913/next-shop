@@ -8,8 +8,10 @@ import { Item } from '@/lib/DAL/MongoModels'
 export default function AmmountSelector(item: Item) {
     const confirm = useConfirm('Are you sure you want to discard this item?')
     const amount = useCartStore(
-        (state) => state.items[0] //.filter((i) => i.product === item.product)
-    ).amount
+        (state) =>
+            state.items.find((state) => state.product === item.product)
+                ?.amount || 0
+    )
     const itemDiscarder = useCartStore((state) => state.discardItem)
     const ammountSetter = useCartStore((state) => state.setAmmount)
     const discardItem = () => itemDiscarder(item.product.toString())
@@ -21,7 +23,6 @@ export default function AmmountSelector(item: Item) {
                 return ans ? discardItem() : false
             })
         } else setAmmount(newAmount)
-        console.log(newAmount)
     }
     return (
         <div className={''}>

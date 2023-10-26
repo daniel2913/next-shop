@@ -6,8 +6,7 @@ import { authOptions } from '../auth/[...nextauth]/route'
 export async function PATCH(req: NextRequest) {
     const session = await getServerSession(authOptions)
     if (!session?.user?.name) {
-        console.log('Not OK, Boomer 404')
-        return new NextResponse('Not OK, Boomer', { status: 404 })
+        return new NextResponse('Not OK Boomer', { status: 404 })
     }
     console.log(session)
     const cart = JSON.stringify(await req.json())

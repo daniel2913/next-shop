@@ -2,7 +2,7 @@ import { ProductModel } from '../../../MongoModels/index.ts'
 
 async function serverLinkValidation(link: string) {
     console.log(link)
-    if (await ProductModel.exists({ link })) return false
+    //if (await ProductModel.exists({ link })) return false
     return true
 }
 
