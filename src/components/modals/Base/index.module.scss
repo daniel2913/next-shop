@@ -1,19 +1,23 @@
 .modal[open] {
-    position: fixed;
-    z-index: 1000;
-    padding: 2rem;
-    inset: 50%;
-    transform: translate(-50%);
-    width: 15rem;
-    height: 10rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
+	position: fixed;
+	z-index: 1000;
+	padding: 2rem;
+	inset: 50%;
+	transform: translate(-50%);
+	width: 15rem;
+	height: 10rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.modal::backdrop {
+	filter: drop-shadow(10);
 }
 
 .answer {
-    display: flex;
-    width: 70%;
-    justify-content: space-between;
+	display: flex;
+	width: 70%;
+	justify-content: space-between;
 }

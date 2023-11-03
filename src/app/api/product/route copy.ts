@@ -1,4 +1,4 @@
-import NewBrandForm from '@/components/forms/NewBrand'
+import NewBrandForm from '@/components/forms'
 import { Image, deleteImages, handleImages, saveImages } from '@/helpers/images'
 import { BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
 import dbConnect from '@/lib/dbConnect'

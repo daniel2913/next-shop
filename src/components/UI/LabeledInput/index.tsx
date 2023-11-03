@@ -1,41 +1,60 @@
 'use client'
+import { FormFieldValidator, FormFieldValue } from '@/components/forms'
 import styles from './index.module.scss'
-import React from 'react'
-interface props {
+import React, { HTMLInputTypeAttribute } from 'react'
+
+type props = {
     label?: string
     placeholder?: string
     type?: string
     className?: string
-    value?: string
-    id?: string
-    error?: string
+    id: string
+    value: FormFieldValue
     multiple?: boolean
     accept?: string
-    validation?: (inp: string) => string | false
+    setValue: (val: FormFieldValue) => void
+    validator?: FormFieldValidator
 }
 
 export default function LabeledInput({
     label = 'default label',
-    error = '',
     multiple = false,
     accept = 'image/*',
     placeholder = 'input',
     type = 'text',
     className = '',
     id,
-    validation,
+    value,
+    setValue,
+    validator: validation,
 }: props) {
-    const [_value, _setValue] = React.useState('')
-    const [_error, _setError] = React.useState(error)
-
-    function validate() {
-        if (validation && _value != '') {
-            const err = validation(_value)
-            if (err) {
-                _setError(err)
-            } else _setError('')
+    const [_error, _setError] = React.useState<string>('')
+    const _inpRef = React.useRef<HTMLInputElement>(null)
+    function validate(value: props['value'], validation: props['validator']) {
+        if (validation) {
+            const err = validation(value)
+            if (!err.valid) {
+                _setError(err.msg)
+                return false
+            } else {
+                _setError('')
+                return true
+            }
         }
     }
+
+    React.useEffect(() => {
+        if (type != 'file' || !value || !_inpRef.current) {
+            return
+        }
+        const data = new DataTransfer()
+        if (multiple) {
+            value.forEach((file) => data.items.add(file as File))
+        } else {
+            data.items.add(value as File)
+        }
+        _inpRef.current.files = data.files
+    }, [value])
 
     return (
         <div className={`${className} ${styles.container}`}>
@@ -43,20 +62,33 @@ export default function LabeledInput({
                 {label}
             </label>
             <input
+                ref={_inpRef.current}
                 multiple={multiple}
                 accept={accept}
-                onBlur={validate}
+                onBlur={() => validate(value, validation)}
                 id={id}
                 name={id}
-                className={`${styles.input} ${
-                    (_error != '' && styles.inputError) || ''
-                }`}
+                className={`${styles.input} ${(_error != '' && styles.inputError) || ''
+                    }`}
                 type={type}
                 placeholder={placeholder}
-                value={_value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    _setValue(e.target.value)
-                }
+                value={typeof value === 'string' ? value : ''}
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    //if (!e.target.files) return false
+                    //const files = Object.values(e.target.files)
+                    const files = e.target.files
+                    if (type === 'file') {
+                        if (
+                            validate(
+                                (!multiple && e.target.files?.[0]) ||
+                                (multiple && e.target.files),
+                                validation
+                            )
+                        ) {
+                            setValue(e.target.files)
+                        }
+                    }
+                }}
             />
             <label htmlFor={id || ''} className={styles.error}>
                 {_error}

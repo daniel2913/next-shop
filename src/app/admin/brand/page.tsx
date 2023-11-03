@@ -1,4 +1,4 @@
-import NewBrandForm from '@/components/forms/NewBrand'
+import NewBrandForm from '@/components/forms'
 import styles from './page.module.scss'
 
 export default function Brand() {

@@ -17,7 +17,7 @@ export default function Form() {
             <LabeledInput
                 id="username"
                 type="username"
-                validation={clientUsernameValidation}
+                validator={clientUsernameValidation}
                 label="Username"
                 placeholder="UserName"
                 className={styles.login}
@@ -25,7 +25,7 @@ export default function Form() {
             <LabeledInput
                 id="password"
                 type="password"
-                validation={clientPasswordValidation}
+                validator={clientPasswordValidation}
                 label="Password"
                 placeholder="Password"
                 className={styles.password}

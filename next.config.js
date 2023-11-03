@@ -5,7 +5,6 @@ const nextConfig = {
     experimental: {
         esmExternals: 'loose',
         serverComponentsExternalPackages: ['mongodb', 'mongoose'],
-        serverActions: true,
     },
     webpack(config) {
         const fileLoaderRule = config.module.rules.find((rule) =>

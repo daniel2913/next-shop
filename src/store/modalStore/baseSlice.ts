@@ -1,13 +1,13 @@
 import { StateCreator } from 'zustand'
-import React from 'react'
+import React, { ReactElement } from 'react'
 
 export interface BaseModalSlice {
     base: {
         isVisible: boolean
-        content: React.JSX.Element | null
+        content: ReactElement | null
         show: () => void
         close: () => void
-        setModal: (newContent: React.JSX.Element) => void
+        setModal: (newContent: React.ReactElement) => void
     }
 }
 

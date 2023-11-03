@@ -1,9 +1,8 @@
-'use server'
 import styles from './index.module.scss'
-import { getProducts } from '../page'
-import CartRow from '@/components/Cart/CartRow'
+import { getProducts } from '../../../shop/page'
+import CartRow from '@/components/cart/CartRow'
 import { Item, Product, UserModel } from '@/lib/DAL/MongoModels'
-import { authOptions } from '../api/auth/[...nextauth]/route'
+import { authOptions } from '../../../api/auth/[...nextauth]/route'
 import { getServerSession } from 'next-auth'
 import dbConnect from '@/lib/dbConnect'
 

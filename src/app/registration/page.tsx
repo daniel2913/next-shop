@@ -1,6 +1,6 @@
 import React from 'react'
 import Form from '@/components/forms/Registration'
-import prepareNewUser from '@/Actions/newUser'
+import prepareNewUser from '@/actions/newUser'
 
 interface formFields {
     username: string

@@ -6,8 +6,10 @@ import styles from './index.module.scss'
 import React from 'react'
 import Auth from '../ui/Auth'
 import CartStatus from '../cart/Status'
+import CategoryForm from '@/hooks/modals/forms/useCategoryForm'
 
 export default function NavBar() {
+    //  const modal = React.useRef(useProductForm())
     return (
         <header className={styles.navbar}>
             <div className={styles.logo}></div>
@@ -22,6 +24,7 @@ export default function NavBar() {
                 <CartStatus />
                 <Auth />
             </div>
+            <CategoryForm method="PUT" />
         </header>
     )
 }
