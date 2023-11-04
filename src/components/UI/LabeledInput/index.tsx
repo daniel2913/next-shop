@@ -42,6 +42,22 @@ export default function LabeledInput({
             }
         }
     }
+    function changeHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        if (type === 'file') {
+            const files = e.currentTarget.files
+            if (
+                validate(
+                    (!multiple && files?.[0]) || (multiple && files),
+                    validation
+                )
+            ) {
+                console.log('==>', { ...files })
+                setValue(multiple ? { ...files } : { ...files }[0])
+            }
+        } else {
+            setValue(e.currentTarget.value)
+        }
+    }
 
     React.useEffect(() => {
         if (type != 'file' || !value || !_inpRef.current) {
@@ -49,12 +65,15 @@ export default function LabeledInput({
         }
         const data = new DataTransfer()
         if (multiple) {
-            value.forEach((file) => data.items.add(file as File))
+            for (const idx in value) {
+                data.items.add(value[idx] as File)
+            }
         } else {
-            data.items.add(value as File)
+            console.log(value)
+            data.items.add(value)
         }
         _inpRef.current.files = data.files
-    }, [value])
+    }, [value, multiple, type])
 
     return (
         <div className={`${className} ${styles.container}`}>
@@ -62,7 +81,7 @@ export default function LabeledInput({
                 {label}
             </label>
             <input
-                ref={_inpRef.current}
+                ref={_inpRef}
                 multiple={multiple}
                 accept={accept}
                 onBlur={() => validate(value, validation)}
@@ -73,22 +92,7 @@ export default function LabeledInput({
                 type={type}
                 placeholder={placeholder}
                 value={typeof value === 'string' ? value : ''}
-                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    //if (!e.target.files) return false
-                    //const files = Object.values(e.target.files)
-                    const files = e.target.files
-                    if (type === 'file') {
-                        if (
-                            validate(
-                                (!multiple && e.target.files?.[0]) ||
-                                (multiple && e.target.files),
-                                validation
-                            )
-                        ) {
-                            setValue(e.target.files)
-                        }
-                    }
-                }}
+                onChange={changeHandler}
             />
             <label htmlFor={id || ''} className={styles.error}>
                 {_error}

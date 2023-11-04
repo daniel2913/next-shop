@@ -1,10 +1,8 @@
-'use client'
 import LabeledInput from '@/components/ui/LabeledInput'
 import styles from './index.module.scss'
 import { ComponentProps, FormEvent, useRef, useState } from 'react'
 import useError from '@/hooks/modals/useError'
 
-export type FormFieldNames = { [key: string]: string | null }
 export type FormFieldValue = FormDataEntryValue | FileList | null
 export type FormFieldValidator = (
     v: FormFieldValue
@@ -15,25 +13,25 @@ export type FormFieldProps = Omit<
 >
 
 type props<T extends { [key: string]: FormFieldValue }> = {
-    dataFields: T
-    setDataFields: React.Dispatch<React.SetStateAction<T>>
-    fieldValues: { [key in keyof T]: FormFieldProps }
+    fieldValues: T
+    setFieldValues: React.Dispatch<React.SetStateAction<T>>
+    fieldProps: { [key in keyof T]: FormFieldProps }
     action: string
 } & (
-    | {
-          method: 'PUT'
-      }
-    | {
-          method: 'PATCH'
-          targId?: string
-          targName?: string
-      }
-)
+        | {
+            method: 'PUT'
+        }
+        | {
+            method: 'PATCH'
+            targId?: string
+            targName?: string
+        }
+    )
 
 export default function Form<T extends { [key: string]: string | null }>({
-    dataFields,
-    setDataFields,
     fieldValues,
+    setFieldValues,
+    fieldProps,
     ...params
 }: props<T>) {
     const [loading, setLoading] = useState(false)
@@ -41,24 +39,23 @@ export default function Form<T extends { [key: string]: string | null }>({
     async function submitHandler(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const form = new FormData()
-        if (params.method === 'PATCH') {
-            if (params.targId) {
-                form.append('targId', params.targId)
-            } else if (params.targName) {
-                form.append('targName', params.targName)
-            }
-        }
         let valid = true
-        for (const [key, value] of Object.entries(dataFields) as [
+        for (const [key, value] of Object.entries(fieldValues) as [
             keyof T,
-            FormDataEntryValue
+            FormDataEntryValue,
         ][]) {
-            form.append(key.toString(), value)
-            if (fieldValues[key].validator) {
-                const entryValid = fieldValues[key].validator!(value)
+            if (fieldProps[key].validator) {
+                const entryValid = fieldProps[key].validator!(value)
                 if (!entryValid.valid) {
                     valid = false
                     break
+                }
+            }
+            if (value instanceof File || typeof value != 'object') {
+                form.append(key.toString(), value)
+            } else {
+                for (const idx in value) {
+                    form.append(key.toString(), value[idx])
                 }
             }
         }
@@ -76,12 +73,12 @@ export default function Form<T extends { [key: string]: string | null }>({
 
     return (
         <form onSubmit={submitHandler}>
-            {Object.entries(fieldValues).map(([key, props]) => (
+            {Object.entries(fieldProps).map(([key, props]) => (
                 <LabeledInput
                     key={key}
-                    value={dataFields[key as keyof FormFieldNames]}
+                    value={fieldValues[key as keyof typeof fieldProps]}
                     setValue={(val: FormFieldValue) =>
-                        setDataFields({ ...dataFields, [key]: val })
+                        setFieldValues({ ...fieldValues, [key]: val })
                     }
                     {...props}
                 />

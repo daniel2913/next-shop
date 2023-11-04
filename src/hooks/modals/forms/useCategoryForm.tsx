@@ -6,8 +6,8 @@ import Form, {
 } from '../../../components/forms/index'
 import React from 'react'
 
-const fields = { name: '', image: null } as const
-const action = 'api/category'
+const formFieldValues = { name: '', image: null } as const
+const action = '/api/category'
 
 const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
     name: (value: FormFieldValue) => {
@@ -31,7 +31,7 @@ const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
     },
 }
 
-const fieldValues = {
+const formFieldProps = {
     name: {
         id: 'name',
         label: 'Category name',
@@ -53,15 +53,14 @@ export default function CategoryForm({
 }: {
     method: 'PUT' | 'PATCH'
 }) {
-    const modalState = useModalStore((state) => state.base)
-    const [dataFields, setDataFields] = React.useState(fields)
+    const [fieldValues, setFieldValues] = React.useState(formFieldValues)
     return (
         <Form
             action={action}
             method={method}
             fieldValues={fieldValues}
-            dataFields={dataFields}
-            setDataFields={setDataFields}
+            fieldProps={formFieldProps}
+            setFieldValues={setFieldValues}
         />
     )
 }

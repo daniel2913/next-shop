@@ -17,7 +17,7 @@ const formFieldValues: {
     discount: string
     link: string
     category: string
-    images: FileList | string
+    images: null
 } = {
     name: '1',
     description: '2',
@@ -26,11 +26,12 @@ const formFieldValues: {
     discount: '',
     link: '',
     category: '',
-    images: '',
+    images: null,
 }
-const action = 'api/product'
+const action = '/api/product'
 
-const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } = {
+const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
+{
     name: (value: FormFieldValue) => {
         if (typeof value != 'string')
             return { valid: false, msg: 'Name can only be string!' }
@@ -46,14 +47,14 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } = 
         if (!value) return { valid: true }
         console.log(value, value instanceof FileList)
         const files = value instanceof File ? [value] : value
-		if (files.length === 0) return {valid:false,msg:'zalupa'}
-        for (const file of files) {
-			if (typeof file ==='number' || !file) continue
-            console.log(file.name.split('.').pop())
-            const ext = file.name.split('.').pop()
+        if (files.length === 0) return { valid: false, msg: 'zalupa' }
+        for (const idx in files) {
+            if (typeof files[idx] === 'number' || files[idx]) continue
+            console.log(files[idx].name.split('.').pop())
+            const ext = files[idx].name.split('.').pop()
             if (ext != 'jpeg' && ext != 'jpg')
                 return { valid: false, msg: 'Only jpegs!' }
-            if (file.size > 1024 * 512)
+            if (files[idx].size > 1024 * 512)
                 return { valid: false, msg: 'Only under 0.5MB!' }
         }
         return { valid: true }
@@ -92,7 +93,7 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } = 
     },
 }
 
-const formFieldProps = {
+const fieldProps = {
     name: {
         id: 'name',
         label: 'Product name',
@@ -154,29 +155,21 @@ function previewImages(images: File[] | null) {
     return res
 }
 
-export default function useProductForm() {
-    const {setFormFieldProps,setFormFieldValues,formFieldProps,formFieldValues} = useModalStore(state=>state.form)
-    const modalState = useModalStore((state) => state.base)
-	console.log('Render!')
-	setFormFieldProps(formFieldProps)
-	setFormFieldValues(formFieldValues)
-
-    function show() {
-        modalState.setModal(
-            <div style={{ display: 'flex' }}>
-				<button onClick={()=>setFormFieldValues({...formFieldValues,name:'zalupa'})}>XXXX</button>
-                <Form
-                    action={action}
-                    method="PUT"
-                    fieldValues={formFieldValues}
-                    dataFields={formFieldProps}
-                    setDataFields={setFormFieldValues}
-                />
-                {/* <ImagesPreview
+export default function ProductForm() {
+    const [fieldValues, setFieldValues] = React.useState(formFieldValues)
+    return (
+        <Form
+            action={action}
+            method="PUT"
+            fieldValues={fieldValues}
+            fieldProps={fieldProps}
+            setFieldValues={setFieldValues}
+        />
+        /* <ImagesPreview
                     images={imagesPreviews}
                     delImage={(idx) => {
                         URL.revokeObjectURL(imagesPreviews[idx])
-                        setDataFields((prev) => {
+                        setFieldValues((prev) => {
                             return {
                                 ...prev,
                                 images: prev.images.filter(
@@ -185,10 +178,6 @@ export default function useProductForm() {
                             }
                         })
                     }}
-                /> */}
-            </div>
-        )
-        modalState.show()
-    }
-    return show
+                /> */
+    )
 }
