@@ -3,40 +3,37 @@ import styles from '../index.module.scss'
 import Price from '../../Price'
 import Discount from '../../Discount'
 import ImageComponent from '@/components/ui/ImageComponent'
-import Link from 'next/link'
-import BuyButton from '@/components/ui/BuyButton'
 
-import type {
-    Brand,
-    BrandModel,
-    Product,
-} from '../../../../lib/DAL/MongoModels'
+import type { Brand, Product } from '../../../../lib/DAL/MongoModels'
 import { useEffect, useState } from 'react'
-import { Require_id } from 'mongoose'
+import React from 'react'
 
 type props = {
     product: Product
 }
 
+const currentImageUrls: string[] = []
+
+function previewImages(images: File[]) {
+    for (const image of currentImageUrls) {
+        URL.revokeObjectURL(image)
+    }
+    let res: string[] = []
+    if (!images) res = []
+    if (images instanceof File) res = [URL.createObjectURL(images)]
+    for (const idx in images) {
+        res.push(URL.createObjectURL(images[idx]))
+    }
+    currentImageUrls.push(...res)
+    return res
+}
+
 export default function PreviewProductCard({ product }: props) {
-    const [brand, setBrand] = useState({
-        name: 'unknown',
-        image: 'template.jpeg',
-    })
-    useEffect(() => {
-        async function getBrand() {
-            const brand = (
-                await (await fetch('api/brand?name=' + product.brand)).json()
-            )[0] as null | Brand
-            if (!brand) return false
-            else setBrand({ name: brand.name, image: brand.image })
-        }
-    }, [product.brand])
     return (
         <div className={styles.productCard}>
             <div className={styles.image}>
                 <Carousel>
-                    {product.images.map((img, i) => (
+                    {product.images?.map((img, i) => (
                         <ImageComponent
                             width={230}
                             height={230}
@@ -45,14 +42,14 @@ export default function PreviewProductCard({ product }: props) {
                             fallback="/products/template.jpeg"
                             alt={product.name}
                         />
-                    ))}
+                    )) || <></>}
                 </Carousel>
                 <ImageComponent
                     className={styles.brandImage}
                     height={30}
                     width={30}
-                    alt={brand.name || 'unknown'}
-                    src={`/brands/${brand.image}`}
+                    alt={product.brand || 'unknown'}
+                    src={`/brands/${'template.jpeg'}`}
                     fallback="/brands/template.jpeg"
                 />
                 <Discount
@@ -61,7 +58,7 @@ export default function PreviewProductCard({ product }: props) {
                 />
             </div>
             <h3 className={styles.name}>{product.name}</h3>
-            <span className={styles.brand}>{brand.name || 'unknown'}</span>
+            <span className={styles.brand}>{product.brand || 'unknown'}</span>
             <span className={styles.category}>{product.category}</span>
             <Price
                 className={styles.price}

@@ -4,10 +4,8 @@ import Form, {
     FormFieldValidator,
     FormFieldValue,
 } from '../../../components/forms/index'
-import React, { useEffect, useMemo, useState } from 'react'
-import ProductCard from '@/components/product/ProductCard'
-import PreviewProductCard from '@/components/product/ProductCard/PreviewProductCard'
-import ImagesPreview from '@/components/ui/ImagesPreview'
+import React from 'react'
+import LabeledInput from '@/components/ui/LabeledInput'
 
 const formFieldValues: {
     name: string
@@ -43,18 +41,14 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
     images: (value: FormFieldValue) => {
         if (typeof value === 'string')
             return { valid: false, msg: 'Image can only be a file!' }
-
         if (!value) return { valid: true }
-        console.log(value, value instanceof FileList)
         const files = value instanceof File ? [value] : value
         if (files.length === 0) return { valid: false, msg: 'zalupa' }
-        for (const idx in files) {
-            if (typeof files[idx] === 'number' || files[idx]) continue
-            console.log(files[idx].name.split('.').pop())
-            const ext = files[idx].name.split('.').pop()
+        for (const file of files) {
+            const ext = file.name.split('.').pop()
             if (ext != 'jpeg' && ext != 'jpg')
                 return { valid: false, msg: 'Only jpegs!' }
-            if (files[idx].size > 1024 * 512)
+            if (file.size > 1024 * 512)
                 return { valid: false, msg: 'Only under 0.5MB!' }
         }
         return { valid: true }
@@ -93,21 +87,30 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
     },
 }
 
-const fieldProps = {
+const fieldProps: {
+    [i in keyof typeof formFieldValues]: Omit<
+        React.ComponentProps<typeof LabeledInput>,
+        'value' | 'setValue'
+    >
+} = {
     name: {
         id: 'name',
+        type: 'text',
         label: 'Product name',
         placeholder: 'Product',
         validator: validation['name'],
     },
     description: {
         id: 'description',
+        type: 'text',
         label: 'Product description',
         placeholder: 'Text',
         validator: validation['description'],
     },
     link: {
         id: 'link',
+        type: 'text',
+
         label: 'Product link',
         placeholder: 'example.com',
         validator: validation['link'],
@@ -117,21 +120,25 @@ const fieldProps = {
         label: 'Product brand',
         placeholder: 'test',
         validator: validation['brand'],
+        type: 'select',
     },
     category: {
         id: 'category',
+        type: 'select',
         label: 'Product category',
         placeholder: 'test',
         validator: validation['category'],
     },
     price: {
         id: 'price',
+        type: 'text',
         label: 'Product price',
         placeholder: 'test',
         validator: validation['price'],
     },
     discount: {
         id: 'discount',
+        type: 'text',
         label: 'Product discount',
         placeholder: 'test',
         validator: validation['discount'],
@@ -144,40 +151,39 @@ const fieldProps = {
         accept: 'image/jpeg',
         validator: validation['images'],
     },
-} as const
-
-function previewImages(images: File[] | null) {
-    if (!images) return ['template.jpeg']
-    const res: string[] = []
-    for (const image of images) {
-        res.push(URL.createObjectURL(image))
-    }
-    return res
 }
 
 export default function ProductForm() {
     const [fieldValues, setFieldValues] = React.useState(formFieldValues)
+    const [brands, setBrands] = React.useState<string[]>(['Loading...'])
+    const [categories, setCategories] = React.useState<string[]>(['Loading...'])
+    fieldProps.brand.options = brands
+    fieldProps.category.options = categories
+    React.useEffect(() => {
+        function getLists() {
+            Promise.all([fetch('/api/category'), fetch('/api/brand')])
+                .then(([cats, brands]) => {
+                    Promise.all([cats.json(), brands.json()]).then(
+                        ([cats, brands]) => {
+                            console.log(cats, brands)
+                            setCategories(cats.map((cat) => cat.name))
+                            setBrands(brands.map((brand) => brand.name))
+                        }
+                    )
+                })
+                .catch((er) => console.log(er))
+        }
+        getLists()
+    }, [])
     return (
-        <Form
-            action={action}
-            method="PUT"
-            fieldValues={fieldValues}
-            fieldProps={fieldProps}
-            setFieldValues={setFieldValues}
-        />
-        /* <ImagesPreview
-                    images={imagesPreviews}
-                    delImage={(idx) => {
-                        URL.revokeObjectURL(imagesPreviews[idx])
-                        setFieldValues((prev) => {
-                            return {
-                                ...prev,
-                                images: prev.images.filter(
-                                    (_, oldIdx) => oldIdx != idx
-                                ),
-                            }
-                        })
-                    }}
-                /> */
+        <div style={{ display: 'flex' }}>
+            <Form
+                action={action}
+                method="PUT"
+                fieldValues={fieldValues}
+                fieldProps={fieldProps}
+                setFieldValues={setFieldValues}
+            />
+        </div>
     )
 }

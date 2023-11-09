@@ -22,7 +22,7 @@ export default function ProductCard({ product, brand }: props) {
                         <ImageComponent
                             width={230}
                             height={230}
-                            key={i}
+                            key={i + img}
                             src={`/products/${img}`}
                             fallback="/products/template.jpeg"
                             alt={product.name}

@@ -1,19 +1,48 @@
 'use client'
 import { FormFieldValidator, FormFieldValue } from '@/components/forms'
 import styles from './index.module.scss'
-import React, { HTMLInputTypeAttribute } from 'react'
+import React from 'react'
+import ImagesPreview from '../ImagesPreview'
+import Selector from '../Selector'
 
 type props = {
     label?: string
     placeholder?: string
-    type?: string
     className?: string
     id: string
-    value: FormFieldValue
-    multiple?: boolean
     accept?: string
-    setValue: (val: FormFieldValue) => void
     validator?: FormFieldValidator
+    //type: T
+    //value: T extends 'file' ? File[] : string
+    //setValue: value
+} & (
+        | {
+            type: 'text'
+            multiple?: false
+            options?: never[]
+            value: string
+            setValue: (val: string) => void
+        }
+        | {
+            type: 'file'
+            multiple?: boolean
+            options?: never[]
+            value: File[]
+            setValue: (val: File[]) => void
+        }
+        | {
+            type: 'select'
+            multiple?: false
+            options: string[]
+            value: string
+            setValue: (val: string) => void
+        }
+    )
+
+function fileListAdapter(inp: File | FileList | null): File[] {
+    if (!inp) return [] as File[]
+    if (inp instanceof File) return [inp]
+    return Array.from(inp)
 }
 
 export default function LabeledInput({
@@ -21,13 +50,15 @@ export default function LabeledInput({
     multiple = false,
     accept = 'image/*',
     placeholder = 'input',
-    type = 'text',
+    type,
     className = '',
+    options = [],
     id,
     value,
     setValue,
     validator: validation,
 }: props) {
+    type = type ? type : 'text'
     const [_error, _setError] = React.useState<string>('')
     const _inpRef = React.useRef<HTMLInputElement>(null)
     function validate(value: props['value'], validation: props['validator']) {
@@ -43,16 +74,16 @@ export default function LabeledInput({
         }
     }
     function changeHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        value
+        setValue
         if (type === 'file') {
-            const files = e.currentTarget.files
-            if (
-                validate(
-                    (!multiple && files?.[0]) || (multiple && files),
-                    validation
-                )
-            ) {
+            value
+            setValue
+            const files = fileListAdapter(e.currentTarget.files)
+            console.log(files)
+            if (validate(files, validation)) {
                 console.log('==>', { ...files })
-                setValue(multiple ? { ...files } : { ...files }[0])
+                setValue(files)
             }
         } else {
             setValue(e.currentTarget.value)
@@ -64,18 +95,36 @@ export default function LabeledInput({
             return
         }
         const data = new DataTransfer()
-        if (multiple) {
-            for (const idx in value) {
-                data.items.add(value[idx] as File)
-            }
-        } else {
-            console.log(value)
-            data.items.add(value)
+        for (const file of value) {
+            data.items.add(file as File)
         }
         _inpRef.current.files = data.files
     }, [value, multiple, type])
-
-    return (
+    const preview =
+        type === 'file' ? (
+            <ImagesPreview
+                images={value as File[]}
+                delImage={(idx: number) => {
+                    console.log(
+                        value,
+                        idx,
+                        value.filter((_, idxOld) => idx != idxOld)
+                    )
+                    setValue(value.filter((_, idxOld) => idx != idxOld))
+                }}
+            />
+        ) : (
+            <></>
+        )
+    return type === 'select' ? (
+        <Selector
+            value={value as string}
+            setValue={setValue}
+            options={options}
+            id={id}
+            label={label}
+        />
+    ) : (
         <div className={`${className} ${styles.container}`}>
             <label htmlFor={id || ''} className={styles.label}>
                 {label}
@@ -97,6 +146,7 @@ export default function LabeledInput({
             <label htmlFor={id || ''} className={styles.error}>
                 {_error}
             </label>
+            {preview}
         </div>
     )
 }

@@ -21,8 +21,16 @@ function Carousel({ children }: props) {
         <div className={styles.carousel}>
             <div className={styles.imageContainer}>
                 {children[current]}
-                {children[getPos(current + 1, children.length)]}
-                {children[getPos(current - 1, children.length)]}
+                {children.length > 1 ? (
+                    children[getPos(current + 1, children.length)]
+                ) : (
+                    <></>
+                )}
+                {children.length > 2 ? (
+                    children[getPos(current - 1, children.length)]
+                ) : (
+                    <></>
+                )}
             </div>
 
             <button

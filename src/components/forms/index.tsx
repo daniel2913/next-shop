@@ -3,7 +3,7 @@ import styles from './index.module.scss'
 import { ComponentProps, FormEvent, useRef, useState } from 'react'
 import useError from '@/hooks/modals/useError'
 
-export type FormFieldValue = FormDataEntryValue | FileList | null
+export type FormFieldValue = string | File[] | null
 export type FormFieldValidator = (
     v: FormFieldValue
 ) => { valid: true; msg?: string } | { valid: false; msg: string }

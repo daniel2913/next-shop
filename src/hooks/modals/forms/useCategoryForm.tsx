@@ -1,5 +1,4 @@
 'use client'
-import useModalStore from '@/store/modalStore'
 import Form, {
     FormFieldValidator,
     FormFieldValue,
@@ -9,7 +8,8 @@ import React from 'react'
 const formFieldValues = { name: '', image: null } as const
 const action = '/api/category'
 
-const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
+const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
+{
     name: (value: FormFieldValue) => {
         if (typeof value != 'string')
             return { valid: false, msg: 'Name can only be string!' }
@@ -18,20 +18,22 @@ const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
             ? { valid: false, msg: 'Name Required!' }
             : { valid: true }
     },
-    image: (file: FormFieldValue) => {
-        if (!(file instanceof File))
+    image: (files: FormFieldValue) => {
+        if (!files || typeof files === 'string')
             return { valid: false, msg: 'Image can only be a file!' }
-        const ext = file.name.split('.').pop()
-        if (ext != 'jpeg' && ext != 'jpg')
-            return { valid: false, msg: 'Only jpegs!' }
-        if (file.size > 1024 * 512)
-            return { valid: false, msg: 'Only under 0.5MB!' }
+        for (const file of files) {
+            const ext = file.name.split('.').pop()
+            if (ext != 'jpeg' && ext != 'jpg')
+                return { valid: false, msg: 'Only jpegs!' }
+            if (file.size > 1024 * 512)
+                return { valid: false, msg: 'Only under 0.5MB!' }
+        }
 
         return { valid: true }
     },
 }
 
-const formFieldProps = {
+const fieldProps = {
     name: {
         id: 'name',
         label: 'Category name',
@@ -59,7 +61,7 @@ export default function CategoryForm({
             action={action}
             method={method}
             fieldValues={fieldValues}
-            fieldProps={formFieldProps}
+            fieldProps={fieldProps}
             setFieldValues={setFieldValues}
         />
     )

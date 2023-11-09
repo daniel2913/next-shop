@@ -23,7 +23,7 @@ export default function ImageComponent(props: props) {
     return error ? (
         <div>Error!</div>
     ) : (
-        <img
+        <Image
             loading="lazy"
             className={props.className}
             src={image}

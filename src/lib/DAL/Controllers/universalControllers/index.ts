@@ -87,10 +87,16 @@ export function collectQueries<T extends AnyParamConstructor<any>>(
     params: URLSearchParams,
     config: Tconfig<T>
 ) {
-    const query: Partial<{ [i: string]: string }> = {}
-    for (const [key, value] of params.entries()) {
+    const query: Partial<{ [i: string]: string | string[] }> = {}
+    for (const [key, value] of Object.entries(params)) {
         if (value && key in config.model.schema.paths) {
-            query[key] = value
+            let test: string | string[] = ''
+            try {
+                test = decodeURIComponent(value).split(',')
+            } catch (e) {
+                test = ''
+            }
+            query[key] = test
         }
     }
     if ('name' in query) {
@@ -108,8 +114,8 @@ export function formatImages<T extends AnyParamConstructor<any>>(
     return config.multImages
         ? propsImages
         : propsImages[0]
-        ? [propsImages[0]]
-        : []
+            ? [propsImages[0]]
+            : []
 }
 
 type FormValue = File | string
@@ -117,12 +123,12 @@ type FormValue = File | string
 export type form = {
     [a: string]: FormValue | FormValue[]
 } & (
-    | {
-          images: FormValue[]
-          image: never
-      }
-    | {
-          image: FormValue
-          images: never
-      }
-)
+        | {
+            images: FormValue[]
+            image: never
+        }
+        | {
+            image: FormValue
+            images: never
+        }
+    )
