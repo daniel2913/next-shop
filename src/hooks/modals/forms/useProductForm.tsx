@@ -6,6 +6,9 @@ import Form, {
 } from '../../../components/forms/index'
 import React from 'react'
 import LabeledInput from '@/components/ui/LabeledInput'
+import { Brand, Category } from '@/lib/DAL/MongoModels'
+import ProductCard from '@/components/product/ProductCard'
+import PreviewProductCard from '@/components/product/ProductCard/PreviewProductCard'
 
 const formFieldValues: {
     name: string
@@ -13,16 +16,14 @@ const formFieldValues: {
     brand: string
     price: string
     discount: string
-    link: string
     category: string
     images: null
 } = {
-    name: '1',
-    description: '2',
-    brand: '3',
+    name: '',
+	brand: '',
+    description: '',
     price: '',
     discount: '',
-    link: '',
     category: '',
     images: null,
 }
@@ -58,11 +59,6 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
             return { valid: false, msg: 'Description can only be string!' }
         return value.length === 0
             ? { valid: false, msg: 'Description required' }
-            : { valid: true }
-    },
-    link: (value: FormFieldValue) => {
-        return typeof value != 'string'
-            ? { valid: false, msg: 'Link can only be string!' }
             : { valid: true }
     },
     brand: (value: FormFieldValue) => {
@@ -107,14 +103,6 @@ const fieldProps: {
         placeholder: 'Text',
         validator: validation['description'],
     },
-    link: {
-        id: 'link',
-        type: 'text',
-
-        label: 'Product link',
-        placeholder: 'example.com',
-        validator: validation['link'],
-    },
     brand: {
         id: 'brand',
         label: 'Product brand',
@@ -153,28 +141,15 @@ const fieldProps: {
     },
 }
 
-export default function ProductForm() {
+type props = {
+	brandList:Brand[]
+	categoryList:Category[]
+}
+
+export default function ProductForm({brandList,categoryList}:props) {
     const [fieldValues, setFieldValues] = React.useState(formFieldValues)
-    const [brands, setBrands] = React.useState<string[]>(['Loading...'])
-    const [categories, setCategories] = React.useState<string[]>(['Loading...'])
-    fieldProps.brand.options = brands
-    fieldProps.category.options = categories
-    React.useEffect(() => {
-        function getLists() {
-            Promise.all([fetch('/api/category'), fetch('/api/brand')])
-                .then(([cats, brands]) => {
-                    Promise.all([cats.json(), brands.json()]).then(
-                        ([cats, brands]) => {
-                            console.log(cats, brands)
-                            setCategories(cats.map((cat) => cat.name))
-                            setBrands(brands.map((brand) => brand.name))
-                        }
-                    )
-                })
-                .catch((er) => console.log(er))
-        }
-        getLists()
-    }, [])
+    fieldProps.brand.options = brandList.map(brand=>brand.name)
+    fieldProps.category.options = categoryList.map(category=>category.name)
     return (
         <div style={{ display: 'flex' }}>
             <Form
@@ -184,6 +159,11 @@ export default function ProductForm() {
                 fieldProps={fieldProps}
                 setFieldValues={setFieldValues}
             />
+			<PreviewProductCard product={{
+				...fieldValues,
+				price:+fieldValues.price,
+				discount:+fieldValues.discount,
+				brandImage:brandList.find(brand=>brand.name===fieldValues.brand)?.image || 'template.jpeg'}}/>
         </div>
     )
 }

@@ -20,7 +20,7 @@ export default async function addController<T extends AnyParamConstructor<any>>(
 ) {
     const { DIR_PATH, model, multImages } = config
 
-    const imageFiles = ((multImages ? props.images : [props.image]) || []) as (
+    const imageFiles = ((multImages ? props['images'] : props['image']) || []) as (
         | File
         | string
     )[]
@@ -40,7 +40,7 @@ export default async function addController<T extends AnyParamConstructor<any>>(
     if (!newDocument) {
         return new NextResponse('Validation error', { status: 400 })
     }
-
+	
     if (!(await saveImages(images, DIR_PATH))) {
         return new NextResponse('Server error', { status: 500 })
     }

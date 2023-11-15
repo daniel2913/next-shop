@@ -1,9 +1,9 @@
 'use client'
-import LabeledInput from '@/components/UI/LabeledInput'
+import LabeledInput from '@/components/ui/LabeledInput'
 import styles from './index.module.scss'
 import { useState } from 'react'
 import useError from '@/hooks/modals/useError'
-import { handleNewCategoryForm } from '@/Actions/newCategory'
+import { handleNewCategoryForm } from '@/actions/newCategory'
 
 export default function NewCategoryForm() {
     const [loading, setLoading] = useState(false)

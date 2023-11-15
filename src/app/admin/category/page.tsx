@@ -1,4 +1,4 @@
-import NewCategoryForm from '@/components/forms/Category/newCategory'
+import NewCategoryForm from '@/components/forms/category/newCategory'
 import styles from './page.module.scss'
 
 export default function Category() {

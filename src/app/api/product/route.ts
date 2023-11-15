@@ -37,6 +37,5 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
     const props: any = collectFromForm(await req.formData(), config)
-    console.log(props)
     return patchController({ ...props }, config)
 }

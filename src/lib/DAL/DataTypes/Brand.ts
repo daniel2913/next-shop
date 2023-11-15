@@ -1,34 +1,33 @@
-import brandNameValidators from '../Validations/Brand/brandNameValidation/serverBrandValidation'
-import { defaultId } from './common'
+import mongoose, { FilterQuery, Model, Query, QueryOptions, Schema } from 'mongoose'
 
-export const brandProps = [
-    '_id',
-    'name',
-    'description',
-    'image',
-    'link',
-] as const
+export interface IBrand{
+	_id?:string
+	name:string
+	description:string,
+	image:string
+}
 
-export const BrandType = {
-    _id: {
-        type: 'ObjectId',
-        default: defaultId,
-    },
-    name: {
-        type: 'string',
-        validate: brandNameValidators,
-        default: () => 'This is a default Brand Name!',
-    },
-    description: {
-        type: 'string',
-        default: () => 'This is a default description!',
-    },
-    image: {
-        type: 'string',
-        default: () => 'template.jpeg',
-    },
-    link: {
-        type: 'string',
-        default: () => './',
-    },
-} as const
+export const BrandDefinition = {
+	_id:{type:String},
+	name:{type:String},
+	description:{type:String},
+	image:{type:String}
+}
+
+
+const tst = new Schema<typeof BrandDefinition>(BrandDefinition)
+
+const test = mongoose.model('test',tst)
+
+type T = typeof BrandDefinition
+
+test.find({z:'test'})
+
+function make<T>(model:Model<T>, obj:Omit<T,'_id'>){
+	return new model(obj)
+}
+
+function makePartial<T>(model:Model<T>, obj:Partial<Omit<T,'_id'>>){
+	return new model(obj)
+}
+

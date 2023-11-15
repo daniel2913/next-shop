@@ -1,8 +1,18 @@
-import authUser from '@/lib/DAL/Controllers/userController/authUser'
-import NextAuth from 'next-auth'
+import { UserModel } from '@/lib/DAL/MongoModels'
+import authUser from '@/lib/DAL/controllers/userController/authUser'
+import dbConnect from '@/lib/dbConnect'
+import NextAuth, { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { cache } from 'react'
 
-export const authOptions = {
+
+async function findUserByName(name:string){
+	await dbConnect()
+	return UserModel.findOne({name})
+}
+const getUser = cache((name:string)=>findUserByName(name))
+
+export const authOptions:AuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -17,19 +27,31 @@ export const authOptions = {
             async authorize(credentials, req) {
                 const user = await authUser(credentials)
                 if (user) {
-                    console.log(user, ' logged in!')
                     return user
                 }
-                console.log('Fucky-Wacky were made by ', credentials)
                 return null
             },
         }),
     ],
+	callbacks:{
+		async session({session,token}){
+			await dbConnect()
+			if (!session.user?.name) return null
+			const user = await getUser(session.user.name)
+			console.log('user session: ',user)
+			if (!user) return session
+			session.user.role = user.user.role || 'user'
+			return session
+		}
+	},
     session: {
         maxAge: 30 * 24 * 60 * 60,
         updateAge: 24 * 60 * 60,
     },
     secret: 'FsLlSA0KpXaM7sHNlqrgpO9SlZBsR0/33ndqledspqQ=',
+	pages:{
+		newUser: '/shop'
+	}
 }
 
 const handler = NextAuth(authOptions)

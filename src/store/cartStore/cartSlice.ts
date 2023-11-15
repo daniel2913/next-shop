@@ -18,7 +18,7 @@ export const validCartItemProps = [
 ] as const
 
 function updateAccount(cart: Item[]) {
-    fetch('api/store', {
+    fetch('/api/store', {
         method: 'PATCH',
         headers: {
             'content-type': 'application/json',

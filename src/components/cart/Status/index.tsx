@@ -19,17 +19,14 @@ export default function CartStatus() {
                 localStorage.getItem('cart-store') || '[]'
             )?.state?.items
             // as Item[]
-            console.log('=>', remoteCache)
             if (remoteCache.length > 0) {
                 if (!localCache?.length) {
-                    console.log('no local')
                     setLocalCache(remoteCache)
                 } else if (
                     JSON.stringify(remoteCache) != JSON.stringify(localCache)
                 ) {
                     confirmOverwrite().then((ans) => {
                         if (!ans) {
-                            console.log('overwrite')
                             setLocalCache(remoteCache)
                         }
                     })

@@ -11,9 +11,11 @@ import type { Brand, Product } from '../../../lib/DAL/MongoModels'
 type props = {
     product: Product
     brand: Brand
+	role:'admin'|'user'
 }
 
-export default function ProductCard({ product, brand }: props) {
+export default async function ProductCard({ product, brand,role }: props) {
+
     return (
         <div className={styles.productCard}>
             <div className={styles.image}>
@@ -42,7 +44,7 @@ export default function ProductCard({ product, brand }: props) {
                     className={styles.discount}
                 />
             </div>
-            <Link href={`./Product/${product.link}`}>
+            <Link href={`./product/${product.link}`}>
                 <h3 className={styles.name}>{product.name}</h3>
             </Link>
             <span className={styles.brand}>{brand.name || 'unknown'}</span>
@@ -52,7 +54,7 @@ export default function ProductCard({ product, brand }: props) {
                 price={product.price || 200}
                 discount={product.discount || 0}
             />
-            <BuyButton {...product} />
+            {role === 'admin'? <></>  : <BuyButton {...product} /> }
             <p className={styles.description}>{product.description}</p>
         </div>
     )

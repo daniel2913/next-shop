@@ -1,14 +1,14 @@
-import Carousel from '@/components/UI/Carousel'
+import Carousel from '@/components/ui/Carousel'
 import styles from './Details.module.scss'
 import React from 'react'
-import Rating from '@/components/UI/Rating'
+import Rating from '@/components/ui/Rating'
 import Image from 'next/image'
-import AmmountSelector from '@/components/UI/AmmountSelector'
-import Price from '@/components/Product/Price'
+import AmmountSelector from '@/components/ui/AmmountSelector'
+import Price from '@/components/product/Price'
 import dbConnect from '@/lib/dbConnect'
 import { BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
-import Discount from '@/components/Product/Discount'
-import BuyButton from '@/components/UI/BuyButton'
+import Discount from '@/components/product/Discount'
+import BuyButton from '@/components/ui/BuyButton'
 
 export async function getProductByLink(adr: string) {
     ///CHANGGGGGGGGGGGGGGGGGE IT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

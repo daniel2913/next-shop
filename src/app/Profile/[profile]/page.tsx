@@ -1,7 +1,15 @@
-import { UserModel } from '@/lib/DAL/MongoModels'
-import dbConnect from '@/lib/dbConnect'
-import Image from 'next/image'
+import { ProductModel, UserModel } from '@/lib/DAL/MongoModels'
 import styles from './page.module.scss'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
+import {  getAllBrands } from '@/helpers/cachedGeters'
+import ImageComponent from '@/components/ui/ImageComponent'
+import Discount from '@/components/product/Discount'
+import Price from '@/components/product/Price'
+import AmmountSelector from '@/components/ui/AmmountSelector'
+import useCartStore from '@/store/cartStore'
+import CartRow from '@/components/cart/CartRow'
 
 interface props {
     login: string
@@ -9,33 +17,50 @@ interface props {
     con: any
 }
 
-export async function getUser(profile: string) {
-    await dbConnect()
-    const user = (await UserModel.find({ username: profile }).exec())[0]
-    const image: string | undefined = user.image
-    return { user: { userName: user.username, image: image } }
-}
 
-export default async function Profile({
+export default async function Cart({
     params,
     searchParams,
 }: {
     params: { profile: string }
     searchParams: { [key: string]: string | string[] | undefined }
 }) {
-    const route = params.profile
-    if (!route) throw 'no route'
-    const { user } = await getUser(Array.isArray(route) ? route[0] : route)
-    return (
+    const session = await getServerSession(authOptions)
+	if(!session?.user?.name)
+		redirect('/api/auth/signin')
+	getAllBrands()
+	const user =await UserModel.findOne({username:session.user.name}).lean().exec() 
+	if (!user) throw 'Fuck!'
+	const cart = JSON.parse(user.cart!) as [{amount:number,product:string}]
+	const products = await ProductModel.find({_id:cart.map(item=>item.product)}).lean().exec()
+    const brands = await getAllBrands()
+	const order = cart.map(item=>{
+		const product = products.find(product=>product._id===item.product)
+		if (!product) return null
+		const brand = brands.find(brand=>brand.name===product.brand)
+		if (!brand) return null
+		return {
+			_id:product._id,
+			name:product.name,
+			brand:brand.name,
+			price:product.price,
+			discount:product.discount,
+			amount:item.amount,
+			image:product.images[0],
+			logo:brand.image
+		}
+	})
+
+	return (
         <div className={styles.pageWrapper}>
-            <Image
-                src={`/users/${user?.image || 'template.jpeg'}`}
-                height={150}
-                width={150}
-                alt="Profile picture"
-            />
-            <h2 className={styles.login}>{user.userName}</h2>
-            <h1>{user.userName}</h1>
+			<h2 className={styles.login}>{session.user.name}</h2>
+			{order.map(item=>{
+				if (!item) return (<div><span>Error!</span></div>)
+				else return (
+					<CartRow {...item}/>
+				)
+
+			})}
         </div>
     )
 }

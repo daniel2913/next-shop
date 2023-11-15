@@ -1,18 +1,23 @@
 import ProductCard from '@/components/product/ProductCard'
-import { Brand, BrandModel, Product, ProductModel } from '@/lib/DAL/MongoModels'
-import dbConnect from '@/lib/dbConnect'
+import { Brand, BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
 import styles from './index.module.scss'
 import {
+	Tconfig,
     collectQueries,
     getController,
 } from '@/lib/DAL/controllers/universalControllers'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getAllBrands } from '@/helpers/cachedGeters'
+import dbConnect from '@/lib/dbConnect'
 
 type TSearchParams = { [key: string]: string | string[] | undefined }
 
 export async function getProducts(searchParams: TSearchParams) {
-    const query = collectQueries(searchParams, { model: ProductModel })
-    const products = await await ProductModel.find(query).lean().exec()
-    const brandList = await await BrandModel.find().lean().exec()
+	await dbConnect()
+    const query = collectQueries(searchParams, { model: ProductModel } as any as Tconfig<typeof ProductModel>) ////FIX!!!
+    const products = await ProductModel.find(query).lean().exec()
+    const brandList = await getAllBrands()
     return { products, brandList }
 }
 
@@ -23,8 +28,8 @@ export default async function ProductList({
     params: { link: string }
     searchParams: TSearchParams
 }) {
+	const role:'admin' | 'user' = (await getServerSession(authOptions))?.user?.role || 'user'
     const { products, brandList } = await getProducts(searchParams)
-    console.log(searchParams)
     return (
         <div className={styles.pageWrapper}>
             <div className={styles.featured}>
@@ -35,6 +40,7 @@ export default async function ProductList({
                 {products.map((product, i) => (
                     <ProductCard
                         key={i}
+						role={role}
                         product={product}
                         brand={
                             brandList[product.brand.toString()] ||

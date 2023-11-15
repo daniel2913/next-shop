@@ -1,25 +1,23 @@
-'use client'
-
 import Link from 'next/link'
 import styles from './index.module.scss'
 
 import React from 'react'
 import Auth from '../ui/Auth'
 import CartStatus from '../cart/Status'
-import CategoryForm from '@/hooks/modals/forms/useCategoryForm'
-import ProductForm from '@/hooks/modals/forms/useProductForm'
 import Search from '../ui/Search'
-import { useRouter } from 'next/navigation'
+import { BrandModel, CategoryModel } from '@/lib/DAL/MongoModels'
 
-export default function NavBar() {
-    //  const modal = React.useRef(useProductForm())
+export const revalidate = 300
+
+export default async function NavBar() {
+    const [brands,categories] = await Promise.all([BrandModel.find().lean().exec(),CategoryModel.find().lean().exec()]) 
     return (
         <header className={styles.navbar}>
             <div className={styles.logo}></div>
-            <Search goTo={(url: string) => router.push(url)} />
+            <Search brandList={brands} categoryList={categories}/>
             <div className={styles.navbarContent}>
                 <Link href="/">Home</Link>
-                <Link href="/Product/AddProduct">Add Product</Link>
+                <Link href="/product/AddProduct">Add Product</Link>
                 <Link href="/">Users</Link>
                 <Link href="/Register">Create User</Link>
             </div>

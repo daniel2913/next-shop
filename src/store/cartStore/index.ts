@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { cartSlice, createCartSlice } from './cartSlice'
-import { createJSONStorage, persist } from 'zustand/middleware'
-import { linkedStorage } from './localStorage'
+import {  persist } from 'zustand/middleware'
 
 const useCartStore = create<cartSlice>()(
     persist(
@@ -11,7 +10,6 @@ const useCartStore = create<cartSlice>()(
         {
             name: 'cart-store',
             skipHydration: true,
-            //storage: createJSONStorage(() => linkedStorage),
         }
     )
 )

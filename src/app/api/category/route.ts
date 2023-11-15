@@ -27,7 +27,6 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
     const form = await req.formData()
     const props: Partial<form> = {}
     for (const [key, value] of form.entries()) {
-        console.log(key, value)
         if (key === 'image') {
             props['image'] = value || undefined
         } else {

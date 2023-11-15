@@ -17,7 +17,7 @@ type props = {
     //setValue: value
 } & (
         | {
-            type: 'text'
+            type: 'text'|'password'
             multiple?: false
             options?: never[]
             value: string
@@ -80,9 +80,7 @@ export default function LabeledInput({
             value
             setValue
             const files = fileListAdapter(e.currentTarget.files)
-            console.log(files)
             if (validate(files, validation)) {
-                console.log('==>', { ...files })
                 setValue(files)
             }
         } else {
@@ -105,11 +103,6 @@ export default function LabeledInput({
             <ImagesPreview
                 images={value as File[]}
                 delImage={(idx: number) => {
-                    console.log(
-                        value,
-                        idx,
-                        value.filter((_, idxOld) => idx != idxOld)
-                    )
                     setValue(value.filter((_, idxOld) => idx != idxOld))
                 }}
             />

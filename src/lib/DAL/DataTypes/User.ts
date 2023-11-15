@@ -1,4 +1,5 @@
-import brandNameValidators from '../Validations/Brand/brandNameValidation/serverBrandValidation'
+import { Mongoose, SchemaDefinitionProperty, SchemaTypeOptions } from 'mongoose'
+import brandNameValidators from '../validations/brand/brandNameValidation/serverBrandValidation'
 import { defaultId } from './common'
 
 export const userProps = [
@@ -7,7 +8,9 @@ export const userProps = [
     'passwordHash',
     'role',
     'cart',
+	'orders'
 ] as const
+
 
 export const UserType = {
     _id: {

@@ -79,7 +79,6 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
             needToSave = true
             images = result
         } else {
-            console.log('images')
             return new NextResponse('Validation error', { status: 400 })
         }
     } else {

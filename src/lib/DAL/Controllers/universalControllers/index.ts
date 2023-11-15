@@ -84,7 +84,7 @@ export function imagesDiff<T extends AnyParamConstructor<any>>(
 }
 
 export function collectQueries<T extends AnyParamConstructor<any>>(
-    params: URLSearchParams,
+    params: URLSearchParams | Record<string,string|string[]|undefined>,
     config: Tconfig<T>
 ) {
     const query: Partial<{ [i: string]: string | string[] }> = {}

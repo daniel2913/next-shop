@@ -1,5 +1,5 @@
 import ProductList from '@/components/Products'
-import Search from '@/components/ui/Search'
+import { Suspense } from 'react'
 
 export default function Shop({
     params,
@@ -10,7 +10,7 @@ export default function Shop({
 }) {
     return (
         <>
-            <ProductList params={params} searchParams={searchParams} />
+				<ProductList params={params} searchParams={searchParams} />
         </>
     )
 }

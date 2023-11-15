@@ -35,7 +35,6 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
             props[key] = value.toString() || undefined
         }
     }
-    console.log(props)
     return addController<typeof Brand>(props, config)
 }
 

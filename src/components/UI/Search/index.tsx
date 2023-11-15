@@ -5,56 +5,29 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 type props = {
-    goTo: (val: string) => void
+    brandList:Brand[],
+	categoryList:Category[]
 }
 
-export default function Search() {
+export default function Search({brandList,categoryList}:props) {
     const router = useRouter()
     const [queryString, setQueryString] = React.useState<string>('')
-    const [brands, setBrands] = React.useState<
-        { brand: Brand; checked: boolean }[]
-    >([])
-    const [categories, setCategories] = React.useState<
-        { category: Category; checked: boolean }[]
-    >([])
-    React.useEffect(() => {
-        Promise.all([fetch('/api/brand'), fetch('/api/category')]).then(
-            ([brands, cats]) => {
-                Promise.all([brands.json(), cats.json()]).then(
-                    ([brands, cats]) => {
-                        setBrands(
-                            brands.map((brand) => ({
-                                brand,
-                                checked: false,
-                            }))
-                        )
-                        setCategories(
-                            cats.map((category) => ({
-                                category,
-                                checked: false,
-                            }))
-                        )
-                    }
-                )
-            }
-        )
-    }, [])
+
+    const [brands, setBrands] = React.useState<{ brand: Brand; checked: boolean }[]>
+        (brandList.map(brand=>({brand,checked:false})))
+    const [categories, setCategories] = React.useState<{ category: Category; checked: boolean }[]>
+		(categoryList.map(category=>({category,checked:false})))
+
     async function onClick() {
         const query = new URL('shop', 'http://localhost:5000')
         const queryCats = categories.filter((category) => category.checked)
         const queryBrands = brands.filter((brand) => brand.checked)
-        query.searchParams.set('name', queryString)
-        query.searchParams.set(
-            'category',
-            queryCats.length === 0
-                ? ''
-                : queryCats.map((cat) => cat.category.name)
+        if (queryString) query.searchParams.set('name', queryString)
+        if (queryCats.length) query.searchParams.set(
+            'category',encodeURIComponent(queryCats.map((cat) => cat.category.name).join(','))
         )
-        query.searchParams.set(
-            'brand',
-            queryBrands.length === 0
-                ? ''
-                : queryBrands.map((brand) => brand.brand.name)
+        if (queryBrands.length) query.searchParams.set(
+            'brand', encodeURIComponent(queryBrands.map((brand) => brand.brand.name).join(','))
         )
         router.push(query.toString())
     }

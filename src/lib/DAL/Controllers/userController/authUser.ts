@@ -16,12 +16,12 @@ export default async function authUser(props: props) {
     console.log(passwordHash)
     const user = await UserModel.findOne({ username }).lean().exec()
     if (!user) return null
-    const cart = !isDocument(user.cart) ? null : user.cart
     if (user?.passwordHash === passwordHash) {
         return {
             id: user._id.toString(),
             name: user.username,
             profilepic: user.image,
+			role:user.role || 'user'
         }
     }
     return null

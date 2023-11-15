@@ -1,24 +1,26 @@
-'use client'
 import Link from 'next/link'
 import styles from './index.module.scss'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSession } from 'next-auth/next'
 
-export default function Auth() {
-    const { data: session, status } = useSession()
+export default async function Auth() {
+    const session =await getServerSession(authOptions)
+	const name = session?.user?.name ? session?.user?.name : 'Guest'
     return (
         <div className={styles.auth}>
-            {status === 'authenticated' ? (
-                <div>
-                    <Link href={`/Profile/${session.user?.name}`}>
-                        {session.user?.name}
-                    </Link>
-                    <button onClick={() => signOut()}>Log out</button>
-                </div>
-            ) : (
-                <div>
-                    <button onClick={() => signIn()}>Log in</button>
-                </div>
-            )}
+					{session?.user?.name 
+					? <div>
+						<Link href={`/profile/${name}`}>
+							{name}
+						</Link>
+						<Link href='/api/auth/signout'>Log out</Link>
+					</div>
+                    :
+					<div>
+						<span>{name}</span>
+						<Link href='/api/auth/signin'>Log in</Link>
+					</div>
+					}                  
         </div>
     )
 }

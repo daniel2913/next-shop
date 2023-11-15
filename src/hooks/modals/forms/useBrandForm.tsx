@@ -24,7 +24,6 @@ const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
         if (!file || (Array.isArray(file) && file.length === 0))
             return { valid: true }
         const files = file instanceof FileList ? Object.values(file) : [file]
-        console.log(files)
         for (const file of files) {
             const ext = file.name.split('.').pop()
             if (ext != 'jpeg' && ext != 'jpg')
