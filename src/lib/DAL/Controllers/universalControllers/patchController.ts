@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect'
-import { Brand, BrandModel } from '../../MongoModels'
+import { Brand, BrandModel } from '../../Models'
 import { NextResponse } from 'next/server'
 import {
     Image,
@@ -8,12 +8,10 @@ import {
     saveImages,
 } from '../../../../helpers/images'
 import { Tconfig, form, imagesDiff, isValidDocument } from '.'
-import { AnyParamConstructor } from '@typegoose/typegoose/lib/types'
 import { FilterQuery } from 'mongoose'
-import { isDocument } from '@typegoose/typegoose'
 
 export default async function patchController<
-    T extends AnyParamConstructor<any>
+    T
 >({ targId, targName, ...props }: any, config: Tconfig<T>) {
     const { DIR_PATH, model, multImages } = config
 
@@ -23,8 +21,8 @@ export default async function patchController<
         return new NextResponse('Invalid target', { status: 400 })
     const query: FilterQuery<T> = targId ? { _id: targId } : { name: targName }
 
-    const cur = await model.findOne(query).exec()
-    if (!cur || !isDocument(cur)) {
+    const cur = await model.findOne(query)
+    if (!cur || false ) {				//!isDocument(cur)
         return new NextResponse('Not Found', { status: 404 })
     }
 
@@ -97,7 +95,7 @@ export default async function patchController<
     } catch (error) {
         return new NextResponse('Errored on save', { status: 500 })
     }
-    const stat = await validDocument.save()
+    const stat = await validDocument	//.save()
     deleteImages(delImages, DIR_PATH)
     return NextResponse.json(stat)
 }

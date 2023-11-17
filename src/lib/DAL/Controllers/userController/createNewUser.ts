@@ -1,5 +1,5 @@
 import { newDocument, isMongoError, noFunc } from '../../helpers.ts'
-import { User } from '../../MongoModels/index.ts'
+import { User } from '../../Models/index.ts'
 
 export default async function createNewUser({
     imageName,

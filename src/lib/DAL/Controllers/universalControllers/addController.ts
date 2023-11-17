@@ -4,17 +4,13 @@ import {
     CategoryModel,
     ProductModel,
     UserModel,
-} from '../../MongoModels/index.ts'
+} from '../../Models/index.ts'
 import { deleteImages, handleImages, saveImages } from '@/helpers/images.ts'
 import { NextResponse } from 'next/server'
-import { ReturnModelType } from '@typegoose/typegoose'
 import { Tconfig, form, isValidDocument } from './index.ts'
-import {
-    AnyParamConstructor,
-    DocumentType,
-} from '@typegoose/typegoose/lib/types'
 
-export default async function addController<T extends AnyParamConstructor<any>>(
+
+export default async function addController<T>(
     props: any,
     config: Tconfig<T>
 ) {
@@ -34,7 +30,7 @@ export default async function addController<T extends AnyParamConstructor<any>>(
     }
     console.log(props)
     await dbConnect()
-    const unknownDocument = new model(props) as unknown
+    const unknownDocument = false//new model(props) as unknown
 
     const newDocument = await isValidDocument<typeof model>(unknownDocument)
     if (!newDocument) {
@@ -46,7 +42,7 @@ export default async function addController<T extends AnyParamConstructor<any>>(
     }
 
     try {
-        const res = await newDocument.save()
+        const res = await newDocument//.save()
         if (!res) {
             deleteImages(
                 images.map((image) => image.name),

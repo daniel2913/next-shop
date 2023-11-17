@@ -1,4 +1,4 @@
-import { ProductModel } from '../../../MongoModels/index.ts'
+import { ProductModel } from '../../../Models/index.ts'
 
 async function serverLinkValidation(link: string) {
     console.log(link)

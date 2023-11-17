@@ -6,7 +6,7 @@ import ImageComponent from '@/components/ui/ImageComponent'
 import Link from 'next/link'
 import BuyButton from '@/components/ui/BuyButton'
 
-import type { Brand, Product } from '../../../lib/DAL/MongoModels'
+import type { Brand, Product } from '../../../lib/DAL/Models'
 
 type props = {
     product: Product

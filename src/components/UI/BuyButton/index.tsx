@@ -2,9 +2,9 @@
 import useCartStore from '@/store/cartStore'
 import styles from './index.module.scss'
 import AmmountSelector from '../AmmountSelector'
-import { Product } from '@/lib/DAL/MongoModels'
+import { Product } from '@/lib/DAL/Models'
 
-export default function BuyButton(item: Product) {
+export default function BuyButton(item: typeof Product) {
     const cachedItem = useCartStore((state) =>
         state.items.find((cacheItem) => cacheItem.product === item._id)
     )

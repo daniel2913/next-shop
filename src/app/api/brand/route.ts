@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { Brand, BrandModel } from '@/lib/DAL/MongoModels'
+import { Brand, BrandModel } from '@/lib/DAL/Models'
 import {
     addController,
     deleteController,

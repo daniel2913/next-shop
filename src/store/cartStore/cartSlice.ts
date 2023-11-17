@@ -1,5 +1,4 @@
-import { Item, Product } from '@/lib/DAL/MongoModels'
-import { Ref } from '@typegoose/typegoose'
+import { Item, Product } from '@/lib/DAL/Models'
 import { StateCreator } from 'zustand'
 export interface cartSlice {
     items: Item[]
@@ -32,7 +31,7 @@ export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
     addItem: (item: Product) => {
         set((state) => {
             const newItems = state.items
-            newItems.push({ amount: 1, product: item._id as Ref<Product> })
+            newItems.push({ amount: 1, product: item._id as string })
             updateAccount(newItems)
             return { items: newItems }
         })

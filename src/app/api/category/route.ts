@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { Category, CategoryModel } from '@/lib/DAL/MongoModels'
+import { Category, CategoryModel } from '@/lib/DAL/Models'
 import {
     addController,
     deleteController,

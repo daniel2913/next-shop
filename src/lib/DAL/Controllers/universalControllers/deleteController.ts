@@ -2,8 +2,6 @@ import dbConnect from '@/lib/dbConnect'
 import { NextResponse } from 'next/server'
 import { deleteImages } from '../../../../helpers/images'
 import { Tconfig } from '.'
-import { AnyParamConstructor } from '@typegoose/typegoose/lib/types'
-import { isDocument } from '@typegoose/typegoose'
 import { FilterQuery } from 'mongoose'
 
 export default async function deleteController<
@@ -25,7 +23,7 @@ export default async function deleteController<
     }
     const query: FilterQuery<T> = _id ? { _id } : { name }
 
-    const res = await model.findOne(query).exec()
+    const res = await model.findOne(query)
     if (!res || !isDocument(res)) {
         return new NextResponse('Not Found', { status: 404 })
     }

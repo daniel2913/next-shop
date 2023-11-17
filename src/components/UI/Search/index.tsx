@@ -1,6 +1,6 @@
 'use client'
 import styles from './index.module.scss'
-import { Brand, Category, Product } from '@/lib/DAL/MongoModels'
+import { Brand, Category, Product } from '@/lib/DAL/Models'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 

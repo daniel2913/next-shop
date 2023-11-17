@@ -1,8 +1,8 @@
-import { UserModel } from '../../../MongoModels/index.ts'
-import { clientUsernameValidation } from './clientUsernameValidation.ts'
+import { UserModel } from '../../../Models/index.ts'
+import { clientUserNameValidation } from './clientUsernameValidation.ts'
 
 async function serverUsernameValidation(login: string) {
-    if (await UserModel.exists({ username: login }))
+    if (await UserModel.exists({ name: login }))
         return 'Username is already taken'
 
     return false
@@ -20,7 +20,7 @@ const loginValidators = [
     {
         // User name should have at least 4 characters, but no more than 20
         validator: (login: string) => {
-            const error = clientUsernameValidation(login)
+            const error = clientUserNameValidation(login)
             if (error) return false
             return true
         },

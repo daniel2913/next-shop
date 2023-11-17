@@ -1,4 +1,4 @@
-import { UserModel } from '../../MongoModels/index.ts'
+import { UserModel } from '../../Models/index.ts'
 
 export default async function changeUserRole({
     login,

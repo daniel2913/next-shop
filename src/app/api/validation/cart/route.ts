@@ -1,4 +1,4 @@
-import { Item, ProductModel } from '@/lib/DAL/MongoModels'
+import { Item, ProductModel } from '@/lib/DAL/Models'
 import { NextRequest, NextResponse } from 'next/server'
 
 function isValidCartType(cart: any[]): cart is Item[] {

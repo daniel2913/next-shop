@@ -1,4 +1,4 @@
-import { BrandModel } from '../../../MongoModels/index.ts'
+import { BrandModel } from '../../../Models/index.ts'
 
 async function serverBrandNameValidation(name: string) {
     if (await BrandModel.exists({ name })) return false

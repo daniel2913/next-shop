@@ -1,4 +1,4 @@
-import { ProductModel, UserModel } from '@/lib/DAL/MongoModels'
+import { ProductModel, UserModel } from '@/lib/DAL/Models'
 import styles from './page.module.scss'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
@@ -29,10 +29,10 @@ export default async function Cart({
 	if(!session?.user?.name)
 		redirect('/api/auth/signin')
 	getAllBrands()
-	const user =await UserModel.findOne({username:session.user.name}).lean().exec() 
+	const user =await UserModel.findOne({username:session.user.name}) 
 	if (!user) throw 'Fuck!'
 	const cart = JSON.parse(user.cart!) as [{amount:number,product:string}]
-	const products = await ProductModel.find({_id:cart.map(item=>item.product)}).lean().exec()
+	const products = await ProductModel.find({_id:cart.map(item=>item.product)})
     const brands = await getAllBrands()
 	const order = cart.map(item=>{
 		const product = products.find(product=>product._id===item.product)

@@ -1,4 +1,4 @@
-import { UserModel } from '@/lib/DAL/MongoModels'
+import { UserModel } from '@/lib/DAL/Models'
 import authUser from '@/lib/DAL/controllers/userController/authUser'
 import dbConnect from '@/lib/dbConnect'
 import NextAuth, { AuthOptions } from 'next-auth'
@@ -17,7 +17,7 @@ export const authOptions:AuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                username: {
+                name: {
                     label: 'Username',
                     type: 'text',
                     placeholder: 'jsmith',

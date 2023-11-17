@@ -1,5 +1,5 @@
 import ProductCard from '@/components/product/ProductCard'
-import { Brand, BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
+import { Brand, BrandModel, ProductModel } from '@/lib/DAL/Models'
 import styles from './index.module.scss'
 import {
 	Tconfig,
@@ -16,7 +16,7 @@ type TSearchParams = { [key: string]: string | string[] | undefined }
 export async function getProducts(searchParams: TSearchParams) {
 	await dbConnect()
     const query = collectQueries(searchParams, { model: ProductModel } as any as Tconfig<typeof ProductModel>) ////FIX!!!
-    const products = await ProductModel.find(query).lean().exec()
+    const products = await ProductModel.find(query)
     const brandList = await getAllBrands()
     return { products, brandList }
 }
@@ -30,6 +30,8 @@ export default async function ProductList({
 }) {
 	const role:'admin' | 'user' = (await getServerSession(authOptions))?.user?.role || 'user'
     const { products, brandList } = await getProducts(searchParams)
+	console.log(products)
+	console.log(brandList)
     return (
         <div className={styles.pageWrapper}>
             <div className={styles.featured}>

@@ -1,14 +1,12 @@
 import dbConnect from '@/lib/dbConnect'
 import { NextResponse } from 'next/server'
 import { Tconfig } from '.'
-import { ReturnModelType } from '@typegoose/typegoose'
-import { AnyParamConstructor } from '@typegoose/typegoose/lib/types'
 
 type Tquery = { [i: string]: string | undefined }
 
-export default async function getController<T extends AnyParamConstructor<any>>(
+export default async function getController(
     querys: Tquery,
-    config: Tconfig<T>
+    config: Tconfig<any>
 ) {
     const { model } = config
 
@@ -20,7 +18,7 @@ export default async function getController<T extends AnyParamConstructor<any>>(
                 query[key] = value
             }
         }
-        const res = await model.find(query).lean().exec()
+        const res = await model.find(query)
 
         return NextResponse.json(res ? res : [], {
             status: res?.length === 0 ? 404 : 200,

@@ -1,28 +1,26 @@
-import { DocumentType, ReturnModelType } from '@typegoose/typegoose'
 import addController from './addController'
 import deleteController from './deleteController'
 import getController from './getController'
 import patchController from './patchController'
-import { AnyParamConstructor } from '@typegoose/typegoose/lib/types'
 import patchImages from './patchImages'
-import { Query } from 'mongoose'
-import { ProductModel } from '../../MongoModels'
+import { DataModels } from '../../Models/base'
+
 
 export {
-    addController,
+    addController,		////TODO!!!!
     deleteController,
     getController,
     patchController,
     patchImages,
 }
 
-export type Tconfig<T extends AnyParamConstructor<any>> = {
+export type Tconfig<T> = {
     DIR_PATH: string
-    model: ReturnModelType<T>
+    model: DataModels
     multImages: boolean
 }
 
-export async function isValidDocument<T extends AnyParamConstructor<any>>(
+export async function isValidDocument<T>(
     doc: unknown
 ) {
     if (
@@ -34,14 +32,14 @@ export async function isValidDocument<T extends AnyParamConstructor<any>>(
         return false
     try {
         await doc.validate()
-        return doc as DocumentType<T>
+        return doc 
     } catch (error) {
         console.log(error)
         return false
     }
 }
 
-export function collectFromForm<T extends AnyParamConstructor<any>>(
+export function collectFromForm<T>(
     form: FormData,
     config: Tconfig<T>
 ) {
@@ -70,7 +68,7 @@ export function collectFromForm<T extends AnyParamConstructor<any>>(
     return props
 }
 
-export function imagesDiff<T extends AnyParamConstructor<any>>(
+export function imagesDiff<T>(
     newImages: string[],
     config: Tconfig<T>,
     oldImages: string[] = [],
@@ -83,13 +81,13 @@ export function imagesDiff<T extends AnyParamConstructor<any>>(
         .concat(newImages)
 }
 
-export function collectQueries<T extends AnyParamConstructor<any>>(
+export function collectQueries<T>(
     params: URLSearchParams | Record<string,string|string[]|undefined>,
     config: Tconfig<T>
 ) {
     const query: Partial<{ [i: string]: string | string[] }> = {}
     for (const [key, value] of Object.entries(params)) {
-        if (value && key in config.model.schema.paths) {
+        if (value && key in config.model.columns) {
             let test: string | string[] = ''
             try {
                 test = decodeURIComponent(value).split(',')
@@ -99,13 +97,13 @@ export function collectQueries<T extends AnyParamConstructor<any>>(
             query[key] = test
         }
     }
-    if ('name' in query) {
-        query['name'] = new RegExp(query['name'] as string) as any as string
+    if ('name' in query) {	//TODO
+        query['name'] = '' //new RegExp(query['name'] as string) as any as string 
     }
     return query
 }
 
-export function formatImages<T extends AnyParamConstructor<any>>(
+export function formatImages<T>(
     propsImages: unknown,
     config: Tconfig<T>
 ) {

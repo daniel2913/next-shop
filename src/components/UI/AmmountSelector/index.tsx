@@ -3,9 +3,8 @@ import React from 'react'
 import styles from './index.module.scss'
 import useConfirm from '@/hooks/modals/useConfirm'
 import useCartStore from '@/store/cartStore'
-import { Item } from '@/lib/DAL/MongoModels'
 
-export default function AmmountSelector(item: Item) {
+export default function AmmountSelector(item: {product:string,amount:number}) {
     const confirm = useConfirm('Are you sure you want to discard this item?')
     const amount = useCartStore(
         (state) =>

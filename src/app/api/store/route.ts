@@ -1,4 +1,4 @@
-import { Cart, UserModel } from '@/lib/DAL/MongoModels'
+import { Cart, UserModel } from '@/lib/DAL/Models'
 import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { authOptions } from '../auth/[...nextauth]/route'
@@ -10,8 +10,9 @@ export async function PATCH(req: NextRequest) {
     }
     const cart = JSON.stringify(await req.json())
     try {
+		throw(false) //Fix
         const res = await UserModel.updateOne(
-            { username: session.user.name },
+            { name: session.user.name },
             { cart: cart }
         )
         if (!(res.acknowledged && res.matchedCount > 0)) throw ''
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     if (!session?.user?.name) {
         return new NextResponse(JSON.stringify([]), { status: 404 })
     }
-    const cart = (await UserModel.findOne({ username: session.user.name }))
+    const cart = (await UserModel.findOne({ name: session.user.name }))
         ?.cart
     if (cart) return new NextResponse(cart, { status: 200 })
     return new NextResponse(JSON.stringify([]), { status: 404 })

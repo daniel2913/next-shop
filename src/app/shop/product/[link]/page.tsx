@@ -6,18 +6,16 @@ import Image from 'next/image'
 import AmmountSelector from '@/components/ui/AmmountSelector'
 import Price from '@/components/product/Price'
 import dbConnect from '@/lib/dbConnect'
-import { BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
+import { BrandModel, ProductModel } from '@/lib/DAL/Models'
 import Discount from '@/components/product/Discount'
 import BuyButton from '@/components/ui/BuyButton'
 
 export async function getProductByLink(adr: string) {
     ///CHANGGGGGGGGGGGGGGGGGE IT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     await dbConnect()
-    const product = await ProductModel.findOne({ link: adr }).lean().exec()
+    const product = await ProductModel.findOne({ link: adr })
     if (!product) return false
-    const brand = (await BrandModel.findOne({ name: product.brand })
-        .lean()
-        .exec()) || { name: 'unknown', image: 'template.jpeg', link: './' }
+    const brand = (await BrandModel.findOne({ name: product.brand }))|| { name: 'unknown', image: 'template.jpeg', link: './' }
 
     return { product, brand }
 }

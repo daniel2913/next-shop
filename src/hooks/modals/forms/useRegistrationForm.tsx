@@ -4,7 +4,7 @@ import { clientPasswordValidation } from '@/lib/DAL/Validations/User/passwordVal
 import React from 'react'
 
 const formFieldValues= {
-    username: '',
+    name: '',
     password: '',
     image: null
 }
@@ -12,7 +12,7 @@ const action = '/api/user'
 
 const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
 {
-    username: (value: FormFieldValue) => {
+    name: (value: FormFieldValue) => {
         if (typeof value != 'string')
             return { valid: false, msg: 'Name can only be string!' }
 
@@ -46,12 +46,12 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
 }
 
 const fieldProps = {
-    username: {
-        id: 'username',
+    name: {
+        id: 'name',
 		type:'text',
         label: 'Username',
         placeholder: 'John',
-        validator: validation['username'],
+        validator: validation['name'],
     },
 	password: {
 		id:'password',

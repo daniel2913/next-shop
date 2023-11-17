@@ -1,6 +1,6 @@
 import NewBrandForm from '@/components/forms'
 import { Image, deleteImages, handleImages, saveImages } from '@/helpers/images'
-import { BrandModel, ProductModel } from '@/lib/DAL/MongoModels'
+import { BrandModel, ProductModel } from '@/lib/DAL/Models'
 import dbConnect from '@/lib/dbConnect'
 import { NextRequest, NextResponse } from 'next/server'
 

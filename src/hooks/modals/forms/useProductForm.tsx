@@ -6,7 +6,7 @@ import Form, {
 } from '../../../components/forms/index'
 import React from 'react'
 import LabeledInput from '@/components/ui/LabeledInput'
-import { Brand, Category } from '@/lib/DAL/MongoModels'
+import { Brand, Category } from '@/lib/DAL/Models'
 import ProductCard from '@/components/product/ProductCard'
 import PreviewProductCard from '@/components/product/ProductCard/PreviewProductCard'
 

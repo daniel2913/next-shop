@@ -2,11 +2,11 @@
 import createNewUser from './createNewUser.ts'
 import changeUserRole from './changeUserRole.ts'
 
-const userRequiredFields = ['username', 'passwordHash'] as const
-const userSearchQuerys = ['username', 'role'] as const
+const userRequiredFields = ['name', 'passwordHash'] as const
+const userSearchQuerys = ['name', 'role'] as const
 const userOptionalFields = ['role', 'image'] as const
 
-export type userSearchQuerysTypes = { username: string; role: string }
+export type userSearchQuerysTypes = { name: string; role: string }
 export type userPathsTypes = {
     [T in (typeof userRequiredFields)[number]]: string
 } & { [T in (typeof userOptionalFields)[number]]: string | undefined }

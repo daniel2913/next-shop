@@ -4,7 +4,7 @@ import Price from '../../Price'
 import Discount from '../../Discount'
 import ImageComponent from '@/components/ui/ImageComponent'
 
-import type { Brand, Product } from '../../../../lib/DAL/MongoModels'
+import type { Brand, Product } from '../../../../lib/DAL/Models'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import Image from 'next/image'

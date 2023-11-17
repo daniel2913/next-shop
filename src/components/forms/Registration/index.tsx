@@ -3,7 +3,7 @@ import { handleRegistrationForm } from '@/Actions/newUser'
 import styles from './index.module.scss'
 import LabeledInput from '@/components/ui/LabeledInput'
 import { clientPasswordValidation } from '@/lib/DAL/Validations/User/passwordValidation/clientPasswordValidation'
-import { clientUsernameValidation } from '@/lib/DAL/Validations/User/usernameValidation/clientUsernameValidation'
+import { clientUserNameValidation } from '@/lib/DAL/Validations/User/usernameValidation/clientUsernameValidation'
 
 export default function Form() {
     return (
@@ -15,9 +15,9 @@ export default function Form() {
                 className={styles.image}
             />
             <LabeledInput
-                id="username"
+                id="name"
                 type="username"
-                validator={clientUsernameValidation}
+                validator={clientUserNameValidation}
                 label="Username"
                 placeholder="UserName"
                 className={styles.login}

@@ -1,7 +1,7 @@
 import styles from './index.module.scss'
 import { getProducts } from '../../../shop/page'
 import CartRow from '@/components/cart/CartRow'
-import { Item, Product, UserModel } from '@/lib/DAL/MongoModels'
+import { Item, Product, UserModel } from '@/lib/DAL/Models'
 import { authOptions } from '../../../api/auth/[...nextauth]/route'
 import { getServerSession } from 'next-auth'
 import dbConnect from '@/lib/dbConnect'

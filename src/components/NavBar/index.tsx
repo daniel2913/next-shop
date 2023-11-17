@@ -5,12 +5,12 @@ import React from 'react'
 import Auth from '../ui/Auth'
 import CartStatus from '../cart/Status'
 import Search from '../ui/Search'
-import { BrandModel, CategoryModel } from '@/lib/DAL/MongoModels'
+import { BrandModel, CategoryModel } from '@/lib/DAL/Models'
 
 export const revalidate = 300
 
 export default async function NavBar() {
-    const [brands,categories] = await Promise.all([BrandModel.find().lean().exec(),CategoryModel.find().lean().exec()]) 
+    const [brands,categories] = await Promise.all([BrandModel.find(undefined),CategoryModel.find(undefined)]) 
     return (
         <header className={styles.navbar}>
             <div className={styles.logo}></div>

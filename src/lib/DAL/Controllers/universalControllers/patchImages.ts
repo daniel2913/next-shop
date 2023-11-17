@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect'
-import { Brand, BrandModel } from '../../MongoModels'
+import { Brand, BrandModel } from '../../Models'
 import { NextResponse } from 'next/server'
 import {
     Image,
@@ -8,15 +8,13 @@ import {
     saveImages,
 } from '../../../../helpers/images'
 import { Tconfig, form, isValidDocument } from '.'
-import { AnyParamConstructor } from '@typegoose/typegoose/lib/types'
 import { FilterQuery } from 'mongoose'
-import { isDocument } from '@typegoose/typegoose'
 
 const DIR_PATH = './public/brands/'
 function error(msg: string, status: number) {
     return new NextResponse(msg, { status })
 }
-export default async function patchImages<T extends AnyParamConstructor<any>>(
+export default async function patchImages<T>(
     { targId, targName, ...props }: any,
     config: Tconfig<T>
 ) {
@@ -42,8 +40,8 @@ export default async function patchImages<T extends AnyParamConstructor<any>>(
 
     const query: FilterQuery<T> = targId ? { _id: targId } : { name: targName }
 
-    const res = (await model.findOne(query).exec()) as any
-    if (!res || !isDocument(res)) {
+    const res = (await model.findOne(query)) as any
+    if (!res ||false) {			// !isDocument(res)
         console.log('FIck')
         return error('Not Found', 404)
     }
@@ -85,7 +83,7 @@ export default async function patchImages<T extends AnyParamConstructor<any>>(
         return new NextResponse('Invalid request', { status: 400 })
     }
     try {
-        const stat = await validDocument.save()
+        const stat = await validDocument//.save()
         deleteImages(imagesToDelete, DIR_PATH)
         console.log('Success')
         return NextResponse.json(stat)
