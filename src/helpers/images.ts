@@ -3,7 +3,7 @@ import path from 'path'
 import mongoose from 'mongoose'
 
 export type Image = { file: File | null; name: string }
-const template = { name: 'template.jpeg', file: null }
+const template = { name: 'template.jpg', file: null }
 export function handleImages(images: (File | string)[]): Image[] {
     const result: Image[] = []
     for (const i of images) {
@@ -18,10 +18,10 @@ export function handleImages(images: (File | string)[]): Image[] {
 }
 
 export function handleImage(image: File): Image | null {
-    let imageName = 'template.jpeg'
+    let imageName = 'template.jpg'
     const ext = image.type?.split('/').pop()
-    if (ext == 'jpeg' || ext === 'jpg' || ext == 'png') {
-        imageName = new mongoose.Types.ObjectId().toString() + '.' + ext
+    if (ext == 'jpeg' || ext === 'jpg') {
+        imageName = new mongoose.Types.ObjectId().toString() + '.jpg'
         return { name: imageName, file: image }
     } else {
         return template
@@ -48,7 +48,7 @@ export async function saveImage(
     { name, file }: Image,
     filePath: string
 ): Promise<boolean> {
-    if (name === 'template.jpeg') return true
+    if (name === 'template.jpg') return true
     if (!file) return false
     try {
         await fs.writeFile(
@@ -63,6 +63,6 @@ export async function saveImage(
 }
 
 export function deleteImage(name: string, filePath: string): void {
-    if (name === 'template.jpeg') return
+    if (name === 'template.jpg') return
     fs.rm(path.resolve(filePath + name))
 }

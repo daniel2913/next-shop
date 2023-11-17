@@ -1,19 +1,32 @@
-import mongoose, { Schema } from 'mongoose'
-import { defaultId, imageMatch } from './common'
-import { pgTable, varchar } from 'drizzle-orm/pg-core'
+import { Schema } from 'mongoose'
+import { pgTable } from 'drizzle-orm/pg-core'
+import { maxSizes, mongoDefaults, pgreDefaults, validations } from './common'
+import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 
+type testType = Readonly<{
+	_id:"string",
+	name:"string",
+	image:"string",
+}>
 
+const CategoryValidations = {
+	_id:[validations._idMatch('_id')],
+	name: [validations.length('name',maxSizes.name,1)],
+	image: [validations.imageMatch()]
+}
 
-const CategoryPgreTable = pgTable('category', {
-	_id:varchar('_id',{length:24}).primaryKey().unique().notNull(),
-	name:varchar('name',{length:64}).unique().notNull(),
-	image:varchar('image',{length:30}).notNull()
+const config = {
+	_id:pgreDefaults._id,
+	name:pgreDefaults.name.unique(),
+	image:pgreDefaults.image
+}
+
+const CategoryPgreTable = pgTable('category', config as TestColumnsConfig<typeof config,ColumnsConfig<testType> > )
+
+const CategoryMongoSchema = new Schema<MongoSchema<testType>>({
+	_id:mongoDefaults._id,
+	name:{...mongoDefaults.name, unique:true},
+	image:mongoDefaults.image
 })
 
-const CategoryMongoSchema = new Schema({
-	_id:{type:String, default:defaultId},
-	name:{type:String,required:true, unique:true, minLength:1, maxLength:64},
-	image:{type:String,required:true, ...imageMatch}
-})
-
-export {CategoryPgreTable, CategoryMongoSchema}
+export {CategoryPgreTable, CategoryMongoSchema, CategoryValidations}

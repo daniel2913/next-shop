@@ -1,21 +1,51 @@
-import { pgTable, varchar } from 'drizzle-orm/pg-core'
-import { Schema } from 'mongoose'
-import { defaultId, imageMatch } from './common'
+import {
+	PgTableWithColumns,
+	char,
+	pgTable,
+	real,
+	varchar,
+} from 'drizzle-orm/pg-core'
+import mongoose, { Schema } from 'mongoose'
+import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
+import {
+	maxSizes,
+	mongoDefaults,
+	pgreDefaults,
+	shop,
+	validations,
+} from './common'
 
-const columns = ['_id','name','description','image'] as const
+type testType = Readonly<{
+	_id: 'string'
+	name: 'string'
+	description: 'string'
+	image: 'string'
+}>
 
-const BrandPgreTable = pgTable('brand', {
-	_id:varchar('_id',{length:24}).primaryKey().unique().notNull(),
-	name:varchar('name',{length:64}).unique().notNull(),
-	description:varchar('description',{length:1024}).notNull(),
-	image:varchar('image',{length:30}).notNull()
+const BrandValidations = {
+	_id: [validations._idMatch('_id')],
+	name: [validations.length('name', maxSizes.name, 1)],
+	description: [validations.length('description', maxSizes.description, 1)],
+	image: [validations.imageMatch()],
+}
+
+const config = {
+	_id: pgreDefaults._id,
+	name: pgreDefaults.name.unique(),
+	description: pgreDefaults.description,
+	image: pgreDefaults.image,
+}
+
+const BrandPgreTable = shop.table(
+	'brand',
+	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
+)
+
+const BrandMongoSchema = new Schema<MongoSchema<testType>>({
+	_id: mongoDefaults._id,
+	name: { ...mongoDefaults.name, unique: true },
+	description: mongoDefaults.description,
+	image: mongoDefaults.image,
 })
 
-const BrandMongoSchema = new Schema({
-	_id:{type:String, default:defaultId},
-	name:{type:String, required:true, unique:true, minLength:1, maxLength:64},
-	description:{type:String,required:true, minLength:1, maxLength:1024},
-	image:{type:String,required:true, ...imageMatch}
-})
-
-export {BrandPgreTable, BrandMongoSchema}
+export { BrandPgreTable, BrandMongoSchema, BrandValidations }

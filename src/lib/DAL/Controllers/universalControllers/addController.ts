@@ -8,18 +8,14 @@ import {
 import { deleteImages, handleImages, saveImages } from '@/helpers/images.ts'
 import { NextResponse } from 'next/server'
 import { Tconfig, form, isValidDocument } from './index.ts'
+import { getAllBrands, getAllCategories } from '@/helpers/cachedGeters.ts'
+import brandNameValidators from '../../validations/brand/brandNameValidation/serverBrandValidation.ts'
 
-
-export default async function addController<T>(
-    props: any,
-    config: Tconfig<T>
-) {
+export default async function addController<T>(props: any, config: Tconfig<T>) {
     const { DIR_PATH, model, multImages } = config
 
-    const imageFiles = ((multImages ? props['images'] : props['image']) || []) as (
-        | File
-        | string
-    )[]
+    const imageFiles = ((multImages ? props['images'] : props['image']) ||
+        []) as (File | string)[]
 
     const images = handleImages(imageFiles)
 
@@ -29,20 +25,20 @@ export default async function addController<T>(
         props.image = images[0].name
     }
     console.log(props)
-    await dbConnect()
-    const unknownDocument = false//new model(props) as unknown
 
-    const newDocument = await isValidDocument<typeof model>(unknownDocument)
-    if (!newDocument) {
-        return new NextResponse('Validation error', { status: 400 })
-    }
-	
     if (!(await saveImages(images, DIR_PATH))) {
         return new NextResponse('Server error', { status: 500 })
     }
-
+    const brandId = (await getAllBrands()).find(
+        (brand) => brand.name === props.brand
+    )
+    const categoryId = (await getAllCategories()).find(
+        (cat) => cat.name === props.category
+    )
+    props.brand = brandId
+    props.category = categoryId
     try {
-        const res = await newDocument//.save()
+        const res = await model.newObject(props)
         if (!res) {
             deleteImages(
                 images.map((image) => image.name),
