@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { Brand, BrandModel } from '@/lib/DAL/Models'
+import { BrandModel } from '@/lib/DAL/Models'
 import {
     addController,
     deleteController,
     getController,
     patchController,
     form,
-    patchImages,
     collectFromForm,
 } from '@/lib/DAL/controllers/universalControllers'
 
@@ -22,7 +21,7 @@ export async function GET(req: NextRequest) {
     const _id = searchParams.get('_id') || undefined
     const name = searchParams.get('name') || undefined
 
-    return getController<typeof Brand>({ name, _id }, config)
+    return await getController({ name, _id }, config)
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
@@ -35,15 +34,15 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
             props[key] = value.toString() || undefined
         }
     }
-    return addController<typeof Brand>(props, config)
+    return await addController(props, config)
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
-    const { name, _id } = await req.json()
-    return deleteController<typeof Brand>({ name, _id }, config)
+    const { _id } = await req.json()
+    return await deleteController<typeof BrandModel>(_id, config)
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
     const props: any = collectFromForm(await req.formData(), config)
-    return await patchController<typeof Brand>(props, config)
+    return await patchController(props, config)
 }

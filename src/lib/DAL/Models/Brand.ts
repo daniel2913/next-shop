@@ -37,7 +37,7 @@ const config = {
 }
 
 const BrandPgreTable = shop.table(
-	'brand',
+	'brands',
 	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
 )
 

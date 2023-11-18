@@ -14,11 +14,11 @@ import brandNameValidators from '../../validations/brand/brandNameValidation/ser
 export default async function addController<T>(props: any, config: Tconfig<T>) {
     const { DIR_PATH, model, multImages } = config
 
-    const imageFiles = ((multImages ? props['images'] : props['image']) ||
+    const imageFiles = ((multImages ? props['images'] : [props['image']]) ||
         []) as (File | string)[]
 
     const images = handleImages(imageFiles)
-
+    console.log('====>', images)
     if (multImages) {
         props.images = images.map((image) => image.name)
     } else {
@@ -29,14 +29,18 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
     if (!(await saveImages(images, DIR_PATH))) {
         return new NextResponse('Server error', { status: 500 })
     }
-    const brandId = (await getAllBrands()).find(
-        (brand) => brand.name === props.brand
-    )
-    const categoryId = (await getAllCategories()).find(
-        (cat) => cat.name === props.category
-    )
-    props.brand = brandId
-    props.category = categoryId
+    if (props.brand) {
+        const brand = (await getAllBrands()).find(
+            (brand) => brand.name === props.brand
+        )
+        props.brand = brand?._id || ''
+    }
+    if (props.category) {
+        const category = (await getAllCategories()).find(
+            (cat) => cat.name === props.category
+        )
+        props.category = category?._id || ''
+    }
     try {
         const res = await model.newObject(props)
         if (!res) {

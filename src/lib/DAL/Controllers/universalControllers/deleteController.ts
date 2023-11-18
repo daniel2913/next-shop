@@ -3,35 +3,20 @@ import { NextResponse } from 'next/server'
 import { deleteImages } from '../../../../helpers/images'
 import { Tconfig } from '.'
 import { FilterQuery } from 'mongoose'
+import { DataModels } from '../../Models/base'
+import { FileStorage } from '../../FileStorage'
 
-export default async function deleteController<
-    T extends AnyParamConstructor<any>
->(
-    {
-        _id,
-        name,
-    }: {
-        _id?: string
-        name?: string
-    },
+export default async function deleteController<T extends DataModels>(
+    _id: string | undefined,
     config: Tconfig<T>
 ) {
-    await dbConnect()
-    const { model, multImages, DIR_PATH } = config
-    if (!_id && !name) {
+    const { model, DIR_PATH } = config
+    if (!_id) {
         return new NextResponse('Invalid request', { status: 400 })
     }
-    const query: FilterQuery<T> = _id ? { _id } : { name }
-
-    const res = await model.findOne(query)
-    if (!res || !isDocument(res)) {
-        return new NextResponse('Not Found', { status: 404 })
-    }
-    if ('image' in res || 'images' in res) {
-        const images = multImages ? res.images : [res.image]
-        deleteImages(images, DIR_PATH)
-    }
-
-    const stat = await res.deleteOne()
+    const { image, images } = await model.findOne({ _id: _id })
+    if (image) deleteImages([image], DIR_PATH)
+    if (images) deleteImages(images, DIR_PATH)
+    const stat = await model.delete(_id)
     return NextResponse.json(stat)
 }

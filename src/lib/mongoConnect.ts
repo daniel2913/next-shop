@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
 
-const MONGODB_URL = process.env.DEV === 'DEV' ? process.env.MONGO_URL_DEV : process.env.MONGO_URL_DEV
+const MONGODB_URL =
+    process.env.DEV != 'PROD'
+        ? process.env.MONGO_URL_DEV
+        : process.env.MONGO_URL_PROD
 
 if (!MONGODB_URL) {
     throw new Error(
@@ -15,6 +18,7 @@ if (!cached) {
 }
 
 async function mongoConnect() {
+    if (process.env.DB != 'MONGO') return true
     if (cached.conn) {
         return cached.conn
     }

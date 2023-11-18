@@ -1,62 +1,68 @@
 import { Schema } from 'mongoose'
-import { Brand, Category } from './index.ts'
-import { defaultId } from './common.ts'
-import { char, pgTable, real, smallint, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { shop } from './common.ts'
+import { char, real, smallint, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import { maxSizes, mongoDefaults, pgreDefaults, validations } from './common'
 import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 import { BrandPgreTable } from './Brand.ts'
 import { CategoryPgreTable } from './Category.ts'
 
 type testType = Readonly<{
-	_id:"string"
-	name:"string"
-	brand:"string"
-	category:"string"
-	description:"string"
-	images:"array",
-	price:'number',
-	discount:'number'
+	_id: 'string'
+	name: 'string'
+	brand: 'string'
+	category: 'string'
+	description: 'string'
+	images: 'array'
+	price: 'number'
+	discount: 'number'
 }>
 
 const ProductValidations = {
-	_id:[validations._idMatch('_id')],
-	name: [validations.length('name',maxSizes.name,1)],
+	_id: [validations._idMatch('_id')],
+	name: [validations.length('name', maxSizes.name, 1)],
 	brand: [validations._idMatch('brand')],
 	category: [validations._idMatch('category')],
-	description: [validations.length('description',maxSizes.description,1)],
+	description: [validations.length('description', maxSizes.description, 1)],
 	images: [validations.imagesMatch()],
-	price:[validations.value('price',Infinity,1)],
-	discount: [validations.value('discount',99,0)]
+	price: [validations.value('price', Infinity, 1)],
+	discount: [validations.value('discount', 99, 0)],
 }
 
 const config = {
-	_id:pgreDefaults._id,
-	name:pgreDefaults.name,
-	brand:char('brand',{length:maxSizes._id}).notNull().references(()=>BrandPgreTable._id),
-	category:char('category',{length:maxSizes._id}).notNull().references(()=>CategoryPgreTable._id),
-	description:pgreDefaults.description,
-	images:pgreDefaults.image.array(),
+	_id: pgreDefaults._id,
+	name: pgreDefaults.name,
+	brand: char('brand', { length: maxSizes._id })
+		.notNull()
+		.references(() => BrandPgreTable._id),
+	category: char('category', { length: maxSizes._id })
+		.notNull()
+		.references(() => CategoryPgreTable._id),
+	description: pgreDefaults.description,
+	images: varchar('images', { length: maxSizes.image }).notNull().array(),
 	price: real('price').notNull(),
-	discount: smallint('price').notNull(),
+	discount: smallint('discount').notNull(),
 }
 
-const ProductPgreTable = pgTable('product', config as TestColumnsConfig<typeof config,ColumnsConfig<testType>>,
-(table)=>{
-	return{
-		uq: uniqueIndex().on(table.brand,table.name)
+const ProductPgreTable = shop.table(
+	'products',
+	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>,
+	(table) => {
+		return {
+			uq: uniqueIndex().on(table.brand, table.name),
+		}
 	}
-})
+)
 
 const ProductMongoSchema = new Schema<MongoSchema<testType>>({
-	_id:mongoDefaults._id,
-	name:mongoDefaults.name,
-	brand:{type:String, ref:'Brand',required:true},
-	category:{type:String, ref:'Category',required:true},
-	description:mongoDefaults.description,
-	images:[mongoDefaults.image],
-	price:{type:Number, required:true, min:0},
-	discount:{type:Number, default:0, max:100},
+	_id: mongoDefaults._id,
+	name: mongoDefaults.name,
+	brand: { type: String, ref: 'Brand', required: true },
+	category: { type: String, ref: 'Category', required: true },
+	description: mongoDefaults.description,
+	images: [mongoDefaults.image],
+	price: { type: Number, required: true, min: 0 },
+	discount: { type: Number, default: 0, max: 100 },
 })
-ProductMongoSchema.index({name:1,brand:1},{unique:true})
+ProductMongoSchema.index({ name: 1, brand: 1 }, { unique: true })
 
-export {ProductMongoSchema, ProductPgreTable, ProductValidations}
+export { ProductMongoSchema, ProductPgreTable, ProductValidations }

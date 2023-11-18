@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const _id = searchParams.get('_id') || undefined
     const name = searchParams.get('name') || undefined
 
-    return getController<typeof Category>({ name, _id }, config)
+    return getController({ name, _id }, config)
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
@@ -33,12 +33,12 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
             props[key] = value.toString() || undefined
         }
     }
-    return addController<typeof Category>(props, config)
+    return addController(props, config)
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
-    const { name, _id } = await req.json()
-    return deleteController<typeof Category>({ name, _id }, config)
+    const { _id } = await req.json()
+    return deleteController(_id, config)
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
@@ -51,5 +51,5 @@ export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
             props[key] = value.toString() || undefined
         }
     }
-    return patchController<typeof Category>(props, config)
+    return patchController(props, config)
 }

@@ -1,9 +1,11 @@
 import fs from 'fs/promises'
 import path from 'path'
 import mongoose from 'mongoose'
+import { FileStorage } from '@/lib/DAL/FileStorage'
 
 export type Image = { file: File | null; name: string }
 const template = { name: 'template.jpg', file: null }
+
 export function handleImages(images: (File | string)[]): Image[] {
     const result: Image[] = []
     for (const i of images) {
@@ -50,19 +52,10 @@ export async function saveImage(
 ): Promise<boolean> {
     if (name === 'template.jpg') return true
     if (!file) return false
-    try {
-        await fs.writeFile(
-            path.resolve(filePath + name),
-            Buffer.from(await file.arrayBuffer())
-        )
-        return true
-    } catch (error) {
-        console.log(error)
-        return false
-    }
+    return FileStorage.write(name, filePath, file)
 }
 
 export function deleteImage(name: string, filePath: string): void {
     if (name === 'template.jpg') return
-    fs.rm(path.resolve(filePath + name))
+    FileStorage.delete(name, filePath)
 }

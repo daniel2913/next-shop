@@ -5,9 +5,8 @@ import patchController from './patchController'
 import patchImages from './patchImages'
 import { DataModels } from '../../Models/base'
 
-
 export {
-    addController,		////TODO!!!!
+    addController, ////TODO!!!!
     deleteController,
     getController,
     patchController,
@@ -20,9 +19,7 @@ export type Tconfig<T> = {
     multImages: boolean
 }
 
-export async function isValidDocument<T>(
-    doc: unknown
-) {
+export async function isValidDocument<T>(doc: unknown) {
     if (
         !doc ||
         typeof doc != 'object' ||
@@ -32,17 +29,14 @@ export async function isValidDocument<T>(
         return false
     try {
         await doc.validate()
-        return doc 
+        return doc
     } catch (error) {
         console.log(error)
         return false
     }
 }
 
-export function collectFromForm<T>(
-    form: FormData,
-    config: Tconfig<T>
-) {
+export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
     const props: any = {}
     const imagesPath = config.multImages ? 'images' : 'image'
     console.log('form: ', form)
@@ -82,7 +76,7 @@ export function imagesDiff<T>(
 }
 
 export function collectQueries<T>(
-    params: URLSearchParams | Record<string,string|string[]|undefined>,
+    params: URLSearchParams | Record<string, string | string[] | undefined>,
     config: Tconfig<T>
 ) {
     const query: Partial<{ [i: string]: string | string[] }> = {}
@@ -97,16 +91,14 @@ export function collectQueries<T>(
             query[key] = test
         }
     }
-    if ('name' in query) {	//TODO
-        query['name'] = '' //new RegExp(query['name'] as string) as any as string 
+    if ('name' in query) {
+        //TODO
+        query['name'] = new RegExp(query['name'] as string) as any as string
     }
     return query
 }
 
-export function formatImages<T>(
-    propsImages: unknown,
-    config: Tconfig<T>
-) {
+export function formatImages<T>(propsImages: unknown, config: Tconfig<T>) {
     if (!propsImages) return []
     if (!Array.isArray(propsImages)) return [propsImages]
     return config.multImages
