@@ -1,26 +1,33 @@
-'use client'
-import useCartStore from '@/store/cartStore'
-import styles from './index.module.scss'
-import AmmountSelector from '../AmmountSelector'
-import { Product } from '@/lib/DAL/Models'
+"use client";
+import useCartStore from "@/store/cartStore";
+import styles from "./index.module.scss";
+import AmmountSelector from "../AmmountSelector";
+import { Product } from "@/lib/DAL/Models";
 
-export default function BuyButton(item: typeof Product) {
+type props = {
+    className: string;
+    _id: string;
+};
+
+export default function BuyButton({ className, _id }: typeof props) {
     const cachedItem = useCartStore((state) =>
-        state.items.find((cacheItem) => cacheItem.product === item._id)
-    )
-    const addItem = useCartStore((state) => state.addItem)
+        state.items.find((cacheItem) => cacheItem.product === _id),
+    );
+    const addItem = useCartStore((state) => state.addItem);
     if (!cachedItem) {
         return (
-            <div className={`${styles.ammountSelector} ${''}`}>
-                <button
-                    className={`${styles.button} ${styles.buy}`}
-                    onClick={() => addItem(item)}
-                >
-                    Buy
-                </button>
-            </div>
-        )
+            <button
+                type="button"
+                className={`
+                        ${className}
+                        border-[2px] py-2 min-w-fit w-16 rounded-md font-bold text-xl 
+                    `}
+                onClick={() => addItem(_id)}
+            >
+                Buy
+            </button>
+        );
     } else {
-        return <AmmountSelector {...cachedItem} />
+        return <AmmountSelector {...cachedItem} />;
     }
 }
