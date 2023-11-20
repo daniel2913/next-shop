@@ -1,7 +1,6 @@
 "use client";
 
 import React, { ReactNode, useState } from "react";
-import styles from "./index.module.scss";
 import ArrowStraight from "@public/arrowStraight.svg";
 
 interface props {
@@ -57,26 +56,28 @@ function Carousel({ className, children, brandImage, discount }: props) {
                     border-none
                 "
             >
-                <ArrowStraight width={30} height={30} className={styles.arrow} />
+                <ArrowStraight width={30} height={30} className="" />
             </button>
             <button
+                type="button"
                 onClick={() => changeSlide(current + 1)}
                 className="
                     absolute top-1/2 -translate-y-1/2 right-2 rotate-90
                     border-none
                 "
             >
-                <ArrowStraight width={30} height={30} className={styles.arrow} />
+                <ArrowStraight width={30} height={30} className="" />
             </button>
-            <div className={styles.pages}>
+            <div className="">
                 {children.map((_, i) => {
                     return (
                         <button
+                            type="button"
                             key={i}
                             onClick={() => changeSlide(i)}
-                            aria-expanded={i == current}
-                            className={styles.page}
-                        ></button>
+                            aria-expanded={i === current}
+                            className=""
+                        />
                     );
                 })}
             </div>

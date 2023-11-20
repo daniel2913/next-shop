@@ -1,5 +1,4 @@
 import ProductList from "@/components/Products";
-import { Suspense } from "react";
 
 export default function Shop({
     params,

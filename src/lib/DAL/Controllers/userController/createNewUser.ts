@@ -1,10 +1,9 @@
 import { newDocument, isMongoError, noFunc } from '../../helpers.ts'
-import { User } from '../../Models/index.ts'
+import { UserModel } from '../../Models/index.ts'
 
-export default async function createNewUser({
-    imageName,
-    ...args
-}: noFunc<User> & { imageName?: string }) {
+
+
+export default async function createNewUser(newUser: typeof UserModel.) {
     const newUser = newDocument(User, { ...args })
 
     let err = null

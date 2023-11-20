@@ -1,32 +1,31 @@
-import LabeledInput from '@/components/ui/LabeledInput'
-import styles from './index.module.scss'
-import { ComponentProps, FormEvent, useRef, useState } from 'react'
-import useError from '@/hooks/modals/useError'
+import LabeledInput from "@/components/ui/LabeledInput";
+import { ComponentProps, FormEvent, useRef, useState } from "react";
+import useError from "@/hooks/modals/useError";
 
-export type FormFieldValue = string | File[] | null
+export type FormFieldValue = string | File[] | null;
 export type FormFieldValidator = (
-    v: FormFieldValue
-) => { valid: true; msg?: string } | { valid: false; msg: string }
+    v: FormFieldValue,
+) => { valid: true; msg?: string } | { valid: false; msg: string };
 export type FormFieldProps = Omit<
     ComponentProps<typeof LabeledInput>,
-    'value' | 'setValue'
->
+    "value" | "setValue"
+>;
 
 type props<T extends { [key: string]: FormFieldValue }> = {
-    fieldValues: T
-    setFieldValues: React.Dispatch<React.SetStateAction<T>>
-    fieldProps: { [key in keyof T]: FormFieldProps }
-    action: string
+    fieldValues: T;
+    setFieldValues: React.Dispatch<React.SetStateAction<T>>;
+    fieldProps: { [key in keyof T]: FormFieldProps };
+    action: string;
 } & (
         | {
-            method: 'PUT'
+            method: "PUT";
         }
         | {
-            method: 'PATCH'
-            targId?: string
-            targName?: string
+            method: "PATCH";
+            targId?: string;
+            targName?: string;
         }
-    )
+    );
 
 export default function Form<T extends { [key: string]: string | null }>({
     fieldValues,
@@ -34,41 +33,41 @@ export default function Form<T extends { [key: string]: string | null }>({
     fieldProps,
     ...params
 }: props<T>) {
-    const [loading, setLoading] = useState(false)
-    const error = useError()
+    const [loading, setLoading] = useState(false);
+    const error = useError();
     async function submitHandler(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        const form = new FormData()
-        let valid = true
+        e.preventDefault();
+        const form = new FormData();
+        let valid = true;
         for (const [key, value] of Object.entries(fieldValues) as [
             keyof T,
             FormDataEntryValue,
         ][]) {
             if (fieldProps[key].validator) {
-                const entryValid = fieldProps[key].validator!(value)
+                const entryValid = fieldProps[key].validator!(value);
                 if (!entryValid.valid) {
-                    valid = false
-                    break
+                    valid = false;
+                    break;
                 }
             }
-            if (value instanceof File || typeof value != 'object') {
-                form.append(key.toString(), value)
+            if (value instanceof File || typeof value != "object") {
+                form.append(key.toString(), value);
             } else {
                 for (const idx in value) {
-                    form.append(key.toString(), value[idx])
+                    form.append(key.toString(), value[idx]);
                 }
             }
         }
         if (!valid) {
-            return false
+            return false;
         }
-        setLoading(true)
+        setLoading(true);
         const result = await fetch(params.action, {
             method: params.method,
             body: form,
-        })
-        setLoading(false)
-        error(await result.text())
+        });
+        setLoading(false);
+        error(await result.text());
     }
 
     return (
@@ -91,5 +90,5 @@ export default function Form<T extends { [key: string]: string | null }>({
                 <button type="submit">Save</button>
             )}
         </form>
-    )
+    );
 }

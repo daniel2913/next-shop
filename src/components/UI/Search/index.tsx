@@ -1,6 +1,4 @@
 "use client";
-import styles from "./index.module.scss";
-import { Brand, Category, Product } from "@/lib/DAL/Models";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -86,7 +84,7 @@ export default function Search({ brandList, categoryList }: props) {
                 <div className="flex z-50 gap-3">
                     {categories.map((category) => {
                         return (
-                            <div key={"category" + category.category.name}>
+                            <div key={`category ${category.category.name}`}>
                                 <input
                                     type="checkbox"
                                     id={category.category.name}
@@ -105,7 +103,7 @@ export default function Search({ brandList, categoryList }: props) {
                 <div className="flex z-50 gap-3">
                     {brands.map((brand) => {
                         return (
-                            <div key={"brand" + brand.brand.name}>
+                            <div key={`brand ${brand.brand.name}`}>
                                 <input
                                     type="checkbox"
                                     id={brand.brand.name}

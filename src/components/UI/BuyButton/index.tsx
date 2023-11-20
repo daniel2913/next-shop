@@ -1,8 +1,6 @@
 "use client";
 import useCartStore from "@/store/cartStore";
-import styles from "./index.module.scss";
 import AmmountSelector from "../AmmountSelector";
-import { Product } from "@/lib/DAL/Models";
 
 type props = {
     className: string;

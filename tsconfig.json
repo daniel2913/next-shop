@@ -20,7 +20,6 @@
 		"allowSyntheticDefaultImports": true,
 		"strictPropertyInitialization": false,
 		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
 		"noEmit": true,
 		"module": "esnext",
 		"moduleResolution": "node",

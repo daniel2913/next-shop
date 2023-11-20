@@ -1,11 +1,4 @@
-import {
-	PgTableWithColumns,
-	char,
-	pgTable,
-	real,
-	varchar,
-} from 'drizzle-orm/pg-core'
-import mongoose, { Schema } from 'mongoose'
+import { Schema } from 'mongoose'
 import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 import {
 	maxSizes,
@@ -29,6 +22,7 @@ const BrandValidations = {
 	image: [validations.imageMatch()],
 }
 
+
 const config = {
 	_id: pgreDefaults._id,
 	name: pgreDefaults.name.unique(),
@@ -40,6 +34,8 @@ const BrandPgreTable = shop.table(
 	'brands',
 	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
 )
+
+export type Brand = typeof BrandPgreTable.$inferSelect
 
 const BrandMongoSchema = new Schema<MongoSchema<testType>>({
 	_id: mongoDefaults._id,

@@ -1,5 +1,4 @@
 import ModalBase from "@/components/modals/Base";
-import "@styles/index.scss";
 import { ReactElement } from "react";
 import RootProviders from "./providers";
 import "./global.css";

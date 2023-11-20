@@ -1,18 +1,16 @@
 import Link from "next/link";
-import styles from "./index.module.scss";
-
 import React from "react";
 import Auth from "../ui/Auth";
 import CartStatus from "../cart/Status";
 import Search from "../ui/Search";
-import { BrandModel, CategoryModel } from "@/lib/DAL/Models";
+import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters";
 
 export const revalidate = 300;
 
 export default async function NavBar() {
     const [brands, categories] = await Promise.all([
-        BrandModel.find(undefined),
-        CategoryModel.find(undefined),
+        getAllBrands(),
+        getAllCategories(),
     ]);
     return (
         <header
@@ -24,7 +22,7 @@ export default async function NavBar() {
         >
             <div className="w-20 h-15 bg-red-300"></div>
             <Search brandList={brands} categoryList={categories} />
-            <div className={styles["login"]}>
+            <div className="">
                 <CartStatus />
                 <Auth />
             </div>

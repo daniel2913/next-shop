@@ -1,5 +1,4 @@
 import Carousel from "../../ui/Carousel";
-import styles from "./index.module.scss";
 import Price from "../Price";
 import Discount from "../Discount";
 import ImageComponent from "@/components/ui/ImageComponent";
@@ -29,7 +28,7 @@ export default async function ProductCard({ className, product, role }: props) {
 		<div
 			className={`
             ${className}
-			rounded-md p-2 bg-red-200
+			rounded-md p-3 bg-red-200 overflow-hidden
 			`}
 		>
 			<Carousel
@@ -76,10 +75,12 @@ export default async function ProductCard({ className, product, role }: props) {
 					className="col-span-2"
 					href={`./product/${product.brand}/${product.name}`}
 				>
-					<h3 className={styles.name}>{product.name}</h3>
+					<h3 className="">{product.name}</h3>
 				</Link>
-				<span className="">{product.brand}</span>
-				<span className="justify-self-end text-gray-600">
+				<span className="text-lg capitalize font-semibold">
+					{product.brand}
+				</span>
+				<span className="text-lg capitalize justify-self-end text-gray-600">
 					{product.category}
 				</span>
 
@@ -93,13 +94,6 @@ export default async function ProductCard({ className, product, role }: props) {
 				) : (
 					<BuyButton className="justify-self-end" {...product} />
 				)}
-				<p
-					className="
-					col-span-2
-					"
-				>
-					{product.description}
-				</p>
 			</div>
 		</div>
 	);

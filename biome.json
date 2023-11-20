@@ -6,7 +6,25 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious":{
+				"noExplicitAny": false
+			},
+			"style":{
+				"noNegationElse":true,
+				"useNamingConvention":true,
+			},
+			"complexity":{
+				"useSimplifiedLogicExpression":true,
+				"noExcessiveCognitiveComplexity":true
+			},
+			"correctnes":true
+			
 		}
+	},
+	"formatter":{
+		"enabled":true,
+		"semicolons": "asNeeded",
+		
 	}
 }

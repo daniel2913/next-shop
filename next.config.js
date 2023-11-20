@@ -3,13 +3,13 @@
 const nextConfig = {
     sassOptions: {},
     experimental: {
-        esmExternals: 'loose',
-        serverComponentsExternalPackages: ['mongodb', 'mongoose'],
+        //        esmExternals: 'loose',
+        //        serverComponentsExternalPackages: ['mongodb', 'mongoose'],
     },
     webpack(config) {
         const fileLoaderRule = config.module.rules.find((rule) =>
-            rule.test?.test?.('.svg')
-        )
+            rule.test?.test?.(".svg"),
+        );
 
         config.module.rules.push(
             {
@@ -21,15 +21,15 @@ const nextConfig = {
                 test: /\.svg$/i,
                 issuer: /\.[jt]sx?$/,
                 resourceQuery: { not: /url/ },
-                use: ['@svgr/webpack'],
-            }
-        )
-        fileLoaderRule.exclude = /\.svg$/i
+                use: ["@svgr/webpack"],
+            },
+        );
+        fileLoaderRule.exclude = /\.svg$/i;
         config.experiments = {
             topLevelAwait: true,
             layers: true,
-        }
-        return config
+        };
+        return config;
     },
-}
-module.exports = nextConfig
+};
+module.exports = nextConfig;

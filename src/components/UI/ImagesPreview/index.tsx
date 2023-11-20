@@ -1,30 +1,30 @@
-import ImageComponent from '../ImageComponent'
-import React from 'react'
+import ImageComponent from "../ImageComponent";
+import React from "react";
 type props = {
-    images: File[]
-    delImage: (idx: number) => void
-}
+    images: File[];
+    delImage: (idx: number) => void;
+};
 
-const currentImageUrls: string[] = []
+const currentImageUrls: string[] = [];
 
 function previewImages(images: File[]) {
     for (const image of currentImageUrls) {
-        URL.revokeObjectURL(image)
+        URL.revokeObjectURL(image);
     }
-    let res: string[] = []
-    if (!images) res = []
-    if (images instanceof File) res = [URL.createObjectURL(images)]
+    let res: string[] = [];
+    if (!images) res = [];
+    if (images instanceof File) res = [URL.createObjectURL(images)];
     for (const idx in images) {
-        res.push(URL.createObjectURL(images[idx]))
+        res.push(URL.createObjectURL(images[idx]));
     }
-    currentImageUrls.push(...res)
-    return res
+    currentImageUrls.push(...res);
+    return res;
 }
 
 export default function ImagesPreview({ images, delImage }: props) {
     const imageUrls = React.useMemo<string[]>(() => {
-        return previewImages(images)
-    }, [images])
+        return previewImages(images);
+    }, [images]);
     return (
         <div>
             {imageUrls.map((image, idx) => {
@@ -35,14 +35,14 @@ export default function ImagesPreview({ images, delImage }: props) {
                             alt=""
                             width={30}
                             height={50}
-                            fallback="template.jpeg"
+                            fallback="template.jpg"
                             src={image}
                         />
                     </div>
                 ) : (
                     <></>
-                )
+                );
             })}
         </div>
-    )
+    );
 }

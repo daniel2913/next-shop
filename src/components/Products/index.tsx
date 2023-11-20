@@ -1,6 +1,5 @@
 import ProductCard from "@/components/product/ProductCard";
 import { Brand, BrandModel, ProductModel } from "@/lib/DAL/Models";
-import styles from "./index.module.scss";
 import {
 	Tconfig,
 	collectQueries,
@@ -46,9 +45,9 @@ export default async function ProductList({
 	const products = await getProducts(searchParams);
 	return (
 		<div className="bg-green-100">
-			<div className={styles.featured}>
-				<div className={styles.featuredProducts} />
-				<div className={styles.featuredBrands} />
+			<div className="">
+				<div className="" />
+				<div className="" />
 			</div>
 			<div
 				className="

@@ -1,5 +1,3 @@
-import styles from "./index.module.scss";
-
 interface props {
     discount: number;
     className: string;

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import styles from "./index.modules.scss";
 import { useState } from "react";
 
 interface props {

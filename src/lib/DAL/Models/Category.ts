@@ -32,6 +32,8 @@ const CategoryPgreTable = shop.table(
 	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
 )
 
+export type Category = typeof CategoryPgreTable.$inferSelect
+
 const CategoryMongoSchema = new Schema<MongoSchema<testType>>({
 	_id: mongoDefaults._id,
 	name: { ...mongoDefaults.name, unique: true },

@@ -1,4 +1,3 @@
-import styles from './index.module.scss'
 
 interface props {
     price: number
@@ -8,13 +7,13 @@ interface props {
 
 export default function Price({ price, discount = 0, className = '' }: props) {
     return discount > 0 ? (
-        <div className={styles.productPrice + ' ' + className}>
-            <s className={styles.oldPrice}>{price}</s>
-            <span className={styles.newPrice}>
+        <div className={`${className} text-inherit`}>
+            <s className="text-gray-600">{price}</s>
+            <span className="">
                 {price - (price * discount) / 100}
             </span>
         </div>
     ) : (
-        <div className={styles.productPrice}>{price}</div>
+        <div className="">{price}</div>
     )
 }

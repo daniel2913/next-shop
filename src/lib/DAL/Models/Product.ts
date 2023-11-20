@@ -53,6 +53,9 @@ const ProductPgreTable = shop.table(
 	}
 )
 
+export type Product = typeof ProductPgreTable.$inferSelect
+
+
 const ProductMongoSchema = new Schema<MongoSchema<testType>>({
 	_id: mongoDefaults._id,
 	name: mongoDefaults.name,

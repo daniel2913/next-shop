@@ -1,16 +1,15 @@
-'use client'
+"use client";
 
-import React from 'react'
-import styles from './index.module.scss'
+import React from "react";
 
 type props = {
-    options: string[]
-    className?: string
-    id: string
-    label: string
-    value: string
-    setValue: (a: string) => void
-}
+    options: string[];
+    className?: string;
+    id: string;
+    label: string;
+    value: string;
+    setValue: (a: string) => void;
+};
 
 export default function Selector({
     options,
@@ -20,38 +19,35 @@ export default function Selector({
     value,
     setValue,
 }: props) {
-    const [open, setOpen] = React.useState<boolean>(false)
+    const [open, setOpen] = React.useState<boolean>(false);
     React.useEffect(() => {
-        setValue(options[0])
-    }, [])
+        setValue(options[0]);
+    }, []);
     return (
-        <div
-            onBlur={() => setOpen(false)}
-            className={`${className} ${styles.selector}`}
-        >
-            <label htmlFor={id} className={styles.label}>
+        <div onBlur={() => setOpen(false)} className={`${className}`}>
+            <label htmlFor={id} className="">
                 {label}
             </label>
             <input
                 placeholder="Not Found..."
-                className={styles.current}
+                className=""
                 onFocus={() => setOpen((prev) => !prev)}
                 type="text"
                 value={value}
                 name={id}
                 id={id}
             />
-            <div aria-hidden={!open} className={styles.variants}>
+            <div aria-hidden={!open} className="">
                 <ul>
                     {options.map((option) => (
                         <li key={option}>
                             <button
                                 onClick={(e) => {
-                                    e.preventDefault()
-                                    setValue(option)
-                                    e.currentTarget.blur()
+                                    e.preventDefault();
+                                    setValue(option);
+                                    e.currentTarget.blur();
                                 }}
-                                className={styles.variant}
+                                className=""
                             >
                                 {option}
                             </button>
@@ -60,5 +56,5 @@ export default function Selector({
                 </ul>
             </div>
         </div>
-    )
+    );
 }

@@ -1,5 +1,4 @@
 import { Schema } from 'mongoose'
-import { defaultId } from './common.ts'
 import { char, pgTable, varchar } from 'drizzle-orm/pg-core'
 import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 import { maxSizes, mongoDefaults, pgreDefaults, validations } from './common'
@@ -38,6 +37,8 @@ const UserPgreTable = pgTable(
 	'users',
 	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
 )
+
+export type User = typeof UserPgreTable.$inferSelect
 
 const UserMongoSchema = new Schema<MongoSchema<testType>>({
 	_id: mongoDefaults._id,
