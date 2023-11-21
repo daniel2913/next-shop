@@ -1,27 +1,34 @@
 import mongoose from "mongoose";
-
-import { BrandMongoSchema, BrandPgreTable, BrandValidations } from "./Brand";
 import { MongoModel, PgreModel } from "./base";
+import {
+	BrandMongoSchema,
+	BrandPgreTable,
+	BrandValidations,
+	Brand
+} from "./Brand";
 import {
 	CategoryMongoSchema,
 	CategoryPgreTable,
 	CategoryValidations,
+	Category
 } from "./Category";
 import {
 	ProductMongoSchema,
 	ProductPgreTable,
 	ProductValidations,
+	Product
 } from "./Product";
-import { UserMongoSchema, UserPgreTable, UserValidations } from "./User";
+import {
+	UserMongoSchema,
+	UserPgreTable,
+	UserValidations,
+	User
+} from "./User";
+
+export type { Brand, Category, Product, User }
 
 const DB = process.env.DB;
 
-export {
-	BrandMongoSchema as Brand,
-	CategoryMongoSchema as Category,
-	ProductMongoSchema as Product,
-	UserMongoSchema as User,
-};
 
 export const BrandModel = (
 	DB === "MONGO"

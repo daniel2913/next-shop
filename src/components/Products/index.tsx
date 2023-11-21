@@ -1,9 +1,9 @@
 import ProductCard from "@/components/product/ProductCard";
-import { Brand, BrandModel, ProductModel } from "@/lib/DAL/Models";
+import { ProductModel } from "@/lib/DAL/Models";
 import {
 	Tconfig,
 	collectQueries,
-	getController,
+
 } from "@/lib/DAL/controllers/universalControllers";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";

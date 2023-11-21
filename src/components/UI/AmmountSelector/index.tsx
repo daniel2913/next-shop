@@ -2,21 +2,26 @@
 import React from "react";
 import useConfirm from "@/hooks/modals/useConfirm";
 import useCartStore from "@/store/cartStore";
+import { Product } from "@/lib/DAL/Models";
 
-export default function AmmountSelector(item: {
-    product: string;
-    amount: number;
-}) {
+interface Props {
+    className: string
+    product: Product['_id']
+}
+
+
+export default function AmmountSelector({ className, product }: Props) {
     const confirm = useConfirm("Are you sure you want to discard this item?");
     const amount = useCartStore(
         (state) =>
-            state.items.find((state) => state.product === item.product)?.amount || 0,
+            state.items.find((state) => state.product === product)?.amount,
     );
     const itemDiscarder = useCartStore((state) => state.discardItem);
     const ammountSetter = useCartStore((state) => state.setAmmount);
-    const discardItem = () => itemDiscarder(item.product.toString());
+    if (amount === null) return (<div>Error!</div>)
+    const discardItem = () => itemDiscarder(product);
     const setAmmount = (amnt: number) =>
-        ammountSetter(item.product.toString(), amnt);
+        ammountSetter(product, amnt);
     function clickHandler(newAmount: number) {
         if (newAmount <= 0) {
             confirm().then((ans) => {
@@ -25,24 +30,22 @@ export default function AmmountSelector(item: {
         } else setAmmount(newAmount);
     }
     return (
-        <div className={""}>
-            <div className="">
-                <button
-                    type="button"
-                    className=""
-                    onClick={() => clickHandler(amount + 1)}
-                >
-                    +
-                </button>
-                <span className="" />
-                <button
-                    type="button"
-                    className=""
-                    onClick={() => clickHandler(amount - 1)}
-                >
-                    -
-                </button>
-            </div>
+        <div className={`${className} min-w-[4ch] w-fit flex justify-between text-4xl text-center text-accent1-600 font-semibold`}>
+            <button
+                type="button"
+                className="text-inherit"
+                onClick={() => clickHandler(amount - 1)}
+            >
+                -
+            </button>
+            <span className="text-inherit">{amount}</span>
+            <button
+                type="button"
+                className="text-inherit"
+                onClick={() => clickHandler(amount + 1)}
+            >
+                +
+            </button>
         </div>
     );
 }

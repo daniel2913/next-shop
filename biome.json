@@ -1,5 +1,9 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.3.3/schema.json",
+
+	"files":{
+		"ignore":["./node_modules","./.next"]
+	},
 	"organizeImports": {
 		"enabled": true
 	},
@@ -8,23 +12,28 @@
 		"rules": {
 			"recommended": true,
 			"suspicious":{
-				"noExplicitAny": false
+				"noExplicitAny": "off"
 			},
 			"style":{
-				"noNegationElse":true,
-				"useNamingConvention":true,
+				"noNegationElse":"warn",
+				"useNamingConvention":"warn"
 			},
 			"complexity":{
-				"useSimplifiedLogicExpression":true,
-				"noExcessiveCognitiveComplexity":true
+				"useSimplifiedLogicExpression":"warn",
+				"noExcessiveCognitiveComplexity":"warn"
 			},
-			"correctnes":true
+			"correctness":{
+				"enabled":true
+			}
 			
 		}
 	},
 	"formatter":{
-		"enabled":true,
-		"semicolons": "asNeeded",
-		
+		"enabled":true
+	},
+	"javascript":{
+		"formatter":{
+			"semicolons": "asNeeded"
+		}
 	}
 }

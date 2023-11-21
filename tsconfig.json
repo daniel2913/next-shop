@@ -19,7 +19,6 @@
 		"allowImportingTsExtensions": true,
 		"allowSyntheticDefaultImports": true,
 		"strictPropertyInitialization": false,
-		"emitDecoratorMetadata": true,
 		"noEmit": true,
 		"module": "esnext",
 		"moduleResolution": "node",

@@ -10,6 +10,7 @@ if (!PGRE_URL) {
 	throw "Define the PGRE_URL environment variable inside .env.local";
 }
 
-const pgreConnect = drizzle(postgres(PGRE_URL, { max: 20 }), { logger: true });
+
+const pgreConnect = drizzle(postgres(PGRE_URL, { max: 20 }), { logger: true })
 
 export default pgreConnect;

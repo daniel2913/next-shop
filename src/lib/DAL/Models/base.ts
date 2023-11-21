@@ -1,5 +1,4 @@
 import mongoConnect from "@/lib/mongoConnect";
-import pgreConnect from "@/lib/postgressConnect";
 import {
     Column,
     ColumnBuilderBaseConfig,
@@ -21,6 +20,8 @@ import {
 } from "drizzle-orm/pg-core";
 import mongoose, { InferSchemaType, Model, Schema } from "mongoose";
 import { defaultId } from "./common";
+import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 export type ColumnsConfi<T extends Record<string, ColumnDataType>> = Record<
     keyof T,
@@ -58,7 +59,7 @@ interface DataModel {
     ) => Promise<Record<string, any> | false>;
     find: (
         query?: Record<string, string | string[]>,
-    ) => Promise<Record<string, any>[]>;
+    ) => Promise<Record<string, any>[] | []>;
     findPaginated: (
         query: Record<string, string | string[]>,
         pageSize: number,
@@ -88,7 +89,7 @@ export class MongoModel<T extends Schema> implements DataModel {
             Record<keyof InferSchemaType<T>, string | string[] | RegExp>
         > = {};
         for (const [key, value] of Object.entries(query)) {
-            if (!(key in model.schema.paths) || !value) continue;
+            if (!((key in model.schema.paths) && value)) continue;
             res[key as keyof InferSchemaType<T>] = value;
         }
         return res as Record<string, string | string[]>;
@@ -187,7 +188,7 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
         keyof InferSelectModel<T> & string,
         string | string[] | RegExp
     >;
-
+    private connection: PostgresJsDatabase
     private validations: Record<keyof T["_"]["columns"], validator[]>;
 
     constructor(
@@ -197,6 +198,7 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
         this.table = table;
         this.columns = getTableColumns(table);
         this.validations = validations;
+        this.connection = drizzle(postgres(process.env.PGRE_URL_DEV, { max: 5, idle_timeout: 60 * 2 }), { logger: true })
     }
 
     private isInvalid(newObj: any) {
@@ -215,12 +217,12 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
     ) {
         const sqlQueryWrappers: SQLWrapper[] = [];
         for (const [key, value] of Object.entries(query)) {
-            if (!(key in this.columns) || !value) continue;
+            if (!((key in this.columns) && value)) continue;
             const column = model[key as keyof Table<T>] as Column;
             if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value));
             else if (value instanceof RegExp)
                 sqlQueryWrappers.push(
-                    like(column, value.toString().slice(1, -1) + "%"),
+                    like(column, `${value.toString().slice(1, -1)}%`),
                 );
             else sqlQueryWrappers.push(eq(column, value));
         }
@@ -239,7 +241,7 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
     async findOne(query: typeof this.Query) {
         return (
             (
-                await pgreConnect
+                await this.connection
                     .select()
                     .from(this.table)
                     .where(this.makePgreQuery(this.table, query))
@@ -251,26 +253,26 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
     async exists(query: typeof this.Query) {
         return (
             (
-                await pgreConnect
+                await this.connection
                     .select()
                     .from(this.table)
                     .where(this.makePgreQuery(this.table, query))
                     .limit(1)
-            )[0] || false
+            )[0]
         );
     }
 
-    find(query?: typeof this.Query) {
+    async find(query?: typeof this.Query) {
         if (!query) {
-            return pgreConnect.select().from(this.table);
+            return this.connection.select().from(this.table)
         }
-        return pgreConnect
+        return (await this.connection
             .select()
             .from(this.table)
-            .where(this.makePgreQuery(this.table, query));
+            .where(this.makePgreQuery(this.table, query))) || []
     }
     findPaginated(query: typeof this.Query, pageSize: number, offset: number) {
-        return pgreConnect
+        return this.connection
             .select()
             .from(this.table)
             .where(this.makePgreQuery(this.table, query))
@@ -278,14 +280,14 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
             .offset(offset);
     }
     write(object: InferInsertModel<T>) {
-        return pgreConnect
+        return this.connection
             .insert(this.table)
             .values(object as InferInsertModel<T>)
             .returning();
     }
     async delete(_id: string) {
         if (!_id) return false;
-        const res = await pgreConnect
+        const res = await this.connection
             .delete(this.table)
             .where(eq(this.table._id, _id))
             .returning();
@@ -295,7 +297,7 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
         if (!targId) return false;
         const newObj = { ...patch, _id: targId };
         this.isInvalid(newObj);
-        const res = await pgreConnect
+        const res = await this.connection
             .update(this.table)
             .set(newObj)
             .where(eq(this.table._id, targId))

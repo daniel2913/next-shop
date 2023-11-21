@@ -1,13 +1,15 @@
 "use client";
+import type { Brand, Category } from "@/lib/DAL/Models";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-type props = {
+interface Props {
+    className?: string
     brandList: Brand[];
     categoryList: Category[];
 };
 
-export default function Search({ brandList, categoryList }: props) {
+export default function Search({ className, brandList, categoryList }: Props) {
     const router = useRouter();
     const [queryString, setQueryString] = React.useState<string>("");
 
@@ -58,12 +60,12 @@ export default function Search({ brandList, categoryList }: props) {
         );
     }
     return (
-        <div className="relative group right-auto w-1/2 flex ">
+        <div className={`${className} relative group right-auto w-1/2 flex`}>
             <div className="w-full">
                 <input
                     className="
                 w-4/5 px-2 rounded-l-lg border-r-transparent
-                    bg-sky-200
+                    bg-cyan-100 border-2 border-r-0 border-cyan-700
                 "
                     type="search"
                     name="searchQuery"
@@ -71,7 +73,13 @@ export default function Search({ brandList, categoryList }: props) {
                     value={queryString}
                     onChange={(e) => setQueryString(e.currentTarget.value)}
                 />
-                <button className="rounded-r-lg w-1/5" type="button" onClick={onClick}>
+                <button className="
+                    rounded-r-lg w-1/5 
+                    border-2 border-cyan-700
+                    
+                    "
+                    type="button"
+                    onClick={onClick}>
                     Search
                 </button>
             </div>

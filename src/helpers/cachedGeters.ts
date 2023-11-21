@@ -1,28 +1,25 @@
 import {
     BrandModel,
     CategoryModel,
-    Product,
-    ProductModel,
 } from "@/lib/DAL/Models";
 
-function cache<T extends (...args: any) => any>(func: T) {
+
+export function cache<T extends (...args: any) => any>(func: T) {
     let cache: ReturnType<T>;
-    async function revalidate(args: Parameters<T>) {
-        cache = func(args);
+    async function revalidate(...args: Parameters<T>) {
+        cache = await func(args);
     }
-    async function get(args: Parameters<T>) {
+    async function get(...args: Parameters<T>) {
         if (cache) {
             console.log("Cached!");
             return cache;
         }
-        console.log("No Cache!: ", cache);
-        cache = func(args);
+        console.log("No Cache!");
+        cache = await func(args);
         return cache;
     }
     return [get, revalidate];
 }
 
 export const [getAllBrands, revalidateBrands] = cache(() => BrandModel.find());
-export const [getAllCategories, revalidateCategories] = cache(() =>
-    CategoryModel.find(),
-);
+export const [getAllCategories, revalidateCategories] = cache(() => CategoryModel.find(),);

@@ -10,8 +10,8 @@ export default function ModalConfirm({ message }: props) {
         <>
             <p>{message}</p>
             <div className="">
-                <button onClick={accept}>Yes</button>
-                <button onClick={reject}>No</button>
+                <button type="button" onClick={accept}>Yes</button>
+                <button type="button" onClick={reject}>No</button>
             </div>
         </>
     );

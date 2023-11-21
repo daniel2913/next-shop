@@ -17,12 +17,15 @@ export default async function NavBar() {
             className="
             relative top-0 left-0 right-0
             h-12 py-2 px-5
-            flex justify-between
-            bg-blue-300"
+            flex justify-between items-center
+            bg-teal-400"
         >
-            <div className="w-20 h-15 bg-red-300"></div>
-            <Search brandList={brands} categoryList={categories} />
-            <div className="">
+            <div className="w-20 h-full bg-accent1-400" />
+            <Search
+                className="h-full"
+                brandList={brands}
+                categoryList={categories} />
+            <div className="flex gap-4 items-center">
                 <CartStatus />
                 <Auth />
             </div>

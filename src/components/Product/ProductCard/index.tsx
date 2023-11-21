@@ -1,34 +1,32 @@
 import Carousel from "../../ui/Carousel";
 import Price from "../Price";
 import Discount from "../Discount";
-import ImageComponent from "@/components/ui/ImageComponent";
 import Link from "next/link";
 import BuyButton from "@/components/ui/BuyButton";
 import Image from "next/image";
-import type { Brand, Product } from "../../../lib/DAL/Models";
 type ProductProps = {
 	name: string;
 	brand: string;
 	category: string;
 	price: number;
 	discount: number;
-	description: srting;
+	description: string;
 	images: string[];
 	brandImage: string;
 };
 
-type props = {
+type Props = {
 	className: string;
 	product: ProductProps;
 	role: "admin" | "user";
 };
 
-export default async function ProductCard({ className, product, role }: props) {
+export default async function ProductCard({ className, product, role }: Props) {
 	return (
 		<div
 			className={`
             ${className}
-			rounded-md p-3 bg-red-200 overflow-hidden
+			rounded-md p-3 bg-cyan-200 overflow-hidden
 			`}
 		>
 			<Carousel
@@ -61,7 +59,6 @@ export default async function ProductCard({ className, product, role }: props) {
 							"
 						key={i + img}
 						src={`/products/${img}`}
-						fallback="/products/template.jpg"
 						alt={product.name}
 					/>
 				))}
@@ -72,12 +69,12 @@ export default async function ProductCard({ className, product, role }: props) {
 			"
 			>
 				<Link
-					className="col-span-2"
+					className="col-span-2 "
 					href={`./product/${product.brand}/${product.name}`}
 				>
-					<h3 className="">{product.name}</h3>
+					<h3 className="text-accent1-400 text-2xl uppercase font-bold">{product.name}</h3>
 				</Link>
-				<span className="text-lg capitalize font-semibold">
+				<span className="text-xl font-semibold">
 					{product.brand}
 				</span>
 				<span className="text-lg capitalize justify-self-end text-gray-600">
@@ -85,14 +82,14 @@ export default async function ProductCard({ className, product, role }: props) {
 				</span>
 
 				<Price
-					className=""
+					className="text-2xl"
 					price={product.price || 200}
 					discount={product.discount || 0}
 				/>
 				{role === "admin" ? (
 					<></>
 				) : (
-					<BuyButton className="justify-self-end" {...product} />
+					<BuyButton className="justify-self-center" {...product} />
 				)}
 			</div>
 		</div>
