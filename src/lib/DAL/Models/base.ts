@@ -12,13 +12,15 @@ import {
     like,
     getTableColumns,
     inArray,
+    SQL,
 } from "drizzle-orm";
 import {
     PgColumn,
     PgColumnBuilderBase,
+    PgTableWithColumns,
     TableConfig,
 } from "drizzle-orm/pg-core";
-import mongoose, { InferSchemaType, Model, Schema } from "mongoose";
+import mongoose, { Document, InferSchemaType, Model, Schema } from "mongoose";
 import { defaultId } from "./common";
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -32,7 +34,7 @@ export type ColumnsConfig<T extends Record<string, ColumnDataType>> = {
     [i in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[i], string>>;
 };
 export type TestColumnsConfig<
-    T extends any,
+    T,
     U extends ColumnsConfig<any>,
 > = T extends U ? T : "false";
 
@@ -40,7 +42,7 @@ export type MongoSchema<T extends Record<string, ColumnDataType>> = {
     [i in keyof T]: T[i] extends keyof typeEnum ? typeEnum[T[i]] : unknown;
 };
 
-export type DataModels = MongoModel<any> | PgreModel<any>;
+export type DataModels = MongoModel<any> | PgreModel<any, any>;
 
 type typeEnum = {
     string: string;
@@ -48,120 +50,113 @@ type typeEnum = {
     array: Array<any>;
 };
 
-interface DataModel {
-    columns: Record<string, any>;
-    newObject: (obj: any) => Record<string, any> | null;
+interface DataModel<T extends { [i: string]: any, _id: string }> {
+    columns: T;
+    newObject: (obj: Record<string, any>) => Promise<T | false>;
     findOne: (
-        query: Record<string, string | string[]>,
-    ) => Promise<Record<string, any>>;
-    exists: (
-        query: Record<string, string | string[]>,
-    ) => Promise<Record<string, any> | false>;
+        query: Query<T>,
+    ) => Promise<T | false>;
     find: (
-        query?: Record<string, string | string[]>,
-    ) => Promise<Record<string, any>[] | []>;
+        query?: Query<T>,
+    ) => Promise<T[]>;
     findPaginated: (
-        query: Record<string, string | string[]>,
+        query: Query<T>,
         pageSize: number,
         offset: number,
-    ) => Promise<Record<string, any>[]>;
-    write: (obj: any) => any; //TODO
+    ) => Promise<T[]>;
     delete: (_id: string) => Promise<boolean>;
-    patch: (targId: string, patch: any) => Promise<boolean>;
+    patch: (targId: string, patch: Partial<T>) => Promise<boolean>;
 }
 
-type validator = (value: any) => string | false;
+type Query<T extends Record<string, any> & { _id: string }> = Partial<{ [i in keyof T]?: string | string[] | RegExp }>
+type Validator<T> = (value: T) => string | false;
 
-export class MongoModel<T extends Schema> implements DataModel {
-    private Query: Record<
-        keyof InferSchemaType<T> & string,
-        string | string[] | RegExp
-    >;
-    private model: Model<T>;
-    private validations: Record<keyof InferSchemaType<T>, validator[]>;
-    public columns: InferSchemaType<T>;
+export class MongoModel<T extends { [i: string]: any, _id: string }> implements DataModel<T> {
+    private model: Model<Schema<T>>;
+    private validations: { [I in keyof T]: Validator<T[I]>[] };
+    public columns: T;
 
-    private makeMongoQuery<T extends Schema>(
-        model: Model<T>,
-        query: typeof this.Query,
+    private makeMongoQuery(
+        query: Query<T>,
     ) {
-        const res: Partial<
-            Record<keyof InferSchemaType<T>, string | string[] | RegExp>
-        > = {};
+        const res: Query<T> = {};
         for (const [key, value] of Object.entries(query)) {
-            if (!((key in model.schema.paths) && value)) continue;
-            res[key as keyof InferSchemaType<T>] = value;
+            if (!((key in this.model.schema.paths) && value)) continue;
+            res[key as keyof T] = value;
         }
         return res as Record<string, string | string[]>;
     }
-    private isInvalid(newObj: any) {
+    private isValid(newObj: Record<string, any>): newObj is T {
         //TODO?
+        for (const path in newObj) {
+            if (!(path in this.columns)) throw `Invalid column ${path}`
+        }
+        for (const path in this.columns) {
+            if (!(path in newObj)) throw `Column ${path} is not present`
+        }
         for (const [column, value] of Object.entries(newObj)) {
-            if (!this.validations[column]) continue;
             for (const validator of this.validations[column]) {
                 const error = validator(value);
                 if (error) throw error;
             }
         }
+        return true
     }
     constructor(
-        model: Model<T>,
-        validations: Record<keyof InferSchemaType<T>, validator[]>,
+        model: Model<Schema<T>>,
+        validations: { [I in keyof T]: Validator<T[I]>[] },
     ) {
         this.model = model;
         this.validations = validations;
     }
 
-    async newObject(obj: Omit<InferSchemaType<T>, "_id"> & { _id?: string }) {
-        const newObj = new this.model(obj);
-        newObj._id = defaultId() as any as mongoose.Types.ObjectId;
-        const test = newObj.toJSON();
-        this.isInvalid(test);
-        const res = await this.write(newObj as InferSchemaType<T>);
-        return res as InferSchemaType<T> | null;
+    async newObject(obj: Record<string, any>) {
+        obj._id = defaultId()
+        if (this.isValid(obj)) {
+            const newObj = new this.model(obj)
+            const res = await this.write(newObj);
+            return res as T | false;
+        }
+        return false
     }
 
-    async findOne(query: typeof this.Query) {
+    async findOne(query: Query<T>) {
         await mongoConnect();
         return (await this.model
-            .findOne(this.makeMongoQuery(this.model, query))
+            .findOne(this.makeMongoQuery(query))
             .lean()
-            .exec()) as InferSchemaType<T>;
+            .exec()) as T;
     }
-    async exists(query: typeof this.Query) {
-        await mongoConnect();
-        return (await this.model
-            .exists(this.makeMongoQuery(this.model, query))
-            .lean()
-            .exec()) as InferSchemaType<T> | false;
-    }
-    async find(query?: typeof this.Query) {
+    async find(query?: Query<T>) {
         await mongoConnect();
         if (!query) {
-            return (await this.model.find().lean().exec()) as InferSchemaType<T>[];
+            return this.model.find().lean().exec() as Promise<T[]>
         }
-        return (await this.model
-            .find(this.makeMongoQuery(this.model, query))
+        return this.model
+            .find(this.makeMongoQuery(query))
             .lean()
-            .exec()) as InferSchemaType<T>[];
+            .exec() as Promise<T[]>;
     }
     async findPaginated(
-        query: typeof this.Query,
+        query: Query<T>,
         pageSize: number,
         offset: number,
     ) {
         await mongoConnect();
         return (await this.model
-            .find(this.makeMongoQuery(this.model, query))
+            .find(this.makeMongoQuery(query))
             .limit(pageSize)
             .skip(offset)
             .lean()
-            .exec()) as InferSchemaType<T>[];
+            .exec()) as T[];
     }
-    async write(object: InferSchemaType<T>) {
+    private async write(object: Document<any, any, T>) {
         await mongoConnect();
         try {
-            return [await object.save()] as InferSchemaType<T>[];
+            const res = await object.save()
+            return res
+                ? res.toObject() as T
+                : false
         } catch (e) {
             console.log("Pizda", e);
             return false;
@@ -169,39 +164,46 @@ export class MongoModel<T extends Schema> implements DataModel {
     }
     async delete(_id: string) {
         const res = await this.model.deleteOne({ _id });
-        return res ? true : false;
+        return res.deletedCount > 0 ? true : false;
     }
-    async patch(targId: string, patch: Partial<InferSchemaType<T>>) {
+    async patch(targId: string, patch: Partial<T>) {
         if (!targId) return false;
-        const newObj = { ...patch, _id: targId };
-        this.isInvalid(newObj);
-        const res = await this.model.updateOne({ _id: targId }, newObj);
-        return res ? true : false;
+        const oldObject = await this.findOne({ _id: targId })
+        if (!oldObject) return false
+        const newObj = { ...oldObject, ...patch, _id: targId };
+        try {
+            if (this.isValid(newObj)) {
+                const res = await this.model.updateOne({ _id: targId }, newObj);
+                return res ? true : false;
+            }
+            throw "Something is wrong"
+        }
+        catch (err) {
+            return false
+        }
     }
 }
 
-export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
-    implements DataModel {
-    table: T;
-    public columns: T["_"]["columns"];
-    private Query: Record<
-        keyof InferSelectModel<T> & string,
-        string | string[] | RegExp
-    >;
-    private connection: PostgresJsDatabase
-    private validations: Record<keyof T["_"]["columns"], validator[]>;
+
+export class PgreModel<T extends { [i: string]: any, _id: string }, U extends Table<TableConfig>>
+    implements DataModel<T> {
+    private table: U;
+    public columns: T;
+    private model: PostgresJsDatabase
+    private validations: { [key in keyof T]: Validator<T[key]>[] }
 
     constructor(
-        table: T,
-        validations: Record<keyof T["_"]["columns"], validator[]>,
+        table: U['$inferSelect'] extends T ? T extends U['$inferSelect'] ? U : never : never,
+        validations: { [key in keyof T]: Validator<T[key]>[] }
     ) {
+        console.log('===>', table)
         this.table = table;
-        this.columns = getTableColumns(table);
+        this.columns = table as T;
         this.validations = validations;
-        this.connection = drizzle(postgres(process.env.PGRE_URL_DEV, { max: 5, idle_timeout: 60 * 2 }), { logger: true })
+        this.model = drizzle(postgres(process.env.PGRE_URL_DEV, { max: 5, idle_timeout: 60 * 2 }), { logger: true })
     }
 
-    private isInvalid(newObj: any) {
+    private isValid(newObj: Record<string, any>): newObj is T {
         for (const [column, value] of Object.entries(newObj)) {
             if (!this.validations[column]) continue;
             for (const validator of this.validations[column]) {
@@ -209,16 +211,16 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
                 if (error) throw error;
             }
         }
+        return true
     }
 
-    private makePgreQuery<T extends TableConfig>(
-        model: Table<T>,
-        query: typeof this.Query,
+    private makePgreQuery(
+        query: Query<T>
     ) {
         const sqlQueryWrappers: SQLWrapper[] = [];
         for (const [key, value] of Object.entries(query)) {
             if (!((key in this.columns) && value)) continue;
-            const column = model[key as keyof Table<T>] as Column;
+            const column = this.table[key as keyof U] as Column;
             if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value));
             else if (value instanceof RegExp)
                 sqlQueryWrappers.push(
@@ -229,79 +231,72 @@ export class PgreModel<T extends Table<TableConfig> & { _id: PgColumn }>
         return and(...sqlQueryWrappers);
     }
 
-    async newObject(obj: Omit<InferInsertModel<T>, "_id"> & { _id?: string }) {
+    async newObject(obj: Record<string, any>) {
         const newObj = { ...obj };
         newObj._id = defaultId();
         console.log("<===3", newObj);
-        this.isInvalid(newObj);
-        const res = await this.write(newObj as InferInsertModel<T>);
-        return res as InferInsertModel<T> | null;
-    }
-
-    async findOne(query: typeof this.Query) {
-        return (
-            (
-                await this.connection
-                    .select()
-                    .from(this.table)
-                    .where(this.makePgreQuery(this.table, query))
-                    .limit(1)
-            )[0] || null
-        );
-    }
-
-    async exists(query: typeof this.Query) {
-        return (
-            (
-                await this.connection
-                    .select()
-                    .from(this.table)
-                    .where(this.makePgreQuery(this.table, query))
-                    .limit(1)
-            )[0]
-        );
-    }
-
-    async find(query?: typeof this.Query) {
-        if (!query) {
-            return this.connection.select().from(this.table)
+        if (this.isValid(newObj)) {
+            ;
+            const res = await this.write(newObj as T);
+            return res ? res as U['$inferInsert'] as T : false;
         }
-        return (await this.connection
-            .select()
-            .from(this.table)
-            .where(this.makePgreQuery(this.table, query))) || []
+        return false
     }
-    findPaginated(query: typeof this.Query, pageSize: number, offset: number) {
-        return this.connection
+
+    async findOne(query: Query<T>) {
+        return (
+            (
+                await this.model
+                    .select()
+                    .from(this.table)
+                    .where(this.makePgreQuery(query))
+                    .limit(1)
+            )[0] as T || null
+        );
+    }
+
+    async find(query?: Query<T>) {
+        if (!query) {
+            return ((await this.model.select().from(this.table)) || []) as T[]
+        }
+        return ((await this.model
             .select()
             .from(this.table)
-            .where(this.makePgreQuery(this.table, query))
+            .where(this.makePgreQuery(query))) || []) as T[]
+    }
+    async findPaginated(query: Query<T>, pageSize: number, offset: number) {
+        return ((await this.model
+            .select()
+            .from(this.table)
+            .where(this.makePgreQuery(query))
             .limit(pageSize)
-            .offset(offset);
+            .offset(offset)) || []) as T[]
     }
-    write(object: InferInsertModel<T>) {
-        return this.connection
+    write(object: T) {
+        return this.model
             .insert(this.table)
-            .values(object as InferInsertModel<T>)
+            .values(object)
             .returning();
     }
     async delete(_id: string) {
         if (!_id) return false;
-        const res = await this.connection
+        const res = await this.model
             .delete(this.table)
             .where(eq(this.table._id, _id))
             .returning();
         return res.length > 0 ? true : false;
     }
-    async patch(targId: string, patch: Partial<InferInsertModel<T>>) {
+    async patch(targId: string, patch: Partial<T>) {
         if (!targId) return false;
         const newObj = { ...patch, _id: targId };
-        this.isInvalid(newObj);
-        const res = await this.connection
-            .update(this.table)
-            .set(newObj)
-            .where(eq(this.table._id, targId))
-            .returning({ id: this.table._id });
-        return res.length > 0 ? true : false;
+        if (this.isValid(newObj)) {
+            const res = await this.model
+                .update(this.table)
+                .set(newObj)
+                .where(eq(this.table._id, targId))
+                .returning({ id: this.table._id });
+            return res.length > 0 ? true : false;
+        }
+        return false
     }
 }

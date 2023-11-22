@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose'
+import { Document, InferSchemaType, Model, Schema } from 'mongoose'
 import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 import {
 	maxSizes,
@@ -8,7 +8,7 @@ import {
 	validations,
 } from './common'
 
-type testType = Readonly<{
+type TestType = Readonly<{
 	_id: 'string'
 	name: 'string'
 	description: 'string'
@@ -32,12 +32,12 @@ const config = {
 
 const BrandPgreTable = shop.table(
 	'brands',
-	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type Brand = typeof BrandPgreTable.$inferSelect
 
-const BrandMongoSchema = new Schema<MongoSchema<testType>>({
+const BrandMongoSchema = new Schema<Brand>({
 	_id: mongoDefaults._id,
 	name: { ...mongoDefaults.name, unique: true },
 	description: mongoDefaults.description,

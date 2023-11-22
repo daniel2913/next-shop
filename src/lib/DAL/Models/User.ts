@@ -40,7 +40,7 @@ const UserPgreTable = pgTable(
 
 export type User = typeof UserPgreTable.$inferSelect
 
-const UserMongoSchema = new Schema<MongoSchema<testType>>({
+const UserMongoSchema = new Schema<User>({
 	_id: mongoDefaults._id,
 	name: { ...mongoDefaults.name, unique: true },
 	passwordHash: { type: String, required: true },

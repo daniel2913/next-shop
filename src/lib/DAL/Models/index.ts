@@ -30,42 +30,43 @@ export type { Brand, Category, Product, User }
 const DB = process.env.DB;
 
 
+
 export const BrandModel = (
 	DB === "MONGO"
-		? new MongoModel(
+		? new MongoModel<Brand>(
 			mongoose.models?.brand || mongoose.model("brand", BrandMongoSchema),
 			BrandValidations,
 		)
-		: new PgreModel(BrandPgreTable, BrandValidations)
-) as MongoModel<typeof BrandMongoSchema> | PgreModel<typeof BrandPgreTable>;
+		: new PgreModel<Brand, typeof BrandPgreTable>(BrandPgreTable, BrandValidations)
+) as MongoModel<Brand> | PgreModel<Brand, typeof BrandPgreTable>;
 
 export const CategoryModel = (
 	DB === "MONGO"
-		? new MongoModel(
+		? new MongoModel<Category>(
 			mongoose.models?.category ||
 			mongoose.model("category", CategoryMongoSchema),
 			CategoryValidations,
 		)
-		: new PgreModel(CategoryPgreTable, CategoryValidations)
+		: new PgreModel<Category, typeof CategoryPgreTable>(CategoryPgreTable, CategoryValidations)
 ) as
-	| MongoModel<typeof CategoryMongoSchema>
-	| PgreModel<typeof CategoryPgreTable>;
+	| MongoModel<Category>
+	| PgreModel<Category, typeof CategoryPgreTable>;
 
 export const ProductModel = (
 	DB === "MONGO"
-		? new MongoModel(
+		? new MongoModel<Product>(
 			mongoose.models?.product ||
 			mongoose.model("product", ProductMongoSchema),
 			ProductValidations,
 		)
-		: new PgreModel(ProductPgreTable, ProductValidations)
-) as MongoModel<typeof ProductMongoSchema> | PgreModel<typeof ProductPgreTable>;
+		: new PgreModel<Product, typeof ProductPgreTable>(ProductPgreTable, ProductValidations)
+) as MongoModel<Product> | PgreModel<Product, typeof ProductPgreTable>;
 
 export const UserModel = (
 	DB === "MONGO"
-		? new MongoModel(
+		? new MongoModel<User>(
 			mongoose.models?.user || mongoose.model("user", UserMongoSchema),
 			UserValidations,
 		)
-		: new PgreModel(UserPgreTable, UserValidations)
-) as MongoModel<typeof UserMongoSchema> | PgreModel<typeof UserPgreTable>;
+		: new PgreModel<User, typeof UserPgreTable>(UserPgreTable, UserValidations)
+) as MongoModel<User> | PgreModel<User, typeof UserPgreTable>;

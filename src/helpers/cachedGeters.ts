@@ -11,10 +11,8 @@ export function cache<T extends (...args: any) => any>(func: T) {
     }
     async function get(...args: Parameters<T>) {
         if (cache) {
-            console.log("Cached!");
             return cache;
         }
-        console.log("No Cache!");
         cache = await func(args);
         return cache;
     }

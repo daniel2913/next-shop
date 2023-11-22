@@ -6,7 +6,7 @@ import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
 import { BrandPgreTable } from './Brand.ts'
 import { CategoryPgreTable } from './Category.ts'
 
-type testType = Readonly<{
+type TestType = Readonly<{
 	_id: 'string'
 	name: 'string'
 	brand: 'string'
@@ -38,14 +38,14 @@ const config = {
 		.notNull()
 		.references(() => CategoryPgreTable._id),
 	description: pgreDefaults.description,
-	images: varchar('images', { length: maxSizes.image }).notNull().array(),
+	images: varchar('images', { length: maxSizes.image }).array().notNull(),
 	price: real('price').notNull(),
 	discount: smallint('discount').notNull(),
 }
 
 const ProductPgreTable = shop.table(
 	'products',
-	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>,
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
 	(table) => {
 		return {
 			uq: uniqueIndex().on(table.brand, table.name),
@@ -56,7 +56,7 @@ const ProductPgreTable = shop.table(
 export type Product = typeof ProductPgreTable.$inferSelect
 
 
-const ProductMongoSchema = new Schema<MongoSchema<testType>>({
+const ProductMongoSchema = new Schema<Product>({
 	_id: mongoDefaults._id,
 	name: mongoDefaults.name,
 	brand: { type: String, ref: 'Brand', required: true },

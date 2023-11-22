@@ -34,7 +34,7 @@ const CategoryPgreTable = shop.table(
 
 export type Category = typeof CategoryPgreTable.$inferSelect
 
-const CategoryMongoSchema = new Schema<MongoSchema<testType>>({
+const CategoryMongoSchema = new Schema<Category>({
 	_id: mongoDefaults._id,
 	name: { ...mongoDefaults.name, unique: true },
 	image: mongoDefaults.image,

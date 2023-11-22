@@ -15,7 +15,7 @@ export const maxSizes = {
     description: 2048,
 }
 export const pgreDefaults = {
-    _id: char('_id', { length: 24 }).primaryKey().notNull(),
+    _id: char('_id', { length: maxSizes._id }).primaryKey().notNull(),
     image: varchar('image', { length: maxSizes.image }).notNull(),
     name: varchar('name', { length: maxSizes.name }).notNull(),
     description: varchar('description', {
@@ -60,7 +60,8 @@ export const validations = {
     },
     imageMatch() {
         return function(value: string) {
-            if (!value.toString().match(/^^(template|[0-9 a-f]{24})\.jpg$/))
+            const regexp = `^(template|[0-9 a-f]{${maxSizes._id}})\\.jpg$`
+            if (!value.toString().match(new RegExp(regexp)))
                 return `image (${value}) does not match image pattern`
             return false
         }
@@ -68,8 +69,9 @@ export const validations = {
     imagesMatch() {
         return function(value: string[]) {
             for (const img of value) {
-                if (!img.toString().match(/^^(template|[0-9 a-f]{24})\.jpg$/))
-                    return `image (${img}) does not match image pattern`
+                const regexp = `^(template|[0-9 a-f]{${maxSizes._id}})\\.jpg$`
+                if (!img.toString().match(new RegExp(regexp)))
+                    return `image (${img}) does not match image pattern ${regexp}`
             }
             return false
         }
@@ -77,7 +79,8 @@ export const validations = {
     _idMatch(name: string) {
         return function(value: string) {
             console.log('==>', value)
-            if (!value.toString().match(/^[0-9 a-f]{24}$/))
+            const regexp = `^[0-9 a-f]{${maxSizes._id}}$`
+            if (!value.toString().match(new RegExp(regexp)))
                 return `${name} (${value}) does not match id pattern`
             return false
         }

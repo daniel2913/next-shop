@@ -65,7 +65,7 @@ export default function Search({ className, brandList, categoryList }: Props) {
                 <input
                     className="
                 w-4/5 px-2 rounded-l-lg border-r-transparent
-                    bg-cyan-100 border-2 border-r-0 border-cyan-700
+                    bg-cyan-100 border-2 border-r-0 border-cyan-500
                 "
                     type="search"
                     name="searchQuery"
@@ -75,7 +75,7 @@ export default function Search({ className, brandList, categoryList }: Props) {
                 />
                 <button className="
                     rounded-r-lg w-1/5 
-                    border-2 border-cyan-700
+                    border-2 border-cyan-600
                     
                     "
                     type="button"

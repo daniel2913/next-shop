@@ -12,6 +12,7 @@
 		"rules": {
 			"recommended": true,
 			"suspicious":{
+				"noRedeclare": "off",
 				"noExplicitAny": "off"
 			},
 			"style":{

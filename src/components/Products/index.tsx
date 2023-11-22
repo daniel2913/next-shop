@@ -17,8 +17,11 @@ export async function getProducts(searchParams: TSearchParams) {
 	const query = collectQueries(searchParams, {
 		model: ProductModel,
 	} as any as Tconfig<typeof ProductModel>); ////FIX!!!
-	const brandList = await getAllBrands();
-	const categoryList = await getAllCategories();
+	const [brandList, categoryList] = await Promise.all([getAllBrands(), getAllCategories()])
+	if (query.brand)
+		query.brand = brandList?.find(brand => brand._id === query.brand)?._id || ''
+	if (query.category)
+		query.category = categoryList?.find(cat => cat._id === query.category)?._id || ''
 	const products = await ProductModel.find(query);
 
 	return products.map((product) => {
@@ -51,14 +54,14 @@ export default async function ProductList({
 			</div>
 			<div
 				className="
-					grid
-					sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8
+					grid grid-
+					sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
 					p-5 h-full
 				"
 			>
 				{products.map((product, i) => (
 					<ProductCard
-						className="			w-64 h-80
+						className="	w-64 h-80 p-2
 						"
 						key={`${product.brand}/${product.name}`}
 						role={role}
