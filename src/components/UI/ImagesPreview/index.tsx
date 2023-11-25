@@ -1,48 +1,48 @@
-import ImageComponent from "../ImageComponent";
-import React from "react";
-type props = {
-    images: File[];
-    delImage: (idx: number) => void;
-};
+import React from "react"
 
-const currentImageUrls: string[] = [];
-
-function previewImages(images: File[]) {
-    for (const image of currentImageUrls) {
-        URL.revokeObjectURL(image);
-    }
-    let res: string[] = [];
-    if (!images) res = [];
-    if (images instanceof File) res = [URL.createObjectURL(images)];
-    for (const idx in images) {
-        res.push(URL.createObjectURL(images[idx]));
-    }
-    currentImageUrls.push(...res);
-    return res;
+interface Props {
+	className: string
+	images: File[]
+	delImage: (idx: number) => void
 }
 
-export default function ImagesPreview({ images, delImage }: props) {
-    const imageUrls = React.useMemo<string[]>(() => {
-        return previewImages(images);
-    }, [images]);
-    return (
-        <div>
-            {imageUrls.map((image, idx) => {
-                return image ? (
-                    <div key={image}>
-                        <button onClick={() => delImage(idx)}>X</button>
-                        <ImageComponent
-                            alt=""
-                            width={30}
-                            height={50}
-                            fallback="template.jpg"
-                            src={image}
-                        />
-                    </div>
-                ) : (
-                    <></>
-                );
-            })}
-        </div>
-    );
+const currentImageUrls: string[] = []
+
+function previewImages(images: File[]) {
+	for (const image of currentImageUrls) {
+		URL.revokeObjectURL(image)
+	}
+	let res: string[] = []
+	if (!images) res = []
+	if (images instanceof File) res = [URL.createObjectURL(images)]
+	for (const idx in images) {
+		res.push(URL.createObjectURL(images[idx]))
+	}
+	currentImageUrls.push(...res)
+	return res
+}
+
+export default function ImagesPreview({ images, delImage, className }: Props) {
+	const imageUrls = React.useMemo<string[]>(() => {
+		return previewImages(images)
+	}, [images])
+	return (
+		<div className={`${className} flex gap-2`}>
+			{imageUrls.map((image, idx) => {
+				return image ? (
+					<div className="relative" key={image}>
+						<button
+							className="absolute right-0 top-0 text-accent1-500"
+							onClick={() => delImage(idx)}
+						>
+							X
+						</button>
+						<img alt="" width={30} height={50} src={image} />
+					</div>
+				) : (
+					<></>
+				)
+			})}
+		</div>
+	)
 }

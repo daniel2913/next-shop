@@ -1,94 +1,128 @@
-import LabeledInput from "@/components/ui/LabeledInput"
-import { ComponentProps, FormEvent, useRef, useState } from "react"
-import useError from "@/hooks/modals/useError"
+import React from "react";
+import LabeledInput from "@/components/ui/LabeledInput";
 
-export type FormFieldValue = string | File[] | null
-export type FormFieldValidator = (
-	v: FormFieldValue,
-) => { valid: true; msg?: string } | { valid: false; msg: string }
+export type FormFieldValue = string | File[];
+export interface FormFieldValidator {
+	(
+		v: string | File[],
+	): { valid: true; msg?: string } | { valid: false; msg: string };
+}
 export type FormFieldProps = Omit<
-	ComponentProps<typeof LabeledInput>,
+	React.ComponentProps<typeof LabeledInput>,
 	"value" | "setValue"
->
+>;
 
-type Props<T extends { [key: string]: FormFieldValue }> = {
-	fieldValues: T
-	setFieldValues: React.Dispatch<React.SetStateAction<T>>
-	fieldProps: { [key in keyof T]: FormFieldProps }
-	action: string
+
+
+
+
+type Props<T extends Record<string, FormFieldValue>> = {
+	className: string;
+	  fieldValues: T;
+	setFieldValues: React.Dispatch<React.SetStateAction<T>>;
+	fieldProps: { [Key in keyof T]: FormFieldProps };
+	action: string;
+	children: React.ReactNode;
 } & (
-	| {
-			method: "PUT"
-	  }
-	| {
-			method: "PATCH"
-			targId?: string
-			targName?: string
-	  }
-)
+		| {
+			method: "PUT";
+		}
+		| {
+			method: "PATCH";
+			targId: string;
+		}
+	);
 
-export default function Form<T extends { [key: string]: string | null }>({
+export default function Form<T extends { [key: string]: string | File[] }>({
 	fieldValues,
 	setFieldValues,
 	fieldProps,
+	children,
+	className,
 	...params
 }: Props<T>) {
-	const [loading, setLoading] = useState(false)
-	const error = useError()
+	const [loading, setLoading] = React.useState(false);
+	const [error, setError] = React.useState("");
+	const [status, setStatus] = React.useState("");
+
 	async function submitHandler(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault()
-		const form = new FormData()
-		let valid = true
-		for (const [key, value] of Object.entries(fieldValues) as [
-			keyof T,
-			FormDataEntryValue,
-		][]) {
-			if (fieldProps[key].validator) {
-				const entryValid = fieldProps[key].validator!(value)
+		e.preventDefault();
+		const form = new FormData();
+		setError("");
+		setStatus("");
+		for (const [key, value] of Object.entries(fieldValues)) {
+			if (!value) {
+				setError(`${fieldProps[key].label} is not specified`);
+				return false;
+			}
+			if (!fieldProps[key].validator) continue;
+
+			if (!Array.isArray(value)) {
+				const entryValid = fieldProps[key].validator(value);
 				if (!entryValid.valid) {
-					valid = false
-					break
+					setError(`${fieldProps[key].label}: ${entryValid.msg}`);
+					return false;
 				}
 			}
-			if (value instanceof File || typeof value != "object") {
-				form.append(key.toString(), value)
-			} else {
-				for (const idx in value) {
-					form.append(key.toString(), value[idx])
+
+			if (Array.isArray(value)) {
+				const entryValid = fieldProps[key].validator(value);
+				if (!entryValid) {
+					setError(`${fieldProps[key].label} is invalid`);
+					return false;
+				}
+				for (const item of value) {
+					form.append(key, item);
 				}
 			}
 		}
-		if (!valid) {
-			return false
-		}
-		setLoading(true)
-		const result = await fetch(params.action, {
+		setLoading(true);
+		const res = await fetch(params.action, {
 			method: params.method,
 			body: form,
-		})
-		setLoading(false)
-		error(await result.text())
+		});
+		setLoading(false);
+		const code = (res.status / 100) ^ 0;
+		if (code === 2) setStatus("Successful!");
+		else if (code === 4) setError(`Input error! ${res.text}`);
+		else if (code === 5) setError(`Server Error! ${res.text}`);
+		else setStatus("Something strange happened!");
+		return true;
 	}
 
 	return (
-		<form onSubmit={submitHandler}>
-			{Object.entries(fieldProps).map(([key, props]) => (
-				<LabeledInput
-					key={key}
-					value={fieldValues[key as keyof typeof fieldProps]}
-					setValue={(val: FormFieldValue) =>
-						setFieldValues({ ...fieldValues, [key]: val })
-					}
-					{...props}
-				/>
-			))}
-			{loading ? (
-				<button disabled={true} type="submit">
-					Loading...
-				</button>
-			) : (
-				<button type="submit">Save</button>
-			)}
-		</form>
-	)
+		<div className={`${className} flex`}>
+			<form className="flex flex-col gap-3" onSubmit={submitHandler}>
+				{Object.entries(fieldProps).map(([key, props]) => (
+					<LabeledInput
+						key={key}
+						value={fieldValues[key]}
+						setValue={(
+							value: FormFieldValue | ((a: FormFieldValue) => FormFieldValue),
+						) => {
+							if (value instanceof Function) {
+								setFieldValues((prev) => ({
+									...prev,
+									[key]: value(prev[key]),
+								}));
+							} else {
+								setFieldValues((prev) => ({ ...prev, [key]: value }));
+							}
+						}}
+						{...props}
+					/>
+				))}
+				{loading ? (
+					<button disabled={true} type="submit">
+						Loading...
+					</button>
+				) : (
+					<button type="submit">Save</button>
+				)}
+				<span>{error}</span>
+				<span>{status}</span>
+			</form>
+			{children}
+		</div>
+	);
 }

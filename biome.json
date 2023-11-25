@@ -1,8 +1,8 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.3.3/schema.json",
 
-	"files":{
-		"ignore":["./node_modules","./.next"]
+	"files": {
+		"ignore": ["./node_modules", "./.next", "./.git"]
 	},
 	"organizeImports": {
 		"enabled": true
@@ -11,29 +11,29 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"suspicious":{
+			"suspicious": {
 				"noRedeclare": "off",
 				"noExplicitAny": "off"
 			},
-			"style":{
-				"noNegationElse":"warn",
-				"useNamingConvention":"warn"
+			"style": {
+				"noNegationElse": "warn",
+				"useNamingConvention": "warn"
 			},
-			"complexity":{
-				"useSimplifiedLogicExpression":"warn",
-				"noExcessiveCognitiveComplexity":"warn"
+			"complexity": {
+				"useSimplifiedLogicExpression": "warn",
+				"noExcessiveCognitiveComplexity": "warn"
 			},
-			"correctness":{
-				"enabled":true
+			"correctness": {
+				"all": true
 			}
-			
 		}
 	},
-	"formatter":{
-		"enabled":true
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": true
 	},
-	"javascript":{
-		"formatter":{
+	"javascript": {
+		"formatter": {
 			"semicolons": "asNeeded"
 		}
 	}

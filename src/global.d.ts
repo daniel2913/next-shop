@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose"
 
 declare global {
-    var mongoose: mongoose
+	var mongoose: mongoose
 }

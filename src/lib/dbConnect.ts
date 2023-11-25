@@ -1,7 +1,5 @@
-import mongoConnect from './mongoConnect';
-
+import mongoConnect from "./mongoConnect"
 
 const dbConnect = mongoConnect
 
 export default dbConnect
-

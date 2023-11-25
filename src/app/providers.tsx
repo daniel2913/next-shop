@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
-import React, { ReactElement } from 'react'
-import { SessionProvider } from 'next-auth/react'
+import React, { ReactElement } from "react"
+import { SessionProvider } from "next-auth/react"
 
 interface props {
-    children: ReactElement[]
+	children: ReactElement[]
 }
 
 export default function RootProviders({ children }: props) {
-    return <SessionProvider>{children}</SessionProvider>
+	return <SessionProvider>{children}</SessionProvider>
 }

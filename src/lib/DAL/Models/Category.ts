@@ -1,23 +1,23 @@
-import { Schema } from 'mongoose'
-import { pgTable } from 'drizzle-orm/pg-core'
+import { Schema } from "mongoose"
+import { pgTable } from "drizzle-orm/pg-core"
 import {
 	maxSizes,
 	mongoDefaults,
 	pgreDefaults,
 	shop,
 	validations,
-} from './common'
-import { ColumnsConfig, MongoSchema, TestColumnsConfig } from './base'
+} from "./common"
+import { ColumnsConfig, MongoSchema, TestColumnsConfig } from "./base"
 
 type testType = Readonly<{
-	_id: 'string'
-	name: 'string'
-	image: 'string'
+	_id: "string"
+	name: "string"
+	image: "string"
 }>
 
 const CategoryValidations = {
-	_id: [validations._idMatch('_id')],
-	name: [validations.length('name', maxSizes.name, 1)],
+	_id: [validations._idMatch("_id")],
+	name: [validations.length("name", maxSizes.name, 1)],
 	image: [validations.imageMatch()],
 }
 
@@ -28,8 +28,8 @@ const config = {
 }
 
 const CategoryPgreTable = shop.table(
-	'categories',
-	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>
+	"categories",
+	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>,
 )
 
 export type Category = typeof CategoryPgreTable.$inferSelect

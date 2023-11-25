@@ -1,10 +1,10 @@
-import NewCategoryForm from "@/components/forms/category/newCategory";
+import NewCategoryForm from "@/components/forms/category/newCategory"
 
 export default function Category() {
-    return (
-        <div className="">
-            <h1>Add new Brand</h1>
-            <NewCategoryForm />
-        </div>
-    );
+	return (
+		<div className="">
+			<h1>Add new Brand</h1>
+			<NewCategoryForm />
+		</div>
+	)
 }
