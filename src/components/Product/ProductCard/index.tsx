@@ -4,6 +4,7 @@ import Discount from "../Discount";
 import Image from "next/image";
 import Link from "next/link";
 import Price from "../Price";
+import Rating from "@/components/ui/Rating";
 
 type ProductProps = {
 	_id: string
@@ -78,11 +79,12 @@ export default async function ProductCard({ className, product, role }: Props) {
 						{product.name}
 					</h3>
 				</Link>
+				<Rating rating={3} className="col-span-2 max-h-8" />
+
 				<span className="text-xl font-semibold">{product.brand}</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">
 					{product.category}
 				</span>
-
 				<Price
 					className="text-2xl"
 					discount={product.discount || 0}

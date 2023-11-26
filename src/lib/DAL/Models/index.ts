@@ -24,6 +24,11 @@ export type { Brand, Category, Product, User }
 
 const DB = process.env.DB
 
+const pgTables = [BrandPgreTable,CategoryPgreTable,ProductPgreTable,UserPgreTable]
+const mongoSchemas = [BrandMongoSchema, CategoryMongoSchema, ProductMongoSchema, UserMongoSchema]
+
+
+
 export const BrandModel = (
 	DB === "MONGO"
 		? new MongoModel<Brand>(
@@ -69,3 +74,5 @@ export const UserModel = (
 		  )
 		: new PgreModel<User, typeof UserPgreTable>(UserPgreTable, UserValidations)
 ) as MongoModel<User> | PgreModel<User, typeof UserPgreTable>
+
+

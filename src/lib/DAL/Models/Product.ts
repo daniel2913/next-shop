@@ -1,8 +1,8 @@
 import { Schema } from "mongoose"
 import { shop } from "./common.ts"
-import { char, real, smallint, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { char, integer, json, real, smallint, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 import { maxSizes, mongoDefaults, pgreDefaults, validations } from "./common"
-import { ColumnsConfig, MongoSchema, TestColumnsConfig } from "./base"
+import { ColumnsConfig,  TestColumnsConfig } from "./base"
 import { BrandPgreTable } from "./Brand.ts"
 import { CategoryPgreTable } from "./Category.ts"
 
@@ -40,9 +40,9 @@ const config = {
 	description: pgreDefaults.description,
 	images: varchar("images", { length: maxSizes.image }).array().notNull(),
 	price: real("price").notNull(),
+	rating: integer('rating').array(2).default([0,0]).notNull(),
 	discount: smallint("discount").notNull(),
 }
-
 const ProductPgreTable = shop.table(
 	"products",
 	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
