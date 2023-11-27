@@ -1,21 +1,16 @@
-import { char, pgSchema, varchar } from "drizzle-orm/pg-core"
-import { Types } from "mongoose"
-
-export function defaultId() {
-	return new Types.ObjectId().toString()
-}
+import { pgSchema, smallint, varchar } from "drizzle-orm/pg-core"
 
 export const shop = pgSchema("shop")
 
 export const maxSizes = {
-	_id: 24,
-	image: 28,
+	uuid: 8,
+	image: 12,
 	name: 64,
 	hash: 64,
-	description: 2048,
+	description: 8192,
 }
 export const pgreDefaults = {
-	_id: char("_id", { length: maxSizes._id }).primaryKey().notNull(),
+	id: smallint("id").primaryKey().notNull(),
 	image: varchar("image", { length: maxSizes.image }).notNull(),
 	name: varchar("name", { length: maxSizes.name }).notNull(),
 	description: varchar("description", {
@@ -23,14 +18,18 @@ export const pgreDefaults = {
 	}).notNull(),
 }
 
-export const mongoDefaults = {
-	_id: { type: String, required: true },
-	name: { type: String, required: true },
-	description: { type: String, required: true },
-	image: { type: String, required: true },
-}
-
 export const validations = {
+
+	id(name:string){
+		return function(value:number){
+			return `${name} has id specified!`
+		}
+	},
+	noDefault(name:string){
+		return function(value:any){
+			return `${name} is generated column!`
+		}
+	},
 	length(name: string, max: number, min?: number) {
 		return function (value: string | number) {
 			if ((min || min === 0) && value.toString().length < min)
@@ -59,7 +58,7 @@ export const validations = {
 	},
 	imageMatch() {
 		return function (value: string) {
-			const regexp = `^(template|[0-9 a-f]{${maxSizes._id}})\\.jpg$`
+			const regexp = `^(template|[0-9 a-f]{${maxSizes.uuid}})\\.jpg$`
 			if (!value.toString().match(new RegExp(regexp)))
 				return `image (${value}) does not match image pattern`
 			return false
@@ -68,19 +67,10 @@ export const validations = {
 	imagesMatch() {
 		return function (value: string[]) {
 			for (const img of value) {
-				const regexp = `^(template|[0-9 a-f]{${maxSizes._id}})\\.jpg$`
+				const regexp = `^(template|[0-9 a-f]{${maxSizes.uuid}})\\.jpg$`
 				if (!img.toString().match(new RegExp(regexp)))
 					return `image (${img}) does not match image pattern ${regexp}`
 			}
-			return false
-		}
-	},
-	_idMatch(name: string) {
-		return function (value: string) {
-			console.log("==>", value)
-			const regexp = `^[0-9 a-f]{${maxSizes._id}}$`
-			if (!value.toString().match(new RegExp(regexp)))
-				return `${name} (${value}) does not match id pattern`
 			return false
 		}
 	},

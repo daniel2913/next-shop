@@ -2,7 +2,6 @@ import addController from "./addController"
 import deleteController from "./deleteController"
 import getController from "./getController"
 import patchController from "./patchController"
-import patchImages from "./patchImages"
 import { DataModels } from "../../Models/base"
 
 export {
@@ -10,21 +9,20 @@ export {
 	deleteController,
 	getController,
 	patchController,
-	patchImages,
 }
 
-export type Tconfig<T> = {
+export type Tconfig = {
 	DIR_PATH: string
 	model: DataModels
 	multImages: boolean
 }
 
-export async function isValidDocument<T>(doc: unknown) {
+export async function isValidDocument(doc: unknown) {
 	if (
 		!doc ||
-		typeof doc != "object" ||
+		typeof doc !== "object" ||
 		!("validate" in doc) ||
-		typeof doc?.validate != "function"
+		typeof doc?.validate !== "function"
 	)
 		return false
 	try {
@@ -43,8 +41,8 @@ export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
 	for (const [key, value] of form.entries()) {
 		if (
 			!value ||
-			(key === "image" && key != imagesPath) ||
-			(key === "images" && key != imagesPath)
+			(key === "image" && key !== imagesPath) ||
+			(key === "images" && key !== imagesPath)
 		)
 			continue
 		if (props[key]) {

@@ -1,7 +1,5 @@
-import fs from "fs/promises"
-import path from "path"
-import mongoose from "mongoose"
 import { FileStorage } from "@/lib/DAL/FileStorage"
+import { randomUUID } from "crypto";
 
 export type Image = { file: File | null; name: string }
 const template = { name: "template.jpg", file: null }
@@ -22,8 +20,8 @@ export function handleImages(images: (File | string)[]): Image[] {
 export function handleImage(image: File): Image | null {
 	let imageName = "template.jpg"
 	const ext = image.type?.split("/").pop()
-	if (ext == "jpeg" || ext === "jpg") {
-		imageName = new mongoose.Types.ObjectId().toString() + ".jpg"
+	if (ext === "jpeg" || ext === "jpg") {
+		imageName = `${randomUUID().replace('-','').slice(0,8)}.jpg`
 		return { name: imageName, file: image }
 	} else {
 		return template

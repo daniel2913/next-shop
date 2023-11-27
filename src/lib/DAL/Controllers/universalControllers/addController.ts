@@ -1,15 +1,7 @@
-import dbConnect from "@/lib/dbConnect.ts"
-import {
-	BrandModel,
-	CategoryModel,
-	ProductModel,
-	UserModel,
-} from "../../Models/index.ts"
 import { deleteImages, handleImages, saveImages } from "@/helpers/images.ts"
 import { NextResponse } from "next/server"
-import { Tconfig, form, isValidDocument } from "./index.ts"
+import { Tconfig, } from "./index.ts"
 import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters.ts"
-import brandNameValidators from "../../validations/brand/brandNameValidation/serverBrandValidation.ts"
 
 export default async function addController<T>(props: any, config: Tconfig<T>) {
 	const { DIR_PATH, model, multImages } = config
@@ -18,7 +10,6 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
 		[]) as (File | string)[]
 
 	const images = handleImages(imageFiles)
-	console.log("====>", images)
 	if (multImages) {
 		props.images = images.map((image) => image.name)
 	} else {
@@ -31,15 +22,15 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
 	}
 	if (props.brand) {
 		const brand = (await getAllBrands()).find(
-			(brand) => brand.name === props.brand,
+			(brand) => brand.name.toString() === props.brand,
 		)
-		props.brand = brand?._id || ""
+		props.brand = brand?.id || undefined
 	}
 	if (props.category) {
 		const category = (await getAllCategories()).find(
-			(cat) => cat.name === props.category,
+			(cat) => cat.name.toString() === props.category,
 		)
-		props.category = category?._id || ""
+		props.category = category?.id || undefined
 	}
 	try {
 		const res = await model.newObject(props)

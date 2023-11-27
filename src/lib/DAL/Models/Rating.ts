@@ -1,42 +1,32 @@
 
-import { Schema } from "mongoose"
-import { char, integer, pgTable, } from "drizzle-orm/pg-core"
+import { integer, pgTable, serial, smallint, } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { maxSizes, mongoDefaults, pgreDefaults, validations } from "./common"
 import { ProductPgreTable } from "./Product"
+import { shop } from "./common"
 
 type TestType = Readonly<{
-	_id: "string"
-	score: "number"
-	ratings: "number"
+	id: "number"
+	votes: "array"
+	voters: "array"
 }>
 
 const RatingValidations: Record<keyof Rating, Array<(...args: any) => any>> = {
-	_id: [validations._idMatch("_id")],
-	product: [validations._idMatch("product")],
-	score: [validations.value("score", Infinity, 0)],
-	ratings: [validations.value("ratings", Infinity, 0)]
+	id: [],
+	votes: [],
+	voters: []
 }
 
 const config = {
-	_id: pgreDefaults._id,
-	product: char("product",{length:maxSizes._id}).notNull().unique().references(()=>ProductPgreTable._id),
-	score: integer("score").notNull().default(0),
-	ratings: integer("ratings").notNull().default(0)
+	id: serial("id").notNull().unique().references(() => ProductPgreTable.id),
+	votes: smallint("score").notNull().array().default([]),
+	voters: smallint("ratings").notNull().array().default([])
 }
 
-const RatingPgreTable = pgTable(
+const RatingPgreTable = shop.table(
 	"ratings",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type Rating = typeof RatingPgreTable.$inferSelect
 
-const RatingMongoSchema = new Schema<Rating>({
-	_id: mongoDefaults._id,
-	product: mongoDefaults._id,
-	score: { type: Number, required: true },
-	ratings: { type: Number, required: true }
-})
-
-export { RatingPgreTable, RatingMongoSchema, RatingValidations }
+export { RatingPgreTable, RatingValidations }

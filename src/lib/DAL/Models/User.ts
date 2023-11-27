@@ -1,52 +1,43 @@
-import { Schema } from "mongoose"
-import { char, pgTable, varchar } from "drizzle-orm/pg-core"
-import { ColumnsConfig, MongoSchema, TestColumnsConfig } from "./base"
-import { maxSizes, mongoDefaults, pgreDefaults, validations } from "./common"
+import { char, jsonb, pgTable, varchar } from "drizzle-orm/pg-core"
+import { ColumnsConfig, TestColumnsConfig } from "./base"
+import { maxSizes, pgreDefaults, validations } from "./common"
 
-type testType = Readonly<{
-	_id: "string"
+type TestType = Readonly<{
+	id: "number"
 	name: "string"
 	passwordHash: "string"
 	role: "string"
 	image: "string"
-	cart: "string"
+	cart: "json"
 }>
 
-const UserValidations = {
-	_id: [validations._idMatch("_id")],
+const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
+	id: [],
 	name: [validations.length("name", maxSizes.name, 1)],
 	passwordHash: [validations.match("passwordHash", /^[0-9 a-f A-F]{64}$/)],
 	role: [validations.match("role", /(admin|user)/)],
 	image: [validations.imageMatch()],
 	cart: [
-		validations.length("cart", 2048),
+		validations.length("cart", maxSizes.description),
 		validations.match("cart", /^\[.*\]$/),
 	],
 }
 
 const config = {
-	_id: pgreDefaults._id,
+	id: pgreDefaults.id,
 	name: pgreDefaults.name.unique(),
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	image: pgreDefaults.image,
-	cart: varchar("cart", { length: 2048 }).notNull(),
+	cart: jsonb("cart").notNull().default([]).$type<{_id:string,amount:number}[]>(),
 }
 
 const UserPgreTable = pgTable(
 	"users",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<testType>>,
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
 )
 
 export type User = typeof UserPgreTable.$inferSelect
 
-const UserMongoSchema = new Schema<User>({
-	_id: mongoDefaults._id,
-	name: { ...mongoDefaults.name, unique: true },
-	passwordHash: { type: String, required: true },
-	role: { type: String, required: true },
-	image: mongoDefaults.image,
-	cart: { type: String, required: true },
-})
 
-export { UserPgreTable, UserMongoSchema, UserValidations }
+export { UserPgreTable, UserValidations }

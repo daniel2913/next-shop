@@ -6,19 +6,19 @@ import { Product } from "@/lib/DAL/Models"
 
 interface Props {
 	className: string
-	product: Product["_id"]
+	productId: Product["id"]
 }
 
-export default function AmmountSelector({ className, product }: Props) {
+export default function AmmountSelector({ className, productId }: Props) {
 	const confirm = useConfirm("Are you sure you want to discard this item?")
 	const amount = useCartStore(
-		(state) => state.items.find((state) => state.product === product)?.amount,
+		(state) => state.items.find((state) => state.productId === productId)?.amount,
 	)
 	const itemDiscarder = useCartStore((state) => state.discardItem)
 	const ammountSetter = useCartStore((state) => state.setAmmount)
 	if (amount === null) return <div>Error!</div>
-	const discardItem = () => itemDiscarder(product)
-	const setAmmount = (amnt: number) => ammountSetter(product, amnt)
+	const discardItem = () => itemDiscarder(productId)
+	const setAmmount = (amnt: number) => ammountSetter(productId, amnt)
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
 			confirm().then((ans) => {

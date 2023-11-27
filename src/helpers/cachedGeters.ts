@@ -1,4 +1,4 @@
-import { BrandModel, CategoryModel } from "@/lib/DAL/Models"
+import { BrandModel, CategoryModel, DiscountModel } from "@/lib/DAL/Models"
 
 export function cache<T extends (...args: any) => any>(func: T) {
 	let cache: ReturnType<T>
@@ -19,3 +19,4 @@ export const [getAllBrands, revalidateBrands] = cache(() => BrandModel.find())
 export const [getAllCategories, revalidateCategories] = cache(() =>
 	CategoryModel.find(),
 )
+export const [getAllDiscounts,revalidateDiscounts] = cache(()=> DiscountModel.find())

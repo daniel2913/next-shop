@@ -1,5 +1,3 @@
-import dbConnect from "@/lib/dbConnect"
-import { Brand, BrandModel } from "../../Models"
 import { NextResponse } from "next/server"
 import {
 	Image,
@@ -15,10 +13,9 @@ export default async function patchController<T>(
 ) {
 	const { DIR_PATH, model, multImages } = config
 
-	await dbConnect()
 
 	if (!targId) return new NextResponse("Invalid target", { status: 400 })
-	const cur = await model.findOne({ _id: targId })
+	const cur = await model.findOne({ id: targId })
 	if (!cur) {
 		//!isDocument(cur)
 		return new NextResponse("Not Found", { status: 404 })
@@ -63,7 +60,7 @@ export default async function patchController<T>(
 
 	const patch: any = {}
 	for (const i in cur) {
-		if (i in props && i in cur && i != "_id" && props[i]) {
+		if (i in props && i in cur && i !== "id" && props[i]) {
 			patch[i] = props[i]
 		}
 	}

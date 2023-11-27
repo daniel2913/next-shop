@@ -1,10 +1,12 @@
-import { Item, Product } from "@/lib/DAL/Models"
 import { StateCreator } from "zustand"
-export interface cartSlice {
+
+interface Item
+{productId:number, amount:number}
+export interface CartSlice {
 	items: Item[]
-	addItem: (item: string) => void
-	discardItem: (id: string) => void
-	setAmmount: (id: string, amnt: number) => void
+	addItem: (item: number) => void
+	discardItem: (id: number) => void
+	setAmmount: (id: number, amnt: number) => void
 	setItems: (items: Item[]) => void
 }
 
@@ -26,12 +28,12 @@ function updateAccount(cart: Item[]) {
 	})
 }
 
-export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
-	items: [],
-	addItem: (_id: string) => {
+export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
+	items:[],
+	addItem: (id: number) => {
 		set((state) => {
 			const newItems = state.items
-			newItems.push({ amount: 1, product: _id })
+			newItems.push({ amount: 1, productId: id })
 			updateAccount(newItems)
 			return { items: newItems }
 		})
@@ -41,17 +43,17 @@ export const createCartSlice: StateCreator<cartSlice> = (set, get) => ({
 			return { items }
 		})
 	},
-	discardItem: (id: string) => {
+	discardItem: (id: number) => {
 		set((state) => {
-			const newItems = state.items.filter((item) => item.product.toString() != id)
+			const newItems = state.items.filter((item) => item.productId !== id)
 			updateAccount(newItems)
 			return { items: newItems }
 		})
 	},
-	setAmmount: (id: string, amnt: number) => {
+	setAmmount: (id: number, amnt: number) => {
 		set((state) => {
 			const newItems = state.items.map((item) => {
-				if (item.product.toString() === id) item.amount = amnt > 0 ? amnt : 0
+				if (item.productId === id) item.amount = amnt > 0 ? amnt : 0
 				return item
 			})
 			updateAccount(newItems)

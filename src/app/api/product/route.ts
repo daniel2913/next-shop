@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { Product, ProductModel } from "@/lib/DAL/Models"
+import { Product, ProductModel} from "@/lib/DAL/Models"
 import {
 	addController,
 	deleteController,
 	getController,
 	patchController,
-	form,
-	patchImages,
 	Tconfig,
 	collectFromForm,
 	collectQueries,

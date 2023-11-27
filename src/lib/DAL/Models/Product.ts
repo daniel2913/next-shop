@@ -1,47 +1,81 @@
-import { Schema } from "mongoose"
+import { Brand, BrandPgreTable } from "./Brand.ts"
+import { Category, CategoryPgreTable } from "./Category.ts"
+import { ColumnsConfig, TestColumnsConfig } from "./base"
+import { PgDatabase, char, integer, real, smallint, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { maxSizes, pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
-import { char, integer, json, real, smallint, uniqueIndex, varchar } from "drizzle-orm/pg-core"
-import { maxSizes, mongoDefaults, pgreDefaults, validations } from "./common"
-import { ColumnsConfig,  TestColumnsConfig } from "./base"
-import { BrandPgreTable } from "./Brand.ts"
-import { CategoryPgreTable } from "./Category.ts"
+import { sql } from "drizzle-orm"
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js/driver"
+import { Discount } from "./Discount.ts"
 
 type TestType = Readonly<{
-	_id: "string"
+	id: "number"
 	name: "string"
-	brand: "string"
-	category: "string"
+	brand: "number"
+	category: "number"
 	description: "string"
 	images: "array"
 	price: "number"
-	discount: "number"
+	discounts: "array"
+	votes:"array"
+	voters:"array"
+	rating:"number"
 }>
 
 const ProductValidations = {
-	_id: [validations._idMatch("_id")],
+	id: [validations.id("id")],
 	name: [validations.length("name", maxSizes.name, 1)],
-	brand: [validations._idMatch("brand")],
-	category: [validations._idMatch("category")],
+	brand: [],
+	category: [],
 	description: [validations.length("description", maxSizes.description, 1)],
 	images: [validations.imagesMatch()],
 	price: [validations.value("price", Infinity, 1)],
-	discount: [validations.value("discount", 99, 0)],
+	discounts: [validations.noDefault('discount')],
+	votes: [validations.noDefault('votes')],
+	voters:[validations.noDefault('voters')],
+	rating:[validations.noDefault('rating')]
+}
+
+const ProductCustomQueries = {
+	updateRatings: (dataBase:PostgresJsDatabase)=>
+		async (id:number,vote:number,voter:number)=>{
+			const res = await dataBase.execute(sql`
+				UPDATE ratings 
+					SET 
+						ratings[
+							COALESCE(
+								ARRAY_POSITION(ratings.voters,${voter}),
+								CARDINALITY(ratings.voters)+1
+							)
+						]=${vote},
+						voters[
+							COALESCE(
+								ARRAY_POSITION(ratings.voters,${voter}),
+								CARDINALITY(ratings.voters)+1)
+						]=${voter}
+					WHERE
+						id=${id}
+			`)
+			return res?.['.count']>0 ? true : false
+		}
 }
 
 const config = {
-	_id: pgreDefaults._id,
+	id: pgreDefaults.id,
 	name: pgreDefaults.name,
-	brand: char("brand", { length: maxSizes._id })
+	brand: smallint("brand")
 		.notNull()
-		.references(() => BrandPgreTable._id),
-	category: char("category", { length: maxSizes._id })
+		.references(() => BrandPgreTable.id),
+	category: smallint("category")
 		.notNull()
-		.references(() => CategoryPgreTable._id),
+		.references(() => CategoryPgreTable.id),
 	description: pgreDefaults.description,
 	images: varchar("images", { length: maxSizes.image }).array().notNull(),
 	price: real("price").notNull(),
-	rating: integer('rating').array(2).default([0,0]).notNull(),
-	discount: smallint("discount").notNull(),
+	discounts: smallint("discounts").array().notNull(),
+	votes: smallint("votes").array().default([]),
+	voters: smallint("voters").array().default([]),
+	rating: real("rating").default(0)
 }
 const ProductPgreTable = shop.table(
 	"products",
@@ -54,17 +88,13 @@ const ProductPgreTable = shop.table(
 )
 
 export type Product = typeof ProductPgreTable.$inferSelect
+export type LeanProduct = Omit<Product,'voters'|'discounts'>
+export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'voters'> & 
+{
+	brand:Brand
+	category:Category
+	discount: Discount
+}
 
-const ProductMongoSchema = new Schema<Product>({
-	_id: mongoDefaults._id,
-	name: mongoDefaults.name,
-	brand: { type: String, ref: "Brand", required: true },
-	category: { type: String, ref: "Category", required: true },
-	description: mongoDefaults.description,
-	images: [mongoDefaults.image],
-	price: { type: Number, required: true, min: 0 },
-	discount: { type: Number, default: 0, max: 100 },
-})
-ProductMongoSchema.index({ name: 1, brand: 1 }, { unique: true })
 
-export { ProductMongoSchema, ProductPgreTable, ProductValidations }
+export { ProductPgreTable, ProductValidations, ProductCustomQueries }

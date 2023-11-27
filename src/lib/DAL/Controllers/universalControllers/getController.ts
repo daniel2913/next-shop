@@ -1,5 +1,4 @@
 import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters"
-import dbConnect from "@/lib/dbConnect"
 import { NextResponse } from "next/server"
 import { Tconfig } from "."
 
@@ -11,7 +10,6 @@ export default async function getController(
 ) {
 	const { model } = config
 
-	await dbConnect()
 	try {
 		const query: any = {}
 		for (const [key, value] of Object.entries(querys)) {
@@ -22,13 +20,13 @@ export default async function getController(
 		console.log(query)
 		if (query.brand) {
 			query.brand =
-				(await getAllBrands())?.find((brand) => brand._id === query.brand)?._id ||
+				(await getAllBrands())?.find((brand) => brand.id === query.brand)?.id ||
 				undefined
 		}
 		if (query.category) {
 			query.category =
-				(await getAllCategories())?.find((cat) => cat._id === query.category)
-					?._id || undefined
+				(await getAllCategories())?.find((cat) => cat.id === query.category)
+					?.id || undefined
 		}
 
 		const res = await model.find(query)

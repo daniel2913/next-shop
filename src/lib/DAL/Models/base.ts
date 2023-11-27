@@ -1,4 +1,3 @@
-import mongoConnect from "@/lib/mongoConnect"
 import {
 	Column,
 	ColumnBuilderBaseConfig,
@@ -12,165 +11,66 @@ import {
 } from "drizzle-orm"
 import {
 	PgColumnBuilderBase,
+	PgSelect,
 	TableConfig,
 } from "drizzle-orm/pg-core"
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
-import { Document,  Model, Schema } from "mongoose"
 import postgres from "postgres"
-import { defaultId } from "./common"
 
 export type ColumnsConfig<T extends Record<string, ColumnDataType>> = {
-	[i in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[i], string>>
+	[Key in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[Key], string>>
 }
 export type TestColumnsConfig<T, U extends ColumnsConfig<any>> = T extends U
 	? T
 	: "false"
 
-export type DataModels = MongoModel<any> | PgreModel<any, any>
+export type DataModels = PgreModel<any, any>
 
-type Query<T extends Record<string, any> & { _id: string }> = Partial<{
-	[i in keyof T]?: string | string[] | RegExp
+type Query<T extends Record<string, any> & { id: number }> = Partial<{
+	[Key in keyof T]: string | string[] | RegExp
 }>
+
+type Select<T extends Record<string, any> & { id: number }> = Partial<{
+	[Key in keyof T as string]:Key
+}>
+
 type Validator<T> = (value: T) => string | false
 
 
-interface DataModel<T extends { [i: string]: any; _id: string }> {
+interface DataModel<T extends { [i: string]: any; id: number }> {
 	columns: T
-	newObject: (obj: Record<string, any>) => Promise<T | false>
-	findOne: (query: Query<T>) => Promise<T | null>
-	find: (query?: Query<T>) => Promise<T[]>
+	newObject: (obj: Record<string, any>) => Promise<T | null>
+	findOne: (query: Query<T>, select?: Select<T>) => Promise<T | null>
+	find: (query?: Query<T>, select?: Select<T>) => Promise<T[]>
 	findPaginated: (
-		query: Query<T>,
 		pageSize: number,
 		offset: number,
+		query?: Query<T>,
+		select?: Select<T>,
 	) => Promise<T[]>
-	delete: (_id: string) => Promise<boolean>
-	patch: (targId: string, patch: Partial<T>) => Promise<boolean>
-}
-
-
-export class MongoModel<T extends { [i: string]: any; _id: string }>
-	implements DataModel<T>
-{
-	private model: Model<Schema<T>>
-	private validations: { [I in keyof T]: Validator<T[I]>[] }
-	public columns: T
-
-	private makeMongoQuery(query: Query<T>) {
-		const res: Query<T> = {}
-		for (const [key, value] of Object.entries(query)) {
-			if (!(key in this.model.schema.paths && value)) continue
-			res[key as keyof T] = value
-		}
-		return res as Record<string, string | string[]>
-	}
-	private isValid(newObj: Record<string, any>): newObj is T {
-		//TODO?
-		for (const path in newObj) {
-			if (!(path in this.columns)) throw `Invalid column ${path}`
-		}
-		for (const path in this.columns) {
-			if (!(path in newObj)) throw `Column ${path} is not present`
-		}
-		for (const [column, value] of Object.entries(newObj)) {
-			for (const validator of this.validations[column]) {
-				const error = validator(value)
-				if (error) throw error
-			}
-		}
-		return true
-	}
-	constructor(
-		model: Model<Schema<T>>,
-		validations: { [I in keyof T]: Validator<T[I]>[] },
-	) {
-		this.model = model
-		this.validations = validations
-	}
-
-	async newObject(obj: Record<string, any>) {
-		obj._id = defaultId()
-		if (this.isValid(obj)) {
-			const newObj = new this.model(obj)
-			const res = await this.write(newObj)
-			return res as T | false
-		}
-		return false
-	}
-
-	async findOne(query: Query<T>) {
-		await mongoConnect()
-		return (await this.model
-			.findOne(this.makeMongoQuery(query))
-			.lean()
-			.exec()) as T | null
-	}
-	async find(query?: Query<T>) {
-		await mongoConnect()
-		if (!query) {
-			return this.model.find().lean().exec() as Promise<T[]>
-		}
-		return this.model.find(this.makeMongoQuery(query)).lean().exec() as Promise<
-			T[]
-		>
-	}
-	async findPaginated(query: Query<T>, pageSize: number, offset: number) {
-		await mongoConnect()
-		return (await this.model
-			.find(this.makeMongoQuery(query))
-			.limit(pageSize)
-			.skip(offset)
-			.lean()
-			.exec()) as T[]
-	}
-	private async write(object: Document<any, any, T>) {
-		await mongoConnect()
-		try {
-			const res = await object.save()
-			return res ? (res.toObject() as T) : false
-		} catch (e) {
-			console.log("Pizda", e)
-			return false
-		}
-	}
-	async delete(_id: string) {
-		const res = await this.model.deleteOne({ _id })
-		return res.deletedCount > 0 ? true : false
-	}
-	async patch(targId: string, patch: Partial<T>) {
-		if (!targId) return false
-		const oldObject = await this.findOne({ _id: targId })
-		if (!oldObject) return false
-		const newObj = { ...oldObject, ...patch, _id: targId }
-		try {
-			if (this.isValid(newObj)) {
-				const res = await this.model.updateOne({ _id: targId }, newObj)
-				return res ? true : false
-			}
-			throw "Something is wrong"
-		} catch (err) {
-			return false
-		}
-	}
+	delete: (id: number) => Promise<boolean>
+	patch: (targid: number, patch: Partial<T>) => Promise<boolean>
 }
 
 export class PgreModel<
-	T extends { [i: string]: any; _id: string },
+	T extends { [i: string]: any; id: number },
 	U extends Table<TableConfig>,
+	E extends  Record<string,(db:PostgresJsDatabase)=>(...args:any)=>any> = never,
 > implements DataModel<T>
 {
 	private table: U
 	public columns: T
 	private model: PostgresJsDatabase
-	private validations: { [key in keyof T]: Validator<T[key]>[] }
-
+	private validations: { [Key in keyof T]: Validator<T[Key]>[] }
+	public custom:{[Key in keyof E]:ReturnType<E[Key]>}
 	constructor(
 		table: U["$inferSelect"] extends T
 			? T extends U["$inferSelect"]
-			? U
-			: never
+				? U
+				: never
 			: never,
 		validations: { [Key in keyof T]: Validator<T[Key]>[] },
+		custom?: E
 	) {
 		this.table = table
 		this.columns = table as any as T
@@ -179,6 +79,13 @@ export class PgreModel<
 			postgres(process.env.PGRE_URL_DEV, { max: 5, idle_timeout: 60 * 2 }),
 			{ logger: true },
 		)
+		if (custom){
+			this.custom = {}
+			for(const [name,func] of Object.entries(custom)){
+				this.custom[name as keyof E] = func(this.model)
+			}  
+		}
+
 	}
 
 	private isValid(newObj: Record<string, any>): newObj is T {
@@ -190,6 +97,15 @@ export class PgreModel<
 			}
 		}
 		return true
+	}
+
+
+	private makePgreSelect(select: Select<T>){
+		const validSelect:Select<T> = {}
+		for (const key in select){
+			if (select[key] in this.table) validSelect[key]=this.table[select[key]]
+		}
+		return validSelect
 	}
 
 	private makePgreQuery(query: Query<T>) {
@@ -206,9 +122,13 @@ export class PgreModel<
 	}
 
 	async newObject(obj: Record<string, any>) {
-		const newObj = { ...obj }
-		newObj._id = defaultId()
-		console.log("<===3", newObj)
+		const newObj:any = {}
+		for (const key in obj){
+			if (key in this.table && key!='id'){
+				newObj[key] = obj[key]
+			}
+		}
+		newObj.id = undefined
 		if (this.isValid(newObj)) {
 			const res = await this.write(newObj as T)
 			return res ? (res as U["$inferInsert"] as T) : false
@@ -236,7 +156,7 @@ export class PgreModel<
 			.from(this.table)
 			.where(this.makePgreQuery(query))) as T[]
 	}
-	async findPaginated(query: Query<T>, pageSize: number, offset: number) {
+	async findPaginated(pageSize: number, offset: number,select?:Select<T>, query?: Query<T>,) {
 		return (await this.model
 			.select()
 			.from(this.table)
@@ -247,23 +167,23 @@ export class PgreModel<
 	write(object: T) {
 		return this.model.insert(this.table).values(object).returning()
 	}
-	async delete(_id: string) {
-		if (!_id) return false
+	async delete(id: number) {
+		if (!id) return false
 		const res = await this.model
 			.delete(this.table)
-			.where(eq(this.table._id, _id))
+			.where(eq(this.table.id, id))
 			.returning()
 		return res.length > 0 ? true : false
 	}
-	async patch(targId: string, patch: Partial<T>) {
+	async patch(targId: number, patch: Partial<T>) {
 		if (!targId) return false
-		const newObj = { ...patch, _id: targId }
+		const newObj = { ...patch, id: targId }
 		if (this.isValid(newObj)) {
 			const res = await this.model
 				.update(this.table)
 				.set(newObj)
-				.where(eq(this.table._id, targId))
-				.returning({ id: this.table._id })
+				.where(eq(this.table.id, targId))
+				.returning({ id: this.table.id })
 			return res.length > 0 ? true : false
 		}
 		return false

@@ -1,8 +1,8 @@
 import { create } from "zustand"
-import { cartSlice, createCartSlice } from "./cartSlice"
+import { CartSlice, createCartSlice } from "./cartSlice"
 import { persist } from "zustand/middleware"
 
-const useCartStore = create<cartSlice>()(
+const useCartStore = create<CartSlice>()(
 	persist(
 		(...a) => ({
 			...createCartSlice(...a),

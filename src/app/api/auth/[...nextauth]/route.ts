@@ -1,12 +1,10 @@
 import { UserModel } from "@/lib/DAL/Models"
 import authUser from "@/lib/DAL/controllers/userController/authUser"
-import dbConnect from "@/lib/dbConnect"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { cache } from "react"
 
 async function findUserByName(name: string) {
-	await dbConnect()
 	return UserModel.findOne({ name })
 }
 const getUser = cache((name: string) => findUserByName(name))
@@ -23,7 +21,7 @@ export const authOptions: AuthOptions = {
 				},
 				password: { label: "Password", type: "password" },
 			},
-			async authorize(credentials, req) {
+			async authorize(credentials, ) {
 				const user = await authUser(credentials)
 				if (user) {
 					return user
@@ -34,7 +32,6 @@ export const authOptions: AuthOptions = {
 	],
 	callbacks: {
 		async session({ session, token }) {
-			await dbConnect()
 			if (!session.user?.name) return null
 			const user = await getUser(session.user.name)
 			console.log("user session: ", user)

@@ -14,12 +14,10 @@ export default function CartStatus() {
 		async function getCache() {
 			const remoteCache = await (await fetch("api/store")).json()
 			const localCache = JSON.parse(localStorage.getItem("cart-store") || "[]")
-				?.state?.items
-			// as Item[]
 			if (remoteCache.length > 0) {
 				if (!localCache?.length) {
 					setLocalCache(remoteCache)
-				} else if (JSON.stringify(remoteCache) != JSON.stringify(localCache)) {
+				} else if (JSON.stringify(remoteCache) !== JSON.stringify(localCache)) {
 					confirmOverwrite().then((ans) => {
 						if (!ans) {
 							setLocalCache(remoteCache)
