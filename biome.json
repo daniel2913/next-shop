@@ -13,11 +13,11 @@
 			"recommended": true,
 			"suspicious": {
 				"noRedeclare": "off",
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+				"noEmptyInterface":"off"
 			},
 			"style": {
-				"noNegationElse": "warn",
-				"useNamingConvention": "warn"
+				"noNegationElse": "warn"
 			},
 			"complexity": {
 				"useSimplifiedLogicExpression": "warn",

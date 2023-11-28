@@ -2,6 +2,8 @@ import ModalBase from "@/components/modals/Base"
 import { ReactElement } from "react"
 import RootProviders from "./providers"
 import "./global.css"
+import { getServerSession } from "next-auth"
+import { authOptions } from "./api/auth/[...nextauth]/route"
 
 export const metadata = {
 	title: "Next shop",
@@ -13,6 +15,7 @@ interface LayoutProps {
 }
 
 export default async function MainLayout({ children }: LayoutProps) {
+	const session = await getServerSession(authOptions)
 	return (
 		<>
 			<html lang="en">
@@ -22,7 +25,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 					<title>Document</title>
 				</head>
 				<body className="w-full overflow-x-hidden">
-					<RootProviders>
+					<RootProviders session={session}>
 						{children}
 						<ModalBase />
 					</RootProviders>

@@ -4,7 +4,7 @@ import Price from "@/components/product/Price"
 import useCartStore from "@/store/cartStore"
 
 type props = {
-	_id: string
+	id: number
 	name: string
 	brand: string
 	price: number
@@ -21,11 +21,11 @@ export default function CartRow(product: props) {
 		items: storeItems,
 	} = useCartStore((state) => state)
 
-	const setAmmount = (amnt: number) => setAmmountStore(product._id!, amnt)
-	const discardItem = () => discardItemStore(product._id!)
+	const setAmmount = (amnt: number) => setAmmountStore(product.id!, amnt)
+	const discardItem = () => discardItemStore(product.id!)
 	const amount =
-		storeItems.find((storeItem) => storeItem.product === product._id)?.amount || 0
-	if (!product._id || !amount) return <></>
+		storeItems.find((storeItem) => storeItem.productId === product.id)?.amount || 0
+	if (!product.id || !amount) return <></>
 	return (
 		<div>
 			<ImageComponent

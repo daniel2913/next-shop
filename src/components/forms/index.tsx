@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 import LabeledInput from "@/components/ui/LabeledInput";
 
 export type FormFieldValue = string | File[];
@@ -18,14 +18,14 @@ export type FormFieldProps = Omit<
 
 type Props<T extends Record<string, FormFieldValue>> = {
 	className: string;
-	  fieldValues: T;
+	fieldValues: T;
 	setFieldValues: React.Dispatch<React.SetStateAction<T>>;
 	fieldProps: { [Key in keyof T]: FormFieldProps };
 	action: string;
-	children: React.ReactNode;
+	children?: React.ReactNode;
 } & (
 		| {
-			method: "PUT";
+			method: "PUT" | "POST";
 		}
 		| {
 			method: "PATCH";
@@ -33,12 +33,13 @@ type Props<T extends Record<string, FormFieldValue>> = {
 		}
 	);
 
-export default function Form<T extends { [key: string]: string | File[] }>({
+export default function Form<T extends Record<string, FormFieldValue>>({
 	fieldValues,
 	setFieldValues,
 	fieldProps,
-	children,
 	className,
+	action,
+	method,
 	...params
 }: Props<T>) {
 	const [loading, setLoading] = React.useState(false);
@@ -55,21 +56,25 @@ export default function Form<T extends { [key: string]: string | File[] }>({
 				setError(`${fieldProps[key].label} is not specified`);
 				return false;
 			}
-			if (!fieldProps[key].validator) continue;
 
 			if (!Array.isArray(value)) {
-				const entryValid = fieldProps[key].validator(value);
-				if (!entryValid.valid) {
-					setError(`${fieldProps[key].label}: ${entryValid.msg}`);
-					return false;
+				if (fieldProps[key].validator) {
+					const entryValid = fieldProps[key].validator(value);
+					if (!entryValid.valid) {
+						setError(`${fieldProps[key].label}: ${entryValid.msg}`);
+						return false;
+					}
 				}
+				form.append(key, value)
 			}
 
-			if (Array.isArray(value)) {
-				const entryValid = fieldProps[key].validator(value);
-				if (!entryValid) {
-					setError(`${fieldProps[key].label} is invalid`);
-					return false;
+			else if (Array.isArray(value)) {
+				if (fieldProps[key].validator) {
+					const entryValid = fieldProps[key].validator(value);
+					if (!entryValid) {
+						setError(`${fieldProps[key].label} is invalid`);
+						return false;
+					}
 				}
 				for (const item of value) {
 					form.append(key, item);
@@ -77,8 +82,8 @@ export default function Form<T extends { [key: string]: string | File[] }>({
 			}
 		}
 		setLoading(true);
-		const res = await fetch(params.action, {
-			method: params.method,
+		const res = await fetch(action, {
+			method: method,
 			body: form,
 		});
 		setLoading(false);
@@ -122,7 +127,7 @@ export default function Form<T extends { [key: string]: string | File[] }>({
 				<span>{error}</span>
 				<span>{status}</span>
 			</form>
-			{children}
+			{params.children}
 		</div>
 	);
 }

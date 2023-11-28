@@ -1,13 +1,18 @@
-import Link from "next/link"
 import React from "react"
 import Auth from "../ui/Auth"
 import CartStatus from "../cart/Status"
 import Search from "../ui/Search"
 import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters"
+import { Session, } from "next-auth"
 
 export const revalidate = 300
 
-export default async function NavBar() {
+interface Props{
+}
+
+
+export default async function NavBar({}:Props) {
+	
 	const [brands, categories] = await Promise.all([
 		getAllBrands(),
 		getAllCategories(),
@@ -24,7 +29,7 @@ export default async function NavBar() {
 			<Search className="h-full" brandList={brands} categoryList={categories} />
 			<div className="flex gap-4 items-center">
 				<CartStatus />
-				<Auth />
+				<Auth  />
 			</div>
 		</header>
 	)

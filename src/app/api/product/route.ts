@@ -29,8 +29,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
-	const { _id } = await req.json()
-	return deleteController(_id, config)
+	const { id } = await req.json()
+	return deleteController(id, config)
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {

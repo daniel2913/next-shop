@@ -10,8 +10,7 @@ export async function PATCH(req: NextRequest) {
 	}
 	const cart = JSON.stringify(await req.json())
 	try {
-		throw false //Fix
-		const res = await UserModel.updateOne(
+		const res = await UserModel.patch(
 			{ name: session.user.name },
 			{ cart: cart },
 		)

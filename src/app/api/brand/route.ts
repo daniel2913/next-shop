@@ -18,10 +18,10 @@ const config = {
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url)
-	const _id = searchParams.get("_id") || undefined
+	const id = searchParams.get("id") || undefined
 	const name = searchParams.get("name") || undefined
 
-	return await getController({ name, _id }, config)
+	return await getController({ name, id }, config)
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
@@ -38,8 +38,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
-	const { _id } = await req.json()
-	return await deleteController<typeof BrandModel>(_id, config)
+	const { id } = await req.json()
+	return await deleteController<typeof BrandModel>(id, config)
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {

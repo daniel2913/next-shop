@@ -13,7 +13,7 @@ interface BaseProps {
 	validator?: FormFieldValidator
 }
 interface TextProps extends BaseProps {
-	type: "text" | "password"
+	type: "text" | "password" | "hidden"
 	multiple?: false
 	options?: never[]
 	value: string
@@ -135,7 +135,7 @@ export default function LabeledInput({
 			</div>
 		)
 	return (
-		<div className={`${className} flex flex-col`}>
+		<div className={`${className} ${type==="hidden" ? "hidden" : ""} flex flex-col`}>
 			<label htmlFor={id || ""} className="text-gray-600">
 				{label}
 			</label>
@@ -148,7 +148,7 @@ export default function LabeledInput({
 				type={type}
 				placeholder={placeholder}
 				value={value}
-				onChange={(e) => setValue(e.currentTarget.value)}
+				onChange={(e) => {if(type!=="hidden") setValue(e.currentTarget.value)}}
 			/>
 			<label htmlFor={id || ""} className="text-accent1-600">
 				{error}

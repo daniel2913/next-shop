@@ -2,7 +2,7 @@
 import Form, {
 	FormFieldValidator,
 	FormFieldValue,
-} from "../../../components/forms/index"
+} from "./index"
 import React from "react"
 import LabeledInput from "@/components/ui/LabeledInput"
 import { Brand, Category } from "@/lib/DAL/Models"

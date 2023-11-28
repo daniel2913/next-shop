@@ -6,15 +6,16 @@ import Link from "next/link";
 import Price from "../Price";
 import Rating from "@/components/ui/Rating";
 import { PopulatedProduct } from "@/lib/DAL/Models/Product";
+import { Session } from "next-auth";
 
 
 type Props = {
 	className: string;
 	product: PopulatedProduct;
-	role: "admin" | "user";
+	session: Session|null;
 };
 
-export default async function ProductCard({ className, product, role }: Props) {
+export default async function ProductCard({ className, product, session }: Props) {
 	console.log(product)
 	return (
 		<div
@@ -70,7 +71,7 @@ export default async function ProductCard({ className, product, role }: Props) {
 						{product.name}
 					</h3>
 				</Link>
-				<Rating rating={product.rating||0} className="col-span-2 max-h-8" />
+				<Rating rating={product.rating||0} votes={product.votes} className="col-span-2 max-h-8" />
 
 				<span className="text-xl font-semibold">{product.brand.name}</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">
@@ -81,7 +82,7 @@ export default async function ProductCard({ className, product, role }: Props) {
 					discount={product.discount.discount || 0}
 					price={product.price || 200}
 				/>
-				{role === "admin" ? (
+				{session?.user?.role === "admin" ? (
 					null
 				) : (
 					<BuyButton className="justify-self-center" id={product.id} />

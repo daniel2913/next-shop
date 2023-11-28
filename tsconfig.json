@@ -9,13 +9,11 @@
     ],
     "typeRoots": [
       "./node_modules/@types",
-      "./@types"
+      "./src/@types"
     ],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
@@ -60,7 +58,8 @@
       "@lib/*": [
         "./src/lib/*"
       ]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*",

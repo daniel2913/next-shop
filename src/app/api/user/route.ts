@@ -28,7 +28,8 @@ export async function PUT(req: NextRequest) {
 	const hash = createHash("sha256")
 	hash.update(props.password)
 	hash.update(props.name)
-	props.passwordHash = hash.digest("base64")
+	props.passwordHash = hash.digest("hex")
+	console.log('===>',hash)
 	props.role = "user"
 	const res = await addController(props, config)
 	if (res.status != 201)

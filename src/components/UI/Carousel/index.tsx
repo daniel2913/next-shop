@@ -35,7 +35,7 @@ function Carousel({ className, children, brandImage, discount, preview, carousel
 						i === getPos(current + 1, children.length) ||
 						i === getPos(current - 1, children.length)
 					)
-						return <div className={`${i === current ? "block" : "hidden"}`}>{image}</div>
+						return <div key={Math.random().toString()} className={`${i === current ? "block" : "hidden"}`}>{image}</div>
 					else
 						return <></>
 				}
@@ -74,7 +74,7 @@ function Carousel({ className, children, brandImage, discount, preview, carousel
 						return (
 							<button
 								type="button"
-								key={i}
+								key={Math.random().toString()}
 								onClick={() => changeSlide(i)}
 								aria-expanded={i === current}
 								className="w-4 aspect-square rounded-full bg-gray-100 hover:bg-gray-300 aria-expanded:bg-gray-200 bg-opacity-50"
@@ -91,7 +91,7 @@ function Carousel({ className, children, brandImage, discount, preview, carousel
 							<button
 								className="w-10 h-full relative"
 								type='button'
-								key={i}
+								key={Math.random().toString()}
 								onClick={() => changeSlide(i)}
 								aria-expanded={i === current}
 							>

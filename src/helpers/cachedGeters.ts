@@ -2,14 +2,14 @@ import { BrandModel, CategoryModel, DiscountModel } from "@/lib/DAL/Models"
 
 export function cache<T extends (...args: any) => any>(func: T) {
 	let cache: ReturnType<T>
-	async function revalidate(...args: Parameters<T>) {
-		cache = await func(args)
+	function revalidate(...args: Parameters<T>) {
+		cache = func(args)
 	}
-	async function get(...args: Parameters<T>) {
+	function get(...args: Parameters<T>) {
 		if (cache) {
 			return cache
 		}
-		cache = await func(args)
+		cache = func(args)
 		return cache
 	}
 	return [get, revalidate]

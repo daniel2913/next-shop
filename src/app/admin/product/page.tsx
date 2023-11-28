@@ -1,4 +1,4 @@
-import ProductForm from "@/hooks/modals/forms/useProductForm"
+import ProductForm from "@/components/forms/ProductForm"
 import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters"
 
 export default async function AddProductPage() {

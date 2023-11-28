@@ -70,7 +70,7 @@ export default async function Details({
 					price={product.price}
 					discount={product.discount || 0}
 				/>
-				<BuyButton {...{ ...product, id: product._id.toString(), ammount: 0 }} />
+				<BuyButton {...{ ...product, id: product.id.toString(), ammount: 0 }} />
 				<p className={styles.productDescription}>{product.description}</p>
 				<div className={styles.productRating}>
 					<Rating rating={3}></Rating>

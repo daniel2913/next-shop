@@ -3,6 +3,7 @@ import React from "react"
 import useConfirm from "@/hooks/modals/useConfirm"
 import useCartStore from "@/store/cartStore"
 import { Product } from "@/lib/DAL/Models"
+import { useSession } from "next-auth/react"
 
 interface Props {
 	className: string
@@ -11,14 +12,15 @@ interface Props {
 
 export default function AmmountSelector({ className, productId }: Props) {
 	const confirm = useConfirm("Are you sure you want to discard this item?")
+	const {data} = useSession()
 	const amount = useCartStore(
 		(state) => state.items.find((state) => state.productId === productId)?.amount,
 	)
 	const itemDiscarder = useCartStore((state) => state.discardItem)
 	const ammountSetter = useCartStore((state) => state.setAmmount)
 	if (amount === null) return <div>Error!</div>
-	const discardItem = () => itemDiscarder(productId)
-	const setAmmount = (amnt: number) => ammountSetter(productId, amnt)
+	const discardItem = () => itemDiscarder(productId,!data?.user?.role)
+	const setAmmount = (amnt: number) => ammountSetter(productId, amnt, !data?.user?.role)
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
 			confirm().then((ans) => {

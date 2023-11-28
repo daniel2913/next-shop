@@ -73,8 +73,8 @@ const config = {
 	images: varchar("images", { length: maxSizes.image }).array().notNull(),
 	price: real("price").notNull(),
 	discounts: smallint("discounts").array().notNull(),
-	votes: smallint("votes").array().default([]),
-	voters: smallint("voters").array().default([]),
+	votes: smallint("votes").array().default([]).notNull(),
+	voters: smallint("voters").array().default([]).notNull(),
 	rating: real("rating").default(0)
 }
 const ProductPgreTable = shop.table(
@@ -89,11 +89,13 @@ const ProductPgreTable = shop.table(
 
 export type Product = typeof ProductPgreTable.$inferSelect
 export type LeanProduct = Omit<Product,'voters'|'discounts'>
-export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'voters'> & 
+export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'voters'|'votes'> & 
 {
+	votes:number
 	brand:Brand
 	category:Category
 	discount: Discount
+	ownVote: number
 }
 
 

@@ -1,7 +1,7 @@
 import React from "react"
 import Form from "@/components/forms/Registration"
 import prepareNewUser from "@/actions/newUser"
-import RegistrationForm from "@/hooks/modals/forms/useRegistrationForm"
+import RegistrationForm from "@/components/forms/RegistrationForm"
 
 export default function RegisterPage() {
 	return (

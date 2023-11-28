@@ -2,7 +2,7 @@
 import Form, {
     FormFieldValidator,
     FormFieldValue,
-} from "../../../components/forms/index"
+} from "./index"
 import React from "react"
 
 const formFieldValues = { name: "", image: null } as const

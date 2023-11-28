@@ -1,12 +1,13 @@
+import { useSession } from "next-auth/react"
 import { StateCreator } from "zustand"
 
 interface Item
 {productId:number, amount:number}
 export interface CartSlice {
 	items: Item[]
-	addItem: (item: number) => void
-	discardItem: (id: number) => void
-	setAmmount: (id: number, amnt: number) => void
+	addItem: (item: number,noUpd?:boolean) => void
+	discardItem: (id: number,noUpd?:boolean) => void
+	setAmmount: (id: number, amnt: number,noUpd?:boolean) => void
 	setItems: (items: Item[]) => void
 }
 
@@ -30,10 +31,11 @@ function updateAccount(cart: Item[]) {
 
 export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
 	items:[],
-	addItem: (id: number) => {
+	addItem: (id: number,noUpd?:boolean) => {
 		set((state) => {
-			const newItems = state.items
+			const newItems = [...state.items]
 			newItems.push({ amount: 1, productId: id })
+			if (!noUpd)
 			updateAccount(newItems)
 			return { items: newItems }
 		})
@@ -43,20 +45,22 @@ export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
 			return { items }
 		})
 	},
-	discardItem: (id: number) => {
+	discardItem: (id: number, noUpd?:boolean) => {
 		set((state) => {
 			const newItems = state.items.filter((item) => item.productId !== id)
+			if(!noUpd)
 			updateAccount(newItems)
 			return { items: newItems }
 		})
 	},
-	setAmmount: (id: number, amnt: number) => {
+	setAmmount: (id: number, amnt: number, noUpd?:boolean) => {
 		set((state) => {
 			const newItems = state.items.map((item) => {
 				if (item.productId === id) item.amount = amnt > 0 ? amnt : 0
 				return item
 			})
-			updateAccount(newItems)
+			if (!noUpd)
+				updateAccount(newItems)
 			return { items: newItems }
 		})
 	},

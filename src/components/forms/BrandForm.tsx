@@ -3,7 +3,7 @@ import useModalStore from "@/store/modalStore"
 import Form, {
 	FormFieldValidator,
 	FormFieldValue,
-} from "../../../components/forms/index"
+} from "./index"
 import React from "react"
 
 const fields = { name: "", description: "", link: "", image: null } as const

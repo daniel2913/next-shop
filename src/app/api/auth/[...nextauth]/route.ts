@@ -4,10 +4,6 @@ import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { cache } from "react"
 
-async function findUserByName(name: string) {
-	return UserModel.findOne({ name })
-}
-const getUser = cache((name: string) => findUserByName(name))
 
 export const authOptions: AuthOptions = {
 	providers: [
@@ -21,7 +17,7 @@ export const authOptions: AuthOptions = {
 				},
 				password: { label: "Password", type: "password" },
 			},
-			async authorize(credentials, ) {
+			async authorize(credentials,) {
 				const user = await authUser(credentials)
 				if (user) {
 					return user
@@ -31,12 +27,12 @@ export const authOptions: AuthOptions = {
 		}),
 	],
 	callbacks: {
-		async session({ session, token }) {
-			if (!session.user?.name) return null
-			const user = await getUser(session.user.name)
+		async session({ session}) {
+			if (!session.user?.name) return session
+			const {cart, ...user} = await UserModel.findOne({name:session.user.name})
 			console.log("user session: ", user)
 			if (!user) return session
-			session.user.role = user.user.role || "user"
+			session.user = user
 			return session
 		},
 	},
