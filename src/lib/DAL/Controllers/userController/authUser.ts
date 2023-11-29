@@ -1,5 +1,6 @@
 import { createHash } from "crypto"
 import { UserModel } from "../../Models"
+import { UserCache } from "@/helpers/cachedGeters"
 
 interface Props{
 	name?:string
@@ -14,7 +15,7 @@ export default async function authUser(props: Props|undefined) {
 	hash.update(password)
 	hash.update(name)
 	const passwordHash = hash.digest("hex")
-	const user = await UserModel.findOne({ name })
+	const user = await UserCache.get(props.name)
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
 		return {

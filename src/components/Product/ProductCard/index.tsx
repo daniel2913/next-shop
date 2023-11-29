@@ -6,7 +6,8 @@ import Link from "next/link";
 import Price from "../Price";
 import Rating from "@/components/ui/Rating";
 import { PopulatedProduct } from "@/lib/DAL/Models/Product";
-import { Session } from "next-auth";
+import { Session, getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 
 type Props = {
@@ -15,8 +16,9 @@ type Props = {
 	session: Session|null;
 };
 
-export default async function ProductCard({ className, product, session }: Props) {
-	console.log(product)
+export default async function ProductCard({ className, product}: Props) {
+	const session = await getServerSession(authOptions)
+	console.log('session - ', session)
 	return (
 		<div
 			className={`
@@ -43,8 +45,9 @@ export default async function ProductCard({ className, product, session }: Props
 					/>
 				}
 			>
-				{product.images.map((img) => (
+				{product.images.map((img,idx) => (
 					<Image
+						priority={idx===0 ? true : false}
 						fill
 						className=""
 						sizes="

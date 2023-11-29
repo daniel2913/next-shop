@@ -26,15 +26,14 @@ export type TestColumnsConfig<T, U extends ColumnsConfig<any>> = T extends U
 
 export type DataModels = PgreModel<any, any>
 
-type Query<T extends Record<string, any> & { id: number }> = Partial<{
-	[Key in keyof T]: string | string[] | RegExp
-}>
+type Query<T extends Record<string, any> & { id: number }> = {[Key in keyof T]?:string | string[] | RegExp}
 
-type Select<T extends Record<string, any> & { id: number }> = Partial<{
-	[Key in keyof T as string]:Key
-}>
+type Select<T extends Record<string, any> & { id: number }> = Record<string,keyof T>
 
 type Validator<T> = (value: T) => string | false
+
+
+
 
 
 interface DataModel<T extends { [i: string]: any; id: number }> {
@@ -52,17 +51,19 @@ interface DataModel<T extends { [i: string]: any; id: number }> {
 	patch: (targid: number, patch: Partial<T>) => Promise<boolean>
 }
 
+
+const PGRE_LINK = process.env.PGRE_URL_DEV
 export class PgreModel<
-	T extends { [i: string]: any; id: number },
 	U extends Table<TableConfig>,
+	T extends Record<keyof U["$inferSelect"],any>&{id:number},
 	E extends  Record<string,(db:PostgresJsDatabase)=>(...args:any)=>any> = never,
 > implements DataModel<T>
 {
 	private table: U
 	public columns: T
-	private model: PostgresJsDatabase
+	public model: PostgresJsDatabase
 	private validations: { [Key in keyof T]: Validator<T[Key]>[] }
-	public custom:{[Key in keyof E]:ReturnType<E[Key]>}
+	public custom:{[Key in keyof E]?:ReturnType<E[Key]>}
 	constructor(
 		table: U["$inferSelect"] extends T
 			? T extends U["$inferSelect"]
@@ -75,14 +76,15 @@ export class PgreModel<
 		this.table = table
 		this.columns = table as any as T
 		this.validations = validations
+		if (!PGRE_LINK) throw 'No Database Address!'
 		this.model = drizzle(
-			postgres(process.env.PGRE_URL_DEV, { max: 5, idle_timeout: 60 * 2 }),
-			{ logger: true },
+			postgres(PGRE_LINK, { max: 5, idle_timeout: 60 * 2 }),
+			{ logger: false },
 		)
 		if (custom){
 			this.custom = {}
-			for(const [name,func] of Object.entries(custom)){
-				this.custom[name as keyof E] = func(this.model)
+			for(const key in custom){
+				this.custom[key] = custom[key](this.model)
 			}  
 		}
 
@@ -177,7 +179,7 @@ export class PgreModel<
 	}
 	async patch(targId: number, patch: Partial<T>) {
 		if (!targId) return false
-		const newObj = { ...patch, id: targId }
+		const newObj = { ...patch}
 		if (this.isValid(newObj)) {
 			const res = await this.model
 				.update(this.table)

@@ -14,33 +14,33 @@ const validation: { [i in keyof typeof formFieldValues]: FormFieldValidator } =
 	{
 		name: (value: FormFieldValue) => {
 			if (typeof value != "string")
-				return { valid: false, msg: "Name can only be string!" }
+				return "Name can only be string!"
 
 			return value.length === 0
-				? { valid: false, msg: "Name Required!" }
-				: { valid: true }
+				? "Name Required!"
+				: false
 		},
 		password: (value: FormFieldValue) => {
 			if (typeof value != "string")
-				return { valid: false, msg: "Password can only be string!" }
+				return "Password can only be string!"
 			const error = clientPasswordValidation(value)
-			if (error) return { valid: false, msg: error }
-			return { valid: true }
+			if (error) return error 
+			return false
 		},
 		image: (value: FormFieldValue) => {
 			if (typeof value === "string")
-				return { valid: false, msg: "Image can only be a file!" }
-			if (!value) return { valid: true }
+				return "Image can only be a file!"
+			if (!value) return false
 			const files = value instanceof File ? [value] : value
-			if (files.length === 0) return { valid: false, msg: "zalupa" }
+			if (files.length === 0) return "Something is wrong"
 			for (const file of files) {
 				const ext = file.name.split(".").pop()
 				if (ext != "jpeg" && ext != "jpg")
-					return { valid: false, msg: "Only jpegs!" }
+					return "Only jpegs!"
 				if (file.size > 1024 * 512)
-					return { valid: false, msg: "Only under 0.5MB!" }
+					return "Only under 0.5MB!"
 			}
-			return { valid: true }
+			return false
 		},
 	}
 
@@ -50,22 +50,22 @@ const fieldProps = {
 		type: "text",
 		label: "Username",
 		placeholder: "John",
-		validator: validation["name"],
+		validator: validation.name,
 	},
 	password: {
 		id: "password",
 		type: "password",
 		label: "Password",
 		placeholder: "****",
-		validator: validation["password"],
+		validator: validation.password,
 	},
 	image: {
 		id: "image",
-		label: "Category image",
+		label: "Profile image",
 		type: "file",
 		multiple: false,
 		accept: "image/jpeg",
-		validator: validation["image"],
+		validator: validation.image,
 	},
 } as const
 

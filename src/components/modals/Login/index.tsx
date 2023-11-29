@@ -1,58 +1,60 @@
 'use client'
-import Form from "@/components/forms"
 import LabeledInput from "@/components/ui/LabeledInput"
+import { clientPasswordValidation } from "@/lib/DAL/Validations/User/passwordValidation/clientPasswordValidation"
+import { clientUserNameValidation } from "@/lib/DAL/validations/user/usernameValidation/clientUsernameValidation"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import React, { ComponentProps, FormEvent } from "react"
-interface Props {
-	csrfToken: string
+
+type Props = {
+	close:()=>void
 }
 
-
-type Login = {
-	name: string
-	password: string
-	csrfToken: string
-}
-
-
-const formProps: Omit<ComponentProps<typeof Form<Login>>, 'fieldValues'| 'method' | 'setFieldValues' | 'className' | 'children'> = {
-	action: '/api/auth/callback/credentials',
-	fieldProps: {
-		csrfToken: {
-			id: "csrfToken",
-			type: "hidden",
-		},
-		name: {
-			id: "name",
-			type: "text",
-			label: "Username",
-			placeholder: "JohnSmith",
-		},
-		password: {
-			id: "password",
-			type: "password",
-			label: "Password",
-		}
-	}
-}
-
-
-export default function Login({ csrfToken }: Props) {
+export default function Login({close}:Props) {
 	
-	const initialFieldValues:Login = {
-		csrfToken:csrfToken,
-		name:"",
-		password:""
-	}
-	const [fieldValues, setFieldValues] = React.useState(initialFieldValues)
+	const [name, setName] = React.useState('')
+	const [password,setPassword] = React.useState('')
+	const [status,setStatus] = React.useState('')
+	const router = useRouter()
 
-	return (
-			<Form<Login>
-				method="POST"
-				className=""
-				{...formProps}
-				fieldValues={fieldValues}
-				setFieldValues={setFieldValues}
-			>
-				</Form>
+	function handleLogin(creds:{name:string,password:string}){
+		signIn('credentials',{...creds,redirect:false})
+			.then(res=>{
+				if (res?.ok){
+					router.refresh()
+					close()
+				}
+				else setStatus(res?.error || 'Something bad happend')
+			})
+			.catch(res=>setStatus(res))
+
+	}
+	return(
+		<div>
+			<span>{status}</span>
+			<LabeledInput
+				type="text"
+				label="Username"
+				id="name"
+				value={name}
+				setValue={setName}
+				validator={(val)=>typeof val === 'string'
+					? clientUserNameValidation(val)
+					: "Username must be a string"}
+			/>
+			<LabeledInput
+				type="password"
+				label="password"
+				id="password"
+				value={password}
+				setValue={setPassword}
+				validator={(val)=>typeof val ==='string'
+					? clientPasswordValidation(val)
+					: "Password must be a string"}
+			/>
+			<button type="submit" onClick={()=>handleLogin({name,password})}>Sign In</button>
+			<button type="submit" onClick={()=>handleLogin({name:"user",password:"user"})}>Demo User</button>
+			<button type="submit" onClick={()=>handleLogin({name:"admin",password:"admin"})}>Demo Admin</button>
+		</div>
 	)
 }

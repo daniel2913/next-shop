@@ -35,34 +35,35 @@ import {
 export type { Brand, Category, Product, User }
 
 
-export const BrandModel = new PgreModel<Brand, typeof BrandPgreTable>(
+export const BrandModel = new PgreModel< typeof BrandPgreTable,Brand>(
 	BrandPgreTable,
 	BrandValidations,
 )
 
-export const CategoryModel = new PgreModel<Category, typeof CategoryPgreTable>(
+export const CategoryModel = new PgreModel< typeof CategoryPgreTable,Category>(
 		CategoryPgreTable,
 		CategoryValidations,
 	)
 
-export const ProductModel = new PgreModel<Product, typeof ProductPgreTable, typeof ProductCustomQueries>(
+export const ProductModel = new PgreModel<typeof ProductPgreTable,Product,  typeof ProductCustomQueries>(
 		ProductPgreTable,
 		ProductValidations,
 		ProductCustomQueries
 	)
 
 
-export const UserModel = new PgreModel<User, typeof UserPgreTable>(
+
+export const UserModel = new PgreModel<typeof UserPgreTable,User >(
 	UserPgreTable,
 	UserValidations
 )
 
-export const RatingModel = new PgreModel<Rating, typeof RatingPgreTable>(
+export const RatingModel = new PgreModel<typeof RatingPgreTable,Rating >(
 	RatingPgreTable,
 	RatingValidations
 )
 
-export const DiscountModel = new PgreModel<Discount, typeof DiscountPgreTable>(
+export const DiscountModel = new PgreModel<typeof DiscountPgreTable,Discount >(
 	DiscountPgreTable,
 	DiscountValidations
 )

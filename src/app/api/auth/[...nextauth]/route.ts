@@ -1,8 +1,7 @@
-import { UserModel } from "@/lib/DAL/Models"
+import { UserCache } from "@/helpers/cachedGeters"
 import authUser from "@/lib/DAL/controllers/userController/authUser"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { cache } from "react"
 
 
 export const authOptions: AuthOptions = {
@@ -29,8 +28,7 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session}) {
 			if (!session.user?.name) return session
-			const {cart, ...user} = await UserModel.findOne({name:session.user.name})
-			console.log("user session: ", user)
+			const user = await UserCache.get(session.user.name)
 			if (!user) return session
 			session.user = user
 			return session

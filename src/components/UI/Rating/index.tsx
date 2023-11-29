@@ -11,14 +11,16 @@ interface Props {
 	className: string
 }
 
+
+
 export default function Rating({ className,votes, rating, ownRating = -1 }: Props) {
 	const {data} = useSession()
-	const [status, setStatus] = React.useState(ownRating===0 ? "You haven't rate this product yet!" : "")
+	const [status, setStatus] = React.useState(ownRating<1 ? "You haven't rate this product yet!" : "")
 	const [rated, setRated] = React.useState(0)
 	const ratings = [1, 2, 3, 4, 5]
 	function handleRate(i:number){
 		if (!data?.user?.id) setStatus("Only authorized users can rate products!")
-		else if (ownRating === -1) setStatus("You can only rate products from your orders!")
+		//else if (ownRating === -1) setStatus("You can only rate products from your orders!")
 		else {
 			setStatus("Thank you for your rating!")
 			setRated(i)
@@ -37,7 +39,9 @@ export default function Rating({ className,votes, rating, ownRating = -1 }: Prop
 						className=""
 						id={`${i}`}
 					>
-						<Star className={`
+						<Star 
+							key={`${i}-${Math.random()}`}
+							className={`
 							h-full aspect-square
 							${i<=rated ? "fill-accent1-600" : i<=rating ? "fill-accent1-400" : "fill-cyan-100"} 
 							${i<=rated ? "stroke-accent1-600" : i<=rating ? "stroke-accent1-400" : "stroke-teal-400"}																		
@@ -45,7 +49,7 @@ export default function Rating({ className,votes, rating, ownRating = -1 }: Prop
 					</button>
 				)
 			}),
-				<span className="text-gray-600 ml-2 self-center text-sm">{`${votes} votes`}</span>
+				<span key={`${Math.random()}`} className="text-gray-600 ml-2 self-center text-sm">{`${votes} votes`}</span>
 			]
 			}
 			<span className="w-full text-accent1-300 text-[.75em] leading-3">{status}</span>

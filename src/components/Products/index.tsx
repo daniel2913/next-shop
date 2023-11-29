@@ -5,7 +5,8 @@ import {
 } from "@/lib/DAL/controllers/universalControllers";
 import { getAllBrands, getAllCategories, getAllDiscounts } from "@/helpers/cachedGeters";
 import { PopulatedProduct } from "@/lib/DAL/Models/Product";
-import { Session } from "next-auth";
+import { Session, getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 type TSearchParams = { [key: string]: string | string[] | undefined };
 
@@ -31,7 +32,7 @@ const unknownDiscount = {
 	expires: new Date()
 }
 
-export async function getProducts(searchParams: TSearchParams, session:Session) {
+export async function getProducts(searchParams: TSearchParams, ) {
 	const query = collectQueries(searchParams, {
 		model: ProductModel,
 	}) ////FIX!!!
@@ -43,7 +44,8 @@ export async function getProducts(searchParams: TSearchParams, session:Session) 
 			categoryList?.find((cat) => cat.id.toString() === query.category)?.id.toString() || "";
 
 
-	const [ products, brandList, categoryList, discountList] = await Promise.all([
+	const [ session,products, brandList, categoryList, discountList] = await Promise.all([
+		getServerSession(authOptions),
 		ProductModel.find(query),
 		getAllBrands(),
 		getAllCategories(),
@@ -78,12 +80,11 @@ export async function getProducts(searchParams: TSearchParams, session:Session) 
 
 export default async function ProductList({
 	searchParams,
-	session
 }: {
 		session:Session;
 	searchParams: TSearchParams;
 }) {
-	const { products} = await getProducts(searchParams,session);
+	const { products} = await getProducts(searchParams);
 	return (
 		<div className="bg-green-100">
 			<div className="">

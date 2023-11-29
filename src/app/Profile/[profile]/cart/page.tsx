@@ -5,6 +5,7 @@ import { Item, Product, UserModel } from "@/lib/DAL/Models"
 import { authOptions } from "../../../api/auth/[...nextauth]/route"
 import { getServerSession } from "next-auth"
 import dbConnect from "@/lib/dbConnect"
+import { UserCache } from "@/helpers/cachedGeters"
 
 async function getCart() {
 	const session = await getServerSession(authOptions)
@@ -12,7 +13,7 @@ async function getCart() {
 		return []
 	}
 	return JSON.parse(
-		(await UserModel.findOne({ name: session.user.name }))?.cart || "[]",
+		(await UserCache.get(session.user.name))?.cart || "[]",
 	) as Item[]
 }
 

@@ -4,8 +4,8 @@ import LabeledInput from "@/components/ui/LabeledInput";
 export type FormFieldValue = string | File[];
 export interface FormFieldValidator {
 	(
-		v: string | File[],
-	): { valid: true; msg?: string } | { valid: false; msg: string };
+		v: FormFieldValue,
+	): string | false;
 }
 export type FormFieldProps = Omit<
 	React.ComponentProps<typeof LabeledInput>,
@@ -52,10 +52,6 @@ export default function Form<T extends Record<string, FormFieldValue>>({
 		setError("");
 		setStatus("");
 		for (const [key, value] of Object.entries(fieldValues)) {
-			if (!value) {
-				setError(`${fieldProps[key].label} is not specified`);
-				return false;
-			}
 
 			if (!Array.isArray(value)) {
 				if (fieldProps[key].validator) {

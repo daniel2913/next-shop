@@ -1,6 +1,7 @@
 "use client"
 import useCartStore from "@/store/cartStore"
 import AmmountSelector from "../AmmountSelector"
+import { useSession } from "next-auth/react"
 
 interface Props {
 	className: string
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function BuyButton({ className, id }: Props) {
+	const session = useSession()
 	const cachedItem = useCartStore((state) =>
 		state.items.find((cacheItem) => cacheItem.productId === id),
 	)
