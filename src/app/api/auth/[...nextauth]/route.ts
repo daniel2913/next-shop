@@ -28,7 +28,7 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session}) {
 			if (!session.user?.name) return session
-			const user = await UserCache.get(session.user.name)
+			const {cart,bought,passwordHash, ...user} = await UserCache.get(session.user.name)
 			if (!user) return session
 			session.user = user
 			return session

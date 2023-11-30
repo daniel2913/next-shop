@@ -21,8 +21,8 @@ export default function CartStatus() {
 		if (data?.user?.role === 'user') {
 			const remoteCache = await(await fetch("api/store")).json()
 			synced = true
-			if (remoteCache.length > 0) {
-				if (!localCache?.length) {
+			if (Object.keys(remoteCache).length > 0) {
+				if (Object.keys(localCache).length===0) {
 					setLocalCache(remoteCache)
 				} else if (JSON.stringify(remoteCache) !== JSON.stringify(localCache)) {
 					confirmOverwrite().then((ans) => {
@@ -36,5 +36,5 @@ export default function CartStatus() {
 	}
 	getCache()
 	}, [data])
-	return <div>{items.reduce((sum, i) => sum + i.amount, 0)}</div>
+	return <div>{Object.values(localCache).reduce((sum,next)=>sum+next,0)}</div>
 }

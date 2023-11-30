@@ -1,9 +1,9 @@
 import ProductCard from "@/components/product/ProductCard";
-import { ProductModel } from "@/lib/DAL/Models";
+import { ProductModel, User } from "@/lib/DAL/Models";
 import {
 	collectQueries,
 } from "@/lib/DAL/controllers/universalControllers";
-import { getAllBrands, getAllCategories, getAllDiscounts } from "@/helpers/cachedGeters";
+import { UserCache, getAllBrands, getAllCategories, getAllDiscounts } from "@/helpers/cachedGeters";
 import { PopulatedProduct } from "@/lib/DAL/Models/Product";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -51,24 +51,22 @@ export async function getProducts(searchParams: TSearchParams, ) {
 		getAllCategories(),
 		getAllDiscounts()
 	]);
+	let user:User|null = null
+	if (session?.user?.name){
+		user = await UserCache.get(session?.user?.name)
+	}
 
 	const populatedProducts = products.map((product) => {
 		const brand = brandList.find((brand) => brand.id === product.brand);
 		const category = categoryList.find((cat) => cat.id === product.category);
 		const discount = discountList.find((dis) => dis.id in product.discounts);
-		const voterIdx = product.voters.indexOf(session?.user?.id || -1)
-		const votes = product.votes.reduce((sum, next) => sum + (next ? 1 : 0), 0)
-		const score = product.votes.reduce((sum, next) => sum + next, 0)
-		const ownVote = voterIdx !== -1
-			? product.votes[voterIdx] || 0
-			: -1
+		const ownVote = user?.bought[product.id.toString()] ?? -1
+		console.log("===>",product,ownVote,user)
 		return {
 
 			...product,
 			ownVote,
-			rating: votes === 0 ? 0 : score / votes,
-			votes: votes,
-			voters: null,
+			voters: product.voters.length,
 			brand: brand || unknownBrand,
 			category: category || unknownCategory,
 			discount: discount || unknownDiscount
@@ -80,6 +78,7 @@ export async function getProducts(searchParams: TSearchParams, ) {
 
 export default async function ProductList({
 	searchParams,
+	session
 }: {
 		session:Session;
 	searchParams: TSearchParams;

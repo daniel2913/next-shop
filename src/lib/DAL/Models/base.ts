@@ -63,7 +63,7 @@ export class PgreModel<
 	public columns: T
 	public model: PostgresJsDatabase
 	private validations: { [Key in keyof T]: Validator<T[Key]>[] }
-	public custom:{[Key in keyof E]?:ReturnType<E[Key]>}
+	public custom:{[Key in keyof E]:ReturnType<E[Key]>}
 	constructor(
 		table: U["$inferSelect"] extends T
 			? T extends U["$inferSelect"]

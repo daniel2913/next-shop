@@ -74,7 +74,7 @@ export default async function ProductCard({ className, product}: Props) {
 						{product.name}
 					</h3>
 				</Link>
-				<Rating rating={product.rating||0} votes={product.votes} className="col-span-2 max-h-8" />
+				<Rating id={product.id} rating={product.rating||0} ownVote={product.ownVote} voters={product.voters} className="col-span-2 max-h-8" />
 
 				<span className="text-xl font-semibold">{product.brand.name}</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">

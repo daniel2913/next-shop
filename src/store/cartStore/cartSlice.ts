@@ -1,14 +1,12 @@
-import { useSession } from "next-auth/react"
 import { StateCreator } from "zustand"
 
-interface Item
-{productId:number, amount:number}
+type Items = Record<number,number>
 export interface CartSlice {
-	items: Item[]
+	items: Items
 	addItem: (item: number,noUpd?:boolean) => void
 	discardItem: (id: number,noUpd?:boolean) => void
 	setAmmount: (id: number, amnt: number,noUpd?:boolean) => void
-	setItems: (items: Item[]) => void
+	setItems: (items: Items) => void
 }
 
 export const validCartItemProps = [
@@ -19,7 +17,7 @@ export const validCartItemProps = [
 	"price",
 ] as const
 
-function updateAccount(cart: Item[]) {
+function updateAccount(cart: Items) {
 	fetch("/api/store", {
 		method: "PATCH",
 		headers: {
@@ -30,38 +28,37 @@ function updateAccount(cart: Item[]) {
 }
 
 export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
-	items:[],
+	items:{},
 	addItem: (id: number,noUpd?:boolean) => {
 		set((state) => {
-			const newItems = [...state.items]
-			newItems.push({ amount: 1, productId: id })
+			const newItems = {...state.items}
+			newItems[id]=1
 			if (!noUpd)
 			updateAccount(newItems)
-			return { items: newItems }
+			return {items: {...state.items,[id]:1}}
 		})
 	},
-	setItems: (items: Item[]) => {
-		set((state) => {
-			return { items }
+	setItems: (items: Items) => {
+		set(_ => {
+			return {items}
 		})
 	},
 	discardItem: (id: number, noUpd?:boolean) => {
 		set((state) => {
-			const newItems = state.items.filter((item) => item.productId !== id)
+			const {[id]:_,...items} = state.items
 			if(!noUpd)
-			updateAccount(newItems)
-			return { items: newItems }
+			updateAccount(items)
+			return {items}
 		})
 	},
 	setAmmount: (id: number, amnt: number, noUpd?:boolean) => {
 		set((state) => {
-			const newItems = state.items.map((item) => {
-				if (item.productId === id) item.amount = amnt > 0 ? amnt : 0
-				return item
-			})
+			
+			const {[id]:_,...items} = state.items 
+			if (amnt>0) items[id] = amnt
 			if (!noUpd)
-				updateAccount(newItems)
-			return { items: newItems }
+				updateAccount(items)
+			return {items}
 		})
 	},
 })

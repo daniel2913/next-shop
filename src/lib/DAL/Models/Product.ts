@@ -17,7 +17,7 @@ type TestType = Readonly<{
 	images: "array"
 	price: "number"
 	discounts: "array"
-	votes:"array"
+	votes:"number"
 	voters:"array"
 	rating:"number"
 }>
@@ -32,7 +32,7 @@ const ProductValidations = {
 	price: [validations.value("price", Infinity, 1)],
 	discounts: [validations.noDefault('discount')],
 	votes: [validations.noDefault('votes')],
-	voters:[validations.noDefault('voters')],
+	voters: [validations.noDefault('voters')],
 	rating:[validations.noDefault('rating')]
 }
 
@@ -40,23 +40,17 @@ const ProductCustomQueries = {
 	updateRatings: (dataBase:PostgresJsDatabase)=>
 		async (id:number,vote:number,voter:number)=>{
 			const res = await dataBase.execute(sql`
-				UPDATE ratings 
+				UPDATE shop.products 
 					SET 
-						ratings[
-							COALESCE(
-								ARRAY_POSITION(ratings.voters,${voter}),
-								CARDINALITY(ratings.voters)+1
-							)
-						]=${vote},
-						voters[
-							COALESCE(
-								ARRAY_POSITION(ratings.voters,${voter}),
-								CARDINALITY(ratings.voters)+1)
-						]=${voter}
+						votes=votes+${vote},
+						voters[coalesce(array_position(voters,${voter}),cardinality(voters)+1)]=${voter}
 					WHERE
-						id=${id}
+							id = ${id}
+					RETURNING
+						id;
 			`)
-			return res?.['.count']>0 ? true : false
+			console.log("=======3",res.toString())
+			return res?.length>0 ? true : false
 		}
 }
 
@@ -73,9 +67,9 @@ const config = {
 	images: varchar("images", { length: maxSizes.image }).array().notNull(),
 	price: real("price").notNull(),
 	discounts: smallint("discounts").array().notNull(),
-	votes: smallint("votes").array().default([]).notNull(),
+	votes: integer("votes").default(0).notNull(),
 	voters: smallint("voters").array().default([]).notNull(),
-	rating: real("rating").default(0)
+	rating: real("rating").default(0),
 }
 const ProductPgreTable = shop.table(
 	"products",
@@ -89,9 +83,10 @@ const ProductPgreTable = shop.table(
 
 export type Product = typeof ProductPgreTable.$inferSelect
 export type LeanProduct = Omit<Product,'voters'|'discounts'>
-export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'voters'|'votes'> & 
+export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'votes'|'voters'> & 
 {
 	votes:number
+	voters:number
 	brand:Brand
 	category:Category
 	discount: Discount

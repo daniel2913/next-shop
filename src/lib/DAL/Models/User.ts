@@ -9,10 +9,11 @@ type TestType = Readonly<{
 	role: "string"
 	image: "string"
 	cart: "json"
+	bought: "json"
 }>
 
 const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
-	id: [],
+	id: [validations.id("id")],
 	name: [validations.length("name", maxSizes.name, 1)],
 	passwordHash: [],
 	role: [validations.match("role", /(admin|user)/)],
@@ -21,6 +22,7 @@ const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
 		validations.length("cart", maxSizes.description),
 		validations.match("cart", /^\[.*\]$/),
 	],
+	bought:[]
 }
 
 const config = {
@@ -29,7 +31,8 @@ const config = {
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	image: pgreDefaults.image,
-	cart: jsonb("cart").notNull().default([]).$type<{id:string,amount:number}[]>(),
+	cart: jsonb("cart").notNull().default({}).$type<Record<string,number>>(),
+	bought: jsonb("bought").notNull().default({}).$type<Record<string,number>>()
 }
 
 const UserPgreTable = shop.table(

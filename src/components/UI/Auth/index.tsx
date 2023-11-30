@@ -19,7 +19,7 @@ export default function Auth({ className }: props) {
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore(state=>state.setItems)
 	const router = useRouter()
-	const purgeCart = ()=>cartSetter([])
+	const purgeCart = ()=>cartSetter({})
 	const modal = useModalStore(state=>state.base)
 	const register = (<Register/>)
 	const login = (<Login close={modal.close}/>)
@@ -28,13 +28,13 @@ export default function Auth({ className }: props) {
 			{session.data?.user?.name ? (
 				<div className="grid">
 					<Link href={`/profile/${name}`}>{name}</Link>
-					<button onClick={()=>{signOut({redirect:false}).then(res=>{purgeCart();router.refresh()})}}>Log out</button>
+					<button type="submit" onClick={()=>{signOut({redirect:false}).then(res=>{purgeCart();router.refresh()})}}>Log out</button>
 				</div>
 			) : (
 				<div className="grid">
 					<span>{name}</span>
-					<button onClick={()=>{modal.setModal(register);modal.show()}}>Register</button>
-					<button onClick={()=>{modal.setModal(login);modal.show()}}>Log in</button>
+					<button type="button" onClick={()=>{modal.setModal(register);modal.show()}}>Register</button>
+					<button type="button" onClick={()=>{modal.setModal(login);modal.show()}}>Log in</button>
 				</div>
 			)}
 		</div>

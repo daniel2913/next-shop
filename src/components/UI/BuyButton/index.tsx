@@ -9,13 +9,10 @@ interface Props {
 }
 
 export default function BuyButton({ className, id }: Props) {
-	const session = useSession()
-	const cachedItem = useCartStore((state) =>
-		state.items.find((cacheItem) => cacheItem.productId === id),
-	)
+	const amount = useCartStore((state) => state.items[id])
 	const addItem = useCartStore((state) => state.addItem)
-	if (cachedItem) {
-		return <AmmountSelector className={`${className}`} {...cachedItem} />
+	if (amount) {
+		return <AmmountSelector className={`${className}`} amount={amount} id={id} />
 	} else {
 		return (
 			<button

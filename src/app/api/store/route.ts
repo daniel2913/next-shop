@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
 		return new NextResponse(JSON.stringify([]), { status: 404 })
 	}
 	const user = await UserCache.get(session.user.name)
-	console.log("<====>",user, user.cart)
 	if (user.cart) return new NextResponse(JSON.stringify(user.cart), { status: 200 })
 	return new NextResponse(JSON.stringify([]), { status: 404 })
 }
