@@ -1,4 +1,4 @@
-import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters"
+import { BrandCache, CategoryCache,} from "@/helpers/cachedGeters"
 import { NextResponse } from "next/server"
 import { Tconfig } from "."
 
@@ -17,15 +17,14 @@ export default async function getController(
 				query[key] = value
 			}
 		}
-		console.log(query)
 		if (query.brand) {
 			query.brand =
-				(await getAllBrands())?.find((brand) => brand.id === query.brand)?.id ||
+				(await BrandCache.get())?.find((brand) => brand.id === query.brand)?.id ||
 				undefined
 		}
 		if (query.category) {
 			query.category =
-				(await getAllCategories())?.find((cat) => cat.id === query.category)
+				(await CategoryCache.get())?.find((cat) => cat.id === query.category)
 					?.id || undefined
 		}
 

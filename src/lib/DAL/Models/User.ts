@@ -1,4 +1,4 @@
-import { char, jsonb, pgTable, varchar } from "drizzle-orm/pg-core"
+import { char, jsonb, varchar } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { maxSizes, pgreDefaults, shop, validations } from "./common"
 
@@ -9,11 +9,11 @@ type TestType = Readonly<{
 	role: "string"
 	image: "string"
 	cart: "json"
-	bought: "json"
+	votes: "json"
 }>
 
 const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
-	id: [validations.id("id")],
+	id: [],
 	name: [validations.length("name", maxSizes.name, 1)],
 	passwordHash: [],
 	role: [validations.match("role", /(admin|user)/)],
@@ -22,7 +22,7 @@ const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
 		validations.length("cart", maxSizes.description),
 		validations.match("cart", /^\[.*\]$/),
 	],
-	bought:[]
+	votes:[]
 }
 
 const config = {
@@ -32,7 +32,7 @@ const config = {
 	role: varchar("role", { length: 10 }).notNull(),
 	image: pgreDefaults.image,
 	cart: jsonb("cart").notNull().default({}).$type<Record<string,number>>(),
-	bought: jsonb("bought").notNull().default({}).$type<Record<string,number>>()
+	votes: jsonb("votes").notNull().default({}).$type<Record<string,number>>()
 }
 
 const UserPgreTable = shop.table(

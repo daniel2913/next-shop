@@ -2,21 +2,24 @@ import React from "react"
 import Auth from "../ui/Auth"
 import CartStatus from "../cart/Status"
 import Search from "../ui/Search"
-import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters"
-import { Session, } from "next-auth"
+import { BrandCache, CategoryCache, } from "@/helpers/cachedGeters"
+import { getProducts } from "../Products"
 
 export const revalidate = 300
 
-interface Props{
+interface Props {
 }
 
 
-export default async function NavBar({}:Props) {
-	
+export default async function NavBar({ }: Props) {
+
 	const [brands, categories] = await Promise.all([
-		getAllBrands(),
-		getAllCategories(),
+		BrandCache.get(),
+		CategoryCache.get(),
 	])
+
+
+
 	return (
 		<header
 			className="
@@ -28,8 +31,8 @@ export default async function NavBar({}:Props) {
 			<div className="w-20 h-full bg-accent1-400" />
 			<Search className="h-full" brandList={brands} categoryList={categories} />
 			<div className="flex gap-4 items-center">
-				<CartStatus />
-				<Auth  />
+				<CartStatus getProducts={getProducts} />
+				<Auth />
 			</div>
 		</header>
 	)

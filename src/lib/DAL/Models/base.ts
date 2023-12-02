@@ -126,7 +126,7 @@ export class PgreModel<
 	async newObject(obj: Record<string, any>) {
 		const newObj:any = {}
 		for (const key in obj){
-			if (key in this.table && key!='id'){
+			if (key in this.table && key!=='id'){
 				newObj[key] = obj[key]
 			}
 		}

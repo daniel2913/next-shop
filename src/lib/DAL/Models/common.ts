@@ -10,7 +10,7 @@ export const maxSizes = {
 	description: 8192,
 }
 export const pgreDefaults = {
-	id: smallint("id").primaryKey().notNull(),
+	id: smallint("id").primaryKey(),
 	image: varchar("image", { length: maxSizes.image }).notNull(),
 	name: varchar("name", { length: maxSizes.name }).notNull(),
 	description: varchar("description", {
@@ -22,12 +22,14 @@ export const validations = {
 
 	id(name:string){
 		return function(value:number){
-			return `${name} has id specified!`
+			if (value)
+				return `${name} has id (${value}) specified!`
 		}
 	},
 	noDefault(name:string){
 		return function(value:any){
-			return `${name} is generated column!`
+			if (value)
+				return `${name} is generated column!`
 		}
 	},
 	length(name: string, max: number, min?: number) {

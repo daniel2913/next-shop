@@ -6,19 +6,17 @@ import Link from "next/link";
 import Price from "../Price";
 import Rating from "@/components/ui/Rating";
 import { PopulatedProduct } from "@/lib/DAL/Models/Product";
-import { Session, getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 
 type Props = {
 	className: string;
 	product: PopulatedProduct;
-	session: Session|null;
 };
 
 export default async function ProductCard({ className, product}: Props) {
 	const session = await getServerSession(authOptions)
-	console.log('session - ', session)
 	return (
 		<div
 			className={`
@@ -27,13 +25,12 @@ export default async function ProductCard({ className, product}: Props) {
 			`}
 		>
 			<Carousel
-				preview
 				previewClassName="absolute bottom-0 left-0 right-0 h-1/5"
 				className="relative h-3/5 p-1"
 				discount={
 					<Discount
 						className="w-12 -rotate-[20deg] text-lg font-bold"
-						discount={product.discount.discount || 0}
+						discount={product.discount.discount}
 					/>
 				}
 				brandImage={
@@ -51,8 +48,8 @@ export default async function ProductCard({ className, product}: Props) {
 						fill
 						className=""
 						sizes="
-							(max-width:640px) 70vw
-							(max-width:1024px) 30vw
+							(max-width:640px) 40vw
+							(max-width:1024px) 20vw
 							25vw
 							"
 						key={img}
@@ -74,7 +71,7 @@ export default async function ProductCard({ className, product}: Props) {
 						{product.name}
 					</h3>
 				</Link>
-				<Rating id={product.id} rating={product.rating||0} ownVote={product.ownVote} voters={product.voters} className="col-span-2 max-h-8" />
+				<Rating id={product.id} rating={product.rating} ownVote={product.ownVote} voters={product.voters} className="col-span-2 max-h-8" />
 
 				<span className="text-xl font-semibold">{product.brand.name}</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">
@@ -82,8 +79,8 @@ export default async function ProductCard({ className, product}: Props) {
 				</span>
 				<Price
 					className="text-2xl"
-					discount={product.discount.discount || 0}
-					price={product.price || 200}
+					discount={product.discount}
+					price={product.price}
 				/>
 				{session?.user?.role === "admin" ? (
 					null

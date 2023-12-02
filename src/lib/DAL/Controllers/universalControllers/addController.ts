@@ -1,7 +1,7 @@
 import { deleteImages, handleImages, saveImages } from "@/helpers/images.ts"
 import { NextResponse } from "next/server"
 import { Tconfig, } from "./index.ts"
-import { getAllBrands, getAllCategories } from "@/helpers/cachedGeters.ts"
+import { BrandCache, CategoryCache, } from "@/helpers/cachedGeters.ts"
 
 export default async function addController<T>(props: any, config: Tconfig<T>) {
 	const { DIR_PATH, model, multImages } = config
@@ -21,13 +21,13 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
 		return new NextResponse("Server error", { status: 500 })
 	}
 	if (props.brand) {
-		const brand = (await getAllBrands()).find(
+		const brand = (await BrandCache.get()).find(
 			(brand) => brand.name.toString() === props.brand,
 		)
 		props.brand = brand?.id || undefined
 	}
 	if (props.category) {
-		const category = (await getAllCategories()).find(
+		const category = (await CategoryCache.get()).find(
 			(cat) => cat.name.toString() === props.category,
 		)
 		props.category = category?.id || undefined

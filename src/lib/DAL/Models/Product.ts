@@ -47,10 +47,10 @@ const ProductCustomQueries = {
 					WHERE
 							id = ${id}
 					RETURNING
-						id;
+						rating, cardinality(voters) as voters;
 			`)
-			console.log("=======3",res.toString())
-			return res?.length>0 ? true : false
+			console.log("=======3",res)
+			return res.length>0 ? res[0] as {rating:number,voters:number} : false
 		}
 }
 
@@ -89,7 +89,7 @@ export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'vote
 	voters:number
 	brand:Brand
 	category:Category
-	discount: Discount
+	discount: Pick<Discount,'discount'|'expires'>
 	ownVote: number
 }
 

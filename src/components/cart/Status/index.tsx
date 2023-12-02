@@ -3,10 +3,20 @@ import React, { useEffect } from "react"
 import useCartStore from "@/store/cartStore"
 import { useSession } from "next-auth/react"
 import useConfirm from "../../../hooks/modals/useConfirm"
-export default function CartStatus() {
+import useModal from "@/hooks/modals/useModal"
+import Cart from "../Cart"
+import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { getProducts } from "@/components/Products"
+
+type Props = {
+	getProducts: (query:{query:string|string[]|RegExp})=>Promise<PopulatedProduct[]>
+}
+
+export default function CartStatus({getProducts}:Props) {
 	const items = useCartStore((state) => state.items)
 	const { data } = useSession()
 	let synced = false
+	const modal = useModal()
 	const localCache = useCartStore(state => state.items)
 	const setLocalCache = useCartStore(state => state.setItems)
 	const confirmOverwrite = useConfirm(
@@ -36,5 +46,16 @@ export default function CartStatus() {
 	}
 	getCache()
 	}, [data])
-	return <div>{Object.values(localCache).reduce((sum,next)=>sum+next,0)}</div>
+
+	async function clickHandler(){
+		const res = await modal.show(<Cart action={getProducts}close={modal.close}/>)
+	}
+
+
+	return <button
+		type = "button"
+		onClick={clickHandler}
+		>
+		{Object.values(localCache).reduce((sum,next)=>sum+next,0)}
+	</button>
 }

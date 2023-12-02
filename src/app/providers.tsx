@@ -10,5 +10,5 @@ interface props {
 }
 
 export default function RootProviders({ children,session }: props) {
-	return <SessionProvider session={session}>{children}</SessionProvider>
+	return <SessionProvider 	refetchOnWindowFocus={false} session={session}>{children}</SessionProvider>
 }
