@@ -21,7 +21,7 @@ export default function Search({ className, brandList, categoryList }: Props) {
 	>(categoryList.map((category) => ({ category, checked: false })))
 
 	async function onClick() {
-		const query = new URL("shop", "http://localhost:5000")
+		const query = new URL("shop", "http://localhost:3000")
 		const queryCats = categories.filter((category) => category.checked)
 		const queryBrands = brands.filter((brand) => brand.checked)
 		if (queryString) query.searchParams.set("name", queryString)

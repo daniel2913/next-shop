@@ -76,7 +76,6 @@ export async function populateProducts(products:Product[]):Promise<PopulatedProd
 
 
 async function getProducts(searchParams: TSearchParams, ) {
-	"use server"
 	const query = collectQueries(searchParams, {
 		model: ProductModel,
 	})

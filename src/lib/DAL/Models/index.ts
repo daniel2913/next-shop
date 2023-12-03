@@ -30,7 +30,7 @@ import {
 	DiscountPgreTable,
 	DiscountValidations
 } from "./Discount"
-import { Order, OrderPgreTable, OrderValidations } from "./Order"
+import { Order, OrderCustomQueries, OrderPgreTable, OrderValidations } from "./Order"
 
 
 export type { Brand, Category, Product, User }
@@ -67,8 +67,9 @@ export const DiscountModel = new PgreModel<typeof DiscountPgreTable,Discount >(
 	DiscountValidations
 )
 
-export const OrderModel = new PgreModel<typeof OrderPgreTable,Order >(
+export const OrderModel = new PgreModel<typeof OrderPgreTable,Order,typeof OrderCustomQueries >(
 	OrderPgreTable,
-	OrderValidations
+	OrderValidations,
+	OrderCustomQueries
 )
 

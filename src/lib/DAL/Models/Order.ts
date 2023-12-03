@@ -3,6 +3,8 @@ import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { jsonb, real, smallint, varchar } from "drizzle-orm/pg-core"
 import { pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
+import { sql } from "drizzle-orm"
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js/index"
 
 type TestType = Readonly<{
 	id: "number"
@@ -23,6 +25,16 @@ const OrderValidations = {
 
 export type Order = typeof OrderPgreTable.$inferSelect
 
+const OrderCustomQueries = {
+	getActive: (dataBase:PostgresJsDatabase)=>
+		async ()=>{
+			const res = await dataBase.execute(sql`
+				SELECT * FROM shop.orders 
+					WHERE status='PROCESSING';
+			`)
+			return res.map(res=>({...res,order:JSON.parse(res.order)})) as Order[]
+		}
+}
 
 const config = {
 	id: pgreDefaults.id,
@@ -38,5 +50,5 @@ const OrderPgreTable = shop.table(
 	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
-export { OrderPgreTable, OrderValidations, }
+export { OrderPgreTable, OrderValidations, OrderCustomQueries }
 

@@ -3,7 +3,8 @@ import Auth from "../ui/Auth"
 import CartStatus from "../cart/Status"
 import Search from "../ui/Search"
 import { BrandCache, CategoryCache, } from "@/helpers/cachedGeters"
-import { getProducts } from "../Products"
+import { getProducts } from "@/actions/getProducts"
+import Link from "next/link"
 
 export const revalidate = 300
 
@@ -28,6 +29,7 @@ export default async function NavBar({ }: Props) {
             flex justify-between items-center
             bg-teal-400"
 		>
+			<Link href="/admin/orders">Orders</Link>
 			<div className="w-20 h-full bg-accent1-400" />
 			<Search className="h-full" brandList={brands} categoryList={categories} />
 			<div className="flex gap-4 items-center">
