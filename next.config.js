@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-	eslint:{
-	dirs:["src"]
-	},
 	experimental: {},
 	webpack(config) {
 		const fileLoaderRule = config.module.rules.find((rule) =>
