@@ -12,14 +12,14 @@ export async function PATCH(req: NextRequest) {
 	const cart = await req.json()
 	console.log(cart)
 	try {
-		const res = await UserModel.patch(
-			session.user.id,
-			{ cart: cart },
-		)
+		const res = await UserModel.patch(session.user.id, {
+			cart: cart,
+		})
 		if (!res) throw res
 
-		if (UserCache.present(session.user.name)) UserCache.patch(session.user.name, { cart })
-		
+		if (UserCache.present(session.user.name))
+			UserCache.patch(session.user.name, { cart })
+
 		return new NextResponse("Cart updated", { status: 200 })
 	} catch (error) {
 		return new NextResponse("Server error", { status: 500 })
@@ -32,6 +32,9 @@ export async function GET(req: NextRequest) {
 		return new NextResponse(JSON.stringify([]), { status: 404 })
 	}
 	const user = await UserCache.get(session.user.name)
-	if (user.cart) return new NextResponse(JSON.stringify(user.cart), { status: 200 })
+	if (user.cart)
+		return new NextResponse(JSON.stringify(user.cart), {
+			status: 200,
+		})
 	return new NextResponse(JSON.stringify([]), { status: 404 })
 }

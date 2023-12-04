@@ -14,14 +14,19 @@ interface LayoutProps {
 	children: ReactElement
 }
 
-export default async function MainLayout({ children }: LayoutProps) {
+export default async function MainLayout({
+	children,
+}: LayoutProps) {
 	const session = await getServerSession(authOptions)
 	return (
 		<>
 			<html lang="en">
 				<head>
 					<meta charSet="UTF-8" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+					<meta
+						name="viewport"
+						content="width=device-width, initial-scale=1.0"
+					/>
 					<title>Document</title>
 				</head>
 				<body className="w-full overflow-x-hidden">

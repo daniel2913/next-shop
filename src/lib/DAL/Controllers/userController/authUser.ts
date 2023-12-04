@@ -2,12 +2,14 @@ import { createHash } from "crypto"
 import { UserModel } from "../../Models"
 import { UserCache } from "@/helpers/cachedGeters"
 
-interface Props{
-	name?:string
-	password?:string
+interface Props {
+	name?: string
+	password?: string
 }
 
-export default async function authUser(props: Props|undefined) {
+export default async function authUser(
+	props: Props | undefined
+) {
 	const password = props?.password
 	const name = props?.name
 	if (!(password && name)) return null

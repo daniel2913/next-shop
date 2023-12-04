@@ -9,12 +9,12 @@ import { Tconfig, form, imagesDiff, isValidDocument } from "."
 
 export default async function patchController<T>(
 	{ targId, targName, ...props }: any,
-	config: Tconfig<T>,
+	config: Tconfig<T>
 ) {
 	const { DIR_PATH, model, multImages } = config
 
-
-	if (!targId) return new NextResponse("Invalid target", { status: 400 })
+	if (!targId)
+		return new NextResponse("Invalid target", { status: 400 })
 	const cur = await model.findOne({ id: targId })
 	if (!cur) {
 		//!isDocument(cur)
@@ -27,7 +27,9 @@ export default async function patchController<T>(
 		? (cur[imagesPath] as string[])
 		: ([cur[imagesPath]] as string[])
 
-	props["delImages"] = props["delImages"] ? props["delImages"].split(";") : []
+	props["delImages"] = props["delImages"]
+		? props["delImages"].split(";")
+		: []
 	let delImages = props["delImages"].filter((strNum: string) => {
 		return !Number.isNaN(+strNum) && +strNum < oldImages.length
 	})
@@ -38,11 +40,13 @@ export default async function patchController<T>(
 		newImages.map((image) => image.name),
 		config,
 		oldImages,
-		delImages,
+		delImages
 	)
 	if (!multImages) {
 		if (props[imagesPath].length > 1 || !props[imagesPath]) {
-			return new NextResponse("Too much single image!", { status: 500 })
+			return new NextResponse("Too much single image!", {
+				status: 500,
+			})
 		}
 		props[imagesPath] = props[imagesPath][0]
 			? props[imagesPath][0]
@@ -65,12 +69,13 @@ export default async function patchController<T>(
 		}
 	}
 	const res = await model.patch(targId, patch)
-	if (!res) return new NextResponse("Something on BD", { status: 500 })
+	if (!res)
+		return new NextResponse("Something on BD", { status: 500 })
 	try {
 		if (!(await saveImages(newImages, DIR_PATH))) {
 			deleteImages(
 				newImages.map((image) => image.name),
-				DIR_PATH,
+				DIR_PATH
 			)
 			return new NextResponse("Couldnt save", { status: 500 })
 		}

@@ -34,7 +34,10 @@ export async function isValidDocument(doc: unknown) {
 	}
 }
 
-export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
+export function collectFromForm<T>(
+	form: FormData,
+	config: Tconfig<T>
+) {
 	const props: any = {}
 	const imagesPath = config.multImages ? "images" : "image"
 	console.log("form: ", form)
@@ -64,18 +67,22 @@ export function imagesDiff<T>(
 	newImages: string[],
 	config: Tconfig<T>,
 	oldImages: string[] = [],
-	deleteImages: string[] = [],
+	deleteImages: string[] = []
 ) {
 	if (!config.multImages) return [newImages[0]]
 	if (!oldImages) return newImages
 	return oldImages
-		.filter((image, idx) => !deleteImages.includes(idx.toString()))
+		.filter(
+			(image, idx) => !deleteImages.includes(idx.toString())
+		)
 		.concat(newImages)
 }
 
 export function collectQueries<T>(
-	params: URLSearchParams | Record<string, string | string[] | undefined>,
-	config: Tconfig<T>,
+	params:
+		| URLSearchParams
+		| Record<string, string | string[] | undefined>,
+	config: Tconfig<T>
 ) {
 	const query: Partial<{ [i: string]: string | string[] }> = {}
 	for (const [key, value] of Object.entries(params)) {
@@ -91,15 +98,24 @@ export function collectQueries<T>(
 	}
 	if ("name" in query) {
 		//TODO
-		query["name"] = new RegExp(query["name"] as string) as any as string
+		query["name"] = new RegExp(
+			query["name"] as string
+		) as any as string
 	}
 	return query
 }
 
-export function formatImages<T>(propsImages: unknown, config: Tconfig<T>) {
+export function formatImages<T>(
+	propsImages: unknown,
+	config: Tconfig<T>
+) {
 	if (!propsImages) return []
 	if (!Array.isArray(propsImages)) return [propsImages]
-	return config.multImages ? propsImages : propsImages[0] ? [propsImages[0]] : []
+	return config.multImages
+		? propsImages
+		: propsImages[0]
+		  ? [propsImages[0]]
+		  : []
 }
 
 type FormValue = File | string

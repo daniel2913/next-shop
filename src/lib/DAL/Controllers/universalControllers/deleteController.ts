@@ -4,10 +4,9 @@ import { Tconfig } from "."
 import { DataModels } from "../../Models/base"
 import { FileStorage } from "../../FileStorage"
 
-export default async function deleteController<T extends DataModels>(
-	id: string | undefined,
-	config: Tconfig<T>,
-) {
+export default async function deleteController<
+	T extends DataModels,
+>(id: string | undefined, config: Tconfig<T>) {
 	const { model, DIR_PATH } = config
 	if (!id) {
 		return new NextResponse("Invalid request", { status: 400 })

@@ -1,4 +1,7 @@
-import { BrandCache, CategoryCache,} from "@/helpers/cachedGeters"
+import {
+	BrandCache,
+	CategoryCache,
+} from "@/helpers/cachedGeters"
 import { NextResponse } from "next/server"
 import { Tconfig } from "."
 
@@ -6,7 +9,7 @@ type Tquery = { [i: string]: string | undefined }
 
 export default async function getController(
 	querys: Tquery,
-	config: Tconfig<any>,
+	config: Tconfig<any>
 ) {
 	const { model } = config
 
@@ -19,13 +22,15 @@ export default async function getController(
 		}
 		if (query.brand) {
 			query.brand =
-				(await BrandCache.get())?.find((brand) => brand.id === query.brand)?.id ||
-				undefined
+				(await BrandCache.get())?.find(
+					(brand) => brand.id === query.brand
+				)?.id || undefined
 		}
 		if (query.category) {
 			query.category =
-				(await CategoryCache.get())?.find((cat) => cat.id === query.category)
-					?.id || undefined
+				(await CategoryCache.get())?.find(
+					(cat) => cat.id === query.category
+				)?.id || undefined
 		}
 
 		const res = await model.find(query)

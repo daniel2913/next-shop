@@ -11,13 +11,23 @@ export interface BaseModalSlice {
 	}
 }
 
-export const createBaseModalSlice: StateCreator<BaseModalSlice> = (set) => ({
+export const createBaseModalSlice: StateCreator<
+	BaseModalSlice
+> = (set) => ({
 	base: {
 		isVisible: false,
 		content: null,
-		show: () => set((state) => ({ base: { ...state.base, isVisible: true } })),
-		close: () => set((state) => ({ base: { ...state.base, isVisible: false } })),
+		show: () =>
+			set((state) => ({
+				base: { ...state.base, isVisible: true },
+			})),
+		close: () =>
+			set((state) => ({
+				base: { ...state.base, isVisible: false },
+			})),
 		setModal: (newContent) =>
-			set((state) => ({ base: { ...state.base, content: newContent } })),
+			set((state) => ({
+				base: { ...state.base, content: newContent },
+			})),
 	},
 })

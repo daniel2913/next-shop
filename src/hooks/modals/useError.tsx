@@ -6,7 +6,9 @@ export default function useError(defMessage = "Error!") {
 	const modalState = useModalStore((state) => state.base)
 
 	function show(message: string) {
-		modalState.setModal(<ModalError message={message || defMessage} />)
+		modalState.setModal(
+			<ModalError message={message || defMessage} />
+		)
 		modalState.show()
 	}
 	return show

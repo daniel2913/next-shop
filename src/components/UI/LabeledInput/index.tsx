@@ -59,7 +59,10 @@ export default function LabeledInput({
 	const [error, setError] = React.useState<string>("")
 	const inpRef = React.useRef<HTMLInputElement>(null)
 
-	function validate(value: string | File[], validation: Props["validator"]) {
+	function validate(
+		value: string | File[],
+		validation: Props["validator"]
+	) {
 		if (validation) {
 			const err = validation(value)
 			if (err.valid) {
@@ -103,7 +106,10 @@ export default function LabeledInput({
 	if (type === "file")
 		return (
 			<div className={`${className} flex flex-col`}>
-				<label htmlFor={id || ""} className="text-gray-600">
+				<label
+					htmlFor={id || ""}
+					className="text-gray-600"
+				>
 					{label}
 				</label>
 				<input
@@ -116,10 +122,12 @@ export default function LabeledInput({
 					type={type}
 					placeholder={placeholder}
 					value=""
-					onChange={(e) => fileChangeHandeler(e.currentTarget.files)}
+					onChange={(e) =>
+						fileChangeHandeler(e.currentTarget.files)
+					}
 				/>
 				<label
-					className="border-2 border-cyan-400 p-1 cursor-pointer font-semibold bg-cyan-200"
+					className="cursor-pointer border-2 border-cyan-400 bg-cyan-200 p-1 font-semibold"
 					htmlFor={id}
 				>
 					Upload
@@ -135,8 +143,15 @@ export default function LabeledInput({
 			</div>
 		)
 	return (
-		<div className={`${className} ${type==="hidden" ? "hidden" : ""} flex flex-col`}>
-			<label htmlFor={id || ""} className="text-gray-600">
+		<div
+			className={`${className} ${
+				type === "hidden" ? "hidden" : ""
+			} flex flex-col`}
+		>
+			<label
+				htmlFor={id || ""}
+				className="text-gray-600"
+			>
 				{label}
 			</label>
 			<input
@@ -148,9 +163,14 @@ export default function LabeledInput({
 				type={type}
 				placeholder={placeholder}
 				value={value}
-				onChange={(e) => {if(type!=="hidden") setValue(e.currentTarget.value)}}
+				onChange={(e) => {
+					if (type !== "hidden") setValue(e.currentTarget.value)
+				}}
 			/>
-			<label htmlFor={id || ""} className="text-accent1-600">
+			<label
+				htmlFor={id || ""}
+				className="text-accent1-600"
+			>
 				{error}
 			</label>
 		</div>

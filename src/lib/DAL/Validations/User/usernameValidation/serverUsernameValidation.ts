@@ -2,7 +2,8 @@ import { UserModel } from "../../../Models/index.ts"
 import { clientUserNameValidation } from "./clientUsernameValidation.ts"
 
 async function serverUsernameValidation(login: string) {
-	if (await UserModel.exists({ name: login })) return "Username is already taken"
+	if (await UserModel.exists({ name: login }))
+		return "Username is already taken"
 
 	return false
 }

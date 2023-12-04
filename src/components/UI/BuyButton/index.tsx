@@ -12,15 +12,21 @@ export default function BuyButton({ className, id }: Props) {
 	const amount = useCartStore((state) => state.items[id])
 	const addItem = useCartStore((state) => state.addItem)
 	if (amount) {
-		return <AmmountSelector className={`${className}`} amount={amount} id={id} />
+		return (
+			<AmmountSelector
+				className={`${className}`}
+				amount={amount}
+				id={id}
+			/>
+		)
 	} else {
 		return (
 			<button
 				type="button"
 				className={`
 					${className} w-16 min-w-fit 
-					border-2 uppercase border-accent1-200 py-2
-					rounded-md font-bold text-xl`}
+					rounded-md border-2 border-accent1-200 py-2
+					text-xl font-bold uppercase`}
 				onClick={() => addItem(id)}
 			>
 				Buy

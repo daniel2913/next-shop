@@ -1,13 +1,24 @@
-import { deleteImages, handleImages, saveImages } from "@/helpers/images.ts"
+import {
+	deleteImages,
+	handleImages,
+	saveImages,
+} from "@/helpers/images.ts"
 import { NextResponse } from "next/server"
-import { Tconfig, } from "./index.ts"
-import { BrandCache, CategoryCache, } from "@/helpers/cachedGeters.ts"
+import { Tconfig } from "./index.ts"
+import {
+	BrandCache,
+	CategoryCache,
+} from "@/helpers/cachedGeters.ts"
 
-export default async function addController<T>(props: any, config: Tconfig<T>) {
+export default async function addController<T>(
+	props: any,
+	config: Tconfig<T>
+) {
 	const { DIR_PATH, model, multImages } = config
 
-	const imageFiles = ((multImages ? props["images"] : [props["image"]]) ||
-		[]) as (File | string)[]
+	const imageFiles = ((multImages
+		? props["images"]
+		: [props["image"]]) || []) as (File | string)[]
 
 	const images = handleImages(imageFiles)
 	if (multImages) {
@@ -22,13 +33,13 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
 	}
 	if (props.brand) {
 		const brand = (await BrandCache.get()).find(
-			(brand) => brand.name.toString() === props.brand,
+			(brand) => brand.name.toString() === props.brand
 		)
 		props.brand = brand?.id || undefined
 	}
 	if (props.category) {
 		const category = (await CategoryCache.get()).find(
-			(cat) => cat.name.toString() === props.category,
+			(cat) => cat.name.toString() === props.category
 		)
 		props.category = category?.id || undefined
 	}
@@ -37,7 +48,7 @@ export default async function addController<T>(props: any, config: Tconfig<T>) {
 		if (!res) {
 			deleteImages(
 				images.map((image) => image.name),
-				DIR_PATH,
+				DIR_PATH
 			)
 			throw "Could not save images"
 		}

@@ -1,7 +1,15 @@
 import { Brand, BrandPgreTable } from "./Brand.ts"
 import { Category, CategoryPgreTable } from "./Category.ts"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { PgDatabase, char, integer, real, smallint, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import {
+	PgDatabase,
+	char,
+	integer,
+	real,
+	smallint,
+	uniqueIndex,
+	varchar,
+} from "drizzle-orm/pg-core"
 import { maxSizes, pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
 import { sql } from "drizzle-orm"
@@ -17,9 +25,9 @@ type TestType = Readonly<{
 	images: "array"
 	price: "number"
 	discounts: "array"
-	votes:"number"
-	voters:"array"
-	rating:"number"
+	votes: "number"
+	voters: "array"
+	rating: "number"
 }>
 
 const ProductValidations = {
@@ -27,18 +35,21 @@ const ProductValidations = {
 	name: [validations.length("name", maxSizes.name, 1)],
 	brand: [],
 	category: [],
-	description: [validations.length("description", maxSizes.description, 1)],
+	description: [
+		validations.length("description", maxSizes.description, 1),
+	],
 	images: [validations.imagesMatch()],
 	price: [validations.value("price", Infinity, 1)],
-	discounts: [validations.noDefault('discount')],
-	votes: [validations.noDefault('votes')],
-	voters: [validations.noDefault('voters')],
-	rating:[validations.noDefault('rating')]
+	discounts: [validations.noDefault("discount")],
+	votes: [validations.noDefault("votes")],
+	voters: [validations.noDefault("voters")],
+	rating: [validations.noDefault("rating")],
 }
 
 const ProductCustomQueries = {
-	updateRatings: (dataBase:PostgresJsDatabase)=>
-		async (id:number,vote:number,voter:number)=>{
+	updateRatings:
+		(dataBase: PostgresJsDatabase) =>
+		async (id: number, vote: number, voter: number) => {
 			const res = await dataBase.execute(sql`
 				UPDATE shop.products 
 					SET 
@@ -49,9 +60,11 @@ const ProductCustomQueries = {
 					RETURNING
 						rating, cardinality(voters) as voters;
 			`)
-			console.log("=======3",res)
-			return res.length>0 ? res[0] as {rating:number,voters:number} : false
-		}
+			console.log("=======3", res)
+			return res.length > 0
+				? (res[0] as { rating: number; voters: number })
+				: false
+		},
 }
 
 const config = {
@@ -64,7 +77,9 @@ const config = {
 		.notNull()
 		.references(() => CategoryPgreTable.id),
 	description: pgreDefaults.description,
-	images: varchar("images", { length: maxSizes.image }).array().notNull(),
+	images: varchar("images", { length: maxSizes.image })
+		.array()
+		.notNull(),
 	price: real("price").notNull(),
 	discounts: smallint("discounts").array().notNull(),
 	votes: integer("votes").default(0).notNull(),
@@ -73,25 +88,33 @@ const config = {
 }
 const ProductPgreTable = shop.table(
 	"products",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
+	config as TestColumnsConfig<
+		typeof config,
+		ColumnsConfig<TestType>
+	>,
 	(table) => {
 		return {
 			uq: uniqueIndex().on(table.brand, table.name),
 		}
-	},
+	}
 )
 
 export type Product = typeof ProductPgreTable.$inferSelect
-export type LeanProduct = Omit<Product,'voters'|'discounts'>
-export type PopulatedProduct = Omit<Product,'brand'|'category'|'discounts'|'votes'|'voters'> & 
-{
-	votes:number
-	voters:number
-	brand:Brand
-	category:Category
-	discount: Pick<Discount,'discount'|'expires'>
+export type LeanProduct = Omit<Product, "voters" | "discounts">
+export type PopulatedProduct = Omit<
+	Product,
+	"brand" | "category" | "discounts" | "votes" | "voters"
+> & {
+	votes: number
+	voters: number
+	brand: Brand
+	category: Category
+	discount: Pick<Discount, "discount" | "expires">
 	ownVote: number
 }
 
-
-export { ProductPgreTable, ProductValidations, ProductCustomQueries }
+export {
+	ProductPgreTable,
+	ProductValidations,
+	ProductCustomQueries,
+}

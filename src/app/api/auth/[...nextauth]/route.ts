@@ -3,7 +3,6 @@ import authUser from "@/lib/DAL/controllers/userController/authUser"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
-
 export const authOptions: AuthOptions = {
 	providers: [
 		CredentialsProvider({
@@ -16,7 +15,7 @@ export const authOptions: AuthOptions = {
 				},
 				password: { label: "Password", type: "password" },
 			},
-			async authorize(credentials,) {
+			async authorize(credentials) {
 				const user = await authUser(credentials)
 				if (user) {
 					return user
@@ -26,9 +25,10 @@ export const authOptions: AuthOptions = {
 		}),
 	],
 	callbacks: {
-		async session({ session}) {
+		async session({ session }) {
 			if (!session.user?.name) return session
-			const {cart,votes,passwordHash, ...user} = await UserCache.get(session.user.name)
+			const { cart, votes, passwordHash, ...user } =
+				await UserCache.get(session.user.name)
 			if (!user) return session
 			session.user = user
 			return session

@@ -9,31 +9,47 @@ interface Props {
 	categoryList: Category[]
 }
 
-export default function Search({ className, brandList, categoryList }: Props) {
+export default function Search({
+	className,
+	brandList,
+	categoryList,
+}: Props) {
 	const router = useRouter()
-	const [queryString, setQueryString] = React.useState<string>("")
+	const [queryString, setQueryString] =
+		React.useState<string>("")
 
 	const [brands, setBrands] = React.useState<
 		{ brand: Brand; checked: boolean }[]
 	>(brandList.map((brand) => ({ brand, checked: false })))
 	const [categories, setCategories] = React.useState<
 		{ category: Category; checked: boolean }[]
-	>(categoryList.map((category) => ({ category, checked: false })))
+	>(
+		categoryList.map((category) => ({
+			category,
+			checked: false,
+		}))
+	)
 
 	async function onClick() {
 		const query = new URL("shop", "http://localhost:3000")
-		const queryCats = categories.filter((category) => category.checked)
+		const queryCats = categories.filter(
+			(category) => category.checked
+		)
 		const queryBrands = brands.filter((brand) => brand.checked)
 		if (queryString) query.searchParams.set("name", queryString)
 		if (queryCats.length)
 			query.searchParams.set(
 				"category",
-				encodeURIComponent(queryCats.map((cat) => cat.category.name).join(",")),
+				encodeURIComponent(
+					queryCats.map((cat) => cat.category.name).join(",")
+				)
 			)
 		if (queryBrands.length)
 			query.searchParams.set(
 				"brand",
-				encodeURIComponent(queryBrands.map((brand) => brand.brand.name).join(",")),
+				encodeURIComponent(
+					queryBrands.map((brand) => brand.brand.name).join(",")
+				)
 			)
 		router.push(query.toString())
 	}
@@ -41,8 +57,11 @@ export default function Search({ className, brandList, categoryList }: Props) {
 		setBrands(
 			brands.map((brand) => ({
 				...brand,
-				checked: name === brand.brand.name ? !brand.checked : brand.checked,
-			})),
+				checked:
+					name === brand.brand.name
+						? !brand.checked
+						: brand.checked,
+			}))
 		)
 	}
 
@@ -51,17 +70,21 @@ export default function Search({ className, brandList, categoryList }: Props) {
 			categories.map((category) => ({
 				...category,
 				checked:
-					name === category.category.name ? !category.checked : category.checked,
-			})),
+					name === category.category.name
+						? !category.checked
+						: category.checked,
+			}))
 		)
 	}
 	return (
-		<div className={`${className} relative group right-auto w-1/2 flex`}>
+		<div
+			className={`${className} group relative right-auto flex w-1/2`}
+		>
 			<div className="w-full">
 				<input
 					className="
-                w-4/5 px-2 rounded-l-lg border-r-transparent
-                    bg-cyan-100 border-2 border-r-0 border-cyan-500
+                w-4/5 rounded-l-lg border-2 border-r-0
+                    border-cyan-500 border-r-transparent bg-cyan-100 px-2
                 "
 					type="search"
 					name="searchQuery"
@@ -71,7 +94,7 @@ export default function Search({ className, brandList, categoryList }: Props) {
 				/>
 				<button
 					className="
-                    rounded-r-lg w-1/5 
+                    w-1/5 rounded-r-lg 
                     border-2 border-cyan-600
                     
                     "
@@ -83,11 +106,11 @@ export default function Search({ className, brandList, categoryList }: Props) {
 			</div>
 			<div
 				className="
-                hidden group-focus-within:block absolute 
-                top-6 w-full overflow-x-scroll
+                absolute top-6 hidden 
+                w-full overflow-x-scroll group-focus-within:block
                 "
 			>
-				<div className="flex z-50 gap-3">
+				<div className="z-50 flex gap-3">
 					{categories.map((category) => {
 						return (
 							<div key={`category ${category.category.name}`}>
@@ -96,15 +119,19 @@ export default function Search({ className, brandList, categoryList }: Props) {
 									id={category.category.name}
 									name={category.category.name}
 									checked={category.checked}
-									onChange={() => onCategoryCheck(category.category.name)}
+									onChange={() =>
+										onCategoryCheck(category.category.name)
+									}
 								/>
-								<label htmlFor={category.category.name}>{category.category.name}</label>
+								<label htmlFor={category.category.name}>
+									{category.category.name}
+								</label>
 							</div>
 						)
 					})}
 				</div>
 				<br />
-				<div className="flex z-50 gap-3">
+				<div className="z-50 flex gap-3">
 					{brands.map((brand) => {
 						return (
 							<div key={`brand ${brand.brand.name}`}>
@@ -115,7 +142,9 @@ export default function Search({ className, brandList, categoryList }: Props) {
 									checked={brand.checked}
 									onChange={() => onBrandCheck(brand.brand.name)}
 								/>
-								<label htmlFor={brand.brand.name}>{brand.brand.name}</label>
+								<label htmlFor={brand.brand.name}>
+									{brand.brand.name}
+								</label>
 							</div>
 						)
 					})}

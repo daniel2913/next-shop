@@ -26,10 +26,12 @@ const config = {
 
 const CategoryPgreTable = shop.table(
 	"categories",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
+	config as TestColumnsConfig<
+		typeof config,
+		ColumnsConfig<TestType>
+	>
 )
 
 export type Category = typeof CategoryPgreTable.$inferSelect
-
 
 export { CategoryPgreTable, CategoryValidations }

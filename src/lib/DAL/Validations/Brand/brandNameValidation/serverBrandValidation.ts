@@ -1,7 +1,8 @@
 import { BrandModel } from "../../../Models/index.ts"
 
 async function serverBrandValidation(name: string) {
-	if (await BrandModel.exists({ name })) return "Brand already exists!"
+	if (await BrandModel.exists({ name }))
+		return "Brand already exists!"
 	return false
 }
 

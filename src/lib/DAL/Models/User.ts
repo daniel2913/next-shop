@@ -1,6 +1,11 @@
 import { char, jsonb, varchar } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import {
+	maxSizes,
+	pgreDefaults,
+	shop,
+	validations,
+} from "./common"
 
 type TestType = Readonly<{
 	id: "number"
@@ -12,7 +17,10 @@ type TestType = Readonly<{
 	votes: "json"
 }>
 
-const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
+const UserValidations: Record<
+	keyof User,
+	Array<(...args: any) => any>
+> = {
 	id: [],
 	name: [validations.length("name", maxSizes.name, 1)],
 	passwordHash: [],
@@ -22,7 +30,7 @@ const UserValidations:Record<keyof User,Array<(...args:any)=>any>> = {
 		validations.length("cart", maxSizes.description),
 		validations.match("cart", /^\[.*\]$/),
 	],
-	votes:[]
+	votes: [],
 }
 
 const config = {
@@ -31,16 +39,24 @@ const config = {
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	image: pgreDefaults.image,
-	cart: jsonb("cart").notNull().default({}).$type<Record<string,number>>(),
-	votes: jsonb("votes").notNull().default({}).$type<Record<string,number>>()
+	cart: jsonb("cart")
+		.notNull()
+		.default({})
+		.$type<Record<string, number>>(),
+	votes: jsonb("votes")
+		.notNull()
+		.default({})
+		.$type<Record<string, number>>(),
 }
 
 const UserPgreTable = shop.table(
 	"users",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
+	config as TestColumnsConfig<
+		typeof config,
+		ColumnsConfig<TestType>
+	>
 )
 
 export type User = typeof UserPgreTable.$inferSelect
-
 
 export { UserPgreTable, UserValidations }

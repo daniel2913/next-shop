@@ -15,61 +15,75 @@ interface Props {
 
 const getPos = (i: number, len: number) => (i + len) % len
 
-function Carousel({ className, children, brandImage, discount, preview, carouselClassName, previewClassName }: Props) {
+function Carousel({
+	className,
+	children,
+	brandImage,
+	discount,
+	preview,
+	carouselClassName,
+	previewClassName,
+}: Props) {
 	const [current, setCurrent] = useState(0)
 	function changeSlide(n: number) {
 		setCurrent(getPos(n, children.length))
-
 	}
 	return (
-		<div
-			className={`${className} relative mx-auto`}
-		>
+		<div className={`${className} relative mx-auto`}>
 			{" "}
-			<div
-				className={`${carouselClassName}`}
-			>
+			<div className={`${carouselClassName}`}>
 				{children.map((image, i) => {
 					if (
 						i === current ||
 						i === getPos(current + 1, children.length) ||
 						i === getPos(current - 1, children.length)
 					)
-						return <div key={Math.random().toString()} className={`${i === current ? "block" : "hidden"}`}>{image}</div>
-					else
-						return <></>
-				}
-
-				)}
+						return (
+							<div
+								key={Math.random().toString()}
+								className={`${
+									i === current ? "block" : "hidden"
+								}`}
+							>
+								{image}
+							</div>
+						)
+					else return <></>
+				})}
 				{children[current]}
 			</div>
-			<div
-				className="absolute top-2 left-2 z-40"
-			>
+			<div className="absolute left-2 top-2 z-40">
 				{brandImage}
 			</div>
-			<div
-				className="absolute bottom-2 right-2 z-40"
-			>
+			<div className="absolute bottom-2 right-2 z-40">
 				{discount}
 			</div>
 			<button
 				type="button"
 				onClick={() => changeSlide(current - 1)}
-				className="absolute top-1/2 -translate-y-1/2 left-2 -rotate-90 border-none"
+				className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 border-none"
 			>
-				<ArrowStraight width={30} height={30} className="" />
+				<ArrowStraight
+					width={30}
+					height={30}
+					className=""
+				/>
 			</button>
 			<button
 				type="button"
 				onClick={() => changeSlide(current + 1)}
-				className="absolute top-1/2 -translate-y-1/2 right-2 rotate-90 border-none"
+				className="absolute right-2 top-1/2 -translate-y-1/2 rotate-90 border-none"
 			>
-				<ArrowStraight width={30} height={30} className="" />
+				<ArrowStraight
+					width={30}
+					height={30}
+					className=""
+				/>
 			</button>
-			{preview
-				? <></>
-				: <div className="absolute bottom-0 right-1/2 translate-x-1/2 flex gap-1 justify-center z-50">
+			{preview ? (
+				<></>
+			) : (
+				<div className="absolute bottom-0 right-1/2 z-50 flex translate-x-1/2 justify-center gap-1">
 					{children.map((_, i) => {
 						return (
 							<button
@@ -77,32 +91,31 @@ function Carousel({ className, children, brandImage, discount, preview, carousel
 								key={Math.random().toString()}
 								onClick={() => changeSlide(i)}
 								aria-expanded={i === current}
-								className="w-4 aspect-square rounded-full bg-gray-100 hover:bg-gray-300 aria-expanded:bg-gray-200 bg-opacity-50"
+								className="aspect-square w-4 rounded-full bg-gray-100 bg-opacity-50 hover:bg-gray-300 aria-expanded:bg-gray-200"
 							/>
 						)
 					})}
-				</div>}
-			{preview
-				? <div
-					className={`${previewClassName} flex gap-2 justify-center`}
-				>
-					{
-						children.map((image, i) => (
-							<button
-								className="w-10 h-full relative"
-								type='button'
-								key={Math.random().toString()}
-								onClick={() => changeSlide(i)}
-								aria-expanded={i === current}
-							>
-								{image}
-							</button>
-						))
-					}
 				</div>
-				: <></>
-
-			}
+			)}
+			{preview ? (
+				<div
+					className={`${previewClassName} flex justify-center gap-2`}
+				>
+					{children.map((image, i) => (
+						<button
+							className="relative h-full w-10"
+							type="button"
+							key={Math.random().toString()}
+							onClick={() => changeSlide(i)}
+							aria-expanded={i === current}
+						>
+							{image}
+						</button>
+					))}
+				</div>
+			) : (
+				<></>
+			)}
 		</div>
 	)
 }

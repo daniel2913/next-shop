@@ -24,8 +24,14 @@ export default function Selector({
 		setValue(options[0])
 	}, [])
 	return (
-		<div onBlur={() => setOpen(false)} className={`${className}`}>
-			<label htmlFor={id} className="">
+		<div
+			onBlur={() => setOpen(false)}
+			className={`${className}`}
+		>
+			<label
+				htmlFor={id}
+				className=""
+			>
 				{label}
 			</label>
 			<input
@@ -37,7 +43,10 @@ export default function Selector({
 				name={id}
 				id={id}
 			/>
-			<div aria-hidden={!open} className="">
+			<div
+				aria-hidden={!open}
+				className=""
+			>
 				<ul>
 					{options.map((option) => (
 						<li key={option}>

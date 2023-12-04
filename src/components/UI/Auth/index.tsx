@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import Link from "next/link"
 import useModalStore from "@/store/modalStore"
 import { signIn, signOut, useSession } from "next-auth/react"
@@ -15,26 +15,54 @@ interface props {
 export default function Auth({ className }: props) {
 	const session = useSession()
 	console.log(session)
-	
-	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
-	const cartSetter = useCartStore(state=>state.setItems)
+
+	const name = session.data?.user?.name
+		? session.data?.user?.name
+		: "Guest"
+	const cartSetter = useCartStore((state) => state.setItems)
 	const router = useRouter()
-	const purgeCart = ()=>cartSetter({})
-	const modal = useModalStore(state=>state.base)
-	const register = (<Register/>)
-	const login = (<Login close={modal.close}/>)
+	const purgeCart = () => cartSetter({})
+	const modal = useModalStore((state) => state.base)
+	const register = <Register />
+	const login = <Login close={modal.close} />
 	return (
 		<div className={`${className}`}>
 			{session.data?.user?.name ? (
 				<div className="grid">
 					<Link href={`/profile/${name}`}>{name}</Link>
-					<button type="submit" onClick={()=>{signOut({redirect:false}).then(res=>{purgeCart();router.refresh()})}}>Log out</button>
+					<button
+						type="submit"
+						onClick={() => {
+							signOut({ redirect: false }).then((res) => {
+								purgeCart()
+								router.refresh()
+							})
+						}}
+					>
+						Log out
+					</button>
 				</div>
 			) : (
 				<div className="grid">
 					<span>{name}</span>
-					<button type="button" onClick={()=>{modal.setModal(register);modal.show()}}>Register</button>
-					<button type="button" onClick={()=>{modal.setModal(login);modal.show()}}>Log in</button>
+					<button
+						type="button"
+						onClick={() => {
+							modal.setModal(register)
+							modal.show()
+						}}
+					>
+						Register
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							modal.setModal(login)
+							modal.show()
+						}}
+					>
+						Log in
+					</button>
 				</div>
 			)}
 		</div>

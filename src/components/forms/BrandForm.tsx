@@ -6,10 +6,17 @@ import Form, {
 } from "./index"
 import React from "react"
 
-const fields = { name: "", description: "", link: "", image: null } as const
+const fields = {
+	name: "",
+	description: "",
+	link: "",
+	image: null,
+} as const
 const action = "api/brand"
 
-const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
+const validation: {
+	[i in keyof typeof fields]: FormFieldValidator
+} = {
 	name: (value: FormFieldValue) => {
 		if (typeof value !== "string")
 			return { valid: false, msg: "Name can only be string!" }
@@ -23,18 +30,23 @@ const validation: { [i in keyof typeof fields]: FormFieldValidator } = {
 			return { valid: false, msg: "Image can only be a file!" }
 		if (!file || (Array.isArray(file) && file.length === 0))
 			return { valid: true }
-		const files = file instanceof FileList ? Object.values(file) : [file]
+		const files =
+			file instanceof FileList ? Object.values(file) : [file]
 		for (const file of files) {
 			const ext = file.name.split(".").pop()
 			if (ext != "jpeg" && ext != "jpg")
 				return { valid: false, msg: "Only jpegs!" }
-			if (file.size > 1024 * 512) return { valid: false, msg: "Only under 0.5MB!" }
+			if (file.size > 1024 * 512)
+				return { valid: false, msg: "Only under 0.5MB!" }
 		}
 		return { valid: true }
 	},
 	description: (value: FormFieldValue) => {
 		if (typeof value != "string")
-			return { valid: false, msg: "Description can only be string!" }
+			return {
+				valid: false,
+				msg: "Description can only be string!",
+			}
 		return value.length === 0
 			? { valid: false, msg: "Description required" }
 			: { valid: true }
@@ -87,7 +99,11 @@ type props =
 
 export default function useBrandForm(props: props) {
 	const modalState = useModalStore((state) => state.base)
-	if (props.method === "PATCH" && !props.targId && !props.targName)
+	if (
+		props.method === "PATCH" &&
+		!props.targId &&
+		!props.targName
+	)
 		return function Error() {
 			return <>Error!</>
 		}
@@ -110,7 +126,7 @@ export default function useBrandForm(props: props) {
 					fieldValues={fieldValues}
 					fields={fields}
 				/>
-			),
+			)
 		)
 		modalState.show()
 	}

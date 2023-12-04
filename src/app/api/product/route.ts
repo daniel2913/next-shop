@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { Product, ProductModel} from "@/lib/DAL/Models"
+import { Product, ProductModel } from "@/lib/DAL/Models"
 import {
 	addController,
 	deleteController,
@@ -23,17 +23,29 @@ export async function GET(req: NextRequest) {
 	return getController(query, config)
 }
 
-export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
-	const props: any = collectFromForm(await req.formData(), config)
+export async function PUT(
+	req: NextRequest
+): Promise<NextResponse<any>> {
+	const props: any = collectFromForm(
+		await req.formData(),
+		config
+	)
 	return addController(props, config)
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
+export async function DELETE(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const { id } = await req.json()
 	return deleteController(id, config)
 }
 
-export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
-	const props: any = collectFromForm(await req.formData(), config)
+export async function PATCH(
+	req: NextRequest
+): Promise<NextResponse<any>> {
+	const props: any = collectFromForm(
+		await req.formData(),
+		config
+	)
 	return patchController({ ...props }, config)
 }

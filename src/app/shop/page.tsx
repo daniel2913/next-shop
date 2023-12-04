@@ -5,7 +5,7 @@ import { Suspense } from "react"
 export default function Shop({
 	searchParams,
 }: {
-	session:Session|null
+	session: Session | null
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	return (

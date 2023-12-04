@@ -1,21 +1,23 @@
-import BuyButton from "@/components/ui/BuyButton";
-import Carousel from "../../ui/Carousel";
-import Discount from "../Discount";
-import Image from "next/image";
-import Link from "next/link";
-import Price from "../Price";
-import Rating from "@/components/ui/Rating";
-import { PopulatedProduct } from "@/lib/DAL/Models/Product";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
+import BuyButton from "@/components/ui/BuyButton"
+import Carousel from "../../ui/Carousel"
+import Discount from "../Discount"
+import Image from "next/image"
+import Link from "next/link"
+import Price from "../Price"
+import Rating from "@/components/ui/Rating"
+import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 type Props = {
-	className: string;
-	product: PopulatedProduct;
-};
+	className: string
+	product: PopulatedProduct
+}
 
-export default async function ProductCard({ className, product}: Props) {
+export default async function ProductCard({
+	className,
+	product,
+}: Props) {
 	const session = await getServerSession(authOptions)
 	return (
 		<div
@@ -42,9 +44,9 @@ export default async function ProductCard({ className, product}: Props) {
 					/>
 				}
 			>
-				{product.images.map((img,idx) => (
+				{product.images.map((img, idx) => (
 					<Image
-						priority={idx===0 ? true : false}
+						priority={idx === 0 ? true : false}
 						fill
 						className=""
 						sizes="
@@ -71,9 +73,17 @@ export default async function ProductCard({ className, product}: Props) {
 						{product.name}
 					</h3>
 				</Link>
-				<Rating id={product.id} rating={product.rating} ownVote={product.ownVote} voters={product.voters} className="col-span-2 max-h-8" />
+				<Rating
+					id={product.id}
+					rating={product.rating}
+					ownVote={product.ownVote}
+					voters={product.voters}
+					className="col-span-2 max-h-8"
+				/>
 
-				<span className="text-xl font-semibold">{product.brand.name}</span>
+				<span className="text-xl font-semibold">
+					{product.brand.name}
+				</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">
 					{product.category.name}
 				</span>
@@ -82,12 +92,13 @@ export default async function ProductCard({ className, product}: Props) {
 					discount={product.discount}
 					price={product.price}
 				/>
-				{session?.user?.role === "admin" ? (
-					null
-				) : (
-					<BuyButton className="justify-self-center" id={product.id} />
+				{session?.user?.role === "admin" ? null : (
+					<BuyButton
+						className="justify-self-center"
+						id={product.id}
+					/>
 				)}
 			</div>
 		</div>
-	);
+	)
 }

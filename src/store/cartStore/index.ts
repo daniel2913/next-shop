@@ -10,8 +10,8 @@ const useCartStore = create<CartSlice>()(
 		{
 			name: "cart-store",
 			skipHydration: true,
-		},
-	),
+		}
+	)
 )
 
 export default useCartStore

@@ -22,7 +22,11 @@ function previewImages(images: File[]) {
 	return res
 }
 
-export default function ImagesPreview({ images, delImage, className }: Props) {
+export default function ImagesPreview({
+	images,
+	delImage,
+	className,
+}: Props) {
 	const imageUrls = React.useMemo<string[]>(() => {
 		return previewImages(images)
 	}, [images])
@@ -30,14 +34,22 @@ export default function ImagesPreview({ images, delImage, className }: Props) {
 		<div className={`${className} flex gap-2`}>
 			{imageUrls.map((image, idx) => {
 				return image ? (
-					<div className="relative" key={image}>
+					<div
+						className="relative"
+						key={image}
+					>
 						<button
 							className="absolute right-0 top-0 text-accent1-500"
 							onClick={() => delImage(idx)}
 						>
 							X
 						</button>
-						<img alt="" width={30} height={50} src={image} />
+						<img
+							alt=""
+							width={30}
+							height={50}
+							src={image}
+						/>
 					</div>
 				) : (
 					<></>

@@ -1,8 +1,15 @@
 import LabeledInput from "@/components/ui/LabeledInput"
-import { ComponentProps, FunctionComponent, ReactElement } from "react"
+import {
+	ComponentProps,
+	FunctionComponent,
+	ReactElement,
+} from "react"
 import { StateCreator } from "zustand"
 
-type props = Omit<ComponentProps<typeof LabeledInput>, "value" | "setValue">
+type props = Omit<
+	ComponentProps<typeof LabeledInput>,
+	"value" | "setValue"
+>
 export interface ModalFormSlice {
 	form: {
 		formFieldProps: {
@@ -14,14 +21,16 @@ export interface ModalFormSlice {
 		setFormFieldValues: (newValues: {
 			[i: string]: string | FileList | File
 		}) => void
-		setFormFieldProps: (
-			props: { [i in keyof ModalFormSlice["form"]["formFieldValues"]]: props },
-		) => void
+		setFormFieldProps: (props: {
+			[i in keyof ModalFormSlice["form"]["formFieldValues"]]: props
+		}) => void
 		reset: () => void
 	}
 }
 
-export const createModalFormSlice: StateCreator<ModalFormSlice> = (set) => ({
+export const createModalFormSlice: StateCreator<
+	ModalFormSlice
+> = (set) => ({
 	form: {
 		formFieldValues: {},
 		formFieldProps: {},

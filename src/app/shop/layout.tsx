@@ -7,12 +7,17 @@ interface LayoutProps {
 	modal: ReactElement
 }
 
-export default async function ShopLayout({ children,modal }: LayoutProps) {
+export default async function ShopLayout({
+	children,
+	modal,
+}: LayoutProps) {
 	console.log(modal)
 	return (
 		<>
 			<NavBar />
-			<Link href={"/shop/@modal/admin/orders"}>LINK TO ORDERS</Link>
+			<Link href={"/shop/@modal/admin/orders"}>
+				LINK TO ORDERS
+			</Link>
 			{children}
 		</>
 	)

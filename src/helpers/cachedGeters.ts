@@ -1,17 +1,24 @@
-import { BrandModel, CategoryModel, DiscountModel, User, UserModel } from "@/lib/DAL/Models"
+import {
+	BrandModel,
+	CategoryModel,
+	DiscountModel,
+	User,
+	UserModel,
+} from "@/lib/DAL/Models"
 import { Serializable } from "child_process"
 
 const maxLifeTime = 1000 * 60 * 15
 
-export function simpleCache<T extends () => Promise<any>>(func: T, maxLifeTime = 1000 * 60 * 15) {
+export function simpleCache<T extends () => Promise<any>>(
+	func: T,
+	maxLifeTime = 1000 * 60 * 15
+) {
 	let cache: ReturnType<T>
 	let cacheMap: Map<number, ReturnType<T>> = new Map()
 	let fetching = false
 	let validUntil: number
 
-	function add() {
-
-	}
+	function add() {}
 
 	function revalidate() {
 		if (!cache) {
@@ -22,7 +29,7 @@ export function simpleCache<T extends () => Promise<any>>(func: T, maxLifeTime =
 		if (fetching) return true
 		fetching = true
 		const newCache = func()
-		newCache.then(_ => {
+		newCache.then((_) => {
 			cache = newCache as ReturnType<T>
 			fetching = false
 			validUntil = Date.now() + maxLifeTime
@@ -39,20 +46,27 @@ export function simpleCache<T extends () => Promise<any>>(func: T, maxLifeTime =
 }
 
 export const BrandCache = simpleCache(() => BrandModel.find())
-export const CategoryCache = simpleCache(() => CategoryModel.find())
-export const DiscountCache = simpleCache(() => DiscountModel.find(),)
+export const CategoryCache = simpleCache(() =>
+	CategoryModel.find()
+)
+export const DiscountCache = simpleCache(() =>
+	DiscountModel.find()
+)
 
 type Args = string
 
 type safeSingleArgs = string & number & RegExp
 type safeMultiArgs = Array<safeSingleArgs>
-type safeRecordArgs = Record<string|number, safeSingleArgs & safeMultiArgs>
-type safeMRecordArgs = Record<string|number,safeRecordArgs>
-type SafeArg = safeSingleArgs & safeMultiArgs & safeRecordArgs & safeMRecordArgs
+type safeRecordArgs = Record<
+	string | number,
+	safeSingleArgs & safeMultiArgs
+>
+type safeMRecordArgs = Record<string | number, safeRecordArgs>
+type SafeArg = safeSingleArgs &
+	safeMultiArgs &
+	safeRecordArgs &
+	safeMRecordArgs
 type SafeFunction<T> = (...args: SafeArg[]) => T | T[]
-
-
-
 
 /* export function cacheModel<
 	model extends DataModel
@@ -103,67 +117,105 @@ const exp = cacheModel<User,Parameters<typeof UserModel.find>,typeof UserModel.f
 
 exp.find. */
 
-	export function cachePar<T extends (arg: Args) => Promise<any>>(func: T, maxLifeTime = 1000 * 60 * 1, maxSize = 30) {
-		const cache: Map<Args, { value: ReturnType<T>, fetching: boolean, validUntil: number }> = new Map()
-		function add(arg: Args) {
-			const value = func(arg) as ReturnType<T>
-			if (cache.size < maxSize) {
-				cache.set(arg, { value, fetching: false, validUntil: Date.now() + maxLifeTime })
-				return true
-			}
-			const stalest: { stalestKey: Args, validUntil: number } = { stalestKey: '', validUntil: Infinity }
-			for (const key of cache.keys()) {
-				const value = cache.get(key)
-				if (!value){
-					stalest.stalestKey = key;
-					break
-				}
-				if (value.validUntil < stalest.validUntil) {
-					stalest.stalestKey = key
-					stalest.validUntil = value.validUntil
-				}
-			}
-			cache.delete(stalest.stalestKey)
-			cache.set(arg, { value, fetching: false, validUntil: Date.now() + maxLifeTime })
+export function cachePar<T extends (arg: Args) => Promise<any>>(
+	func: T,
+	maxLifeTime = 1000 * 60 * 1,
+	maxSize = 30
+) {
+	const cache: Map<
+		Args,
+		{
+			value: ReturnType<T>
+			fetching: boolean
+			validUntil: number
 		}
-
-		function revalidate(arg: Args) {
-			const cached = cache.get(arg)
-			if (!cached) add(arg)
-			if (!cached) return false
-			if (cached.fetching) return true
-			cached.fetching = true
-			const value = func(arg) as ReturnType<T>
-			value.then(_ => cache.set(arg, { value, fetching: false, validUntil: Date.now() + maxLifeTime }))
+	> = new Map()
+	function add(arg: Args) {
+		const value = func(arg) as ReturnType<T>
+		if (cache.size < maxSize) {
+			cache.set(arg, {
+				value,
+				fetching: false,
+				validUntil: Date.now() + maxLifeTime,
+			})
 			return true
 		}
-		async function patch(arg: Args, patch: Partial<Awaited<ReturnType<T>>>) {
-			const cached = cache.get(arg)
-			if (!cached) return false
-			const value = { ...(await cached.value), ...patch }
-			cache.set(arg, { value, fetching: false, validUntil: Date.now() + maxLifeTime })
-			return true
+		const stalest: { stalestKey: Args; validUntil: number } = {
+			stalestKey: "",
+			validUntil: Infinity,
 		}
-		function present(arg: Args) {
-			const cached = cache.get(arg)
-			if (!cached) return false
-			if (cached.validUntil < Date.now()) {
-				cache.delete(arg)
-				return false
+		for (const key of cache.keys()) {
+			const value = cache.get(key)
+			if (!value) {
+				stalest.stalestKey = key
+				break
 			}
-			return true
+			if (value.validUntil < stalest.validUntil) {
+				stalest.stalestKey = key
+				stalest.validUntil = value.validUntil
+			}
 		}
-
-		function get(arg: Args) {
-			const cached = cache.get(arg)
-			if (!cached) add(arg)
-			else if (Date.now() > cached.validUntil) revalidate(arg)
-			const value = cache.get(arg)?.value
-			if (!value) return Promise.resolve(value)
-			return value as ReturnType<T>
-		}
-		return { get, revalidate, patch, present }
+		cache.delete(stalest.stalestKey)
+		cache.set(arg, {
+			value,
+			fetching: false,
+			validUntil: Date.now() + maxLifeTime,
+		})
 	}
 
-	export const UserCache = cachePar((name: string) => UserModel.findOne({ name }), 1000 * 30, 10)
+	function revalidate(arg: Args) {
+		const cached = cache.get(arg)
+		if (!cached) add(arg)
+		if (!cached) return false
+		if (cached.fetching) return true
+		cached.fetching = true
+		const value = func(arg) as ReturnType<T>
+		value.then((_) =>
+			cache.set(arg, {
+				value,
+				fetching: false,
+				validUntil: Date.now() + maxLifeTime,
+			})
+		)
+		return true
+	}
+	async function patch(
+		arg: Args,
+		patch: Partial<Awaited<ReturnType<T>>>
+	) {
+		const cached = cache.get(arg)
+		if (!cached) return false
+		const value = { ...(await cached.value), ...patch }
+		cache.set(arg, {
+			value,
+			fetching: false,
+			validUntil: Date.now() + maxLifeTime,
+		})
+		return true
+	}
+	function present(arg: Args) {
+		const cached = cache.get(arg)
+		if (!cached) return false
+		if (cached.validUntil < Date.now()) {
+			cache.delete(arg)
+			return false
+		}
+		return true
+	}
 
+	function get(arg: Args) {
+		const cached = cache.get(arg)
+		if (!cached) add(arg)
+		else if (Date.now() > cached.validUntil) revalidate(arg)
+		const value = cache.get(arg)?.value
+		if (!value) return Promise.resolve(value)
+		return value as ReturnType<T>
+	}
+	return { get, revalidate, patch, present }
+}
+
+export const UserCache = cachePar(
+	(name: string) => UserModel.findOne({ name }),
+	1000 * 30,
+	10
+)

@@ -10,15 +10,23 @@ interface Props {
 	id: Product["id"]
 }
 
-export default function AmmountSelector({ className, id }: Props) {
-	const confirm = useConfirm("Are you sure you want to discard this item?")
-	const {data} = useSession()
-	const amount = useCartStore((state) => state.items[id] || 0,)
-	const itemDiscarder = useCartStore((state) => state.discardItem)
+export default function AmmountSelector({
+	className,
+	id,
+}: Props) {
+	const confirm = useConfirm(
+		"Are you sure you want to discard this item?"
+	)
+	const { data } = useSession()
+	const amount = useCartStore((state) => state.items[id] || 0)
+	const itemDiscarder = useCartStore(
+		(state) => state.discardItem
+	)
 	const ammountSetter = useCartStore((state) => state.setAmmount)
 	if (amount === null) return <div>Error!</div>
-	const discardItem = () => itemDiscarder(id,!data?.user)
-	const setAmmount = (amnt: number) => ammountSetter(id, amnt, !data?.user)
+	const discardItem = () => itemDiscarder(id, !data?.user)
+	const setAmmount = (amnt: number) =>
+		ammountSetter(id, amnt, !data?.user)
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
 			confirm().then((ans) => {
@@ -28,7 +36,7 @@ export default function AmmountSelector({ className, id }: Props) {
 	}
 	return (
 		<div
-			className={`${className} min-w-[4ch] w-fit flex justify-between text-4xl text-center text-accent1-600 font-semibold`}
+			className={`${className} flex w-fit min-w-[4ch] justify-between text-center text-4xl font-semibold text-accent1-600`}
 		>
 			<button
 				type="button"

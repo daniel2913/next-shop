@@ -1,4 +1,3 @@
-export default function ModalCatchAll(){
+export default function ModalCatchAll() {
 	return null
 }
-

@@ -10,39 +10,56 @@ type Props = {
 	close?: () => void
 }
 
-
 export default function Cart({ close }: Props) {
 	const session = useSession()
-	const [products, setProducts] = React.useState<PopulatedProduct[]>([])
-	const [loading,setLoading] = React.useState(false)
-	const items = useCartStore(state => state.items)
-	const itemsSetter = useCartStore(state => state.setItems)
-	const resetCart = ()=>itemsSetter({})
+	const [products, setProducts] = React.useState<
+		PopulatedProduct[]
+	>([])
+	const [loading, setLoading] = React.useState(false)
+	const items = useCartStore((state) => state.items)
+	const itemsSetter = useCartStore((state) => state.setItems)
+	const resetCart = () => itemsSetter({})
 	if (!session?.data?.user?.name) return false
-	
-	async function handleClick(){
+
+	async function handleClick() {
 		setLoading(true)
-		const order:Record<number,{price:number,amount:number}> = {}
-		if (Object.keys(items).length ===0) return false
-		for (const id in items){
-		const product = products.find(product=>product.id===+id)
-		if (!product) return "Error!"
-		const price = (product.price - (product.price*product.discount.discount)/100)
-		const amount = items[+id]
-		order[id] = {price,amount}	
-	}
-		if (Object.keys(order).length!==Object.keys(items).length) return "Error2!"
-		
-		const res = await fetch("/api/order",{method:"POST",body:JSON.stringify(order)})
+		const order: Record<
+			number,
+			{ price: number; amount: number }
+		> = {}
+		if (Object.keys(items).length === 0) return false
+		for (const id in items) {
+			const product = products.find(
+				(product) => product.id === +id
+			)
+			if (!product) return "Error!"
+			const price =
+				product.price -
+				(product.price * product.discount.discount) / 100
+			const amount = items[+id]
+			order[id] = { price, amount }
+		}
+		if (Object.keys(order).length !== Object.keys(items).length)
+			return "Error2!"
+
+		const res = await fetch("/api/order", {
+			method: "POST",
+			body: JSON.stringify(order),
+		})
 		if (res) resetCart()
 		setLoading(false)
 	}
 
-	const totalAmount = Object.values(items).reduce((sum, next) => sum + next, 0)
-	const totalPrice = products.reduce((total, next) =>
-		total +
-		(next.price - (next.price * next.discount.discount) / 100) *
-		items[next.id],
+	const totalAmount = Object.values(items).reduce(
+		(sum, next) => sum + next,
+		0
+	)
+	const totalPrice = products.reduce(
+		(total, next) =>
+			total +
+			(next.price -
+				(next.price * next.discount.discount) / 100) *
+				items[next.id],
 		0
 	)
 	React.useEffect(() => {
@@ -50,51 +67,43 @@ export default function Cart({ close }: Props) {
 			setProducts(await getProducts(Object.keys(items)))
 		}
 		updateCart()
-	}
-		, [Object.keys(items).length])
-	return  loading
-
-		?	<div className="w-8 h-8 animate-spin bg-accent1-500">c</div>
-		:(
+	}, [Object.keys(items).length])
+	return loading ? (
+		<div className="h-8 w-8 animate-spin bg-accent1-500">c</div>
+	) : (
 		<div
 			className="
-				items-center justify-items-center
-				w-fit min-h-full h-fit p-2 rounded-sm
-				grid grid-cols-6 grid-rows-[subgrid]
-				bg-cyan-500 text-2xl 
+				grid h-fit
+				min-h-full w-fit grid-cols-6 grid-rows-[subgrid] items-center
+				justify-items-center rounded-sm bg-cyan-500
+				p-2 text-2xl 
 			"
 		>
-			{products.map(product =>
+			{products.map((product) => (
 				<CartRow
-					className="h-16 w-full border-1 text-2xl"
+					className="border-1 h-16 w-full text-2xl"
 					key={product.id}
-					product={product} />
-			)}
+					product={product}
+				/>
+			))}
 			<span className="">Total:</span>
 			<div
 				className="
-					grid  
-					col-start-4 col-span-2 w-full grid-cols-2
+					col-span-2  
+					col-start-4 grid w-full grid-cols-2
 					border-t-2 border-accent1-500
 				"
 			>
-				<span
-					className="text-center"
-				>
-					{totalAmount}
-				</span>
-				<span
-					className="text-center"
-				>
-					{totalPrice}
-				</span>
+				<span className="text-center">{totalAmount}</span>
+				<span className="text-center">{totalPrice}</span>
 			</div>
-			<button 
+			<button
 				disabled={loading}
 				onClick={handleClick}
-				type="submit">Order</button>
+				type="submit"
+			>
+				Order
+			</button>
 		</div>
 	)
-
-
-}	
+}

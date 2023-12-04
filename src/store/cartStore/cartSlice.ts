@@ -1,11 +1,11 @@
 import { StateCreator } from "zustand"
 
-type Items = Record<number,number>
+type Items = Record<number, number>
 export interface CartSlice {
 	items: Items
-	addItem: (item: number,noUpd?:boolean) => void
-	discardItem: (id: number,noUpd?:boolean) => void
-	setAmmount: (id: number, amnt: number,noUpd?:boolean) => void
+	addItem: (item: number, noUpd?: boolean) => void
+	discardItem: (id: number, noUpd?: boolean) => void
+	setAmmount: (id: number, amnt: number, noUpd?: boolean) => void
 	setItems: (items: Items) => void
 }
 
@@ -27,38 +27,37 @@ function updateAccount(cart: Items) {
 	})
 }
 
-export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
-	items:{},
-	addItem: (id: number,noUpd?:boolean) => {
+export const createCartSlice: StateCreator<CartSlice> = (
+	set,
+	get
+) => ({
+	items: {},
+	addItem: (id: number, noUpd?: boolean) => {
 		set((state) => {
-			const newItems = {...state.items}
-			newItems[id]=1
-			if (!noUpd)
-			updateAccount(newItems)
-			return {items: {...state.items,[id]:1}}
+			const newItems = { ...state.items }
+			newItems[id] = 1
+			if (!noUpd) updateAccount(newItems)
+			return { items: { ...state.items, [id]: 1 } }
 		})
 	},
 	setItems: (items: Items) => {
-		set(_ => {
-			return {items}
+		set((_) => {
+			return { items }
 		})
 	},
-	discardItem: (id: number, noUpd?:boolean) => {
+	discardItem: (id: number, noUpd?: boolean) => {
 		set((state) => {
-			const {[id]:_,...items} = state.items
-			if(!noUpd)
-			updateAccount(items)
-			return {items}
+			const { [id]: _, ...items } = state.items
+			if (!noUpd) updateAccount(items)
+			return { items }
 		})
 	},
-	setAmmount: (id: number, amnt: number, noUpd?:boolean) => {
+	setAmmount: (id: number, amnt: number, noUpd?: boolean) => {
 		set((state) => {
-			
-			const {[id]:_,...items} = state.items 
-			if (amnt>0) items[id] = amnt
-			if (!noUpd)
-				updateAccount(items)
-			return {items}
+			const { [id]: _, ...items } = state.items
+			if (amnt > 0) items[id] = amnt
+			if (!noUpd) updateAccount(items)
+			return { items }
 		})
 	},
 })

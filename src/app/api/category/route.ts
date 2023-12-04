@@ -23,7 +23,9 @@ export async function GET(req: NextRequest) {
 	return getController({ name, id }, config)
 }
 
-export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
+export async function PUT(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const form = await req.formData()
 	const props: Partial<form> = {}
 	for (const [key, value] of form.entries()) {
@@ -36,12 +38,16 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
 	return addController(props, config)
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
+export async function DELETE(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const { id } = await req.json()
 	return deleteController(id, config)
 }
 
-export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
+export async function PATCH(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const form = await req.formData()
 	const props: { [a: string]: string | undefined | File } = {}
 	for (const [key, value] of form.entries()) {

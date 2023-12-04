@@ -19,17 +19,14 @@ export const pgreDefaults = {
 }
 
 export const validations = {
-
-	id(name:string){
-		return function(value:number){
-			if (value)
-				return `${name} has id (${value}) specified!`
+	id(name: string) {
+		return function (value: number) {
+			if (value) return `${name} has id (${value}) specified!`
 		}
 	},
-	noDefault(name:string){
-		return function(value:any){
-			if (value)
-				return `${name} is generated column!`
+	noDefault(name: string) {
+		return function (value: any) {
+			if (value) return `${name} is generated column!`
 		}
 	},
 	length(name: string, max: number, min?: number) {
@@ -43,7 +40,8 @@ export const validations = {
 	},
 	value(name: string, max: number, min?: number) {
 		return function (value: string | number) {
-			if (Number.isNaN(value)) return `${name} value (${value}) is not a number`
+			if (Number.isNaN(value))
+				return `${name} value (${value}) is not a number`
 			if ((min || min === 0) && +value < min)
 				return `${name} value (${value}) is below min value (${min})`
 			if (+value > max)

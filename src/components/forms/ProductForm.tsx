@@ -27,59 +27,64 @@ const formFieldValues: {
 }
 const action = "/api/product"
 
-const validation: { [I in keyof typeof formFieldValues]: FormFieldValidator } =
-	{
-		name: (value: FormFieldValue) => {
-			if (typeof value !== "string")
-				return { valid: false, msg: "Name can only be string!" }
+const validation: {
+	[I in keyof typeof formFieldValues]: FormFieldValidator
+} = {
+	name: (value: FormFieldValue) => {
+		if (typeof value !== "string")
+			return { valid: false, msg: "Name can only be string!" }
 
-			return value.length === 0
-				? { valid: false, msg: "Name Required!" }
-				: { valid: true }
-		},
-		images: (value: FormFieldValue) => {
-			if (typeof value === "string")
-				return { valid: false, msg: "Image can only be a file!" }
-			if (!value) return { valid: true }
-			const files = value instanceof File ? [value] : value
-			if (files.length === 0) return { valid: false, msg: "zalupa" }
-			for (const file of files) {
-				const ext = file.name.split(".").pop()
-				if (ext !== "jpeg" && ext !== "jpg")
-					return { valid: false, msg: "Only jpegs!" }
-				if (file.size > 1024 * 512)
-					return { valid: false, msg: "Only under 0.5MB!" }
+		return value.length === 0
+			? { valid: false, msg: "Name Required!" }
+			: { valid: true }
+	},
+	images: (value: FormFieldValue) => {
+		if (typeof value === "string")
+			return { valid: false, msg: "Image can only be a file!" }
+		if (!value) return { valid: true }
+		const files = value instanceof File ? [value] : value
+		if (files.length === 0)
+			return { valid: false, msg: "zalupa" }
+		for (const file of files) {
+			const ext = file.name.split(".").pop()
+			if (ext !== "jpeg" && ext !== "jpg")
+				return { valid: false, msg: "Only jpegs!" }
+			if (file.size > 1024 * 512)
+				return { valid: false, msg: "Only under 0.5MB!" }
+		}
+		return { valid: true }
+	},
+	description: (value: FormFieldValue) => {
+		if (typeof value !== "string")
+			return {
+				valid: false,
+				msg: "Description can only be string!",
 			}
-			return { valid: true }
-		},
-		description: (value: FormFieldValue) => {
-			if (typeof value !== "string")
-				return { valid: false, msg: "Description can only be string!" }
-			return value.length === 0
-				? { valid: false, msg: "Description required" }
-				: { valid: true }
-		},
-		brand: (value: FormFieldValue) => {
-			return typeof value !== "string"
-				? { valid: false, msg: "Brand can only be string!" }
-				: { valid: true }
-		},
-		category: (value: FormFieldValue) => {
-			return typeof value !== "string"
-				? { valid: false, msg: "Category can only be string!" }
-				: { valid: true }
-		},
-		price: (value: FormFieldValue) => {
-			return Number.isNaN(Number(value))
-				? { valid: false, msg: "Price can only be number!" }
-				: { valid: true }
-		},
-		discount: (value: FormFieldValue) => {
-			return Number.isNaN(Number(value))
-				? { valid: false, msg: "Price can only be number!" }
-				: { valid: true }
-		},
-	}
+		return value.length === 0
+			? { valid: false, msg: "Description required" }
+			: { valid: true }
+	},
+	brand: (value: FormFieldValue) => {
+		return typeof value !== "string"
+			? { valid: false, msg: "Brand can only be string!" }
+			: { valid: true }
+	},
+	category: (value: FormFieldValue) => {
+		return typeof value !== "string"
+			? { valid: false, msg: "Category can only be string!" }
+			: { valid: true }
+	},
+	price: (value: FormFieldValue) => {
+		return Number.isNaN(Number(value))
+			? { valid: false, msg: "Price can only be number!" }
+			: { valid: true }
+	},
+	discount: (value: FormFieldValue) => {
+		return Number.isNaN(Number(value))
+			? { valid: false, msg: "Price can only be number!" }
+			: { valid: true }
+	},
+}
 
 const fieldProps: {
 	[I in keyof typeof formFieldValues]: Omit<
@@ -144,10 +149,16 @@ interface Props {
 	categoryList: Category[]
 }
 
-export default function ProductForm({ brandList, categoryList }: Props) {
-	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
+export default function ProductForm({
+	brandList,
+	categoryList,
+}: Props) {
+	const [fieldValues, setFieldValues] =
+		React.useState(formFieldValues)
 	fieldProps.brand.options = brandList.map((brand) => brand.name)
-	fieldProps.category.options = categoryList.map((category) => category.name)
+	fieldProps.category.options = categoryList.map(
+		(category) => category.name
+	)
 	return (
 		<Form
 			className=""
@@ -158,14 +169,15 @@ export default function ProductForm({ brandList, categoryList }: Props) {
 			setFieldValues={setFieldValues}
 		>
 			<PreviewProductCard
-				className="w-64 h-80 p-2"
+				className="h-80 w-64 p-2"
 				product={{
 					...fieldValues,
 					price: +fieldValues.price,
 					discount: +fieldValues.discount,
 					brandImage:
-						brandList.find((brand) => brand.name === fieldValues.brand)?.image ||
-						"template.jpeg",
+						brandList.find(
+							(brand) => brand.name === fieldValues.brand
+						)?.image || "template.jpeg",
 				}}
 			/>
 		</Form>

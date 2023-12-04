@@ -4,7 +4,11 @@ import _path from "path"
 interface IFileStorage {
 	exists: (name: string, path: string) => Promise<boolean>
 	delete: (name: string, path: string) => Promise<boolean>
-	write: (name: string, path: string, file: File) => Promise<boolean>
+	write: (
+		name: string,
+		path: string,
+		file: File
+	) => Promise<boolean>
 }
 
 type FileStorages = LocalPublicFileStorage
@@ -27,7 +31,10 @@ class LocalPublicFileStorage implements IFileStorage {
 		const fullName = this.resolve(name, path)
 		if (!fs.lstat(fullName)) return false
 		try {
-			await fs.writeFile(fullName, Buffer.from(await file.arrayBuffer()))
+			await fs.writeFile(
+				fullName,
+				Buffer.from(await file.arrayBuffer())
+			)
 			return true
 		} catch {
 			return false
@@ -46,4 +53,5 @@ class LocalPublicFileStorage implements IFileStorage {
 	}
 }
 
-export const FileStorage: FileStorages = new LocalPublicFileStorage()
+export const FileStorage: FileStorages =
+	new LocalPublicFileStorage()

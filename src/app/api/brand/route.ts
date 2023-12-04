@@ -24,7 +24,9 @@ export async function GET(req: NextRequest) {
 	return await getController({ name, id }, config)
 }
 
-export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
+export async function PUT(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const form = await req.formData()
 	const props: Partial<form> = {}
 	for (const [key, value] of form.entries()) {
@@ -37,12 +39,19 @@ export async function PUT(req: NextRequest): Promise<NextResponse<any>> {
 	return await addController(props, config)
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse<any>> {
+export async function DELETE(
+	req: NextRequest
+): Promise<NextResponse<any>> {
 	const { id } = await req.json()
 	return await deleteController<typeof BrandModel>(id, config)
 }
 
-export async function PATCH(req: NextRequest): Promise<NextResponse<any>> {
-	const props: any = collectFromForm(await req.formData(), config)
+export async function PATCH(
+	req: NextRequest
+): Promise<NextResponse<any>> {
+	const props: any = collectFromForm(
+		await req.formData(),
+		config
+	)
 	return await patchController(props, config)
 }
