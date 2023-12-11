@@ -1,9 +1,4 @@
-import {
-	integer,
-	pgTable,
-	serial,
-	smallint,
-} from "drizzle-orm/pg-core"
+import { integer, pgTable, serial, smallint } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { ProductPgreTable } from "./Product"
 import { shop } from "./common"
@@ -14,10 +9,7 @@ type TestType = Readonly<{
 	voters: "array"
 }>
 
-const RatingValidations: Record<
-	keyof Rating,
-	Array<(...args: any) => any>
-> = {
+const RatingValidations: Record<keyof Rating, Array<(...args: any) => any>> = {
 	id: [],
 	votes: [],
 	voters: [],
@@ -34,10 +26,7 @@ const config = {
 
 const RatingPgreTable = shop.table(
 	"ratings",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type Rating = typeof RatingPgreTable.$inferSelect

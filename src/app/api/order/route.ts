@@ -12,12 +12,8 @@ function isCorrect(
 	for (const [key, value] of Object.entries(body)) {
 		if (Number.isNaN(+key)) return false
 		if (typeof value !== "object" || value === null) return false
-		console.log("test2")
 		if (!("amount" in value && "price" in value)) return false
-		if (
-			typeof value.amount !== "number" ||
-			typeof value.price !== "number"
-		)
+		if (typeof value.amount !== "number" || typeof value.price !== "number")
 			return false
 	}
 	return true
@@ -39,8 +35,7 @@ export async function POST(req: NextRequest) {
 		})
 	const prices = products.map(
 		(product) =>
-			product.price -
-				(product.discount.discount * product.price) / 100 ===
+			product.price - (product.discount.discount * product.price) / 100 ===
 			order[product.id].price
 	)
 	const correct = prices.reduce((prev, cur) => prev && cur, true)
@@ -48,12 +43,7 @@ export async function POST(req: NextRequest) {
 		return new NextResponse("Some prices have changed", {
 			status: 400,
 		})
-	const res = await OrderModel.newObject({
-		user: session.user.id,
-		order,
-		status: "PROCESSING",
-	})
-	if (!res)
-		return new NextResponse("Unknown Error", { status: 500 })
+	const res = await OrderModel.custom.create(session.user.id, order)
+	if (!res) return new NextResponse("Unknown Error", { status: 500 })
 	return new NextResponse("Successful", { status: 200 })
 }

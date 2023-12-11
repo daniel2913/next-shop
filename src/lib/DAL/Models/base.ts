@@ -9,28 +9,16 @@ import {
 	inArray,
 	like,
 } from "drizzle-orm"
-import {
-	PgColumnBuilderBase,
-	PgSelect,
-	TableConfig,
-} from "drizzle-orm/pg-core"
-import {
-	PostgresJsDatabase,
-	drizzle,
-} from "drizzle-orm/postgres-js"
+import { PgColumnBuilderBase, PgSelect, TableConfig } from "drizzle-orm/pg-core"
+import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
-export type ColumnsConfig<
-	T extends Record<string, ColumnDataType>,
-> = {
-	[Key in keyof T]: PgColumnBuilderBase<
-		ColumnBuilderBaseConfig<T[Key], string>
-	>
+export type ColumnsConfig<T extends Record<string, ColumnDataType>> = {
+	[Key in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[Key], string>>
 }
-export type TestColumnsConfig<
-	T,
-	U extends ColumnsConfig<any>,
-> = T extends U ? T : "false"
+export type TestColumnsConfig<T, U extends ColumnsConfig<any>> = T extends U
+	? T
+	: "false"
 
 export type DataModels = PgreModel<any, any>
 
@@ -38,18 +26,17 @@ type Query<T extends Record<string, any> & { id: number }> = {
 	[Key in keyof T]?: string | string[] | RegExp
 }
 
-type Select<T extends Record<string, any> & { id: number }> =
-	Record<string, keyof T>
+type Select<T extends Record<string, any> & { id: number }> = Record<
+	string,
+	keyof T
+>
 
 type Validator<T> = (value: T) => string | false
 
-interface DataModel<T extends { [i: string]: any; id: number }> {
+interface DataModel<T extends Record<string,any>& {id: number }> {
 	columns: T
 	newObject: (obj: Record<string, any>) => Promise<T | null>
-	findOne: (
-		query: Query<T>,
-		select?: Select<T>
-	) => Promise<T | null>
+	findOne: (query: Query<T>, select?: Select<T>) => Promise<T | null>
 	find: (query?: Query<T>, select?: Select<T>) => Promise<T[]>
 	findPaginated: (
 		pageSize: number,
@@ -117,8 +104,7 @@ export class PgreModel<
 	private makePgreSelect(select: Select<T>) {
 		const validSelect: Select<T> = {}
 		for (const key in select) {
-			if (select[key] in this.table)
-				validSelect[key] = this.table[select[key]]
+			if (select[key] in this.table) validSelect[key] = this.table[select[key]]
 		}
 		return validSelect
 	}
@@ -128,12 +114,9 @@ export class PgreModel<
 		for (const [key, value] of Object.entries(query)) {
 			if (!(key in this.columns && value)) continue
 			const column = this.table[key as keyof U] as Column
-			if (Array.isArray(value))
-				sqlQueryWrappers.push(inArray(column, value))
+			if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value))
 			else if (value instanceof RegExp)
-				sqlQueryWrappers.push(
-					like(column, `${value.toString().slice(1, -1)}%`)
-				)
+				sqlQueryWrappers.push(like(column, `%${value.toString().slice(1, -1)}%`))
 			else sqlQueryWrappers.push(eq(column, value))
 		}
 		return and(...sqlQueryWrappers)
@@ -165,8 +148,7 @@ export class PgreModel<
 
 	async find(query?: Query<T>) {
 		if (!query) {
-			return ((await this.model.select().from(this.table)) ||
-				[]) as T[]
+			return ((await this.model.select().from(this.table)) || []) as T[]
 		}
 		return (await this.model
 			.select()
@@ -187,10 +169,7 @@ export class PgreModel<
 			.offset(offset)) as T[]
 	}
 	write(object: T) {
-		return this.model
-			.insert(this.table)
-			.values(object)
-			.returning()
+		return this.model.insert(this.table).values(object).returning()
 	}
 	async delete(id: number) {
 		if (!id) return false

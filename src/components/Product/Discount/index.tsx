@@ -5,15 +5,9 @@ interface Props {
 	discount: number
 }
 
-export default function Discount({
-	discount,
-	className,
-}: Props) {
+export default function Discount({ discount, className }: Props) {
 	const lvls = ["none", "small", "medium", "high"]
-	const style = React.useMemo(
-		() => lvls[(discount / 25) ^ 0],
-		[discount]
-	)
+	const style = React.useMemo(() => lvls[(discount / 25) ^ 0], [discount])
 	return (
 		<div
 			data-lvl={style}

@@ -46,26 +46,16 @@ export function simpleCache<T extends () => Promise<any>>(
 }
 
 export const BrandCache = simpleCache(() => BrandModel.find())
-export const CategoryCache = simpleCache(() =>
-	CategoryModel.find()
-)
-export const DiscountCache = simpleCache(() =>
-	DiscountModel.find()
-)
+export const CategoryCache = simpleCache(() => CategoryModel.find())
+export const DiscountCache = simpleCache(() => DiscountModel.find())
 
 type Args = string
 
 type safeSingleArgs = string & number & RegExp
 type safeMultiArgs = Array<safeSingleArgs>
-type safeRecordArgs = Record<
-	string | number,
-	safeSingleArgs & safeMultiArgs
->
+type safeRecordArgs = Record<string | number, safeSingleArgs & safeMultiArgs>
 type safeMRecordArgs = Record<string | number, safeRecordArgs>
-type SafeArg = safeSingleArgs &
-	safeMultiArgs &
-	safeRecordArgs &
-	safeMRecordArgs
+type SafeArg = safeSingleArgs & safeMultiArgs & safeRecordArgs & safeMRecordArgs
 type SafeFunction<T> = (...args: SafeArg[]) => T | T[]
 
 /* export function cacheModel<
@@ -120,7 +110,8 @@ exp.find. */
 export function cachePar<T extends (arg: Args) => Promise<any>>(
 	func: T,
 	maxLifeTime = 1000 * 60 * 1,
-	maxSize = 30
+	maxSize = 30,
+	stale = false
 ) {
 	const cache: Map<
 		Args,
@@ -163,7 +154,7 @@ export function cachePar<T extends (arg: Args) => Promise<any>>(
 		})
 	}
 
-	function revalidate(arg: Args) {
+	async function revalidate(arg: Args) {
 		const cached = cache.get(arg)
 		if (!cached) add(arg)
 		if (!cached) return false
@@ -179,10 +170,7 @@ export function cachePar<T extends (arg: Args) => Promise<any>>(
 		)
 		return true
 	}
-	async function patch(
-		arg: Args,
-		patch: Partial<Awaited<ReturnType<T>>>
-	) {
+	async function patch(arg: Args, patch: Partial<Awaited<ReturnType<T>>>) {
 		const cached = cache.get(arg)
 		if (!cached) return false
 		const value = { ...(await cached.value), ...patch }
@@ -203,10 +191,13 @@ export function cachePar<T extends (arg: Args) => Promise<any>>(
 		return true
 	}
 
-	function get(arg: Args) {
+	async function get(arg: Args) {
 		const cached = cache.get(arg)
 		if (!cached) add(arg)
-		else if (Date.now() > cached.validUntil) revalidate(arg)
+		else if (Date.now() > cached.validUntil) {
+			if (stale) revalidate(arg)
+			else await revalidate(arg)
+		}
 		const value = cache.get(arg)?.value
 		if (!value) return Promise.resolve(value)
 		return value as ReturnType<T>
@@ -216,6 +207,7 @@ export function cachePar<T extends (arg: Args) => Promise<any>>(
 
 export const UserCache = cachePar(
 	(name: string) => UserModel.findOne({ name }),
-	1000 * 30,
-	10
+	1000 * 10,
+	10,
+	false
 )

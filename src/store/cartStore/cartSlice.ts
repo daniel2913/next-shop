@@ -27,10 +27,7 @@ function updateAccount(cart: Items) {
 	})
 }
 
-export const createCartSlice: StateCreator<CartSlice> = (
-	set,
-	get
-) => ({
+export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
 	items: {},
 	addItem: (id: number, noUpd?: boolean) => {
 		set((state) => {
@@ -42,6 +39,7 @@ export const createCartSlice: StateCreator<CartSlice> = (
 	},
 	setItems: (items: Items) => {
 		set((_) => {
+			updateAccount(items)
 			return { items }
 		})
 	},

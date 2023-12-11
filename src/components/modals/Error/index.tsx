@@ -9,9 +9,7 @@ export default function ModalError({ message }: props) {
 		<>
 			<h1>You made Fucky-Wacky!</h1>
 			<p>{message}</p>
-			<button onClick={() => modal.close()}>
-				Get into forever-box
-			</button>
+			<button onClick={() => modal.close()}>Get into forever-box</button>
 		</>
 	)
 }

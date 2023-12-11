@@ -1,9 +1,4 @@
-import {
-	maxSizes,
-	pgreDefaults,
-	shop,
-	validations,
-} from "./common"
+import { maxSizes, pgreDefaults, shop, validations } from "./common"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 
 type TestType = Readonly<{
@@ -26,10 +21,7 @@ const config = {
 
 const CategoryPgreTable = shop.table(
 	"categories",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type Category = typeof CategoryPgreTable.$inferSelect

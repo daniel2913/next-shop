@@ -9,7 +9,6 @@ export type FormFieldProps = Omit<
 	React.ComponentProps<typeof LabeledInput>,
 	"value" | "setValue"
 >
-
 type Props<T extends Record<string, FormFieldValue>> = {
 	className: string
 	fieldValues: T
@@ -26,9 +25,8 @@ type Props<T extends Record<string, FormFieldValue>> = {
 			targId: string
 	  }
 )
-export default function Form<
-	T extends Record<string, FormFieldValue>,
->({
+
+export default function Form<T extends Record<string, FormFieldValue>>({
 	fieldValues,
 	setFieldValues,
 	fieldProps,
@@ -41,6 +39,7 @@ export default function Form<
 	const [error, setError] = React.useState("")
 	const [status, setStatus] = React.useState("")
 
+
 	async function submitHandler(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault()
 		const form = new FormData()
@@ -49,20 +48,18 @@ export default function Form<
 		for (const [key, value] of Object.entries(fieldValues)) {
 			if (!Array.isArray(value)) {
 				if (fieldProps[key].validator) {
-					const entryValid = fieldProps[key].validator(value)
-					if (!entryValid.valid) {
-						setError(
-							`${fieldProps[key].label}: ${entryValid.msg}`
-						)
+					const entryInvalid = fieldProps[key].validator(value)
+					if (entryInvalid) {
+						setError(`${fieldProps[key].label}: ${entryInvalid}`)
 						return false
 					}
 				}
 				form.append(key, value)
 			} else if (Array.isArray(value)) {
 				if (fieldProps[key].validator) {
-					const entryValid = fieldProps[key].validator(value)
-					if (!entryValid) {
-						setError(`${fieldProps[key].label} is invalid`)
+					const entryInvalid = fieldProps[key].validator(value)
+					if (entryInvalid) {
+						setError(`${fieldProps[key].label}: ${entryInvalid}`)
 						return false
 					}
 				}
@@ -88,7 +85,7 @@ export default function Form<
 	return (
 		<div className={`${className} flex`}>
 			<form
-				className="flex flex-col gap-3"
+				className="flex flex-col gap-3 "
 				onSubmit={submitHandler}
 			>
 				{Object.entries(fieldProps).map(([key, props]) => (
@@ -96,9 +93,7 @@ export default function Form<
 						key={key}
 						value={fieldValues[key]}
 						setValue={(
-							value:
-								| FormFieldValue
-								| ((a: FormFieldValue) => FormFieldValue)
+							value: FormFieldValue | ((a: FormFieldValue) => FormFieldValue)
 						) => {
 							if (value instanceof Function) {
 								setFieldValues((prev) => ({

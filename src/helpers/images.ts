@@ -4,9 +4,7 @@ import { randomUUID } from "crypto"
 export type Image = { file: File | null; name: string }
 const template = { name: "template.jpg", file: null }
 
-export function handleImages(
-	images: (File | string)[]
-): Image[] {
+export function handleImages(images: (File | string)[]): Image[] {
 	const result: Image[] = []
 	for (const i of images) {
 		if (!i || typeof i === "string") {
@@ -23,19 +21,14 @@ export function handleImage(image: File): Image | null {
 	let imageName = "template.jpg"
 	const ext = image.type?.split("/").pop()
 	if (ext === "jpeg" || ext === "jpg") {
-		imageName = `${randomUUID()
-			.replace("-", "")
-			.slice(0, 8)}.jpg`
+		imageName = `${randomUUID().replace("-", "").slice(0, 8)}.jpg`
 		return { name: imageName, file: image }
 	} else {
 		return template
 	}
 }
 
-export async function saveImages(
-	images: Image[],
-	filePath: string
-) {
+export async function saveImages(images: Image[], filePath: string) {
 	const results: Promise<boolean>[] = []
 	for (const image of images) {
 		results.push(saveImage(image, filePath))
@@ -45,10 +38,7 @@ export async function saveImages(
 	})
 }
 
-export function deleteImages(
-	names: string[],
-	filePath: string
-): void {
+export function deleteImages(names: string[], filePath: string): void {
 	for (const name of names) {
 		deleteImage(name, filePath)
 	}
@@ -63,10 +53,7 @@ export async function saveImage(
 	return FileStorage.write(name, filePath, file)
 }
 
-export function deleteImage(
-	name: string,
-	filePath: string
-): void {
+export function deleteImage(name: string, filePath: string): void {
 	if (name === "template.jpg") return
 	FileStorage.delete(name, filePath)
 }

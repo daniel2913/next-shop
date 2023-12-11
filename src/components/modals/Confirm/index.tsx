@@ -5,9 +5,7 @@ interface props {
 }
 
 export default function ModalConfirm({ message }: props) {
-	const { accept, reject } = useModalStore(
-		(state) => state.confirm
-	)
+	const { accept, reject } = useModalStore((state) => state.confirm)
 	return (
 		<>
 			<p>{message}</p>

@@ -9,9 +9,9 @@ export interface ModalConfirmSlice {
 	}
 }
 
-export const createModalConfirmSlice: StateCreator<
-	ModalConfirmSlice
-> = (set) => ({
+export const createModalConfirmSlice: StateCreator<ModalConfirmSlice> = (
+	set
+) => ({
 	confirm: {
 		answer: null,
 		accept: () =>

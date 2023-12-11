@@ -14,9 +14,7 @@ interface LayoutProps {
 	children: ReactElement
 }
 
-export default async function MainLayout({
-	children,
-}: LayoutProps) {
+export default async function MainLayout({ children }: LayoutProps) {
 	const session = await getServerSession(authOptions)
 	return (
 		<>

@@ -3,38 +3,53 @@ import { FormFieldValidator } from "@/components/forms"
 import React from "react"
 import ImagesPreview from "../ImagesPreview"
 import Selector from "../Selector"
+import CheckBoxBlock from "../CheckBoxBlock"
 
-interface BaseProps {
+type Props = {
 	label?: string
 	placeholder?: string
 	className?: string
 	id: string
-	accept?: string
 	validator?: FormFieldValidator
-}
-interface TextProps extends BaseProps {
-	type: "text" | "password" | "hidden"
-	multiple?: false
-	options?: never[]
-	value: string
-	setValue: React.Dispatch<React.SetStateAction<string>>
-}
-interface FileProps extends BaseProps {
-	type: "file"
-	multiple?: boolean
-	options?: never[]
-	value: File[]
-	setValue: React.Dispatch<React.SetStateAction<File[]>>
-}
-interface SelectProps extends BaseProps {
-	type: "select"
-	multiple?: false
-	options: string[]
-	value: string
-	setValue: React.Dispatch<React.SetStateAction<string>>
-}
+}  & Optionals
 
-type Props = TextProps | FileProps | SelectProps
+
+type Optionals = (
+		{	
+			accept?:never,
+			multiple?:never,
+			selectProps?:never
+			checkboxProps?:never
+			props?:never
+			type: "text" | "password" | "hidden"
+			value: string
+			setValue: (val:string)=>void
+	  }
+	| {
+			type: "file"
+			props?:never
+			checkboxProps?:never
+			selectProps?:never
+			accept?: string
+			multiple: boolean
+			value: File[]
+			setValue: (files:File[])=>void
+	  }
+	| {
+			accept?:never,
+			multiple?:never,
+			checkboxProps?:never
+			type: "select"
+			selectProps: React.ComponentProps<typeof Selector>
+	  }
+	| {
+			accept?:never,
+			multiple?:never,
+			type: "checkboxes"
+			selectProps?:never
+			checkboxProps: React.ComponentProps<typeof CheckBoxBlock>
+		}
+)
 
 function fileListAdapter(inp: File | FileList | null): File[] {
 	if (!inp) return [] as File[]
@@ -43,67 +58,66 @@ function fileListAdapter(inp: File | FileList | null): File[] {
 }
 
 export default function LabeledInput({
-	label = "default label",
-	multiple = false,
-	accept = "image/jpg",
-	placeholder = "input",
-	type,
-	className = "",
-	options = [],
+	label,
+	placeholder ,
+	className,
 	id,
-	value,
-	setValue,
-	validator: validation,
+	validator,
+	...props
 }: Props) {
-	type = type ? type : "text"
 	const [error, setError] = React.useState<string>("")
 	const inpRef = React.useRef<HTMLInputElement>(null)
 
-	function validate(
-		value: string | File[],
-		validation: Props["validator"]
-	) {
+	function validate(value: string | File[], validation: Props["validator"]) {
 		if (validation) {
 			const err = validation(value)
-			if (err.valid) {
+			if (err) {
+				setError(err)
+				return false
+			} else {
 				setError("")
 				return true
-			} else {
-				setError(err.msg)
-				return false
 			}
 		}
 	}
 
 	function fileChangeHandeler(fileList: FileList | null) {
-		if (type !== "file" || !fileList) return false
+		if (props.type !== "file" || !fileList) return false
 		const files = fileListAdapter(fileList)
-		const filesValidation = validate(files, validation)
-		if (filesValidation) setValue((prev) => [...prev, ...files])
+		const filesValidation = validate(files, validator)
+		if (!filesValidation) return false 
+		if (props.multiple) props.setValue([...props.value, ...files])
+		else props.setValue([files[0]])
+		return true
 	}
 
 	React.useEffect(() => {
-		if (type !== "file" || !value || !inpRef.current) {
+		if (props.type !== "file" || !props.value || !inpRef.current) {
 			return
 		}
 		const data = new DataTransfer()
-		for (const file of value) {
+		for (const file of props.value) {
 			data.items.add(file as File)
 		}
 		inpRef.current.files = data.files
-	}, [value])
+	}, [(props as any).value, props.type])
 
-	if (type === "select")
+	if (props.type === "checkboxes")
+		return(
+		<CheckBoxBlock
+			className="flex overflow-x-scroll w-full"
+			{...props.checkboxProps}
+		/>
+	)
+
+	if (props.type === "select")
 		return (
 			<Selector
-				value={value as string}
-				setValue={setValue}
-				options={options}
+				{...props.selectProps}
 				id={id}
-				label={label}
 			/>
 		)
-	if (type === "file")
+	if (props.type === "file")
 		return (
 			<div className={`${className} flex flex-col`}>
 				<label
@@ -114,17 +128,15 @@ export default function LabeledInput({
 				</label>
 				<input
 					ref={inpRef}
-					multiple={multiple}
-					accept={accept}
+					multiple={props.multiple}
+					accept={props.accept}
 					id={id}
 					name={id}
 					className="hidden"
-					type={type}
+					type={props.type}
 					placeholder={placeholder}
 					value=""
-					onChange={(e) =>
-						fileChangeHandeler(e.currentTarget.files)
-					}
+					onChange={(e) => fileChangeHandeler(e.currentTarget.files)}
 				/>
 				<label
 					className="cursor-pointer border-2 border-cyan-400 bg-cyan-200 p-1 font-semibold"
@@ -135,9 +147,9 @@ export default function LabeledInput({
 				<span className="text-accent1-600">{error}</span>
 				<ImagesPreview
 					className="w-full"
-					images={value}
+					images={props.value}
 					delImage={(idx: number) => {
-						setValue(value.filter((_, idxOld) => idx !== idxOld))
+						props.setValue(props.value.filter((_, idxOld) => idx !== idxOld))
 					}}
 				/>
 			</div>
@@ -145,7 +157,7 @@ export default function LabeledInput({
 	return (
 		<div
 			className={`${className} ${
-				type === "hidden" ? "hidden" : ""
+				props.type === "hidden" ? "hidden" : ""
 			} flex flex-col`}
 		>
 			<label
@@ -156,15 +168,15 @@ export default function LabeledInput({
 			</label>
 			<input
 				ref={inpRef}
-				onBlur={() => validate(value, validation)}
+				onBlur={() => validate(props.value, validator)}
 				id={id}
 				name={id}
 				className="bg-cyan-50"
-				type={type}
+				type={props.type}
 				placeholder={placeholder}
-				value={value}
+				value={props.value}
 				onChange={(e) => {
-					if (type !== "hidden") setValue(e.currentTarget.value)
+					if (props.type !== "hidden") props.setValue(e.currentTarget.value)
 				}}
 			/>
 			<label

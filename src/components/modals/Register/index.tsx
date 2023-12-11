@@ -1,23 +1,15 @@
 "use client"
 import Form from "@/components/forms"
-import LabeledInput from "@/components/ui/LabeledInput"
-import React, { ComponentProps, FormEvent } from "react"
-interface Props {
-	csrfToken: string
-}
+import React, { ComponentProps } from "react"
 
-type Register = {
+type RegisterFields = {
 	name: string
 	password: string
 }
 
 const formProps: Omit<
-	ComponentProps<typeof Form<Register>>,
-	| "fieldValues"
-	| "method"
-	| "setFieldValues"
-	| "className"
-	| "children"
+	ComponentProps<typeof Form<RegisterFields>>,
+	"fieldValues" | "method" | "setFieldValues" | "className" | "children"
 > = {
 	action: "/api/user",
 	fieldProps: {
@@ -36,16 +28,14 @@ const formProps: Omit<
 }
 
 export default function Register() {
-	const initialFieldValues: Register = {
+	const initialFieldValues: RegisterFields = {
 		name: "",
 		password: "",
 	}
-	const [fieldValues, setFieldValues] = React.useState(
-		initialFieldValues
-	)
+	const [fieldValues, setFieldValues] = React.useState(initialFieldValues)
 
 	return (
-		<Form<Register>
+		<Form<RegisterFields>
 			method="PUT"
 			className=""
 			{...formProps}

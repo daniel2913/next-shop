@@ -1,12 +1,18 @@
 "use server"
 
-import { OrderModel } from "@/lib/DAL/Models"
+import { UserCache } from "@/helpers/cachedGeters"
+import { OrderModel, ProductModel, UserModel } from "@/lib/DAL/Models"
 
-export async function CompleteOrder(form: FormData) {
-	const id = form.get("id")
-	if (!id || Number.isNaN(+id)) return false
-	const res = await OrderModel.patch(+id, {
-		status: "COMPLETED",
-	})
+type Props = {
+	user: number
+	id: number
+	prodIds: number[]
+}
+
+export async function CompleteOrder({ user, id, prodIds }: Props) {
+	const [res] = await Promise.all([
+		OrderModel.patch(id, { status: "COMPLETED" }),
+		ProductModel.custom.openRating(prodIds, +user),
+	])
 	return res
 }

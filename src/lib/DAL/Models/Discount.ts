@@ -1,11 +1,6 @@
 import { smallint, timestamp } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import {
-	maxSizes,
-	pgreDefaults,
-	shop,
-	validations,
-} from "./common"
+import { maxSizes, pgreDefaults, shop, validations } from "./common"
 
 type TestType = Readonly<{
 	id: "number"
@@ -36,10 +31,7 @@ const config = {
 	id: pgreDefaults.id,
 	discount: smallint("discount").notNull().default(0),
 	products: smallint("products").array().notNull().default([]),
-	categories: smallint("categories")
-		.array()
-		.notNull()
-		.default([]),
+	categories: smallint("categories").array().notNull().default([]),
 	brands: smallint("brands").array().notNull().default([]),
 	expires: timestamp("expires")
 		.notNull()
@@ -48,10 +40,7 @@ const config = {
 
 const DiscountPgreTable = shop.table(
 	"discounts",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type Discount = typeof DiscountPgreTable.$inferSelect

@@ -1,12 +1,13 @@
 "use client"
 import Link from "next/link"
 import useModalStore from "@/store/modalStore"
-import { signIn, signOut, useSession } from "next-auth/react"
-import Register from "@/components/modals/Register"
+import { signOut, useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
-import useLogin from "@/hooks/modals/useLogin"
-import Login from "@/components/modals/Login"
 import { useRouter } from "next/navigation"
+import dynamic from "next/dynamic"
+
+const Login = dynamic(() => import("@/components/modals/Login"))
+const Register = dynamic(() => import("@/components/modals/Register"))
 
 interface props {
 	className?: string
@@ -16,15 +17,11 @@ export default function Auth({ className }: props) {
 	const session = useSession()
 	console.log(session)
 
-	const name = session.data?.user?.name
-		? session.data?.user?.name
-		: "Guest"
+	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const router = useRouter()
 	const purgeCart = () => cartSetter({})
 	const modal = useModalStore((state) => state.base)
-	const register = <Register />
-	const login = <Login close={modal.close} />
 	return (
 		<div className={`${className}`}>
 			{session.data?.user?.name ? (
@@ -48,7 +45,7 @@ export default function Auth({ className }: props) {
 					<button
 						type="button"
 						onClick={() => {
-							modal.setModal(register)
+							modal.setModal(<Register close={modal.close} />)
 							modal.show()
 						}}
 					>
@@ -56,8 +53,8 @@ export default function Auth({ className }: props) {
 					</button>
 					<button
 						type="button"
-						onClick={() => {
-							modal.setModal(login)
+						onClick={async () => {
+							modal.setModal(<Login close={modal.close} />)
 							modal.show()
 						}}
 					>

@@ -1,81 +1,45 @@
 "use client"
-import useModalStore from "@/store/modalStore"
-import Form, {
-	FormFieldValidator,
-	FormFieldValue,
-} from "./index"
+import Form  from "./index"
 import React from "react"
+import LabeledInput from "../ui/LabeledInput/index.tsx"
+import { clientValidations } from "./common.ts"
 
-const fields = {
+const formFieldValues: {
+	name: string
+	description: string
+	image: File[]
+} = {
 	name: "",
 	description: "",
-	link: "",
-	image: null,
+	image: [],
 } as const
-const action = "api/brand"
+const action = "/api/brand"
 
-const validation: {
-	[i in keyof typeof fields]: FormFieldValidator
-} = {
-	name: (value: FormFieldValue) => {
-		if (typeof value !== "string")
-			return { valid: false, msg: "Name can only be string!" }
-
-		return value.length === 0
-			? { valid: false, msg: "Name Required!" }
-			: { valid: true }
-	},
-	image: (file: FormFieldValue) => {
-		if (typeof file === "string")
-			return { valid: false, msg: "Image can only be a file!" }
-		if (!file || (Array.isArray(file) && file.length === 0))
-			return { valid: true }
-		const files =
-			file instanceof FileList ? Object.values(file) : [file]
-		for (const file of files) {
-			const ext = file.name.split(".").pop()
-			if (ext != "jpeg" && ext != "jpg")
-				return { valid: false, msg: "Only jpegs!" }
-			if (file.size > 1024 * 512)
-				return { valid: false, msg: "Only under 0.5MB!" }
-		}
-		return { valid: true }
-	},
-	description: (value: FormFieldValue) => {
-		if (typeof value != "string")
-			return {
-				valid: false,
-				msg: "Description can only be string!",
-			}
-		return value.length === 0
-			? { valid: false, msg: "Description required" }
-			: { valid: true }
-	},
-	link: (value: FormFieldValue) => {
-		return typeof value != "string"
-			? { valid: false, msg: "Link can only be string!" }
-			: { valid: true }
-	},
+const validation = {
+	name: clientValidations.name,
+	image: clientValidations.images,
+	description: clientValidations.description,
 }
 
-const fieldValues = {
+const fieldProps: {
+	[I in keyof typeof formFieldValues]: Omit<
+		React.ComponentProps<typeof LabeledInput>,
+		"value" | "setValue"
+	>
+} = {
 	name: {
 		id: "name",
+		type: "text",
 		label: "Brand name",
 		placeholder: "Brand",
 		validator: validation["name"],
 	},
 	description: {
 		id: "description",
+		type: "text",
 		label: "Brand description",
 		placeholder: "Text",
 		validator: validation["description"],
-	},
-	link: {
-		id: "link",
-		label: "Brand link",
-		placeholder: "example.com",
-		validator: validation["link"],
 	},
 	image: {
 		id: "image",
@@ -87,48 +51,26 @@ const fieldValues = {
 	},
 } as const
 
-type props =
+type Props =
 	| {
-			method: "PUT"
-	  }
-	| {
-			method: "PATCH"
-			targId?: string
-			targName?: string
-	  }
-
-export default function useBrandForm(props: props) {
-	const modalState = useModalStore((state) => state.base)
-	if (
-		props.method === "PATCH" &&
-		!props.targId &&
-		!props.targName
-	)
-		return function Error() {
-			return <>Error!</>
-		}
-	function show() {
-		modalState.setModal(
-			props.method === "PUT" ? (
-				<Form
-					action={action}
-					method={props.method}
-					fieldValues={fieldValues}
-					fields={fields}
-				/>
-			) : (
-				<Form
-					{...(props.targId
-						? { targId: props.targId }
-						: { targName: props.targName })}
-					action={action}
-					method={props.method}
-					fieldValues={fieldValues}
-					fields={fields}
-				/>
-			)
-		)
-		modalState.show()
+		method: "PUT"
 	}
-	return show
+	| {
+		method: "PATCH"
+		targId?: string
+		targName?: string
+	}
+
+export default function BrandForm(props: Props) {
+	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
+	return (
+		<Form
+			className=""
+			action={action}
+			method={"PUT"}
+			fieldValues={fieldValues}
+			fieldProps={fieldProps}
+			setFieldValues={setFieldValues}
+		/>
+	)
 }

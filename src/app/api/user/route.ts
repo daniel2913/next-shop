@@ -22,10 +22,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-	const props: any = collectFromForm(
-		await req.formData(),
-		config
-	)
+	const props: any = collectFromForm(await req.formData(), config)
 	if (!props.name || !props.password)
 		return new NextResponse("Error1!", { status: 400 })
 	const hash = createHash("sha256")

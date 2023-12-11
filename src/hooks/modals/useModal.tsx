@@ -3,8 +3,7 @@ import React, { ReactElement } from "react"
 
 export default function useModal<T>() {
 	const modalState = useModalStore((state) => state.base)
-	const answer =
-		React.useRef<(res: T | null | Promise<T | null>) => void>()
+	const answer = React.useRef<(res: T | null | Promise<T | null>) => void>()
 
 	function show(Modal: ReactElement) {
 		modalState.setModal(Modal)

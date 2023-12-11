@@ -1,8 +1,7 @@
 import { CategoryModel } from "../../../Models/index.ts"
 
 async function serverCategoryValidation(name: string) {
-	if (await CategoryModel.exists({ name }))
-		return "mCategory already exists!"
+	if (await CategoryModel.exists({ name })) return "mCategory already exists!"
 	return false
 }
 

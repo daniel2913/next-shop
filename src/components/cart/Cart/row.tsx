@@ -10,15 +10,10 @@ type props = {
 }
 
 export default function CartRow({ className, product }: props) {
-	const {
-		setAmmount: ammountSetter,
-		discardItem: itemDiscarder,
-	} = useCartStore((state) => state)
-	const storeAmount = useCartStore(
-		(state) => state.items[product.id]
-	)
-	const setAmmount = (amnt: number) =>
-		ammountSetter(product.id, amnt)
+	const { setAmmount: ammountSetter, discardItem: itemDiscarder } =
+		useCartStore((state) => state)
+	const storeAmount = useCartStore((state) => state.items[product.id])
+	const setAmmount = (amnt: number) => ammountSetter(product.id, amnt)
 	const discardItem = () => itemDiscarder(product.id)
 	return (
 		<div
@@ -54,9 +49,7 @@ export default function CartRow({ className, product }: props) {
 				>
 					-
 				</button>
-				<span className="w-[3ch] text-center">
-					{storeAmount}
-				</span>
+				<span className="w-[3ch] text-center">{storeAmount}</span>
 				<button
 					className=""
 					type="button"
@@ -66,8 +59,7 @@ export default function CartRow({ className, product }: props) {
 				</button>
 			</div>
 			<span>
-				{(product.price -
-					(product.price * product.discount.discount) / 100) *
+				{(product.price - (product.price * product.discount.discount) / 100) *
 					storeAmount}
 			</span>
 			<button

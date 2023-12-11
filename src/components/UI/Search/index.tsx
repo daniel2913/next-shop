@@ -2,6 +2,7 @@
 import type { Brand, Category } from "@/lib/DAL/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
+import CheckBoxBlock from "../CheckBoxBlock"
 
 interface Props {
 	className?: string
@@ -9,83 +10,71 @@ interface Props {
 	categoryList: Category[]
 }
 
-export default function Search({
-	className,
-	brandList,
-	categoryList,
-}: Props) {
+export default function Search({ className, brandList, categoryList }: Props) {
 	const router = useRouter()
-	const [queryString, setQueryString] =
-		React.useState<string>("")
+	const [queryString, setQueryString] = React.useState<string>("")
 
-	const [brands, setBrands] = React.useState<
-		{ brand: Brand; checked: boolean }[]
-	>(brandList.map((brand) => ({ brand, checked: false })))
-	const [categories, setCategories] = React.useState<
-		{ category: Category; checked: boolean }[]
-	>(
-		categoryList.map((category) => ({
-			category,
-			checked: false,
-		}))
+	const brandsInit = brandList.reduce((record, brand) =>
+		Object.assign(
+			record,
+			{[brand.name]:{
+				value:false,
+				image:`/brands/${brand.image}`
+			}}
+		),
+		{} as Record<string,{value:boolean,image:string}>
 	)
+	console.log(brandsInit)
+	const categoriesInit = categoryList.reduce((record, category) =>
+		Object.assign(
+			record,
+			{[category.name]:{
+				value:false,
+				image:`/categories/${category.image}`
+			}}
+		),
+		{} as Record<string,{value:boolean,image:string}>
+	)
+
+	const [brands, setBrands] = React.useState(brandsInit)
+	const [categories, setCategories] = React.useState(categoriesInit)
 
 	async function onClick() {
 		const query = new URL("shop", "http://localhost:3000")
-		const queryCats = categories.filter(
-			(category) => category.checked
-		)
-		const queryBrands = brands.filter((brand) => brand.checked)
+		const queryCats = Object.keys(categories)
+			.filter(key => categories[key].value)
+		const queryBrands = Object.keys(brands)
+			.filter(key => brands[key].value)
 		if (queryString) query.searchParams.set("name", queryString)
 		if (queryCats.length)
 			query.searchParams.set(
 				"category",
-				encodeURIComponent(
-					queryCats.map((cat) => cat.category.name).join(",")
-				)
+				encodeURIComponent(queryCats.join(","))
 			)
 		if (queryBrands.length)
 			query.searchParams.set(
 				"brand",
-				encodeURIComponent(
-					queryBrands.map((brand) => brand.brand.name).join(",")
-				)
+				encodeURIComponent(queryBrands.join(","))
 			)
 		router.push(query.toString())
 	}
-	function onBrandCheck(name: string) {
-		setBrands(
-			brands.map((brand) => ({
-				...brand,
-				checked:
-					name === brand.brand.name
-						? !brand.checked
-						: brand.checked,
+	
+	function onCheck(setter:typeof setBrands){
+		return (name:string)=>
+			setter(prev => ({
+				...prev,[name]:{...prev[name],value:!prev[name].value}
 			}))
-		)
 	}
 
-	function onCategoryCheck(name: string) {
-		setCategories(
-			categories.map((category) => ({
-				...category,
-				checked:
-					name === category.category.name
-						? !category.checked
-						: category.checked,
-			}))
-		)
-	}
 	return (
-		<div
-			className={`${className} group relative right-auto flex w-1/2`}
-		>
+		<div className={`${className} group relative right-auto flex w-1/2`}>
 			<div className="w-full">
 				<input
+					autoComplete="off"
 					className="
-                w-4/5 rounded-l-lg border-2 border-r-0
-                    border-cyan-500 border-r-transparent bg-cyan-100 px-2
-                "
+            w-4/5 rounded-l-lg border-2 border-r-0
+          	border-cyan-500 border-r-transparent bg-cyan-100 px-2
+          "
 					type="search"
 					name="searchQuery"
 					id="searchQuery"
@@ -94,10 +83,9 @@ export default function Search({
 				/>
 				<button
 					className="
-                    w-1/5 rounded-r-lg 
-                    border-2 border-cyan-600
-                    
-                    "
+            w-1/5 rounded-r-lg 
+            border-2 border-cyan-600
+          "
 					type="button"
 					onClick={onClick}
 				>
@@ -105,50 +93,24 @@ export default function Search({
 				</button>
 			</div>
 			<div
+				tabIndex={0}
 				className="
-                absolute top-6 hidden 
-                w-full overflow-x-scroll group-focus-within:block
-                "
+        	absolute top-6 z-30 hidden w-full
+          overflow-x-hidden bg-accent2-300 group-focus-within:block
+        "
 			>
-				<div className="z-50 flex gap-3">
-					{categories.map((category) => {
-						return (
-							<div key={`category ${category.category.name}`}>
-								<input
-									type="checkbox"
-									id={category.category.name}
-									name={category.category.name}
-									checked={category.checked}
-									onChange={() =>
-										onCategoryCheck(category.category.name)
-									}
-								/>
-								<label htmlFor={category.category.name}>
-									{category.category.name}
-								</label>
-							</div>
-						)
-					})}
-				</div>
-				<br />
-				<div className="z-50 flex gap-3">
-					{brands.map((brand) => {
-						return (
-							<div key={`brand ${brand.brand.name}`}>
-								<input
-									type="checkbox"
-									id={brand.brand.name}
-									name={brand.brand.name}
-									checked={brand.checked}
-									onChange={() => onBrandCheck(brand.brand.name)}
-								/>
-								<label htmlFor={brand.brand.name}>
-									{brand.brand.name}
-								</label>
-							</div>
-						)
-					})}
-				</div>
+				<CheckBoxBlock
+					className="flex overflow-x-scroll w-full"
+					value={categories}
+					setValue={onCheck(setCategories)}
+					type="images"
+				/>
+				<CheckBoxBlock
+					className="flex overflow-x-scroll w-full"
+					value={brands}
+					setValue={onCheck(setBrands)}
+					type="images"
+				/>
 			</div>
 		</div>
 	)

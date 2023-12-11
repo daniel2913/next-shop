@@ -1,15 +1,11 @@
 import { UserPgreTable } from "./User.ts"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import {
-	jsonb,
-	real,
-	smallint,
-	varchar,
-} from "drizzle-orm/pg-core"
+import { jsonb, real, smallint, varchar } from "drizzle-orm/pg-core"
 import { pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
 import { sql } from "drizzle-orm"
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js/index"
+import { argv0 } from "process"
 
 type TestType = Readonly<{
 	id: "number"
@@ -37,9 +33,26 @@ const OrderCustomQueries = {
 			`)
 		return res.map((res) => ({
 			...res,
-			order: JSON.parse(res.order),
+			order: res.order,
 		})) as Order[]
 	},
+
+	create:
+		(dataBase: PostgresJsDatabase) =>
+		async (
+			userId: number,
+			order: Record<number, { amount: number; price: number }>
+		) => {
+			const res = await dataBase.execute(sql`
+				INSERT INTO shop.orders 
+					("user","order","status"
+				)
+					values(${userId}::smallint,${order}::json,'PROCESSING')
+				RETURNING
+					id
+			`)
+			return res.length > 0 ? true : false
+		},
 }
 
 const config = {
@@ -55,10 +68,7 @@ const config = {
 }
 const OrderPgreTable = shop.table(
 	"orders",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export { OrderPgreTable, OrderValidations, OrderCustomQueries }

@@ -1,11 +1,12 @@
 {
 	"plugins": ["prettier-plugin-tailwindcss"],
   "trailingComma": "es5",
-	"printWidth": 65,
+	"printWidth": 80,
   "tabWidth": 2,
   "semi": false,
   "singleQuote": false,
 	"useTabs": true,
 	"bracketSameLine": false,
-	"singleAttributePerLine": true
+	"singleAttributePerLine": true,
+
 }

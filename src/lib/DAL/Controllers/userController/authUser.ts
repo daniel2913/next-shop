@@ -7,9 +7,7 @@ interface Props {
 	password?: string
 }
 
-export default async function authUser(
-	props: Props | undefined
-) {
+export default async function authUser(props: Props | undefined) {
 	const password = props?.password
 	const name = props?.name
 	if (!(password && name)) return null

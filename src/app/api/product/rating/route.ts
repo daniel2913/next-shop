@@ -9,23 +9,17 @@ export async function POST(req: NextRequest) {
 		getServerSession(authOptions),
 		req.json(),
 	])
-	if (!(id || vote))
-		return new NextResponse("Invalid Request", { status: 400 })
-	if (!session?.user?.name)
-		return new NextResponse("Not Authorized", { status: 401 })
+	if (!(id || vote)) return new NextResponse("Invalid Request", { status: 400 })
+	if (!session?.user) return new NextResponse("Not Authorized", { status: 401 })
+	console.log(1)
 	const user = await UserCache.get(session.user.name)
-	const prevVote = user.votes[id.toString()] ?? -1
-	if (prevVote === -1)
-		return new NextResponse("Not Authorized", { status: 401 })
+	if (!user) return new NextResponse("Bad Cache", { status: 500 })
 	const res = await ProductModel.custom.updateRatings(
 		id,
-		vote - prevVote,
+		vote,
 		user.id
 	)
-	if (!res)
-		return new NextResponse("Not Authorized", { status: 401 })
-	const newBought = { ...user.votes, [id.toString()]: vote }
-	UserModel.patch(user.id, { votes: newBought })
-	UserCache.patch(user.name, { votes: newBought })
+	console.log(2)
+	if (!res) return new NextResponse("Not Authorized", { status: 401 })
 	return NextResponse.json(res, { status: 200 })
 }

@@ -1,7 +1,6 @@
 import { ProductModel } from "../../../Models/index.ts"
 
 async function serverLinkValidation(link: string) {
-	console.log(link)
 	//if (await ProductModel.exists({ link })) return false
 	return true
 }

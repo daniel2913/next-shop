@@ -22,11 +22,7 @@ function previewImages(images: File[]) {
 	return res
 }
 
-export default function ImagesPreview({
-	images,
-	delImage,
-	className,
-}: Props) {
+export default function ImagesPreview({ images, delImage, className }: Props) {
 	const imageUrls = React.useMemo<string[]>(() => {
 		return previewImages(images)
 	}, [images])

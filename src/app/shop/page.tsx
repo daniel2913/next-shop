@@ -1,6 +1,5 @@
 import ProductList from "@/components/Products"
 import { Session } from "next-auth"
-import { Suspense } from "react"
 
 export default function Shop({
 	searchParams,

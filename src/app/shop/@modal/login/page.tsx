@@ -27,7 +27,7 @@ export default function Login({ close }: Props) {
 			.catch((res) => setStatus(res))
 	}
 	return (
-		<div>
+		<dialog>
 			<span>{status}</span>
 			<LabeledInput
 				type="text"
@@ -71,6 +71,6 @@ export default function Login({ close }: Props) {
 			>
 				Demo Admin
 			</button>
-		</div>
+		</dialog>
 	)
 }

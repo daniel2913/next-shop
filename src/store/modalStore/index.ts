@@ -1,16 +1,7 @@
 import { create } from "zustand"
-import {
-	BaseModalSlice,
-	createBaseModalSlice,
-} from "./baseSlice"
-import {
-	ModalConfirmSlice,
-	createModalConfirmSlice,
-} from "./confirmSlice"
-import {
-	ModalFormSlice,
-	createModalFormSlice,
-} from "./formSlice"
+import { BaseModalSlice, createBaseModalSlice } from "./baseSlice"
+import { ModalConfirmSlice, createModalConfirmSlice } from "./confirmSlice"
+import { ModalFormSlice, createModalFormSlice } from "./formSlice"
 
 const useModalStore = create<
 	BaseModalSlice & ModalConfirmSlice & ModalFormSlice

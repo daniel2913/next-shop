@@ -16,9 +16,7 @@ export default function Timer({ expires }: Props) {
 		return () => clearTimeout(timer)
 	})
 	const gtime = new Date(timeLeft)
-	const time = new Date(
-		+gtime + gtime.getTimezoneOffset() * 1000 * 60
-	)
+	const time = new Date(+gtime + gtime.getTimezoneOffset() * 1000 * 60)
 	return (
 		<span className="text-center text-[.75em] text-gray-500">
 			{`${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`}

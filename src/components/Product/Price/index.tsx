@@ -17,16 +17,10 @@ export default function Price({
 			<s className="text-[.75em] text-gray-600 decoration-accent1-700">
 				{price}
 			</s>
-			<span className="text-accent1-700">
-				{price - (price * 15) / 100}
-			</span>
+			<span className="text-accent1-700">{price - (price * 15) / 100}</span>
 			{timeLeft > 0 && timeLeft < 1000 * 60 * 60 * 6 ? (
 				<Timer
-					expires={
-						new Date(
-							Date.now() + 1000 * 60 * 5
-						) /*discount.expires*/
-					}
+					expires={new Date(Date.now() + 1000 * 60 * 5) /*discount.expires*/}
 				/>
 			) : null}
 		</div>

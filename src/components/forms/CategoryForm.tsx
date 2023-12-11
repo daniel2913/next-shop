@@ -1,8 +1,5 @@
 "use client"
-import Form, {
-	FormFieldValidator,
-	FormFieldValue,
-} from "./index"
+import Form, { FormFieldValidator, FormFieldValue } from "./index"
 import React from "react"
 
 const formFieldValues = { name: "", image: null } as const
@@ -56,8 +53,7 @@ export default function CategoryForm({
 }: {
 	method: "PUT" | "PATCH"
 }) {
-	const [fieldValues, setFieldValues] =
-		React.useState(formFieldValues)
+	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
 	return (
 		<Form
 			action={action}

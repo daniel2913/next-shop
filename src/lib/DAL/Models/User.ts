@@ -1,11 +1,8 @@
 import { char, jsonb, varchar } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import {
-	maxSizes,
-	pgreDefaults,
-	shop,
-	validations,
-} from "./common"
+import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import { sql } from "drizzle-orm"
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js"
 
 type TestType = Readonly<{
 	id: "number"
@@ -17,10 +14,7 @@ type TestType = Readonly<{
 	votes: "json"
 }>
 
-const UserValidations: Record<
-	keyof User,
-	Array<(...args: any) => any>
-> = {
+const UserValidations: Record<keyof User, Array<(...args: any) => any>> = {
 	id: [],
 	name: [validations.length("name", maxSizes.name, 1)],
 	passwordHash: [],
@@ -33,30 +27,52 @@ const UserValidations: Record<
 	votes: [],
 }
 
+const UserCustomQuerys = {
+	updateVotes:
+		(dataBase: PostgresJsDatabase) =>
+		async (id: number, votes: Record<number, number>) => {
+			const res = await dataBase.execute(sql`
+				UPDATE shop.users 
+					SET 
+						votes= votes || ${votes}::jsonb
+					WHERE
+							id = ${id}
+					RETURNING
+						name;
+			`)
+			return res.length > 0 ? (res[0].name as string) : null
+		},
+	updateCart:
+		(dataBase: PostgresJsDatabase) =>
+		async (id: number, cart: Record<number, number>) => {
+			const res = await dataBase.execute(sql`
+				UPDATE shop.users 
+					SET 
+						cart= ${cart}::json
+					WHERE
+							id = ${id}
+					RETURNING
+						id;
+			`)
+			return res.length > 0 ? true : false
+		},
+}
+
 const config = {
 	id: pgreDefaults.id,
 	name: pgreDefaults.name.unique(),
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	image: pgreDefaults.image,
-	cart: jsonb("cart")
-		.notNull()
-		.default({})
-		.$type<Record<string, number>>(),
-	votes: jsonb("votes")
-		.notNull()
-		.default({})
-		.$type<Record<string, number>>(),
+	cart: jsonb("cart").notNull().default({}).$type<Record<string, number>>(),
+	votes: jsonb("votes").notNull().default({}).$type<Record<string, number>>(),
 }
 
 const UserPgreTable = shop.table(
 	"users",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
 export type User = typeof UserPgreTable.$inferSelect
 
-export { UserPgreTable, UserValidations }
+export { UserPgreTable, UserValidations, UserCustomQuerys }

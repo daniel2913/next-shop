@@ -24,43 +24,54 @@ type TestType = Readonly<{
 	description: "string"
 	images: "array"
 	price: "number"
-	discounts: "array"
-	votes: "number"
+	votes: "array"
 	voters: "array"
 	rating: "number"
 }>
-
 const ProductValidations = {
 	id: [validations.id("id")],
 	name: [validations.length("name", maxSizes.name, 1)],
 	brand: [],
 	category: [],
-	description: [
-		validations.length("description", maxSizes.description, 1),
-	],
+	description: [validations.length("description", maxSizes.description, 1)],
 	images: [validations.imagesMatch()],
 	price: [validations.value("price", Infinity, 1)],
-	discounts: [validations.noDefault("discount")],
 	votes: [validations.noDefault("votes")],
 	voters: [validations.noDefault("voters")],
 	rating: [validations.noDefault("rating")],
 }
 
 const ProductCustomQueries = {
+	openRating:
+		(dataBase: PostgresJsDatabase) => async (ids: number[], voter: number) => {
+			const res = await dataBase.execute(sql`
+				UPDATE shop.products 
+					SET 
+						votes[cardinality(voters)+1]=null,
+						voters[cardinality(voters)+1]=${voter}
+					WHERE
+								id in (${ids})
+							AND
+								NOT ${voter} = any(voters)
+					RETURNING
+						rating, cardinality(voters) as voters;
+			`)
+			return res.length > 0
+				? (res[0] as { rating: number; voters: number })
+				: false
+		},
 	updateRatings:
 		(dataBase: PostgresJsDatabase) =>
 		async (id: number, vote: number, voter: number) => {
 			const res = await dataBase.execute(sql`
 				UPDATE shop.products 
 					SET 
-						votes=votes+${vote},
-						voters[coalesce(array_position(voters,${voter}),cardinality(voters)+1)]=${voter}
+						votes[array_position(voters,${voter})]=${vote}
 					WHERE
 							id = ${id}
 					RETURNING
 						rating, cardinality(voters) as voters;
 			`)
-			console.log("=======3", res)
 			return res.length > 0
 				? (res[0] as { rating: number; voters: number })
 				: false
@@ -77,21 +88,15 @@ const config = {
 		.notNull()
 		.references(() => CategoryPgreTable.id),
 	description: pgreDefaults.description,
-	images: varchar("images", { length: maxSizes.image })
-		.array()
-		.notNull(),
+	images: varchar("images", { length: maxSizes.image }).array().notNull(),
 	price: real("price").notNull(),
-	discounts: smallint("discounts").array().notNull(),
-	votes: integer("votes").default(0).notNull(),
+	votes: integer("votes").array().default([]).notNull(),
 	voters: smallint("voters").array().default([]).notNull(),
 	rating: real("rating").default(0),
 }
 const ProductPgreTable = shop.table(
 	"products",
-	config as TestColumnsConfig<
-		typeof config,
-		ColumnsConfig<TestType>
-	>,
+	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
 	(table) => {
 		return {
 			uq: uniqueIndex().on(table.brand, table.name),
@@ -103,7 +108,7 @@ export type Product = typeof ProductPgreTable.$inferSelect
 export type LeanProduct = Omit<Product, "voters" | "discounts">
 export type PopulatedProduct = Omit<
 	Product,
-	"brand" | "category" | "discounts" | "votes" | "voters"
+	"brand" | "category" | "votes" | "voters"
 > & {
 	votes: number
 	voters: number
@@ -113,8 +118,4 @@ export type PopulatedProduct = Omit<
 	ownVote: number
 }
 
-export {
-	ProductPgreTable,
-	ProductValidations,
-	ProductCustomQueries,
-}
+export { ProductPgreTable, ProductValidations, ProductCustomQueries }

@@ -1,7 +1,6 @@
 "use client"
 import useCartStore from "@/store/cartStore"
 import AmmountSelector from "../AmmountSelector"
-import { useSession } from "next-auth/react"
 
 interface Props {
 	className: string
@@ -15,7 +14,6 @@ export default function BuyButton({ className, id }: Props) {
 		return (
 			<AmmountSelector
 				className={`${className}`}
-				amount={amount}
 				id={id}
 			/>
 		)

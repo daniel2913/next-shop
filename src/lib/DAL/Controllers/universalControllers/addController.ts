@@ -1,24 +1,13 @@
-import {
-	deleteImages,
-	handleImages,
-	saveImages,
-} from "@/helpers/images.ts"
+import { deleteImages, handleImages, saveImages } from "@/helpers/images.ts"
 import { NextResponse } from "next/server"
 import { Tconfig } from "./index.ts"
-import {
-	BrandCache,
-	CategoryCache,
-} from "@/helpers/cachedGeters.ts"
+import { BrandCache, CategoryCache } from "@/helpers/cachedGeters.ts"
 
-export default async function addController<T>(
-	props: any,
-	config: Tconfig<T>
-) {
+export default async function addController<T>(props: any, config: Tconfig<T>) {
 	const { DIR_PATH, model, multImages } = config
 
-	const imageFiles = ((multImages
-		? props["images"]
-		: [props["image"]]) || []) as (File | string)[]
+	const imageFiles = ((multImages ? props["images"] : [props["image"]]) ||
+		[]) as (File | string)[]
 
 	const images = handleImages(imageFiles)
 	if (multImages) {

@@ -4,14 +4,12 @@ import useModalStore from "@/store/modalStore"
 import React from "react"
 
 export default function ModalBase() {
-	const { isVisible, content, close } = useModalStore(
-		(state) => state.base
-	)
+	const { isVisible, content, close } = useModalStore((state) => state.base)
 	return (
 		<dialog
 			className={`
-            ${isVisible ? "block" : "hidden"}
-            max-w-70% absolute bottom-1/2 right-1/2 h-[33vh]
+            ${isVisible ? "block" : "hidden"} ax-w-70%
+            absolute bottom-1/2 right-1/2 z-30 h-[33vh]
             max-h-full min-h-fit w-[33vw]
             min-w-fit translate-x-1/2 translate-y-1/2
             rounded-md bg-cyan-100 p-4

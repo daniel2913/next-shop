@@ -40,8 +40,7 @@ export const validations = {
 	},
 	value(name: string, max: number, min?: number) {
 		return function (value: string | number) {
-			if (Number.isNaN(value))
-				return `${name} value (${value}) is not a number`
+			if (Number.isNaN(value)) return `${name} value (${value}) is not a number`
 			if ((min || min === 0) && +value < min)
 				return `${name} value (${value}) is below min value (${min})`
 			if (+value > max)

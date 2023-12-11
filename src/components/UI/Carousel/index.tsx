@@ -41,23 +41,16 @@ function Carousel({
 						return (
 							<div
 								key={Math.random().toString()}
-								className={`${
-									i === current ? "block" : "hidden"
-								}`}
+								className={`${i === current ? "block" : "hidden"}`}
 							>
 								{image}
 							</div>
 						)
 					else return <></>
 				})}
-				{children[current]}
 			</div>
-			<div className="absolute left-2 top-2 z-40">
-				{brandImage}
-			</div>
-			<div className="absolute bottom-2 right-2 z-40">
-				{discount}
-			</div>
+			<div className="f-10 absolute left-2 top-2">{brandImage}</div>
+			<div className="absolute bottom-2 right-2 z-10">{discount}</div>
 			<button
 				type="button"
 				onClick={() => changeSlide(current - 1)}
@@ -83,7 +76,7 @@ function Carousel({
 			{preview ? (
 				<></>
 			) : (
-				<div className="absolute bottom-0 right-1/2 z-50 flex translate-x-1/2 justify-center gap-1">
+				<div className="absolute bottom-0 right-1/2 z-10 flex translate-x-1/2 justify-center gap-1">
 					{children.map((_, i) => {
 						return (
 							<button
@@ -98,9 +91,7 @@ function Carousel({
 				</div>
 			)}
 			{preview ? (
-				<div
-					className={`${previewClassName} flex justify-center gap-2`}
-				>
+				<div className={`${previewClassName} flex justify-center gap-2`}>
 					{children.map((image, i) => (
 						<button
 							className="relative h-full w-10"

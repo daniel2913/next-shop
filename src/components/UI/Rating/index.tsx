@@ -24,6 +24,7 @@ export default function Rating({
 	const prevUser = React.useRef(session.data?.user?.name)
 	const [ratingState, setRatingState] = React.useState(rating)
 	const [votersState, setVotersState] = React.useState(voters)
+	const [loading, setLoading] = React.useState(false)
 	const [status, setStatus] = React.useState(
 		ownVote === 0 ? "You haven't rate this product yet!" : ""
 	)
@@ -41,21 +42,21 @@ export default function Rating({
 		else if (ownVote === -1)
 			setStatus("You can only rate products from your orders!")
 		else {
-			setStatus("Thank you for your rating!")
-			const oldRating = rated
-			setRated(i)
+			setLoading(true)
 			const res = await fetch("/api/product/rating", {
 				method: "POST",
 				body: JSON.stringify({ vote: i, id }),
 			})
+			setLoading(false)
 			if (res.status === 200) {
+				setStatus("Thank you for your rating!")
 				const { voters, rating } = await res.json()
 				console.log(voters, rating)
+				setRated(i)
 				setRatingState(rating)
 				setVotersState(voters)
 				return true
 			}
-			setRated(oldRating)
 			setStatus(res.status.toString())
 		}
 	}
@@ -69,6 +70,7 @@ export default function Rating({
 				ratings.map((i) => {
 					return (
 						<button
+							disabled={loading}
 							type="button"
 							key={`${i}-${Math.random()}`}
 							onClick={() => handleRate(i)}
@@ -101,9 +103,7 @@ export default function Rating({
 				<span
 					key={`${Math.random()}`}
 					className="ml-2 self-center text-sm text-gray-600"
-				>{`${votersState} vote${
-					votersState % 10 === 1 ? "" : "s"
-				}`}</span>,
+				>{`${votersState} vote${votersState % 10 === 1 ? "" : "s"}`}</span>,
 			]}
 			<span className="w-full text-[.75em] leading-3 text-accent1-300">
 				{status}

@@ -29,15 +29,12 @@ export async function isValidDocument(doc: unknown) {
 		await doc.validate()
 		return doc
 	} catch (error) {
-		console.log(error)
+		console.error(error)
 		return false
 	}
 }
 
-export function collectFromForm<T>(
-	form: FormData,
-	config: Tconfig<T>
-) {
+export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
 	const props: any = {}
 	const imagesPath = config.multImages ? "images" : "image"
 	console.log("form: ", form)
@@ -72,16 +69,12 @@ export function imagesDiff<T>(
 	if (!config.multImages) return [newImages[0]]
 	if (!oldImages) return newImages
 	return oldImages
-		.filter(
-			(image, idx) => !deleteImages.includes(idx.toString())
-		)
+		.filter((image, idx) => !deleteImages.includes(idx.toString()))
 		.concat(newImages)
 }
 
 export function collectQueries<T>(
-	params:
-		| URLSearchParams
-		| Record<string, string | string[] | undefined>,
+	params: URLSearchParams | Record<string, string | string[] | undefined>,
 	config: Tconfig<T>
 ) {
 	const query: Partial<{ [i: string]: string | string[] }> = {}
@@ -98,17 +91,12 @@ export function collectQueries<T>(
 	}
 	if ("name" in query) {
 		//TODO
-		query["name"] = new RegExp(
-			query["name"] as string
-		) as any as string
+		query["name"] = new RegExp(query["name"] as string) as any as string
 	}
 	return query
 }
 
-export function formatImages<T>(
-	propsImages: unknown,
-	config: Tconfig<T>
-) {
+export function formatImages<T>(propsImages: unknown, config: Tconfig<T>) {
 	if (!propsImages) return []
 	if (!Array.isArray(propsImages)) return [propsImages]
 	return config.multImages

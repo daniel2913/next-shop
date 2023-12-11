@@ -2,11 +2,11 @@
 
 import React from "react"
 
-type props = {
+type Props = {
 	options: string[]
 	className?: string
 	id: string
-	label: string
+	label?: string
 	value: string
 	setValue: (a: string) => void
 }
@@ -18,7 +18,8 @@ export default function Selector({
 	label,
 	value,
 	setValue,
-}: props) {
+}: Props) {
+
 	const [open, setOpen] = React.useState<boolean>(false)
 	React.useEffect(() => {
 		setValue(options[0])
@@ -40,6 +41,7 @@ export default function Selector({
 				onFocus={() => setOpen((prev) => !prev)}
 				type="text"
 				value={value}
+				onChange={()=>false}
 				name={id}
 				id={id}
 			/>

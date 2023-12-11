@@ -1,8 +1,5 @@
 import ProductForm from "@/components/forms/ProductForm"
-import {
-	BrandCache,
-	CategoryCache,
-} from "@/helpers/cachedGeters"
+import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 
 export default async function AddProductPage() {
 	const [brandList, categoryList] = await Promise.all([

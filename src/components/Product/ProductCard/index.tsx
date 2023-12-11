@@ -14,10 +14,7 @@ type Props = {
 	product: PopulatedProduct
 }
 
-export default async function ProductCard({
-	className,
-	product,
-}: Props) {
+export default async function ProductCard({ className, product }: Props) {
 	const session = await getServerSession(authOptions)
 	return (
 		<div
@@ -81,9 +78,7 @@ export default async function ProductCard({
 					className="col-span-2 max-h-8"
 				/>
 
-				<span className="text-xl font-semibold">
-					{product.brand.name}
-				</span>
+				<span className="text-xl font-semibold">{product.brand.name}</span>
 				<span className="justify-self-end text-lg capitalize text-gray-600">
 					{product.category.name}
 				</span>
