@@ -24,7 +24,6 @@ export default function Search({ className, brandList, categoryList }: Props) {
 		),
 		{} as Record<string,{value:boolean,image:string}>
 	)
-	console.log(brandsInit)
 	const categoriesInit = categoryList.reduce((record, category) =>
 		Object.assign(
 			record,

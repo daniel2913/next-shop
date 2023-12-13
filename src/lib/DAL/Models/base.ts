@@ -2,6 +2,7 @@ import {
 	Column,
 	ColumnBuilderBaseConfig,
 	ColumnDataType,
+	SQL,
 	SQLWrapper,
 	Table,
 	and,
@@ -12,6 +13,8 @@ import {
 import { PgColumnBuilderBase, PgSelect, TableConfig } from "drizzle-orm/pg-core"
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
+
+
 
 export type ColumnsConfig<T extends Record<string, ColumnDataType>> = {
 	[Key in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[Key], string>>
@@ -46,6 +49,7 @@ interface DataModel<T extends Record<string,any>& {id: number }> {
 	) => Promise<T[]>
 	delete: (id: number) => Promise<boolean>
 	patch: (targid: number, patch: Partial<T>) => Promise<boolean>
+	raw: (sql:SQL<any>)=>any
 }
 
 const PGRE_LINK = process.env.PGRE_URL_DEV
@@ -153,7 +157,9 @@ export class PgreModel<
 		return (await this.model
 			.select()
 			.from(this.table)
-			.where(this.makePgreQuery(query))) as T[]
+			.where(this.makePgreQuery(query))
+			.limit(10)
+		) as T[]
 	}
 	async findPaginated(
 		pageSize: number,
@@ -192,4 +198,9 @@ export class PgreModel<
 		}
 		return false
 	}
+	
+	async raw(sql:SQL<any>){
+		return this.model.execute(sql)
+	}
+
 }

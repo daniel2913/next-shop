@@ -37,7 +37,6 @@ export async function isValidDocument(doc: unknown) {
 export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
 	const props: any = {}
 	const imagesPath = config.multImages ? "images" : "image"
-	console.log("form: ", form)
 	for (const [key, value] of form.entries()) {
 		if (
 			!value ||
@@ -75,7 +74,7 @@ export function imagesDiff<T>(
 
 export function collectQueries<T>(
 	params: URLSearchParams | Record<string, string | string[] | undefined>,
-	config: Tconfig<T>
+	config: Tconfig
 ) {
 	const query: Partial<{ [i: string]: string | string[] }> = {}
 	for (const [key, value] of Object.entries(params)) {
@@ -86,6 +85,7 @@ export function collectQueries<T>(
 			} catch (e) {
 				test = ""
 			}
+			if (!Array.isArray(test)) test = [test]
 			query[key] = test
 		}
 	}

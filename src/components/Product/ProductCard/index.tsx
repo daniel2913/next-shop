@@ -1,3 +1,4 @@
+"use client"
 import BuyButton from "@/components/ui/BuyButton"
 import Carousel from "../../ui/Carousel"
 import Discount from "../Discount"
@@ -5,17 +6,16 @@ import Image from "next/image"
 import Link from "next/link"
 import Price from "../Price"
 import Rating from "@/components/ui/Rating"
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { useSession } from "next-auth/react"
 
 type Props = {
 	className: string
 	product: PopulatedProduct
 }
 
-export default async function ProductCard({ className, product }: Props) {
-	const session = await getServerSession(authOptions)
+export default function ProductCard({ className, product }: Props) {
+	const session = useSession()
 	return (
 		<div
 			className={`

@@ -15,7 +15,6 @@ export default async function Orders() {
 	const productSet = new Set(
 		orders.flatMap((order) => Object.keys(order.order))
 	)
-	console.log(productSet)
 	const products = await getProducts(Array.from(productSet))
 	const populatedOrders: {
 		order: Order
@@ -28,7 +27,6 @@ export default async function Orders() {
 		}
 		populatedOrders.push({ products: populatedProducts, order })
 	}
-	console.log(populatedOrders)
 	return (
 		<>
 			{populatedOrders.map((order) => {
@@ -37,7 +35,6 @@ export default async function Orders() {
 					id: +order.order.id,
 					prodIds: Object.keys(order.order.order).map(Number),
 				}
-				console.log("====>1", data)
 				return (
 					<Accordion
 						key={order.order.id}

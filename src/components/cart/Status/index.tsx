@@ -37,7 +37,6 @@ export default function CartStatus({ getProducts }: Props) {
 			synced.current = data.user.id || -1
 			if (data.user.role === "user") {
 				const remoteCache = await (await fetch("api/store")).json()
-				console.log(remoteCache)
 				if (Object.keys(remoteCache).length > 0) {
 					if (Object.keys(localCache).length === 0) {
 						setLocalCache(remoteCache)

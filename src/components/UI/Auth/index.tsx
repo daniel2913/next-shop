@@ -15,12 +15,12 @@ interface props {
 
 export default function Auth({ className }: props) {
 	const session = useSession()
-	console.log(session)
 
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const router = useRouter()
 	const purgeCart = () => cartSetter({})
+	const purgeVotes = useCartStore((state)=>state.clearVotes)
 	const modal = useModalStore((state) => state.base)
 	return (
 		<div className={`${className}`}>
@@ -32,7 +32,7 @@ export default function Auth({ className }: props) {
 						onClick={() => {
 							signOut({ redirect: false }).then((res) => {
 								purgeCart()
-								router.refresh()
+								purgeVotes()
 							})
 						}}
 					>

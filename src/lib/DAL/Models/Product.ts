@@ -44,18 +44,18 @@ const ProductValidations = {
 const ProductCustomQueries = {
 	openRating:
 		(dataBase: PostgresJsDatabase) => async (ids: number[], voter: number) => {
-			const res = await dataBase.execute(sql`
-				UPDATE shop.products 
+			const res = await dataBase.execute(sql.raw(`
+				UPDATE shop.products
 					SET 
 						votes[cardinality(voters)+1]=null,
 						voters[cardinality(voters)+1]=${voter}
 					WHERE
 								id in (${ids})
 							AND
-								NOT ${voter} = any(voters)
+								NOT ${voter} = ANY(voters)
 					RETURNING
 						rating, cardinality(voters) as voters;
-			`)
+			`))
 			return res.length > 0
 				? (res[0] as { rating: number; voters: number })
 				: false
@@ -63,7 +63,7 @@ const ProductCustomQueries = {
 	updateRatings:
 		(dataBase: PostgresJsDatabase) =>
 		async (id: number, vote: number, voter: number) => {
-			const res = await dataBase.execute(sql`
+			const res = await dataBase.execute(sql.raw(`
 				UPDATE shop.products 
 					SET 
 						votes[array_position(voters,${voter})]=${vote}
@@ -71,7 +71,7 @@ const ProductCustomQueries = {
 							id = ${id}
 					RETURNING
 						rating, cardinality(voters) as voters;
-			`)
+			`))
 			return res.length > 0
 				? (res[0] as { rating: number; voters: number })
 				: false

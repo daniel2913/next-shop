@@ -5,7 +5,7 @@ import {
 	CategoryCache,
 	DiscountCache,
 } from "../helpers/cachedGeters"
-import { populateProducts } from "@/components/Products"
+import { populateProducts } from "@/helpers/getProducts"
 
 export async function getProducts(query: string | string[] | RegExp) {
 	if (!query || (Array.isArray(query) && query.length === 0)) return []

@@ -1,6 +1,6 @@
 "use client"
 
-import useError from "@/hooks/modals/useError"
+import useCartStore from "@/store/cartStore"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
 import React from "react"
@@ -18,49 +18,36 @@ export default function Rating({
 	className,
 	voters,
 	rating,
-	ownVote = -1,
 }: Props) {
 	const session = useSession()
 	const prevUser = React.useRef(session.data?.user?.name)
 	const [ratingState, setRatingState] = React.useState(rating)
 	const [votersState, setVotersState] = React.useState(voters)
+	const rated = useCartStore(state=>state.votes[id])
+	const ratingSetter = useCartStore(state=>state.setVote)
 	const [loading, setLoading] = React.useState(false)
 	const [status, setStatus] = React.useState(
-		ownVote === 0 ? "You haven't rate this product yet!" : ""
+		rated === 0 ? "You haven't rate this product yet!" : ""
 	)
-	const [rated, setRated] = React.useState(ownVote)
-	const ratings = [1, 2, 3, 4, 5]
+	const setRated = React.useMemo(()=>(vote:number)=>ratingSetter(id,vote),[id,ratingSetter])
 	if (session.data?.user?.name !== prevUser.current) {
 		setStatus("")
 		prevUser.current = session.data?.user?.name
 	}
-	React.useEffect(() => setRated(ownVote), [ownVote, setRated])
 
 	async function handleRate(i: number) {
 		if (!session.data?.user?.id)
 			setStatus("Only authorized users can rate products!")
-		else if (ownVote === -1)
+		else if (rated === -1)
 			setStatus("You can only rate products from your orders!")
 		else {
 			setLoading(true)
-			const res = await fetch("/api/product/rating", {
-				method: "POST",
-				body: JSON.stringify({ vote: i, id }),
-			})
+			setRated(i)
 			setLoading(false)
-			if (res.status === 200) {
-				setStatus("Thank you for your rating!")
-				const { voters, rating } = await res.json()
-				console.log(voters, rating)
-				setRated(i)
-				setRatingState(rating)
-				setVotersState(voters)
-				return true
-			}
-			setStatus(res.status.toString())
 		}
 	}
 
+	const ratings = [1, 2, 3, 4, 5]
 	return (
 		<div
 			title={`${ratingState}`}

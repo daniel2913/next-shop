@@ -30,7 +30,6 @@ function Carousel({
 	}
 	return (
 		<div className={`${className} relative mx-auto`}>
-			{" "}
 			<div className={`${carouselClassName}`}>
 				{children.map((image, i) => {
 					if (

@@ -1,140 +1,89 @@
+"use client"
 import ProductCard from "@/components/product/ProductCard"
-import { Brand, Category, ProductModel, User } from "@/lib/DAL/Models"
-import { collectQueries } from "@/lib/DAL/controllers/universalControllers"
-import {
-	BrandCache,
-	CategoryCache,
-	DiscountCache,
-	UserCache,
-} from "@/helpers/cachedGeters"
-import { PopulatedProduct, Product } from "@/lib/DAL/Models/Product"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import useCartStore from "@/store/cartStore"
+import { useSession } from "next-auth/react"
+import React from "react"
 
-type TSearchParams = {
-	[key: string]: string | string[] | undefined
+type Props = {
+	initProducts: PopulatedProduct[]
 }
 
-const unknownDiscount = {
-	id: -1,
-	products: [],
-	brands: [],
-	categories: [],
-	discount: 0,
-	expires: new Date(),
+
+function useVotes(){
+	const addVotes = useCartStore(state=>state.addVotes)
+	return (products:PopulatedProduct[])=>{
+	const votes = products
+		.filter(product=>product.ownVote!==-1)
+		.map(product=>[product.id,product.ownVote])
+	addVotes(Object.fromEntries(votes))
+	}
 }
 
-const unknownBrand: Brand = {
-	name: "unknown",
-	image: "template.jpg",
-	description: "not found",
-	id: -1,
-}
+function useInfScroll<T extends any>(
+	endpoint:string,
+	initItems:T[],
+	endRef:React.RefObject<HTMLDivElement>,
+	pageSize:number = 20,
+	searchParams:string|undefined
+){
+	const [items,setItems] = React.useState(initItems)
+	const hasMore = React.useRef(true)
+	const updateVotes = useVotes()
+	const address = endpoint + 
+		`?skip=${items.length}&page=${pageSize}` +
+		(searchParams ? `&${searchParams}` : '')
 
-const unknownCategory: Category = {
-	name: "unknown",
-	image: "template.jpg",
-	id: -1,
-}
-
-const unknownUser: Omit<User, "passwordHash" | "cart"> = {
-	name: "Guest",
-	role: "guest",
-	image: "template.jpg",
-	id: -1,
-	votes: {},
-}
-
-export async function populateProducts(
-	products: Product[]
-): Promise<PopulatedProduct[]> {
-	const [brands, categories, discounts, session] = await Promise.all([
-		BrandCache.get(),
-		CategoryCache.get(),
-		DiscountCache.get(),
-		getServerSession(authOptions),
-	])
-	const user = session?.user?.name
-		? (await UserCache.get(session?.user?.name)) || unknownUser
-		: unknownUser
-	const populatedProducts = products.map((product) => {
-		const brand = brands.find((brand) => brand.id === product.brand)
-		const category = categories.find(
-			(category) => category.id === product.category
-		)
-		const applicableDiscounts = discounts.filter(
-			(discount) => Number(discount.expires) > Date.now() &&
-			(	
-				product.id in discount.products ||
-				product.brand in discount.brands ||
-				product.category in discount.categories
-			)
-		)
-		const discount = applicableDiscounts.reduce(
-			(prev, next) =>
-				(prev =
-						next.discount > prev.discount && {
-							discount: next.discount,
-							expires: next.expires,
-						} ||
-					prev),
-			{ discount: 0, expires: new Date() }
-		)
-		const voterIdx = product.voters.indexOf(user.id)
-		const ownVote = voterIdx === -1 
-			? -1 
-			: product.votes[voterIdx] || 0
-		const votes = product.votes.reduce((prev, next) => prev + next, 0)
-		const voters = product.votes.reduce(
-			(prev, next) => (next ? prev + 1 : prev),
-			0
-		)
-		return {
-			...product,
-			votes,
-			voters,
-			brand: brand || unknownBrand,
-			category: category || unknownCategory,
-			discount,
-			ownVote,
+	const nextObserver = React.useRef(
+		new IntersectionObserver(async (entries)=>{
+			if (!hasMore.current) return false
+			if (!entries[0].isIntersecting) return false
+			const res = await fetch(address,{method:"GET"})
+			if (!res.ok) {
+				console.error(res.status)
+				hasMore.current=false
+				return false
+			}
+			const newItems = await res.json()
+			if (newItems.length<pageSize) hasMore.current = false
+			setItems(prev=>[...prev,...newItems])
+			updateVotes(newItems)
+		})
+	)
+	React.useEffect(()=>{
+		if (endRef.current){
+			nextObserver.current.observe(endRef.current)
 		}
-	})
-	return populatedProducts
+	},[endRef])
+	return items
 }
 
-async function getProducts(searchParams: TSearchParams) {
-	const query = collectQueries(searchParams, {
-		model: ProductModel,
-	})
-	console.log(1,searchParams)
-	const [brandList, categoryList, discountList] = await Promise.all([
-		BrandCache.get(),
-		CategoryCache.get(),
-		DiscountCache.get(),
-	])
-	console.log(query.brand,brandList)
-	if (query.brand)
-		query.brand =
-			brandList
-				.filter((brand) => brand.name in query.brand)
-				.map(brand=>brand.id.toString()) || ""
-	if (query.category)
-		query.category =
-			categoryList
-				?.find((cat) => cat.name === query.category)
-				?.id.toString() || ""
-	console.log("===>",query)
-	const products = await ProductModel.find(query)
 
-	return populateProducts(products)
-}
+export default function ProductList({initProducts}:Props){
+	const updateVotes = useVotes()
+	const session = useSession()
+	const reloadVotes = useCartStore(state=>state.reloadVotes)
+	let search = undefined
+	if (window)
+		search = window.location.search.slice(1)
+	const endRef = React.useRef<HTMLDivElement>(null)
+	const user = React.useRef<number|undefined>()
+	const products = useInfScroll(
+		'/api/product',
+		initProducts,
+		endRef,
+		10,
+		search
+	)
 
-export default async function ProductList({
-	searchParams,
-}: {
-	searchParams: TSearchParams
-}) {
-	const products = await getProducts(searchParams)
+	React.useEffect(()=>{
+		if (user.current !== session.data?.user?.id){
+			console.log(session.data?.user?.id)
+			user.current = session.data?.user?.id
+			reloadVotes(products.map(prod=>prod.id))
+		}
+	},[products,session])
+
 	return (
 		<div className="bg-green-100">
 			<div className="">
@@ -150,12 +99,17 @@ export default async function ProductList({
 			>
 				{products.map((product) => (
 					<ProductCard
-						className="	h-80 w-64 p-2
-						"
+						className="h-80 w-64 p-2"
 						key={`${product.brand}/${product.name}`}
 						product={product}
 					/>
 				))}
+				<div 
+					className="bg-accent1-300"
+					ref={endRef}
+				>
+					I KNOW WHERE YOU ARE
+				</div>
 			</div>
 		</div>
 	)
