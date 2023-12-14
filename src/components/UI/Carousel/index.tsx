@@ -15,7 +15,7 @@ interface Props {
 
 const getPos = (i: number, len: number) => (i + len) % len
 
-function Carousel({
+export default function Carousel({
 	className,
 	children,
 	brandImage,
@@ -28,25 +28,28 @@ function Carousel({
 	function changeSlide(n: number) {
 		setCurrent(getPos(n, children.length))
 	}
+	const currentImages = React.useMemo(() => {
+		return children.map((image, i) => {
+			if (
+				i === current ||
+				i === getPos(current + 1, children.length) ||
+				i === getPos(current - 1, children.length)
+			)
+				return (
+					<div
+						key={i}
+						className={`${i === current ? "block" : "hidden"}`}
+					>
+						{image}
+					</div>
+				)
+			else return null
+		})
+	},[current,children])
 	return (
 		<div className={`${className} relative mx-auto`}>
 			<div className={`${carouselClassName}`}>
-				{children.map((image, i) => {
-					if (
-						i === current ||
-						i === getPos(current + 1, children.length) ||
-						i === getPos(current - 1, children.length)
-					)
-						return (
-							<div
-								key={Math.random().toString()}
-								className={`${i === current ? "block" : "hidden"}`}
-							>
-								{image}
-							</div>
-						)
-					else return <></>
-				})}
+				{currentImages}
 			</div>
 			<div className="f-10 absolute left-2 top-2">{brandImage}</div>
 			<div className="absolute bottom-2 right-2 z-10">{discount}</div>
@@ -73,7 +76,7 @@ function Carousel({
 				/>
 			</button>
 			{preview ? (
-				<></>
+				null
 			) : (
 				<div className="absolute bottom-0 right-1/2 z-10 flex translate-x-1/2 justify-center gap-1">
 					{children.map((_, i) => {
@@ -103,11 +106,10 @@ function Carousel({
 						</button>
 					))}
 				</div>
-			) : (
-				<></>
-			)}
+			) :
+				null
+			}
 		</div>
 	)
 }
 
-export default Carousel

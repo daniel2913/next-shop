@@ -3,6 +3,7 @@ import Link from "next/link"
 import useModalStore from "@/store/modalStore"
 import { signOut, useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
+import useProductStore from "@/store/productsStore/productStore"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 
@@ -18,9 +19,8 @@ export default function Auth({ className }: props) {
 
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
-	const router = useRouter()
 	const purgeCart = () => cartSetter({})
-	const purgeVotes = useCartStore((state)=>state.clearVotes)
+	const reloadVotes = useProductStore(state=>state.reloadVotes)
 	const modal = useModalStore((state) => state.base)
 	return (
 		<div className={`${className}`}>
@@ -32,7 +32,7 @@ export default function Auth({ className }: props) {
 						onClick={() => {
 							signOut({ redirect: false }).then((res) => {
 								purgeCart()
-								purgeVotes()
+								reloadVotes()
 							})
 						}}
 					>

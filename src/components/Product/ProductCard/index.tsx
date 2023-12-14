@@ -3,19 +3,26 @@ import BuyButton from "@/components/ui/BuyButton"
 import Carousel from "../../ui/Carousel"
 import Discount from "../Discount"
 import Image from "next/image"
-import Link from "next/link"
 import Price from "../Price"
 import Rating from "@/components/ui/Rating"
-import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import { useSession } from "next-auth/react"
-
+import useProductStore from "@/store/productsStore/productStore"
+import {shallow} from "zustand/shallow"
+import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 type Props = {
 	className: string
-	product: PopulatedProduct
+	id:number
 }
 
-export default function ProductCard({ className, product }: Props) {
-	const session = useSession()
+function customCompare(oldObj:PopulatedProduct,newObj:PopulatedProduct){
+	for (const key of  Object.keys(oldObj) as (keyof typeof oldObj & keyof typeof newObj)[]){
+		if (key==="rating" || key==="votes" || key==="ownVote") continue
+		if (oldObj[key]!==newObj[key]) return false
+	}
+	return true
+}
+
+export default function ProductCard({ className,id}: Props) {
+	const product = useProductStore(state=>state.products[id],customCompare)
 	return (
 		<div
 			className={`
@@ -62,19 +69,11 @@ export default function ProductCard({ className, product }: Props) {
 				grid grid-cols-2
 			"
 			>
-				<Link
-					className="col-span-2 "
-					href={`./product/${product.brand.name}/${product.name}`}
-				>
 					<h3 className="text-2xl font-bold uppercase text-accent1-400">
 						{product.name}
 					</h3>
-				</Link>
 				<Rating
 					id={product.id}
-					rating={product.rating}
-					ownVote={product.ownVote}
-					voters={product.voters}
 					className="col-span-2 max-h-8"
 				/>
 
@@ -87,12 +86,10 @@ export default function ProductCard({ className, product }: Props) {
 					discount={product.discount}
 					price={product.price}
 				/>
-				{session?.user?.role === "admin" ? null : (
 					<BuyButton
 						className="justify-self-center"
 						id={product.id}
 					/>
-				)}
 			</div>
 		</div>
 	)

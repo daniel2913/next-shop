@@ -1,88 +1,71 @@
 "use client"
 import ProductCard from "@/components/product/ProductCard"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import useCartStore from "@/store/cartStore"
-import { useSession } from "next-auth/react"
+import useProductStore from "@/store/productsStore/productStore"
 import React from "react"
-
 type Props = {
 	initProducts: PopulatedProduct[]
 }
 
 
-function useVotes(){
-	const addVotes = useCartStore(state=>state.addVotes)
-	return (products:PopulatedProduct[])=>{
-	const votes = products
-		.filter(product=>product.ownVote!==-1)
-		.map(product=>[product.id,product.ownVote])
-	addVotes(Object.fromEntries(votes))
-	}
-}
-
 function useInfScroll<T extends any>(
-	endpoint:string,
-	initItems:T[],
+	items:Record<number,T>,
+	loadItems:(page:number|undefined,query:string|undefined)=>Promise<false|number>,
 	endRef:React.RefObject<HTMLDivElement>,
-	pageSize:number = 20,
+	page:number = 20,
 	searchParams:string|undefined
 ){
-	const [items,setItems] = React.useState(initItems)
 	const hasMore = React.useRef(true)
-	const updateVotes = useVotes()
-	const address = endpoint + 
-		`?skip=${items.length}&page=${pageSize}` +
-		(searchParams ? `&${searchParams}` : '')
-
-	const nextObserver = React.useRef(
-		new IntersectionObserver(async (entries)=>{
+	const nextObserver = React.useRef<IntersectionObserver|null>(null)
+		try{
+			nextObserver.current = new IntersectionObserver(async (entries)=>{
 			if (!hasMore.current) return false
 			if (!entries[0].isIntersecting) return false
-			const res = await fetch(address,{method:"GET"})
-			if (!res.ok) {
-				console.error(res.status)
-				hasMore.current=false
-				return false
-			}
-			const newItems = await res.json()
-			if (newItems.length<pageSize) hasMore.current = false
-			setItems(prev=>[...prev,...newItems])
-			updateVotes(newItems)
+			const newItemsAmount = await loadItems(page,searchParams)
+			if (!newItemsAmount || newItemsAmount<page) hasMore.current = false
 		})
-	)
+	}
+	catch{
+		"We Are On The Server!!!"
+	}
+	
 	React.useEffect(()=>{
-		if (endRef.current){
+		if (endRef.current && nextObserver.current){
 			nextObserver.current.observe(endRef.current)
 		}
 	},[endRef])
-	return items
+	return Object.values(items)
+}
+
+function keyCompare(oldObj:Record<number,any>,newObj:Record<number,any>){
+	return (Object.keys(oldObj).toString() === Object.keys(newObj).toString())
 }
 
 
 export default function ProductList({initProducts}:Props){
-	const updateVotes = useVotes()
-	const session = useSession()
-	const reloadVotes = useCartStore(state=>state.reloadVotes)
 	let search = undefined
-	if (window)
+	try{	if (window)
 		search = window.location.search.slice(1)
+	}
+	catch{
+		search = undefined
+	}
 	const endRef = React.useRef<HTMLDivElement>(null)
-	const user = React.useRef<number|undefined>()
+	
+	const storeProducts = useProductStore(state=>state.products,keyCompare)
+	const loadProducts = useProductStore(state=>state.loadProducts)
+	const setProducts = useProductStore(state=>state.setProducts)
+ 	
 	const products = useInfScroll(
-		'/api/product',
-		initProducts,
+		storeProducts,
+		loadProducts,
 		endRef,
 		10,
 		search
 	)
-
-	React.useEffect(()=>{
-		if (user.current !== session.data?.user?.id){
-			console.log(session.data?.user?.id)
-			user.current = session.data?.user?.id
-			reloadVotes(products.map(prod=>prod.id))
-		}
-	},[products,session])
+	React.useEffect(()=>setProducts(Object.fromEntries(
+		initProducts.map(prod=>[prod.id,prod])
+	)),[])
 
 	return (
 		<div className="bg-green-100">
@@ -100,8 +83,8 @@ export default function ProductList({initProducts}:Props){
 				{products.map((product) => (
 					<ProductCard
 						className="h-80 w-64 p-2"
-						key={`${product.brand}/${product.name}`}
-						product={product}
+						key={`${product.id}`}
+						id = {product.id}
 					/>
 				))}
 				<div 

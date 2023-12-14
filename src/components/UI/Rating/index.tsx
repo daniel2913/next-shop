@@ -1,48 +1,37 @@
 "use client"
 
 import useCartStore from "@/store/cartStore"
+import useProductStore from "@/store/productsStore/productStore"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
 import React from "react"
 
 interface Props {
 	id: number
-	rating: number
-	voters: number
-	ownVote: number
 	className: string
 }
 
 export default function Rating({
 	id,
 	className,
-	voters,
-	rating,
 }: Props) {
 	const session = useSession()
-	const prevUser = React.useRef(session.data?.user?.name)
-	const [ratingState, setRatingState] = React.useState(rating)
-	const [votersState, setVotersState] = React.useState(voters)
-	const rated = useCartStore(state=>state.votes[id])
-	const ratingSetter = useCartStore(state=>state.setVote)
+	const {rating,voters,ownVote} = useProductStore(state=>state.products[id])
 	const [loading, setLoading] = React.useState(false)
 	const [status, setStatus] = React.useState(
-		rated === 0 ? "You haven't rate this product yet!" : ""
+		ownVote === 0 ? "You haven't rate this product yet!" : ""
 	)
-	const setRated = React.useMemo(()=>(vote:number)=>ratingSetter(id,vote),[id,ratingSetter])
-	if (session.data?.user?.name !== prevUser.current) {
-		setStatus("")
-		prevUser.current = session.data?.user?.name
-	}
+	const voteSetter = useProductStore(state=>state.updateVote)
+	const setVote = (vote:number)=>voteSetter(id,vote)
 
 	async function handleRate(i: number) {
 		if (!session.data?.user?.id)
 			setStatus("Only authorized users can rate products!")
-		else if (rated === -1)
+		else if (ownVote === -1)
 			setStatus("You can only rate products from your orders!")
 		else {
 			setLoading(true)
-			setRated(i)
+			setVote(i)
 			setLoading(false)
 		}
 	}
@@ -50,7 +39,7 @@ export default function Rating({
 	const ratings = [1, 2, 3, 4, 5]
 	return (
 		<div
-			title={`${ratingState}`}
+			title={`${rating}`}
 			className={`${className} flex flex-wrap`}
 		>
 			{[
@@ -69,16 +58,16 @@ export default function Rating({
 								className={`
 							aspect-square h-full
 							${
-								i <= rated
+								i <= ownVote
 									? "fill-accent1-600"
-									: i <= ratingState
+									: i <= (rating||0)
 									  ? "fill-accent1-400"
 									  : "fill-cyan-100"
 							} 
 							${
-								i <= rated
+								i <= ownVote
 									? "stroke-accent1-600"
-									: i <= ratingState
+									: i <= (rating||0)
 									  ? "stroke-accent1-400"
 									  : "stroke-teal-400"
 							}																		
@@ -90,7 +79,7 @@ export default function Rating({
 				<span
 					key={`${Math.random()}`}
 					className="ml-2 self-center text-sm text-gray-600"
-				>{`${votersState} vote${votersState % 10 === 1 ? "" : "s"}`}</span>,
+				>{`${voters} vote${voters % 10 === 1 ? "" : "s"}`}</span>,
 			]}
 			<span className="w-full text-[.75em] leading-3 text-accent1-300">
 				{status}

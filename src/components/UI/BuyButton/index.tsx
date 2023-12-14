@@ -1,6 +1,7 @@
 "use client"
 import useCartStore from "@/store/cartStore"
 import AmmountSelector from "../AmmountSelector"
+import { useSession } from "next-auth/react"
 
 interface Props {
 	className: string
@@ -8,8 +9,12 @@ interface Props {
 }
 
 export default function BuyButton({ className, id }: Props) {
+	const session = useSession()
 	const amount = useCartStore((state) => state.items[id])
 	const addItem = useCartStore((state) => state.addItem)
+	if (session.data?.user?.role==="admin"){
+		return null
+	}
 	if (amount) {
 		return (
 			<AmmountSelector
