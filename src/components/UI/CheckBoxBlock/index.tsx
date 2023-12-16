@@ -3,83 +3,66 @@ import Image from 'next/image'
 import React from 'react'
 
 
-type Options<T extends "text"|"images"> = {
-	[i:string]:{
-		value:boolean
-	}
-	&
-	T extends "images"
-	?
-		{
-			value:boolean
-			image:string
-		}
-	: 
-		{
-			value:boolean
-		}
-		
-}
-
-type Props<U extends "text"|"images",T extends Options<U>> = {
+type Props<T extends string[]> = {
 	className?: string
-	value: T
-	setValue: (id: keyof T) => void
-	type:U
+	value:T[number][]
+	options: T
+	id:string
+	setValue: (value:T[number][]) => void
+}&(
+|{
+	view:"text"
 }
-	/* &
-	(
-		{
-			type: "images
-			images:never
-		}
-		|
-		{
-			type: "images",
-			images: Map<keyof T, string>
-		}
-	) */
-
+|{
+	view:"images"
+	images:string[]
+}
+)
 type TextCheckBoxProps = {
+	id:string
 	name:string
-	option: Options<"text">[string]
+	value:boolean
 	toggle: () => void
 }
 
 type ImageCheckBoxProps = {
+	id:string
 	name:string
-	option: Options<"images">[string]
+	image:string
+	value:boolean
 	toggle: () => void
 }
 
 
-function TextCheckBox({name, option,toggle }: TextCheckBoxProps) {
+function TextCheckBox({name,toggle,id,value }: TextCheckBoxProps) {
 	return (
 		<div>
 			<input
+				name={id}
 				type="checkbox"
-				checked={option.value}
+				checked={value}
 				value={name}
 				onChange={toggle}
 			/>
 		</div>
 	)
 }
-function ImageCheckBox({ name,option,toggle}: ImageCheckBoxProps) {
-	const id = `${name}-${option.image}`
+function ImageCheckBox({ name,image,value,toggle,id}: ImageCheckBoxProps) {
+	const _id = `${name}-${image}`
 	return (
 		<div
 			className='w-12 aspect-square p-1'
 		>
 			<input
-				id={id}
+				id={_id}
+				name={id}
 				className='hidden peer'
 				type="checkbox"
-				checked={option.value}
+				checked={value}
 				onChange={toggle}
 			/>
 			<label
-				htmlFor={id}
+				htmlFor={_id}
 				className={`
 					peer-checked:opacity-100
 					rounded-full overflow-hidden
@@ -88,7 +71,7 @@ function ImageCheckBox({ name,option,toggle}: ImageCheckBoxProps) {
 				`}
 			>
 				<Image
-					src={option.image}
+					src={image}
 					alt={name}
 					fill
 				/>
@@ -97,30 +80,45 @@ function ImageCheckBox({ name,option,toggle}: ImageCheckBoxProps) {
 	)
 }
 
-export default function CheckBoxBlock<U extends "text"|"images",T extends Options<U>>({
+export default function CheckBoxBlock<T extends string[]>({
 	value,
+	id,
+	options,
 	setValue,
-	type,
-	className
-}: Props<U,T>) {
+	className,
+	...props
+}: Props<T>) {
 	return (
 		<div
 			className={`${className} p-2`}
 		>
 			{
-				Object.keys(value).map((key) => {
-					const toggle = () => setValue(key)
-					const CheckBox = type === "images"
-						? ImageCheckBox
-						: TextCheckBox
-					return (
-						<CheckBox
-							key={key}
-							option={value[key]}
-							name={key}
+				options.map((option) => {
+					const toggle = () => {
+						if(value.indexOf(option)!==-1)
+							setValue(value.filter(val=>val!==option))
+						else
+							setValue([...value,option])
+					}
+					return props.view === "text"
+						? 
+						<TextCheckBox
+							key={`${id}-${option}`}
+							id={id}
+							value={value.indexOf(option)!==-1}
+							name={option}
 							toggle={toggle}
 						/>
-					)
+						:
+							<ImageCheckBox
+							key={`${id}-${option}`}
+							id={id}
+							value={value.indexOf(option)!==-1}
+							name={option}
+							image={props.images[options.indexOf(option)]}
+							toggle={toggle}
+							/>
+					
 				})
 			}
 		</div>

@@ -13,56 +13,27 @@ interface Props {
 export default function Search({ className, brandList, categoryList }: Props) {
 	const router = useRouter()
 	const [queryString, setQueryString] = React.useState<string>("")
+	
+	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
+	const categoryImages = categoryList.map((cat) =>`/categories/${cat.image}`)
 
-	const brandsInit = brandList.reduce((record, brand) =>
-		Object.assign(
-			record,
-			{[brand.name]:{
-				value:false,
-				image:`/brands/${brand.image}`
-			}}
-		),
-		{} as Record<string,{value:boolean,image:string}>
-	)
-	const categoriesInit = categoryList.reduce((record, category) =>
-		Object.assign(
-			record,
-			{[category.name]:{
-				value:false,
-				image:`/categories/${category.image}`
-			}}
-		),
-		{} as Record<string,{value:boolean,image:string}>
-	)
-
-	const [brands, setBrands] = React.useState(brandsInit)
-	const [categories, setCategories] = React.useState(categoriesInit)
+	const [brands, setBrands] = React.useState<string[]>([])
+	const [categories, setCategories] = React.useState<string[]>([])
 
 	async function onClick() {
 		const query = new URL("shop", "http://localhost:3000")
-		const queryCats = Object.keys(categories)
-			.filter(key => categories[key].value)
-		const queryBrands = Object.keys(brands)
-			.filter(key => brands[key].value)
 		if (queryString) query.searchParams.set("name", queryString)
-		if (queryCats.length)
+		if (categories.length)
 			query.searchParams.set(
 				"category",
-				encodeURIComponent(queryCats.join(","))
+				encodeURIComponent(categories.join(","))
 			)
-		if (queryBrands.length)
+		if (brands.length)
 			query.searchParams.set(
 				"brand",
-				encodeURIComponent(queryBrands.join(","))
+				encodeURIComponent(brands.join(","))
 			)
 		router.push(query.toString())
-	}
-	
-	function onCheck(setter:typeof setBrands){
-		return (name:string)=>
-			setter(prev => ({
-				...prev,[name]:{...prev[name],value:!prev[name].value}
-			}))
 	}
 
 	return (
@@ -99,16 +70,22 @@ export default function Search({ className, brandList, categoryList }: Props) {
         "
 			>
 				<CheckBoxBlock
+					id = "category"
 					className="flex overflow-x-scroll w-full"
 					value={categories}
-					setValue={onCheck(setCategories)}
-					type="images"
+					options={categoryList.map(cat=>cat.name)}
+					setValue={setCategories}
+					view="images"
+					images={categoryImages}
 				/>
 				<CheckBoxBlock
+					id="brand"
 					className="flex overflow-x-scroll w-full"
 					value={brands}
-					setValue={onCheck(setBrands)}
-					type="images"
+					options={brandList.map(brand=>brand.name)}
+					setValue={setBrands}
+					view="images"
+					images={brandImages}
 				/>
 			</div>
 		</div>

@@ -1,12 +1,10 @@
 "use client"
-
-import React, { ReactNode, useState } from "react"
+import React from "react"
 import ArrowStraight from "@public/arrowStraight.svg"
-import Image from "next/image"
 interface Props {
-	children: ReactNode[]
-	brandImage?: ReactNode
-	discount?: ReactNode
+	children: React.ReactNode[]
+	brandImage?: React.ReactNode
+	discount?: React.ReactNode
 	className?: string
 	carouselClassName?: string
 	previewClassName?: string
@@ -24,7 +22,7 @@ export default function Carousel({
 	carouselClassName,
 	previewClassName,
 }: Props) {
-	const [current, setCurrent] = useState(0)
+	const [current, setCurrent] = React.useState(0)
 	function changeSlide(n: number) {
 		setCurrent(getPos(n, children.length))
 	}

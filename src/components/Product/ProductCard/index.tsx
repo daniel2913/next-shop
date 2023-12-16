@@ -6,23 +6,25 @@ import Image from "next/image"
 import Price from "../Price"
 import Rating from "@/components/ui/Rating"
 import useProductStore from "@/store/productsStore/productStore"
-import {shallow} from "zustand/shallow"
+import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 type Props = {
 	className: string
-	id:number
+	product:PopulatedProduct
 }
 
 function customCompare(oldObj:PopulatedProduct,newObj:PopulatedProduct){
+	if (!(oldObj && newObj)&&(oldObj||newObj)) return false
 	for (const key of  Object.keys(oldObj) as (keyof typeof oldObj & keyof typeof newObj)[]){
-		if (key==="rating" || key==="votes" || key==="ownVote") continue
+		if (key==="rating" || key==="voters"|| key==="votes" || key==="ownVote") continue
 		if (oldObj[key]!==newObj[key]) return false
 	}
 	return true
 }
 
-export default function ProductCard({ className,id}: Props) {
-	const product = useProductStore(state=>state.products[id],customCompare)
+export default function ProductCard({ className,product:initProduct}: Props) {
+	const storeProduct = useProductStore(state=>state.products.find(prod=>prod.id===initProduct.id)!,customCompare)
+	let product = storeProduct || initProduct
 	return (
 		<div
 			className={`
@@ -74,6 +76,9 @@ export default function ProductCard({ className,id}: Props) {
 					</h3>
 				<Rating
 					id={product.id}
+					ownVote={product.ownVote}
+					rating={product.rating||0}
+					voters={product.voters}
 					className="col-span-2 max-h-8"
 				/>
 

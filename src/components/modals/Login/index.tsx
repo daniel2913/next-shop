@@ -9,14 +9,13 @@ import React, { ComponentProps, FormEvent } from "react"
 
 type Props = {
 	close: () => void
+	reloadVotes: ()=>void
 }
 
-export default function Login({ close }: Props) {
+export default function Login({ close,reloadVotes }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [status, setStatus] = React.useState("")
-	const router = useRouter()
-	const reloadVotes = useProductStore(state=>state.reloadVotes)
 
 	function handleLogin(creds: { name: string; password: string }) {
 		signIn("credentials", { ...creds, redirect: false })

@@ -1,7 +1,7 @@
 import React, { FormEvent } from "react"
 import LabeledInput from "@/components/ui/LabeledInput"
 
-export type FormFieldValue = string | File[]
+export type FormFieldValue = string | File[] | string[]
 export interface FormFieldValidator {
 	(v: FormFieldValue): string | false
 }
@@ -48,7 +48,7 @@ export default function Form<T extends Record<string, FormFieldValue>>({
 		for (const [key, value] of Object.entries(fieldValues)) {
 			if (!Array.isArray(value)) {
 				if (fieldProps[key].validator) {
-					const entryInvalid = fieldProps[key].validator(value)
+					const entryInvalid = fieldProps[key].validator!(value)
 					if (entryInvalid) {
 						setError(`${fieldProps[key].label}: ${entryInvalid}`)
 						return false
@@ -56,8 +56,8 @@ export default function Form<T extends Record<string, FormFieldValue>>({
 				}
 				form.append(key, value)
 			} else if (Array.isArray(value)) {
-				if (fieldProps[key].validator) {
-					const entryInvalid = fieldProps[key].validator(value)
+				if (fieldProps[key].validator!==undefined) {
+					const entryInvalid = fieldProps[key].validator!(value)
 					if (entryInvalid) {
 						setError(`${fieldProps[key].label}: ${entryInvalid}`)
 						return false
@@ -90,24 +90,14 @@ export default function Form<T extends Record<string, FormFieldValue>>({
 			>
 				{Object.entries(fieldProps).map(([key, props]) => (
 					<LabeledInput
+						{...props}
 						key={key}
 						value={fieldValues[key]}
-						setValue={(
-							value: FormFieldValue | ((a: FormFieldValue) => FormFieldValue)
-						) => {
-							if (value instanceof Function) {
-								setFieldValues((prev) => ({
-									...prev,
-									[key]: value(prev[key]),
-								}))
-							} else {
-								setFieldValues((prev) => ({
-									...prev,
-									[key]: value,
-								}))
-							}
-						}}
-						{...props}
+						type={props.type}
+						label={props.label}
+						id={props.label}
+						setValue={(value:FormFieldValue)=>setFieldValues(prev=>({...prev,[key]:value}))}
+						
 					/>
 				))}
 				{loading ? (

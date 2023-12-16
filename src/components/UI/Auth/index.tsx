@@ -4,7 +4,6 @@ import useModalStore from "@/store/modalStore"
 import { signOut, useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productsStore/productStore"
-import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 
 const Login = dynamic(() => import("@/components/modals/Login"))
@@ -14,9 +13,8 @@ interface props {
 	className?: string
 }
 
-export default function Auth({ className }: props) {
+export default function Auth({ className}: props) {
 	const session = useSession()
-
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const purgeCart = () => cartSetter({})
@@ -54,7 +52,7 @@ export default function Auth({ className }: props) {
 					<button
 						type="button"
 						onClick={async () => {
-							modal.setModal(<Login close={modal.close} />)
+							modal.setModal(<Login reloadVotes={reloadVotes} close={modal.close} />)
 							modal.show()
 						}}
 					>

@@ -2,7 +2,7 @@
 import {clientValidations} from "./common.ts"
 import Form,{FormFieldValue } from "./index"
 import React from "react"
-import LabeledInput from "@/components/ui/LabeledInput"
+import LabeledInput, { InputGeneralProps, InputOptionDynamicProps, InputOptionProps, InputOptionStaticProps } from "@/components/ui/LabeledInput"
 import { Brand, Category } from "@/lib/DAL/Models"
 import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
 
@@ -34,75 +34,63 @@ const validation={
 	},
 }
 
-const fieldProps: {
-	[I in keyof typeof formFieldValues]: Omit<
-		React.ComponentProps<typeof LabeledInput>,
-		"value" | "setValue"
-	>
-} = {
-	name: {
-		id: "name",
-		type: "text",
-		label: "Product name",
-		placeholder: "Product",
-		validator: validation.name,
-	},
-	description: {
-		id: "description",
-		type: "text",
-		label: "Product description",
-		placeholder: "Text",
-		validator: validation.description,
-	},
-	brand: {
-		id: "brand",
-		label: "Product brand",
-		placeholder: "test",
-		type: "select",
-	},
-	category: {
-		id: "category",
-		type: "select",
-		label: "Product category",
-		placeholder: "test",
-	},
-	price: {
-		id: "price",
-		type: "text",
-		label: "Product price",
-		placeholder: "test",
-		validator: validation.price,
-	},
-	images: {
-		id: "image",
-		label: "Product image",
-		type: "file",
-		multiple: true,
-		accept: "image/jpeg",
-		validator: validation.images,
-	},
-}
-
 interface Props {
 	brandList: Brand[]
 	categoryList: Category[]
 }
 export default function ProductForm({ brandList, categoryList }: Props) {
 	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
-	fieldProps.brand.selectProps = {
-		options: brandList.map((brand) => brand.name),
-		id:fieldProps.brand.id,
-		label:fieldProps.brand.label,
-		value:fieldValues.brand,
-		setValue:(val:string)=>setFieldValues(prev=>({...prev,brand:val}))
-	}
-	fieldProps.category.selectProps = {
-		options: categoryList.map((category) => category.name),
-		id:fieldProps.category.id,
-		label:fieldProps.category.label,
-		value:fieldValues.category,
-		setValue:(val:string)=>setFieldValues(prev=>({...prev,category:val}))
-	}
+
+const fieldProps: {
+	[I in keyof typeof formFieldValues]: 
+		InputGeneralProps
+		&InputOptionStaticProps
+		&Omit<InputOptionDynamicProps,"value"|"setValue">
+} = {
+	name: {
+		type: "text",
+		id: "name",
+		label: "Product name",
+		placeholder: "Product",
+		validator: validation.name,
+	},
+	description: {
+		type: "text",
+		id: "description",
+		label: "Product description",
+		placeholder: "Text",
+		validator: validation.description,
+	},
+	brand: {
+		type: "select",
+		id: "brand",
+		label: "Product brand",
+		placeholder: "test",
+		options:brandList.map((brand) => brand.name),
+	},
+	category: {
+		type: "select",
+		id: "category",
+		label: "Product category",
+		placeholder: "test",
+		options:categoryList.map((category) => category.name),
+	},
+	price: {
+		type: "text",
+		id: "price",
+		label: "Product price",
+		placeholder: "test",
+		validator: validation.price,
+	},
+	images: {
+		type: "file",
+		id: "image",
+		label: "Product image",
+		multiple: true,
+		accept: "image/jpeg",
+		validator: validation.images,
+	},
+} as const
 	return (
 		<Form
 			className=""

@@ -5,50 +5,40 @@ import ImagesPreview from "../ImagesPreview"
 import Selector from "../Selector"
 import CheckBoxBlock from "../CheckBoxBlock"
 
-type Props = {
-	label?: string
+export type InputGeneralProps = {
+	label: string
+	id: string
 	placeholder?: string
 	className?: string
-	id: string
+	optionClassName?: string
 	validator?: FormFieldValidator
-}  & Optionals
-
-
-type Optionals = (
+} 
+export type InputOptionStaticProps = (
 		{	
-			accept?:never,
-			multiple?:never,
-			selectProps?:never
-			checkboxProps?:never
-			props?:never
 			type: "text" | "password" | "hidden"
-			value: string
-			setValue: (val:string)=>void
 	  }
 	| {
 			type: "file"
-			props?:never
-			checkboxProps?:never
-			selectProps?:never
 			accept?: string
-			multiple: boolean
+			multiple?: boolean
+	  }
+	| ({type: "select"} & Omit<React.ComponentProps<typeof Selector>,"value"|"setValue">)
+	| ({type: "checkboxes"} &Omit<React.ComponentProps<typeof CheckBoxBlock>,"value"|"setValue">)
+)
+export type InputOptionDynamicProps = (
+		{	
+			type: "text" | "password" | "hidden"
+			value: string
+			setValue: (val:string)=>void
+
+	  }
+	| {
+			type: "file"
 			value: File[]
 			setValue: (files:File[])=>void
 	  }
-	| {
-			accept?:never,
-			multiple?:never,
-			checkboxProps?:never
-			type: "select"
-			selectProps: React.ComponentProps<typeof Selector>
-	  }
-	| {
-			accept?:never,
-			multiple?:never,
-			type: "checkboxes"
-			selectProps?:never
-			checkboxProps: React.ComponentProps<typeof CheckBoxBlock>
-		}
+	| ({type: "select"} & Pick<React.ComponentProps<typeof Selector>,"value"|"setValue">)
+	| ({type: "checkboxes"} & Pick<React.ComponentProps<typeof CheckBoxBlock>,"value"|"setValue">)
 )
 
 function fileListAdapter(inp: File | FileList | null): File[] {
@@ -58,17 +48,17 @@ function fileListAdapter(inp: File | FileList | null): File[] {
 }
 
 export default function LabeledInput({
+	id,
 	label,
 	placeholder ,
 	className,
-	id,
 	validator,
 	...props
-}: Props) {
+}: InputGeneralProps&InputOptionStaticProps&InputOptionDynamicProps) {
 	const [error, setError] = React.useState<string>("")
 	const inpRef = React.useRef<HTMLInputElement>(null)
 
-	function validate(value: string | File[], validation: Props["validator"]) {
+	function validate(value: string | File[], validation: InputGeneralProps["validator"]) {
 		if (validation) {
 			const err = validation(value)
 			if (err) {
@@ -105,15 +95,23 @@ export default function LabeledInput({
 	if (props.type === "checkboxes")
 		return(
 		<CheckBoxBlock
-			className="flex overflow-x-scroll w-full"
-			{...props.checkboxProps}
+			id={id}
+			value={props.value}
+			setValue={props.setValue}
+			view={props.view}
+			className={props.optionClassName}
 		/>
 	)
+
+	console.log(props)
 
 	if (props.type === "select")
 		return (
 			<Selector
-				{...props.selectProps}
+				className={props.optionClassName}
+				options={props.options}
+				value={props.value}
+				setValue={props.setValue}
 				id={id}
 			/>
 		)

@@ -1,10 +1,11 @@
 "use client"
 import ProductCard from "@/components/product/ProductCard"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import useProductStore from "@/store/productsStore/productStore"
-import React from "react"
+import useProductStore, { ProductProvider, useHydrate } from "@/store/productsStore/productStore"
+import { useRouter } from "next/navigation"
+import React, { useEffect } from "react"
 type Props = {
-	initProducts: PopulatedProduct[]
+	products: PopulatedProduct[]
 }
 
 
@@ -12,21 +13,18 @@ function useInfScroll<T extends any>(
 	items:Record<number,T>,
 	loadItems:(page:number|undefined,query:string|undefined)=>Promise<false|number>,
 	endRef:React.RefObject<HTMLDivElement>,
-	page:number = 20,
-	searchParams:string|undefined
+	page:number = 10,
+	searchParams:string|null
 ){
 	const hasMore = React.useRef(true)
 	const nextObserver = React.useRef<IntersectionObserver|null>(null)
-		try{
-			nextObserver.current = new IntersectionObserver(async (entries)=>{
+	if (typeof window !== "undefined"){
+		nextObserver.current = new IntersectionObserver(async (entries)=>{
 			if (!hasMore.current) return false
 			if (!entries[0].isIntersecting) return false
 			const newItemsAmount = await loadItems(page,searchParams)
 			if (!newItemsAmount || newItemsAmount<page) hasMore.current = false
 		})
-	}
-	catch{
-		"We Are On The Server!!!"
 	}
 	
 	React.useEffect(()=>{
@@ -37,38 +35,49 @@ function useInfScroll<T extends any>(
 	return Object.values(items)
 }
 
-function keyCompare(oldObj:Record<number,any>,newObj:Record<number,any>){
-	return (Object.keys(oldObj).toString() === Object.keys(newObj).toString())
+function keyCompare(oldObj:PopulatedProduct[],newObj:PopulatedProduct[]){
+	const oldIds = oldObj.map(obj=>obj.id)
+	const newIds = newObj.map(obj=>obj.id)
+	return oldIds.toString() === newIds.toString()
+}
+
+function useSearch(){
+	const router = useRouter()
+	React.useEffect(()=>{
+			
+	},[router])
 }
 
 
-export default function ProductList({initProducts}:Props){
-	let search = undefined
-	try{	if (window)
-		search = window.location.search.slice(1)
+export default function ProductList({products:initProducts}:Props){
+	let search = React.useRef<null|string>(null)
+	const router = useRouter()
+	if (typeof window !== "undefined"){
+		//eslint-disable-next-line
+		React.useEffect(()=>{
+			search.current = window.location.search.slice(1)
+		},[router])
 	}
-	catch{
-		search = undefined
-	}
-	const endRef = React.useRef<HTMLDivElement>(null)
+
 	
-	const storeProducts = useProductStore(state=>state.products,keyCompare)
+	
+	const endRef = React.useRef<HTMLDivElement>(null)
+	let storeProducts = useProductStore(state=>state.products,keyCompare)
+	
 	const loadProducts = useProductStore(state=>state.loadProducts)
-	const setProducts = useProductStore(state=>state.setProducts)
- 	
-	const products = useInfScroll(
+	const scrollProducts = useInfScroll(
 		storeProducts,
 		loadProducts,
 		endRef,
 		10,
-		search
+		search.current
 	)
-	React.useEffect(()=>setProducts(Object.fromEntries(
-		initProducts.map(prod=>[prod.id,prod])
-	)),[])
 
+	const products = scrollProducts || initProducts
+	
 	return (
 		<div className="bg-green-100">
+			<button onClick={()=>console.log(storeProducts)}>TEST</button>
 			<div className="">
 				<div className="" />
 				<div className="" />
@@ -84,7 +93,7 @@ export default function ProductList({initProducts}:Props){
 					<ProductCard
 						className="h-80 w-64 p-2"
 						key={`${product.id}`}
-						id = {product.id}
+						product = {product}
 					/>
 				))}
 				<div 

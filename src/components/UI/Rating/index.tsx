@@ -1,28 +1,32 @@
 "use client"
-
-import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productsStore/productStore"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
 import React from "react"
 
 interface Props {
-	id: number
+	id:number
+	voters:number
+	rating:number
+	ownVote:number
 	className: string
 }
 
 export default function Rating({
 	id,
+	voters: initVoters,
+	ownVote: initOwnVote,
+	rating: initRating,
 	className,
 }: Props) {
+	const {voters,rating,ownVote} = useProductStore(state=>state.products.find(prod=>prod.id===id)!) || {voters: initVoters,rating: initRating,ownVote: initOwnVote}
 	const session = useSession()
-	const {rating,voters,ownVote} = useProductStore(state=>state.products[id])
-	const [loading, setLoading] = React.useState(false)
 	const [status, setStatus] = React.useState(
-		ownVote === 0 ? "You haven't rate this product yet!" : ""
+		initOwnVote === 0 ? "You haven't rate this product yet!" : ""
 	)
 	const voteSetter = useProductStore(state=>state.updateVote)
 	const setVote = (vote:number)=>voteSetter(id,vote)
+	const [pending,startTransition] = React.useTransition()
 
 	async function handleRate(i: number) {
 		if (!session.data?.user?.id)
@@ -30,9 +34,14 @@ export default function Rating({
 		else if (ownVote === -1)
 			setStatus("You can only rate products from your orders!")
 		else {
-			setLoading(true)
-			setVote(i)
-			setLoading(false)
+			setStatus("")
+			startTransition(async ()=>{
+				const res = await setVote(i)
+				if (!res)
+					setStatus("Something went wrong...")
+				else
+					setStatus("Thank you for your vote!")
+			})
 		}
 	}
 
@@ -46,7 +55,7 @@ export default function Rating({
 				ratings.map((i) => {
 					return (
 						<button
-							disabled={loading}
+							disabled={pending}
 							type="button"
 							key={`${i}-${Math.random()}`}
 							onClick={() => handleRate(i)}
