@@ -2,7 +2,7 @@
 import {clientValidations} from "./common.ts"
 import Form,{FormFieldValue } from "./index"
 import React from "react"
-import LabeledInput, { InputGeneralProps, InputOptionDynamicProps, InputOptionProps, InputOptionStaticProps } from "@/components/ui/LabeledInput"
+import { InputGeneralProps, InputOptionDynamicProps, InputOptionStaticProps } from "@/components/ui/LabeledInput"
 import { Brand, Category } from "@/lib/DAL/Models"
 import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
 
@@ -33,6 +33,7 @@ const validation={
 		return false
 	},
 }
+
 
 interface Props {
 	brandList: Brand[]

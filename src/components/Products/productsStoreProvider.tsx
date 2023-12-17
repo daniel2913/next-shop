@@ -9,7 +9,7 @@ type Props = {
 	children:React.ReactNode
 }
 export default function ProductStoreProvider({products,children}:Props){
-	const store = useHydrate({products:products})
+	const	store = useHydrate({products:products})
 	return(
 		<ProductProvider value={store}>
 			{children}

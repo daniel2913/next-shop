@@ -15,7 +15,7 @@ export default async function Shop({
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	console.log("Generating props")
-	const initProducts = await getProducts(searchParams)
+	const initProducts = await getProducts(new URLSearchParams(searchParams))
 	return (
 		<div className="">
 		<ProductStoreProvider products={initProducts}>

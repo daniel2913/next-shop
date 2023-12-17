@@ -9,6 +9,7 @@ import {
 import { PopulatedProduct, Product } from "@/lib/DAL/Models/Product"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { sql } from "drizzle-orm"
 
 
 const unknownDiscount = {
@@ -61,11 +62,13 @@ export async function populateProducts(
 		const applicableDiscounts = discounts.filter(
 			(discount) => Number(discount.expires) > Date.now() &&
 				(
-					product.id in discount.products ||
-					product.brand in discount.brands ||
-					product.category in discount.categories
+					 discount.products.includes(product.id) ||
+					 discount.brands.includes(product.brand) ||
+					 discount.categories.includes(product.category )
 				)
 		)
+		console.log(discounts)
+		console.log(applicableDiscounts)
 		const discount = applicableDiscounts.reduce(
 			(prev, next) =>
 			(prev =
@@ -76,6 +79,8 @@ export async function populateProducts(
 				prev),
 			{ discount: 0, expires: new Date() }
 		)
+		console.log(discount)
+
 		const voterIdx = product.voters.indexOf(user.id)
 		const ownVote = voterIdx === -1
 			? -1
@@ -98,26 +103,44 @@ export async function populateProducts(
 	return populatedProducts
 }
 
-export async function getProducts(searchParams: TSearchParams) {
-	const query = collectQueries(searchParams, {
-		model: ProductModel,
-	})
-	const [brandList, categoryList, discountList] = await Promise.all([
+export async function getProducts(searchParams: URLSearchParams) {
+	const [brands,categories] = await Promise.all([
 		BrandCache.get(),
-		CategoryCache.get(),
-		DiscountCache.get(),
+		CategoryCache.get()
 	])
-	if (query.brand)
-		query.brand =
-			brandList
-				.filter((brand) => query.brand?.indexOf(brand.name) != -1)
-				.map(brand => brand.id.toString()) || ""
-	if (query.category)
-		query.category =
-			categoryList
-				.filter((cat) => query.category?.indexOf(cat.name) != -1)
-				.map(cat => cat.id.toString()) || ""
-	const products = await ProductModel.find(query,)
+	const brand = searchParams.getAll("brand")
+		.filter(brand=>brands.find(_brand=>_brand.name===brand))
+		.map(brand=>brands.find(_brand=>_brand.name===brand)!.id)
+	const category = searchParams.getAll("category")
+		.filter(category=>categories.find(_category=>_category.name===category))
+		.map(category=>categories.find(_category=>_category.name===category)!.id)
+	const skip = searchParams.get("skip") || '0'
+	const page = searchParams.get("page") || '10'
+	const name = searchParams.get("name")
+	let constrains = ''
+	if (brand.length||category.length||name){
+		constrains = "WHERE "
+		if (brand.length){
+			constrains+=`brand IN (${brand}) `
+		}
+		if (brand.length & category.length)
+			constrains+= "AND "
 
-	return populateProducts(products)
+		if (category.length){
+			constrains+=`category IN (${category}) `
+		}
+		if ((brand.length || category.length)&&name)
+			constrains+= "AND "
+		if (name)
+			constrains+=`(name ILIKE '${name}%' OR name ILIKE '%${name}')`
+	}
+
+	const products = await ProductModel.raw(sql.raw(`
+		SELECT * FROM shop.products
+		${constrains}
+		LIMIT ${page} OFFSET ${skip};
+	`)) as any as Product[]
+
+	return await populateProducts(products)
 }
+	

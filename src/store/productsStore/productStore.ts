@@ -18,14 +18,12 @@ export function initializeProductStore(initProps?:{products:PopulatedProduct[]})
 
 export function useHydrate(initProps:{products:PopulatedProduct[]}){
 	let _store = store ?? initializeProductStore(initProps)
-	console.log("Hydrate!",initProps)
 	if (typeof window !== 'undefined'){
 		if (!store){
 			store = _store
 		}
 		//eslint-disable-next-line
 		React.useLayoutEffect(()=>{
-			console.log("Changing state!")
 			if (initProps && store){
 				store.setState({
 					...store.getState(),

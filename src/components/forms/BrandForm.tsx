@@ -1,7 +1,7 @@
 "use client"
-import Form  from "./index"
+import Form from "./index"
 import React from "react"
-import LabeledInput from "../ui/LabeledInput/index.tsx"
+import LabeledInput, { InputOptionStaticProps, InputGeneralProps } from "../ui/LabeledInput/index.tsx"
 import { clientValidations } from "./common.ts"
 
 const formFieldValues: {
@@ -21,35 +21,6 @@ const validation = {
 	description: clientValidations.description,
 }
 
-const fieldProps: {
-	[I in keyof typeof formFieldValues]: Omit<
-		React.ComponentProps<typeof LabeledInput>,
-		"value" | "setValue"
-	>
-} = {
-	name: {
-		id: "name",
-		type: "text",
-		label: "Brand name",
-		placeholder: "Brand",
-		validator: validation["name"],
-	},
-	description: {
-		id: "description",
-		type: "text",
-		label: "Brand description",
-		placeholder: "Text",
-		validator: validation["description"],
-	},
-	image: {
-		id: "image",
-		label: "Brand image",
-		type: "file",
-		multiple: false,
-		accept: "image/jpeg",
-		validator: validation["image"],
-	},
-} as const
 
 type Props =
 	| {
@@ -63,6 +34,33 @@ type Props =
 
 export default function BrandForm(props: Props) {
 	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
+	const fieldProps: Record<
+		keyof typeof formFieldValues,
+		InputGeneralProps & InputOptionStaticProps
+	> = {
+		name: {
+			type: "text",
+			id: "name",
+			label: "Brand name",
+			placeholder: "Brand",
+			validator: validation.name,
+		},
+		description: {
+			type: "text",
+			id: "description",
+			label: "Brand description",
+			placeholder: "Text",
+			validator: validation.description,
+		},
+		image: {
+			type: "file",
+			id: "image",
+			label: "Brand image",
+			multiple: false,
+			accept: "image/jpeg",
+			validator: validation.image,
+		},
+	} as const
 	return (
 		<Form
 			className=""

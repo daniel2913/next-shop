@@ -103,7 +103,6 @@ export default function LabeledInput({
 		/>
 	)
 
-	console.log(props)
 
 	if (props.type === "select")
 		return (
