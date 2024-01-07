@@ -1,5 +1,5 @@
 "use client"
-import { getProducts } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/getProducts"
 import CartRow from "./row"
 import { useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
@@ -51,7 +51,7 @@ export default function Cart({ close }: Props) {
 	)
 	React.useEffect(() => {
 		async function updateCart() {
-			setProducts(await getProducts(Object.keys(items)))
+			setProducts(await getProductsByIdsAction(Object.keys(items)))
 		}
 		updateCart()
 	}, [Object.keys(items).length])

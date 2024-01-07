@@ -12,9 +12,9 @@ type Props = {
 	completed:boolean
 }
 
-export default async function OrderList() {
+export default async function OrderList({completed}:Props) {
 	const session = await getServerSession(authOptions)
-	const status ="PROCESSING"
+	const status = completed ? "COMPLETED" : "PROCESSING"
 	if (!session?.user) return <div>Unauthorized</div>
 	const orders = session.user.role === "admin"
 		? await OrderModel.find({status})
@@ -70,6 +70,10 @@ export default async function OrderList() {
 								action={completeOrder.bind(null, data.id)}
 							/>
 							: <></>
+							,
+							completed
+							?<span>{order.order.rating}</span>
+							:<></>
 						]}
 					</Accordion>
 				)

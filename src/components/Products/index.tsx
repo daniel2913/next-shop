@@ -2,7 +2,7 @@
 import ProductCard from "@/components/product/ProductCard"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import useProductStore from "@/store/productsStore/productStore"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import React from "react"
 type Props = {
 	products: PopulatedProduct[]
@@ -71,9 +71,10 @@ export default function ProductList({ products: initProducts }: Props) {
 			</div>
 			<div
 				className="
-					grid
-					h-full p-5 sm:grid-cols-2
+					h-full p-5
+					grid sm:grid-cols-2  gap-y-8
 					md:grid-cols-3 lg:grid-cols-4
+					items-center justify-items-center
 				"
 			>
 				{products.map((product) => (

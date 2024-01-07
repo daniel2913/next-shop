@@ -67,8 +67,6 @@ export async function populateProducts(
 					 discount.categories.includes(product.category )
 				)
 		)
-		console.log(discounts)
-		console.log(applicableDiscounts)
 		const discount = applicableDiscounts.reduce(
 			(prev, next) =>
 			(prev =
@@ -79,7 +77,6 @@ export async function populateProducts(
 				prev),
 			{ discount: 0, expires: new Date() }
 		)
-		console.log(discount)
 
 		const voterIdx = product.voters.indexOf(user.id)
 		const ownVote = voterIdx === -1

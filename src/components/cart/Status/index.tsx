@@ -1,22 +1,22 @@
 "use client"
-import React, { useEffect } from "react"
+import React, { ReactElement, useEffect } from "react"
 import useCartStore from "@/store/cartStore"
 import { useSession } from "next-auth/react"
 import useConfirm from "../../../hooks/modals/useConfirm"
 import useModal from "@/hooks/modals/useModal"
+import dynamic from "next/dynamic"
 
 const Cart = dynamic(() => import("../Cart"))
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import { getProducts } from "@/actions/getProducts"
-import dynamic from "next/dynamic"
 
 type Props = {
 	getProducts: (query: {
 		query: string | string[] | RegExp
 	}) => Promise<PopulatedProduct[]>
+	orders:ReactElement
 }
 
-export default function CartStatus({ getProducts }: Props) {
+export default function CartStatus({ getProducts,orders }: Props) {
 	const { data } = useSession()
 	let synced = React.useRef(-1)
 	const modal = useModal()
@@ -55,7 +55,7 @@ export default function CartStatus({ getProducts }: Props) {
 		getCache()
 	}, [data])
 
-	async function clickHandler() {
+	async function cartClickHandler() {
 		if (Object.values(localCache).length === 0 || data?.user?.role !== "user")
 			return false
 		const res = await modal.show(
@@ -65,13 +65,21 @@ export default function CartStatus({ getProducts }: Props) {
 			/>
 		)
 	}
+	async function ordersClickHandler() {
+		if (data?.user?.role !== "user")
+			return false
+		const res = await modal.show(orders)
+	}
 
 	return (
+	<>
 		<button
 			type="button"
-			onClick={clickHandler}
+			onClick={cartClickHandler}
 		>
 			{Object.values(localCache).reduce((sum, next) => sum + next, 0)}
 		</button>
+		<button onClick={ordersClickHandler}>TEST</button>
+	</>
 	)
 }

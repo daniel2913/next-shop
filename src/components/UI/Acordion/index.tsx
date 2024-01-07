@@ -15,8 +15,7 @@ export default function Accordion({
 	const [open, setOpen] = React.useState(false)
 	return (
 		<div
-			aria-hidden={!open}
-			className={`${className} peer flex flex-col transition-transform duration-300 peer-aria-hidden:-translate-y-3/4
+			className={`${className} flex flex-col 
 						`}
 		>
 			<button
@@ -29,8 +28,11 @@ export default function Accordion({
 			<div
 				aria-hidden={!open}
 				className={`
-					flex w-full origin-top scale-y-100 flex-col items-center justify-center
-					transition-transform duration-300 aria-hidden:scale-y-0
+					flex w-full flex-col items-center justify-center
+					after:h-9 after:aria-hidden:max-h-0 after:aria-hidden:h-0 after:max-h-50 after:transition-[height]
+					aria-hidden:mh-0
+					mb-0 aria-hidden:mb-[-9999rem] duration-300
+					overflow-y-hidden
 					`}
 			>
 				{children.map((child, idx) => (

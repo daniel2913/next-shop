@@ -54,7 +54,6 @@ export function collectFromForm<T>(form: FormData, config: Tconfig<T>) {
 			props[key] = value
 		}
 	}
-	console.log("props: ", props)
 	props[imagesPath] = formatImages<T>(props[imagesPath], config)
 	return props
 }

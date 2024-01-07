@@ -1,9 +1,10 @@
-import React from "react"
+import React, { Suspense } from "react"
 import Auth from "../ui/Auth"
 import CartStatus from "../cart/Status"
 import Search from "../ui/Search"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
-import { getProducts } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/getProducts"
+import OrderList from "../cart/Orders"
 
 export const revalidate = 300
 
@@ -30,7 +31,13 @@ export default async function NavBar() {
 				categoryList={categories}
 			/>
 			<div className="flex items-center gap-4">
-				<CartStatus getProducts={getProducts} />
+				<CartStatus 
+					getProducts={getProductsByIdsAction}
+					orders={
+						<Suspense>
+							<OrderList completed={false}/>
+						</Suspense>}
+				/>
 				<Auth />
 			</div>
 		</header>

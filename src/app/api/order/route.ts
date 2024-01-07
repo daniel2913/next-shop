@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 import { authOptions } from "../auth/[...nextauth]/route"
-import { getProducts } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/getProducts"
 import { OrderModel } from "@/lib/DAL/Models"
 
 function isCorrect(
@@ -19,6 +19,14 @@ function isCorrect(
 	return true
 }
 
+export async function GET (req:NextRequest){
+	const session = await getServerSession(authOptions)
+	if (!session?.user?.id) return new NextResponse("Unauthorized",{status:400})
+	const orders = await OrderModel.find({user:session.user.id.toString()})
+	if (!orders) return new NextResponse("Server error",{status:500})
+	return NextResponse.json(orders)
+}
+
 export async function POST(req: NextRequest) {
 	const [order, session] = await Promise.all([
 		req.json(),
@@ -28,7 +36,7 @@ export async function POST(req: NextRequest) {
 		return new NextResponse("Unauthorized", { status: 400 })
 	if (!isCorrect(order))
 		return new NextResponse("Invalid request", { status: 400 })
-	const products = await getProducts(Object.keys(order))
+	const products = await getProductsByIdsAction(Object.keys(order))
 	if (products.length !== Object.keys(order).length)
 		return new NextResponse("Some items are not available", {
 			status: 400,
