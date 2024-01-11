@@ -18,7 +18,7 @@ export default function Auth({ className}: props) {
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const purgeCart = () => cartSetter({})
-	const reloadVotes = useProductStore(state=>state.reloadVotes)
+	const reloadVotes = useProductStore(state=>state.reload)
 	const modal = useModalStore((state) => state.base)
 	return (
 		<div className={`${className}`}>

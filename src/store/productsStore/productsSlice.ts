@@ -1,3 +1,5 @@
+import { getRating } from "@/actions/Rating"
+import { getSaved } from "@/actions/savedProducts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { StateCreator } from "zustand"
 type Products = Record<number, PopulatedProduct>
@@ -7,8 +9,9 @@ export interface ProductsSlice {
 	loadProducts:(page:number|undefined,query:string|undefined,) => Promise<number|false>
 	clearProducts: () => void
 	setProducts: (products:PopulatedProduct[])=>void
-	reloadVotes: ()=> void
+	reload: ()=> void
 	updateVote: (id:number,vote:number)=>Promise<false|{rating:number,voters:number}>
+	toggleFav: (id:number)=>Promise<boolean>
 }
 
 async function getVotes(ids: number[]): Promise<false | Record<number, number>> {
@@ -46,12 +49,15 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 		return newProducts.length
 	},
 	setProducts: (products:PopulatedProduct[])=>set((state)=>({...state,products:products}),true),
-	reloadVotes: async () =>{
+	reload: async () =>{
 		const products = get().products
-		const votes = await getVotes(Object.keys(products).map(Number))
-		if (!votes) return true
+		const [votes,favs] = await Promise.all([
+				getRating(Object.keys(products).map(Number)),
+				getSaved()
+			]) 		
 		for (const product of products){
-			product.ownVote = votes[product.id]
+			product.ownVote = votes[product.id] || -1
+			product.favourite = favs.includes(product.id)
 		}
 		set(state=>({...state,products:[...products]}))
 	},

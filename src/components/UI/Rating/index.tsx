@@ -47,9 +47,10 @@ export default function Rating({
 
 	const ratings = [1, 2, 3, 4, 5]
 	return (
+		<div className={`${className} `}>
 		<div
-			title={`${rating}`}
-			className={`${className} flex flex-wrap`}
+			title={`${rating} from ${voters} voter${voters % 10 === 1 ? "" : "s"}`}
+			className={`flex flex-wrap justify-center`}
 		>
 			{[
 				ratings.map((i) => {
@@ -85,12 +86,9 @@ export default function Rating({
 						</button>
 					)
 				}),
-				<span
-					key={`${Math.random()}`}
-					className="ml-2 self-center text-sm text-gray-600"
-				>{`${voters} vote${voters % 10 === 1 ? "" : "s"}`}</span>,
 			]}
-			<span className="w-full text-[.75em] leading-3 text-accent1-300">
+		</div>
+			<span className="w-full text-xs text-accent1-300">
 				{status}
 			</span>
 		</div>

@@ -1,12 +1,10 @@
 import { create } from "zustand"
 import { CartSlice, createCartSlice } from "./cartSlice"
 import { persist } from "zustand/middleware"
-import { VotesSlice, createVotesSlice } from "./votesSlice"
-const useCartStore = create<CartSlice&VotesSlice>()(
+const useCartStore = create<CartSlice>()(
 	persist(
 		(...a) => ({
 			...createCartSlice(...a),
-			...createVotesSlice(...a),
 		}),
 		{
 			name: "cart-store",

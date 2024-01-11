@@ -1,4 +1,4 @@
-import { char, jsonb, varchar } from "drizzle-orm/pg-core"
+import { char, jsonb, smallint, varchar } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { maxSizes, pgreDefaults, shop, validations } from "./common"
 import { sql } from "drizzle-orm"
@@ -12,6 +12,7 @@ type TestType = Readonly<{
 	image: "string"
 	cart: "json"
 	votes: "json"
+	saved: "array"
 }>
 
 const UserValidations: Record<keyof User, Array<(...args: any) => any>> = {
@@ -25,6 +26,7 @@ const UserValidations: Record<keyof User, Array<(...args: any) => any>> = {
 		validations.match("cart", /^\[.*\]$/),
 	],
 	votes: [],
+	saved:[]
 }
 
 const UserCustomQuerys = {
@@ -56,6 +58,34 @@ const UserCustomQuerys = {
 			`)
 			return res.length > 0 ? true : false
 		},
+	clearAllSaved:
+		(dataBase:PostgresJsDatabase)=>
+			async(id:number)=>{
+			const res = await dataBase.execute(sql`
+				UPDATE shop.users
+					SET saved=array_remove(saved,${id}) 
+			`)
+	},
+	deleteSaved:
+		(dataBase:PostgresJsDatabase)=>
+			async(id:number, user:number)=>{
+			const res = await dataBase.execute(sql`
+				UPDATE shop.users
+					SET saved=array_remove(saved,${id})
+				WHERE
+					id=${user}
+			`)
+	},
+	addSaved:
+		(dataBase:PostgresJsDatabase)=>
+			async(id:number, user:number)=>{
+			const res = await dataBase.execute(sql`
+				UPDATE shop.users
+					SET saved=array_append(saved,${id})
+				WHERE
+					id=${user};
+			`)
+	}
 }
 
 const config = {
@@ -66,6 +96,7 @@ const config = {
 	image: pgreDefaults.image,
 	cart: jsonb("cart").notNull().default({}).$type<Record<string, number>>(),
 	votes: jsonb("votes").notNull().default({}).$type<Record<string, number>>(),
+	saved: smallint("saved").notNull().array().default([])
 }
 
 const UserPgreTable = shop.table(

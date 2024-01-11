@@ -9,16 +9,16 @@ import Complete from "@/components/ui/Order/Complete"
 import { completeOrder } from "@/actions/completeOrder"
 
 type Props = {
-	completed:boolean
+	completed: boolean
 }
 
 export default async function OrderList() {
 	const session = await getServerSession(authOptions)
-	const status ="PROCESSING"
+	const status = "PROCESSING"
 	if (!session?.user) return <div>Unauthorized</div>
 	const orders = session.user.role === "admin"
-		? await OrderModel.find({status})
-		: await OrderModel.find({user:session.user.id.toString(), status})
+		? await OrderModel.find({ status })
+		: await OrderModel.find({ user: session.user.id.toString(), status })
 
 	const productSet = new Set(
 		orders.flatMap((order) => Object.keys(order.order))
@@ -50,26 +50,47 @@ export default async function OrderList() {
 						label={`Order-${order.order.id} - ${order.order.user}`}
 					>
 						{[
-							order.products.map((product) => {
-								return (
-									<div
-										key={`${product.id}-${order.order.id}`}
-										className="col-span-5 grid grid-cols-5"
+							<table 
+								key={order.order.id + "table"}
+								className="w-full"
+								>
+
+								<thead>
+									<tr
+										className="flex flex-initial justify-evenly justify-items-center"
 									>
-										<span>{product.id}</span>
-										<span>{product.name}</span>
-										<span>{product.brand.name}</span>
-										<span>{order.order.order[product.id].amount}</span>
-									</div>
-								)
-							}),
-							session.user?.role==="admin"
-							?
-							<Complete
-								key={order.order.id}
-								action={completeOrder.bind(null, data.id)}
-							/>
-							: <></>
+										<th className="basis-1/12">ID</th>
+										<th className="basis-1/3">Product Name</th>
+										<th className="basis-1/4">Brand</th>
+										<th className="basis-1/12">Amount</th>
+									</tr>
+								</thead>
+								<tbody>
+									{order.products.map((product) => {
+										return (
+											<tr
+												key={`${product.id}-${order.order.id}`}
+												className="flex justify-evenly justify-items-center"
+											>
+												<td className="basis-1/12 text-center">{product.id}</td>
+												<td className="basis-1/3 text-center">{product.name}</td>
+												<td className="basis-1/4 text-center">{product.brand.name}</td>
+												<td className="basis-1/12 text-center">{order.order.order[product.id].amount}</td>
+											</tr>
+										)
+									})}
+								</tbody>
+							</table>,
+							session.user?.role === "admin"
+								?
+								<div className="w-full flex justify-center">
+								<Complete
+									className="bg-cyan-200 shadow-none text-black hover:shadow-none hover:bg-cyan-300"
+									key={order.order.id}
+									action={completeOrder.bind(null, data.id)}
+								/>
+								</div>
+								: <></>
 						]}
 					</Accordion>
 				)

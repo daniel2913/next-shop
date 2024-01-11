@@ -1,12 +1,14 @@
 "use client"
+import { Button } from "@/components/material-tailwind"
 import { useRouter } from "next/navigation"
 import React from "react"
 
 type Props = {
 	action: () => Promise<boolean>
+	className:string
 }
 
-export default function Complete({ action }: Props) {
+export default function Complete({ action, className }: Props) {
 	const router = useRouter()
 	const [error, setError] = React.useState("")
 	const [isPending, startTransition] = React.useTransition()
@@ -19,14 +21,14 @@ export default function Complete({ action }: Props) {
 		})
 	}
 	return (
-	<>
-		<button
+	<div>
+		<Button
 			onClick={handleClick}
-			className="border-1 bg-accent2-400"
+			className={className}
 		>
 			Complete
-		</button>
+		</Button>
 			<span>{error}</span>
-	</>
+	</div>
 	)
 }

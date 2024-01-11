@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import useConfirm from "../../../hooks/modals/useConfirm"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
+import { Button } from "@/components/material-tailwind"
 
 const Cart = dynamic(() => import("../Cart"))
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
@@ -79,7 +80,7 @@ export default function CartStatus({ getProducts,orders }: Props) {
 		>
 			{Object.values(localCache).reduce((sum, next) => sum + next, 0)}
 		</button>
-		<button onClick={ordersClickHandler}>TEST</button>
+		<Button onClick={ordersClickHandler}>TEST</Button>
 	</>
 	)
 }

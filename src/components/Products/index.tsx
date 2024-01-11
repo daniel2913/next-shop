@@ -79,7 +79,7 @@ export default function ProductList({ products: initProducts }: Props) {
 			>
 				{products.map((product) => (
 					<ProductCard
-						className="h-80 w-64 p-2"
+						className="h-[22rem] w-64 p-2"
 						key={`${product.id}`}
 						product={product}
 					/>

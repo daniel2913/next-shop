@@ -113,6 +113,7 @@ export type PopulatedProduct = Omit<
 	votes: number
 	voters: number
 	brand: Brand
+	favourite:boolean
 	category: Category
 	discount: Pick<Discount, "discount" | "expires">
 	ownVote: number

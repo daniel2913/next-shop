@@ -87,9 +87,11 @@ export async function populateProducts(
 			(prev, next) => (next ? prev + 1 : prev),
 			0
 		)
+		const favourite = user.saved?.includes(product.id) || false
 		return {
 			...product,
 			votes,
+			favourite,
 			voters,
 			brand: brand || unknownBrand,
 			category: category || unknownCategory,

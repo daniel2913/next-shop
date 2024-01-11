@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev":"next dev",
+		"dev": "next dev",
 		"dev:debug": "cross-env NODE_OPTIONS='--inspect' next dev",
 		"dev-turbo": "next dev --turbo",
 		"build": "next build",
@@ -15,6 +15,7 @@
 		"format": "npm run prettier:fix && npm run lint:fix"
 	},
 	"dependencies": {
+		"@material-tailwind/react": "^2.1.8",
 		"@next/eslint-plugin-next": "^14.0.3",
 		"drizzle-orm": "^0.29.0",
 		"next": "^14.0.3",

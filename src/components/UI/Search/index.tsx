@@ -3,6 +3,7 @@ import type { Brand, Category } from "@/lib/DAL/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
 import CheckBoxBlock from "../CheckBoxBlock"
+import { Button } from "@/components/material-tailwind"
 
 interface Props {
 	className?: string
@@ -13,7 +14,7 @@ interface Props {
 export default function Search({ className, brandList, categoryList }: Props) {
 	const router = useRouter()
 	const [queryString, setQueryString] = React.useState<string>("")
-	
+
 	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
 	const categoryImages = categoryList.map((cat) =>`/categories/${cat.image}`)
 
@@ -38,12 +39,12 @@ export default function Search({ className, brandList, categoryList }: Props) {
 
 	return (
 		<div className={`${className} group relative right-auto flex w-1/2`}>
-			<div className="w-full">
+			<div className="flex w-full">
 				<input
 					autoComplete="off"
 					className="
-            w-4/5 rounded-l-lg border-2 border-r-0
-          	border-cyan-500 border-r-transparent bg-cyan-100 px-2
+            w-4/5 rounded-l-lg border-2 border-r-0 h-full
+          	border-cyan-600 border-r-transparent bg-cyan-100 px-2
           "
 					type="search"
 					name="searchQuery"
@@ -51,21 +52,24 @@ export default function Search({ className, brandList, categoryList }: Props) {
 					value={queryString}
 					onChange={(e) => setQueryString(e.currentTarget.value)}
 				/>
-				<button
+				<Button
 					className="
-            w-1/5 rounded-r-lg 
-            border-2 border-cyan-600
+            w-1/5 rounded-r-lg rounded-l-none h-full
+						border-cyan-600 border-2 border-l-0
+						text-center p-0 border-l-transparent
+						bg-accent1-400 text-teal-400 text-md
+						hover:!shadow-none shadow-none
           "
 					type="button"
 					onClick={onClick}
 				>
 					Search
-				</button>
+				</Button>
 			</div>
 			<div
 				tabIndex={0}
 				className="
-        	absolute top-6 z-30 hidden w-full
+        	absolute top-8 rounded-lg z-30 hidden w-full
           overflow-x-hidden bg-accent2-300 group-focus-within:block
         "
 			>
