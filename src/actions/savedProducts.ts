@@ -28,7 +28,9 @@ export async function clearFromSaved(id:number){
 
 export async function getSaved(){
 	const session = await getServerSession(authOptions)
+	console.log(session)
 	if (!session?.user?.role || session.user.role!=="user") return []
-	const user = await UserCache.get(session.user.id.toString())
+	const user = await UserCache.get(session.user.name)
+	console.log(user?.saved)
 	return user?.saved || []
 }

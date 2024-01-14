@@ -18,11 +18,12 @@ type Props = {
 function customCompare(oldObj: PopulatedProduct, newObj: PopulatedProduct) {
 	if (!(oldObj && newObj) && (oldObj || newObj)) return false
 	for (const key of Object.keys(oldObj) as (keyof typeof oldObj & keyof typeof newObj)[]) {
-		if (key === "rating" || key === "voters" || key === "votes" || key === "ownVote") continue
+		if (key === "rating" || key === "favourite" || key === "voters" || key === "votes" || key === "ownVote") continue
 		if (oldObj[key] !== newObj[key]) return false
 	}
 	return true
 }
+
 
 export default function ProductCard({ className, product: initProduct }: Props) {
 	const storeProduct = useProductStore(state => state.products.find(prod => prod.id === initProduct.id)!, customCompare)
@@ -89,11 +90,6 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 						voters={product.voters}
 						className="col-span-2 max-h-8 justify-self-center mb-2"
 					/>
-					<ProductMenu
-						id={product.id}
-						favourite={product.favourite}
-						className="absolute right-2 top-1/2"
-					/>
 					<h3 className="text-2xl leading-6 h-12 text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
 						{product.name}
 					</h3>
@@ -107,10 +103,17 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 						discount={product.discount}
 						price={product.price}
 					/>
+					<div className="flex gap-2 justify-end">
 					<BuyButton
 						className="justify-self-center h-12"
 						id={product.id}
 					/>
+					<ProductMenu
+						id={product.id}
+						favourite={product.favourite}
+						className="justify-self-end"
+					/>
+					</div>
 				</div>
 			</CardBody>
 		</Card>

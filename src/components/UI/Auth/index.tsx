@@ -5,7 +5,8 @@ import { signOut, useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productsStore/productStore"
 import dynamic from "next/dynamic"
-
+import Image from "next/image"
+import Exit from "@/../public/exit.svg"
 const Login = dynamic(() => import("@/components/modals/Login"))
 const Register = dynamic(() => import("@/components/modals/Register"))
 
@@ -18,23 +19,32 @@ export default function Auth({ className}: props) {
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const purgeCart = () => cartSetter({})
-	const reloadVotes = useProductStore(state=>state.reload)
+	const reloadProducts = useProductStore(state=>state.reload)
 	const modal = useModalStore((state) => state.base)
 	return (
 		<div className={`${className}`}>
 			{session.data?.user?.name ? (
-				<div className="grid">
-					<Link href={`/profile/${name}`}>{name}</Link>
+				<div className="flex gap-2 align-items-center">
+					<Link href={`/profile/${name}`}>
+					<Image
+						width={30}
+						alt="Avatar"
+						height={30}
+						className="rounded-full"
+						src={`/users/${session.data.user.image || "template.jpg"}`}
+					/>
+					<h6>{name}</h6>
+					</Link>
 					<button
 						type="submit"
 						onClick={() => {
 							signOut({ redirect: false }).then((res) => {
 								purgeCart()
-								reloadVotes()
+								reloadProducts()
 							})
 						}}
 					>
-						Log out
+						<Exit className="stroke-accent1-400" height="30px" width="30px"/>
 					</button>
 				</div>
 			) : (
@@ -43,7 +53,7 @@ export default function Auth({ className}: props) {
 					<button
 						type="button"
 						onClick={() => {
-							modal.setModal(<Register close={modal.close} />)
+							modal.setModal(<Register/>)
 							modal.show()
 						}}
 					>
@@ -52,7 +62,7 @@ export default function Auth({ className}: props) {
 					<button
 						type="button"
 						onClick={async () => {
-							modal.setModal(<Login reloadVotes={reloadVotes} close={modal.close} />)
+							modal.setModal(<Login reloadProducts={reloadProducts} close={modal.close} />)
 							modal.show()
 						}}
 					>

@@ -2,27 +2,25 @@
 import LabeledInput from "@/components/ui/LabeledInput"
 import { clientPasswordValidation } from "@/lib/DAL/Validations/User/passwordValidation/clientPasswordValidation"
 import { clientUserNameValidation } from "@/lib/DAL/validations/user/usernameValidation/clientUsernameValidation"
-import useProductStore from "@/store/productsStore/productStore"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import React, { ComponentProps, FormEvent } from "react"
+import React  from "react"
 
 type Props = {
 	close: () => void
-	reloadVotes: ()=>void
+	reloadProducts: ()=>void
 }
 
-export default function Login({ close,reloadVotes }: Props) {
+export default function Login({ close,reloadProducts }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [status, setStatus] = React.useState("")
-
+	console.log(reloadProducts)
 	function handleLogin(creds: { name: string; password: string }) {
 		signIn("credentials", { ...creds, redirect: false })
 			.then((res) => {
 				if (res?.ok) {
 					close()
-					reloadVotes()
+					reloadProducts()
 				} else setStatus(res?.error || "Something bad happend")
 			})
 			.catch((res) => setStatus(res))

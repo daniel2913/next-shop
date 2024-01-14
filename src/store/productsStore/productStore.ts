@@ -2,7 +2,7 @@
 import { createStore} from "zustand"
 import { ProductsSlice, createProductsSlice } from "./productsSlice"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import React, { useContext } from "react"
+import React from "react"
 import {useStoreWithEqualityFn} from "zustand/traditional"
 
 
@@ -23,7 +23,7 @@ export function useHydrate(initProps:{products:PopulatedProduct[]}){
 			store = _store
 		}
 		//eslint-disable-next-line
-		React.useLayoutEffect(()=>{
+		React.useEffect(()=>{
 			if (initProps && store){
 				store.setState({
 					...store.getState(),
@@ -44,7 +44,7 @@ export default function useProductStore<T>(
 	selector:(state:ProductsSlice)=>T,
 	equalityFn?:(left:T,right:T)=>boolean
 ):T{
-	const store = useContext(ProductContext)
+	const store = React.useContext(ProductContext)
 	if(!store) throw new Error("Used outside of context!")
 	return useStoreWithEqualityFn(store,selector,equalityFn)
 }

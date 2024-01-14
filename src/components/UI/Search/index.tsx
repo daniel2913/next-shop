@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import React from "react"
 import CheckBoxBlock from "../CheckBoxBlock"
 import { Button } from "@/components/material-tailwind"
+import SearchIcon from "@/../public/search.svg"
 
 interface Props {
 	className?: string
@@ -54,16 +55,17 @@ export default function Search({ className, brandList, categoryList }: Props) {
 				/>
 				<Button
 					className="
-            w-1/5 rounded-r-lg rounded-l-none h-full
+            rounded-r-lg rounded-l-none h-full
 						border-cyan-600 border-2 border-l-0
 						text-center p-0 border-l-transparent
 						bg-accent1-400 text-teal-400 text-md
 						hover:!shadow-none shadow-none
+						px-1
           "
 					type="button"
 					onClick={onClick}
 				>
-					Search
+					<SearchIcon width="25px" height="25px"/>
 				</Button>
 			</div>
 			<div

@@ -1,5 +1,5 @@
 import { getRating } from "@/actions/Rating"
-import { getSaved } from "@/actions/savedProducts"
+import { addSaved, deleteSaved, getSaved } from "@/actions/savedProducts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { StateCreator } from "zustand"
 type Products = Record<number, PopulatedProduct>
@@ -52,14 +52,17 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 	reload: async () =>{
 		const products = get().products
 		const [votes,favs] = await Promise.all([
-				getRating(Object.keys(products).map(Number)),
+				getRating(products.map(p=>p.id)),
 				getSaved()
-			]) 		
-		for (const product of products){
-			product.ownVote = votes[product.id] || -1
-			product.favourite = favs.includes(product.id)
-		}
-		set(state=>({...state,products:[...products]}))
+			]) 
+		const newProducts = products.map(prod=>(
+			{
+				...prod,
+				ownVote:votes[prod.id] || -1,
+				favourite: favs.includes(prod.id)
+			}
+		))
+		set({products:newProducts})
 	},
 	updateVote: async (id:number,vote:number)=>{
 			const res = await updateVote(id,vote)
@@ -72,6 +75,27 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 			set(state=>({products:[...products]}))
 			return res
 		},
+	toggleFav: async (id: number) => {
+		const oldProds = get().products
+		const prod = oldProds.find(prod=>prod.id===id)
+		if (!prod) return false
+		let action: null | ((id: number) => Promise<boolean>) = null
+		if (prod.favourite) {
+			action = deleteSaved
+		}
+		else {
+			action = addSaved
+		}
+		const prodIdx = oldProds.findIndex(prod=>prod.id===id)
+		const newProds = [...oldProds]
+		newProds[prodIdx].favourite=!newProds[prodIdx].favourite
+			
+		const res = action(id)
+		set({ products: newProds})
+		if (await res) return true
+		set({products:oldProds})
+		return false
+	},
 	clearProducts: () => set((state)=>{
 		return {...state,products: []}
 	},true),
