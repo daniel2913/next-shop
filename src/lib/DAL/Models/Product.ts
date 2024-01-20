@@ -35,7 +35,7 @@ const ProductValidations = {
 	category: [],
 	description: [validations.length("description", maxSizes.description, 1)],
 	images: [validations.imagesMatch()],
-	price: [validations.value("price", Infinity, 1)],
+	price: [validations.minmax("price", Infinity, 1)],
 	votes: [validations.noDefault("votes")],
 	voters: [validations.noDefault("voters")],
 	rating: [validations.noDefault("rating")],

@@ -42,18 +42,6 @@ export default function Carousel({
 							))}
 						</div>
 					: undefined
-					/* ({ setActiveIndex, activeIndex }) =>
-						<div>
-							{children.map((_, i) => (
-								<button
-									key={Math.random()}
-									className="
-										w-4 aspect-square rounded-full bg-blue-gray-300
-									"
-								>
-								</button>
-						</div> */
-							// ))}
 				}
 			>
 				{children}

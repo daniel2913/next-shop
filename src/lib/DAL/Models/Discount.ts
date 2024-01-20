@@ -1,6 +1,6 @@
 import { smallint, timestamp } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import { pgreDefaults, shop, validations } from "./common"
 
 type TestType = Readonly<{
 	id: "number"
@@ -20,7 +20,7 @@ function expiresValidation(name: string) {
 
 const DiscountValidations = {
 	id: [validations.id("discount")],
-	discount: [validations.value("discount", 99, 0)],
+	discount: [validations.minmax("discount", 99, 0)],
 	products: [],
 	brands: [],
 	categories: [],

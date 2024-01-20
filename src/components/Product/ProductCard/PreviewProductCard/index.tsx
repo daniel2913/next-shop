@@ -7,8 +7,7 @@ type Props = {
 	product: Pick<PopulatedProduct, "name"|"price"|"description"> & {
 		brand:string
 		category:string
-		images: File[]
-		brandImage: string
+		images: File[]|string[]
 	}
 	className: string
 }
@@ -22,7 +21,8 @@ export default function PreviewProductCard({ product, className }: Props) {
 		const res: string[] = []
 		if (!product.images) return res
 		for (const image of product.images) {
-			res.push(URL.createObjectURL(image))
+			if(typeof image === "string") res.push(image)
+			else res.push(URL.createObjectURL(image))
 		}
 		currentImageUrls.current.push(...res)
 		return res
@@ -36,7 +36,7 @@ export default function PreviewProductCard({ product, className }: Props) {
 						height={30}
 						width={30}
 						alt={product.brand}
-						src={`/brands/${product.brandImage}`}
+						src={`/brands/template.jpg`}
 					/>
 				}
 			>

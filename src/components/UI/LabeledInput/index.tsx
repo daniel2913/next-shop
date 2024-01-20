@@ -4,6 +4,7 @@ import React from "react"
 import ImagesPreview from "../ImagesPreview"
 import Selector from "../Selector"
 import CheckBoxBlock from "../CheckBoxBlock"
+import { Button, Input } from "@material-tailwind/react"
 
 export type InputGeneralProps = {
 	label: string
@@ -55,7 +56,7 @@ export default function LabeledInput({
 	validator,
 	...props
 }: InputGeneralProps&InputOptionStaticProps&InputOptionDynamicProps) {
-	const [error, setError] = React.useState<string>("")
+	const [error, setError] = React.useState<string>(" ")
 	const inpRef = React.useRef<HTMLInputElement>(null)
 
 	function validate(value: string | File[], validation: InputGeneralProps["validator"]) {
@@ -110,6 +111,7 @@ export default function LabeledInput({
 				className={props.optionClassName}
 				options={props.options}
 				value={props.value}
+				label={label}
 				setValue={props.setValue}
 				id={id}
 			/>
@@ -117,30 +119,32 @@ export default function LabeledInput({
 	if (props.type === "file")
 		return (
 			<div className={`${className} flex flex-col`}>
-				<label
-					htmlFor={id || ""}
-					className="text-gray-600"
-				>
-					{label}
-				</label>
-				<input
-					ref={inpRef}
+				<Input
+					containerProps={{
+						className:"y-0"
+					}}
+					variant="standard"
+					crossOrigin={false}
+					inputRef={inpRef}
+					label={label}
 					multiple={props.multiple}
 					accept={props.accept}
 					id={id}
 					name={id}
 					className="hidden"
-					type={props.type}
+					type="file"
 					placeholder={placeholder}
 					value=""
 					onChange={(e) => fileChangeHandeler(e.currentTarget.files)}
 				/>
-				<label
-					className="cursor-pointer border-2 border-cyan-400 bg-cyan-200 p-1 font-semibold"
-					htmlFor={id}
+				<Button 
+					onClick={()=>{
+						console.log(inpRef.current)
+						inpRef.current?.click()
+					}}
 				>
-					Upload
-				</label>
+				UPLOAD
+				</Button>
 				<span className="text-accent1-600">{error}</span>
 				<ImagesPreview
 					className="w-full"
@@ -157,18 +161,15 @@ export default function LabeledInput({
 				props.type === "hidden" ? "hidden" : ""
 			} flex flex-col`}
 		>
-			<label
-				htmlFor={id || ""}
-				className="text-gray-600"
-			>
-				{label}
-			</label>
-			<input
+			<Input
+				crossOrigin={false}
 				ref={inpRef}
+				label={label}
 				onBlur={() => validate(props.value, validator)}
+				error={!!error&&error!==" "}
+				success={error===""}
 				id={id}
 				name={id}
-				className="bg-cyan-50"
 				type={props.type}
 				placeholder={placeholder}
 				value={props.value}

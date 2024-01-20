@@ -1,71 +1,68 @@
 "use client"
 
 import React from "react"
-
+import { Select, Option } from "@/components/material-tailwind"
 type Props = {
-	options: string[]
 	className?: string
 	id: string
 	label?: string
 	value: string
+	options?: string[]
+	fetchAction?: () => Promise<string[]>
 	setValue: (a: string) => void
-}
+} 
 
 export default function Selector({
-	options,
 	className,
 	id,
 	label,
 	value,
 	setValue,
+	...props
 }: Props) {
 
-	const [open, setOpen] = React.useState<boolean>(false)
+	let options: string[] = ["Loading..."]
+	if (props.options) {
+		options = props.options
+	}
+
+	const [optionsState, setOptionsState] = React.useState(options)
+	const [pending, startTransition] = React.useTransition()
 	React.useEffect(() => {
-		setValue(options[0])
+		async function fetchOptions() {
+			setValue(options[0])
+			if (props.fetchAction) {
+				startTransition(async () => {
+					const res = await props.fetchAction()
+					console.log(res)
+					if (!res) setOptionsState(["Error!"])
+					else setOptionsState(res)
+					setValue(optionsState[0])
+				})
+			}
+		}
+		fetchOptions()
 	}, [])
 	return (
-		<div
-			onBlur={() => setOpen(false)}
-			className={`${className}`}
+		<>
+		<input
+			readOnly
+			value={value}
+			className="hidden"
+			name={id}
+			id={id}
+		/>
+		<Select
+			defaultValue={0}
+			disabled={pending}
+			onChange={(e)=>setValue(e)}
+			label={label}
+			name={id}
 		>
-			<label
-				htmlFor={id}
-				className=""
-			>
-				{label}
-			</label>
-			<input
-				placeholder="Not Found..."
-				className=""
-				onFocus={() => setOpen((prev) => !prev)}
-				type="text"
-				value={value}
-				onChange={()=>false}
-				name={id}
-				id={id}
-			/>
-			<div
-				aria-hidden={!open}
-				className=""
-			>
-				<ul>
-					{options.map((option) => (
-						<li key={option}>
-							<button
-								onClick={(e) => {
-									e.preventDefault()
-									setValue(option)
-									e.currentTarget.blur()
-								}}
-								className=""
-							>
-								{option}
-							</button>
-						</li>
-					))}
-				</ul>
-			</div>
-		</div>
+			{optionsState.map((option, idx) =>
+				<Option value={option} key={idx}>{option}</Option>
+			)}
+		</Select>
+		</>
 	)
 }

@@ -1,3 +1,4 @@
+"use client"
 import React, { FormEvent } from "react"
 import LabeledInput from "@/components/ui/LabeledInput"
 
@@ -9,97 +10,56 @@ export type FormFieldProps = Omit<
 	React.ComponentProps<typeof LabeledInput>,
 	"value" | "setValue"
 >
-type Props<T extends Record<string, FormFieldValue>> = {
+type Props = {
 	className: string
-	fieldValues: T
-	setFieldValues: React.Dispatch<React.SetStateAction<T>>
-	fieldProps: { [Key in keyof T]: FormFieldProps }
-	action: string
-	children?: React.ReactNode
-} & (
-	| {
-			method: "PUT" | "POST"
-	  }
-	| {
-			method: "PATCH"
-			targId: string
-	  }
-)
+	validations: Record<string, (val: any) => false | string>
+	action: (payload: any) => Promise<false | string>
+	children: React.ReactNode
+	preview?: React.ReactElement
+}
 
-export default function Form<T extends Record<string, FormFieldValue>>({
-	fieldValues,
-	setFieldValues,
-	fieldProps,
+export default function Form({
+	preview,
+	validations,
 	className,
+	children,
 	action,
-	method,
-	...params
-}: Props<T>) {
+}: Props) {
 	const [loading, setLoading] = React.useState(false)
 	const [error, setError] = React.useState("")
 	const [status, setStatus] = React.useState("")
 
-
 	async function submitHandler(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault()
-		const form = new FormData()
+		const payload = new FormData()
 		setError("")
 		setStatus("")
-		for (const [key, value] of Object.entries(fieldValues)) {
-			if (!Array.isArray(value)) {
-				if (fieldProps[key].validator) {
-					const entryInvalid = fieldProps[key].validator!(value)
-					if (entryInvalid) {
-						setError(`${fieldProps[key].label}: ${entryInvalid}`)
-						return false
-					}
-				}
-				form.append(key, value)
-			} else if (Array.isArray(value)) {
-				if (fieldProps[key].validator!==undefined) {
-					const entryInvalid = fieldProps[key].validator!(value)
-					if (entryInvalid) {
-						setError(`${fieldProps[key].label}: ${entryInvalid}`)
-						return false
-					}
-				}
-				for (const item of value) {
-					form.append(key, item)
+		for (const [key, value] of e.entries()) {
+			console.log(key,value)
+			if (validations[key]) {
+				const entryInvalid = validations[key](value)
+				if (entryInvalid) {
+					setError(`${key}: ${entryInvalid}`)
+					return false
 				}
 			}
+			payload.set(key,value)
 		}
 		setLoading(true)
-		const res = await fetch(action, {
-			method: method,
-			body: form,
-		})
+		console.log(payload)
+		const res = await action(payload)
 		setLoading(false)
-		const code = (res.status / 100) ^ 0
-		if (code === 2) setStatus("Successful!")
-		else if (code === 4) setError(`Input error! ${res.text}`)
-		else if (code === 5) setError(`Server Error! ${res.text}`)
-		else setStatus("Something strange happened!")
+		if (!res) setStatus("Successful!")
+		else setError(res)
 		return true
 	}
 
 	return (
 		<div className={`${className} flex`}>
 			<form
+				action={submitHandler}
 				className="flex flex-col gap-3 "
-				onSubmit={submitHandler}
 			>
-				{Object.entries(fieldProps).map(([key, props]) => (
-					<LabeledInput
-						{...props}
-						key={key}
-						value={fieldValues[key]}
-						type={props.type}
-						label={props.label}
-						id={props.label}
-						setValue={(value:FormFieldValue)=>setFieldValues(prev=>({...prev,[key]:value}))}
-						
-					/>
-				))}
+				{children}
 				{loading ? (
 					<button
 						disabled={true}
@@ -113,7 +73,7 @@ export default function Form<T extends Record<string, FormFieldValue>>({
 				<span>{error}</span>
 				<span>{status}</span>
 			</form>
-			{params.children}
+			{preview || null}
 		</div>
 	)
 }
