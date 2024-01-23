@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function CartStatus({ getProducts,orders }: Props) {
-	const { data } = useSession()
+	const session = useSession()
 	let synced = React.useRef(-1)
 	const modal = useModal()
 	const localCache = useCartStore((state) => state.items)
@@ -31,12 +31,12 @@ export default function CartStatus({ getProducts,orders }: Props) {
 	}, [])
 	useEffect(() => {
 		async function getCache() {
-			if (!data?.user?.id) return false
-			if (synced.current === data.user.id) {
+			const userId = session.data?.user?.id
+			if (synced.current === userId) {
 				return false
 			}
-			synced.current = data.user.id || -1
-			if (data.user.role === "user") {
+			synced.current = userId || -1
+			if (!userId || session.data?.user?.role==="admin") return false
 				const remoteCache = await (await fetch("api/store")).json()
 				if (Object.keys(remoteCache).length > 0) {
 					if (Object.keys(localCache).length === 0) {
@@ -51,10 +51,9 @@ export default function CartStatus({ getProducts,orders }: Props) {
 						})
 					}
 				}
-			}
 		}
 		getCache()
-	}, [data])
+	}, [session.data?.user?.id])
 
 	async function cartClickHandler() {
 		if (Object.values(localCache).length === 0 || data?.user?.role !== "user")
@@ -67,7 +66,7 @@ export default function CartStatus({ getProducts,orders }: Props) {
 		)
 	}
 	async function ordersClickHandler() {
-		if (data?.user?.role !== "user")
+		if (session.data?.user?.role !== "user")
 			return false
 		const res = await modal.show(orders)
 	}

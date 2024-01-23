@@ -1,15 +1,16 @@
+import { getProductsByIdsAction } from "@/actions/getProducts"
 import ProductForm from "@/components/forms/ProductForm"
-import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 
 export default async function AddProductPage() {
-	const [brandList, categoryList] = await Promise.all([
-		BrandCache.get(),
-		CategoryCache.get(),
-	])
+	const test = (await getProductsByIdsAction('62'))[0]
+	const refine = {
+		...test,
+		brand:test.brand.name,
+		category:test.category.name
+	}
 	return (
 		<ProductForm
-			brandList={brandList}
-			categoryList={categoryList}
+			initValues={refine}
 		/>
 	)
 }

@@ -3,13 +3,14 @@ import { clientValidations } from "./common.ts"
 import Form, { FormFieldValue } from "./index"
 import React from "react"
 import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
-import { createProduct } from "@/actions/getProducts.ts"
+import { changeProductAction, createProduct, getProductsByIdsAction } from "@/actions/getProducts.ts"
 import Input from "../ui/Input/index.tsx"
 import FileUpload from "../ui/FileUpload/index.tsx"
 import Selector from "../ui/Selector/index.tsx"
 import { getAllBrandNamesAction } from "@/actions/brand.ts"
 import { getAllCategoryNamesAction } from "@/actions/category.ts"
-
+import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
+import {Button} from "@/components/material-tailwind"
 
 const validation = {
 	name: clientValidations.name,
@@ -23,48 +24,54 @@ const validation = {
 }
 
 type ProductProps = {
+	id?:number
 	name: string
 	description: string
 	brand: string
 	price: number
 	category: string
-	images: File[] | string[]
+	images: string[]
 }
 
 type Props = {
-	initValues?: Partial<ProductProps>
+	product?:PopulatedProduct
 }
 
-export default function ProductForm({ initValues }: Props) {
+export default function ProductForm({product}: Props) {
+	
+	const action = product?.id 
+		? (form:FormData)=>changeProductAction(product.id,form) 
+		: createProduct
 
-	const [name, setName] = React.useState(initValues?.name||"")
-	const [description, setDescription] = React.useState(initValues?.description||"")
-	const [brand, setBrand] = React.useState(initValues?.brand||"")
-	const [category, setCategory] = React.useState(initValues?.category||"")
-	const [price, setPrice] = React.useState(initValues?.price||0)
-
-	const [images, setImages] = React.useState<File[]>(
-		initValues?.images?.filter(image=>image instanceof File) as File[]||[])
+	const [name, setName] = React.useState(product?.name||"")
+	const [description, setDescription] = React.useState(product?.description||"")
+	const [brand, setBrand] = React.useState(product?.brand?.name||"")
+	const [category, setCategory] = React.useState(product?.category?.name||"")
+	const [price, setPrice] = React.useState(product?.price||0)
+	const [images, setImages] = React.useState<File[]>([])
 
 	React.useEffect(()=>{
-		async function fetchImages() {
+
+		async function fetchImages(imageUrls:string[]) {
 			let loadingBlobs: Promise<Blob>[] = []
-			for (const image of images) {
-				if (image instanceof File || typeof image !== "string") continue
-				loadingBlobs.push(fetch(image).then(res => res.blob()))
+			for (const image of imageUrls) {
+				loadingBlobs.push(fetch(`/products/${image}`).then(res => res.blob()))
 			}
-			const loadedFiles = (await Promise.all(loadingBlobs)).map(blob =>
-				new File([blob], "image.jpg", { type: blob.type })
+			const loadedFiles = (await Promise.all(loadingBlobs)).map((blob,idx) =>
+				new File([blob], imageUrls[idx], { type: blob.type })
 			)
 			setImages([...images, ...loadedFiles.filter(file => file.type === "image/jpeg")])
 		}
-		fetchImages()
+		if (!product?.id) return
+		fetchImages(product.images)
 		},[])
+
+
 	return (
 		<Form
 			className=""
 			validations={validation}
-			action={createProduct}
+			action={action}
 			preview={
 				<PreviewProductCard
 					className="h-80 w-64 p-2"
@@ -126,8 +133,6 @@ export default function ProductForm({ initValues }: Props) {
 			accept= "image/jpeg"
 			preview
 			/>
-
-
 		</Form>
 	)
 }

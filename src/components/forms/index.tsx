@@ -34,7 +34,6 @@ export default function Form({
 		setError("")
 		setStatus("")
 		for (const [key, value] of e.entries()) {
-			console.log(key,value)
 			if (validations[key]) {
 				const entryInvalid = validations[key](value)
 				if (entryInvalid) {
@@ -42,10 +41,9 @@ export default function Form({
 					return false
 				}
 			}
-			payload.set(key,value)
+			payload.append(key,value)
 		}
 		setLoading(true)
-		console.log(payload)
 		const res = await action(payload)
 		setLoading(false)
 		if (!res) setStatus("Successful!")

@@ -5,10 +5,11 @@ import Search from "../ui/Search"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 import { getProductsByIdsAction } from "@/actions/getProducts"
 import OrderList from "../cart/Orders"
+import useToast from "@/hooks/modals/useToast"
+import {Button} from "@/components/material-tailwind"
 
 export const revalidate = 300
 
-interface Props {}
 
 export default async function NavBar() {
 	const [brands, categories] = await Promise.all([

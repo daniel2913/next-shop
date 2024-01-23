@@ -1,25 +1,22 @@
-import useModalStore from "../../store/modalStore"
-import React, { ReactElement } from "react"
+import {useModalStore} from "../../store/modalStore"
+import React from "react"
 
-export default function useModal<T>() {
-	const modalState = useModalStore((state) => state.base)
-	const answer = React.useRef<(res: T | null | Promise<T | null>) => void>()
+export default function useModal() {
+	const {dialogRef,setContent} = useModalStore(state=>state)
 
-	function show(Modal: ReactElement) {
-		modalState.setModal(Modal)
-		modalState.show()
-		return new Promise<T | null>((resolve) => {
-			answer.current = resolve
-		})
-	}
-	function resolve(data: any) {
-		if (answer.current) answer.current(data)
-		modalState.close()
+	function show(Modal: React.ReactElement) {
+		if (dialogRef?.current){
+			setContent(Modal)
+			dialogRef.current.showModal()
+		}
+		else (
+			console.error("NO MODAL?")
+		)
 	}
 	function close() {
-		if (answer.current) answer.current(null)
-		modalState.close()
+		setContent(null)
+		dialogRef?.current?.close()
 	}
 
-	return { show, close, resolve }
+	return { show, close}
 }

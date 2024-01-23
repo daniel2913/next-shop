@@ -1,6 +1,12 @@
 "use client"
 import {
 	Button,
+	ButtonGroup,
+	TabPanel,
+	TabsHeader,
+	TabsBody,
+	Tabs,
+	Tab,
 	Checkbox,
 	Slider,
 	Select,
@@ -15,9 +21,19 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverHandler,
+	Menu,
+	MenuItem,
+	MenuHandler,
+	MenuList,
 } from "@material-tailwind/react"
 export {
 	Button,
+	ButtonGroup,
+	TabPanel,
+	TabsHeader,
+	TabsBody,
+	Tabs,
+	Tab,
 	Checkbox,
 	Slider,
 	Select,
@@ -32,4 +48,8 @@ export {
 	Popover,
 	PopoverContent,
 	PopoverHandler,
+	Menu,
+	MenuItem,
+	MenuHandler,
+	MenuList,
 }

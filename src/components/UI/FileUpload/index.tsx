@@ -26,9 +26,6 @@ type Props = {
 }
 
 export default function FileUpload(props: Props) {
-	const [value, setValue] = React.useState(
-		props.value.filter(a => a instanceof File) as File[]
-	)
 	const inpRef = React.useRef<HTMLInputElement>(null)
 	const [error, setError] = React.useState(" ")
 	React.useEffect(() => {
@@ -37,13 +34,10 @@ export default function FileUpload(props: Props) {
 		}
 		const data = new DataTransfer()
 		for (const file of props.value) {
-			console.log(file)
 			data.items.add(file as File)
 		}
-		console.log(inpRef.current.files)
 		inpRef.current.files = data.files
-		console.log(inpRef.current.files)
-	}, [value])
+	}, [props.value])
 
 
 	return (
@@ -53,7 +47,6 @@ export default function FileUpload(props: Props) {
 					className: "h-4"
 				}}
 				variant="standard"
-				crossOrigin={false}
 				inputRef={inpRef}
 				label={props.label}
 				multiple={props.multiple}
@@ -84,7 +77,7 @@ export default function FileUpload(props: Props) {
 						className="w-full"
 						images={props.value}
 						delImage={(idx: number) => {
-							setValue(value.filter((_, idxOld) => idx !== idxOld))
+							props.onChange(props.value.filter((_, idxOld) => idx !== idxOld))
 						}}
 					/>
 					: null

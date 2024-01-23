@@ -109,7 +109,7 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 						id={product.id}
 					/>
 					<ProductMenu
-						id={product.id}
+						product={product}
 						favourite={product.favourite}
 						className="justify-self-end"
 					/>

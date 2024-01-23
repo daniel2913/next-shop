@@ -26,15 +26,14 @@ export default function Selector({
 		options = props.options
 	}
 
-	const [optionsState, setOptionsState] = React.useState(options)
+	const [optionsState, setOptionsState] = React.useState(options||[value])
 	const [pending, startTransition] = React.useTransition()
 	React.useEffect(() => {
 		async function fetchOptions() {
-			setValue(options[0])
+			setValue(value||optionsState[0])
 			if (props.fetchAction) {
 				startTransition(async () => {
 					const res = await props.fetchAction()
-					console.log(res)
 					if (!res) setOptionsState(["Error!"])
 					else setOptionsState(res)
 					setValue(optionsState[0])
@@ -53,7 +52,7 @@ export default function Selector({
 			id={id}
 		/>
 		<Select
-			defaultValue={0}
+			value={value}
 			disabled={pending}
 			onChange={(e)=>setValue(e)}
 			label={label}

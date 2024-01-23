@@ -23,7 +23,6 @@ export default function Input(props:Props){
 	return(
 		<>
 			<BaseInput
-				crossOrigin={""}
 				label={props.label}
 				onBlur={() => setError(props.validate?.(value)||"")}
 				error={!!error&&error!==" "}

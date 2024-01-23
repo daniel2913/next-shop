@@ -44,14 +44,16 @@ export default function ProductList({ products: initProducts }: Props) {
 			<div
 				className="
 					h-full p-5
-					grid sm:grid-cols-2  gap-y-8
-					md:grid-cols-3 lg:grid-cols-4
+					grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]
+					gap-y-4
 					items-center justify-items-center
 				"
 			>
 				{products.map((product) => (
 					<ProductCard
-						className="h-[22rem] w-64 p-2"
+						className="
+							h-[22rem] min-w-[16rem] w-1/5 max-w-[20rem] p-2
+						"
 						key={`${product.id}`}
 						product={product}
 					/>

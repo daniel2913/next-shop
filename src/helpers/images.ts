@@ -2,58 +2,54 @@ import { FileStorage } from "@/lib/DAL/FileStorage"
 import { randomUUID } from "crypto"
 
 export type Image = { file: File | null; name: string }
-const template = { name: "template.jpg", file: null }
 
-export function handleImages(images: (File | string)[]): Image[] {
-	const result: Image[] = []
+export async function handleImages(images: File[], path: string): Promise<string[]|null> {
+
+	console.log(images.map(i=>i.name))
+	const prepImages: Promise<Image>[] = []
 	for (const i of images) {
-		if (!i || typeof i === "string") {
-			result.push(template)
-		} else {
-			const image = handleImage(i)
-			result.push(image ? image : template)
-		}
+
+		const ext = i.type?.split("/").pop()
+		if (ext !== "jpeg" && ext !== "jpg") continue
+		const image = handleImage(i, path)
+		if (image !== null) prepImages.push(image)
 	}
-	return result
+	return saveImages(await Promise.all(prepImages),path)
 }
 
-export function handleImage(image: File): Image | null {
-	let imageName = "template.jpg"
-	const ext = image.type?.split("/").pop()
-	if (ext === "jpeg" || ext === "jpg") {
-		imageName = `${randomUUID().replace("-", "").slice(0, 8)}.jpg`
-		return { name: imageName, file: image }
-	} else {
-		return template
+export async function handleImage(image: File, path: string): Promise<Image> {
+	console.log(`Checking ${image.name}`);
+	
+	if (await FileStorage.exists(image.name, path)) {
+		console.log("Has it")
+		return { name: image.name, file: null }
 	}
+	const imageName = `${randomUUID().replace("-", "").slice(0, 8)}.jpg`
+	console.log(`New name is ${imageName}`)
+	return { name: imageName, file: image }
 }
 
-export async function saveImages(images: Image[], filePath: string) {
-	const results: Promise<boolean>[] = []
+export async function saveImages(images: Image[], path: string) {
+	const resultsPromises: Promise<boolean>[] = []
 	for (const image of images) {
-		results.push(saveImage(image, filePath))
+		if (image.file === null) resultsPromises.push(Promise.resolve(true))
+		else resultsPromises.push(FileStorage.write(image.name, path, image.file))
 	}
-	return Promise.all(results).then((results) => {
-		return results.reduce((res, cur) => res && cur, true)
-	})
+	const results = await Promise.all(resultsPromises)
+	const names = images
+		.filter((i,idx)=>results[idx])
+		.map(i=>i.name)
+	if (names.length>0) return names
+	return null
 }
 
-export function deleteImages(names: string[], filePath: string): void {
+export function deleteImages(names: string[], path: string): void {
 	for (const name of names) {
-		deleteImage(name, filePath)
+		deleteImage(name, path)
 	}
 }
 
-export async function saveImage(
-	{ name, file }: Image,
-	filePath: string
-): Promise<boolean> {
-	if (name === "template.jpg") return true
-	if (!file) return false
-	return FileStorage.write(name, filePath, file)
-}
-
-export function deleteImage(name: string, filePath: string): void {
+export function deleteImage(name: string, path: string): void {
 	if (name === "template.jpg") return
-	FileStorage.delete(name, filePath)
+	FileStorage.delete(name, path)
 }

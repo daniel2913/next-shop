@@ -1,12 +1,12 @@
 "use client"
 import Link from "next/link"
-import useModalStore from "@/store/modalStore"
 import { signOut, useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productsStore/productStore"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Exit from "@/../public/exit.svg"
+import useModal from "@/hooks/modals/useModal"
 const Login = dynamic(() => import("@/components/modals/Login"))
 const Register = dynamic(() => import("@/components/modals/Register"))
 
@@ -20,7 +20,7 @@ export default function Auth({ className}: props) {
 	const cartSetter = useCartStore((state) => state.setItems)
 	const purgeCart = () => cartSetter({})
 	const reloadProducts = useProductStore(state=>state.reload)
-	const modal = useModalStore((state) => state.base)
+	const modal = useModal()
 	return (
 		<div className={`${className}`}>
 			{session.data?.user?.name ? (
@@ -53,8 +53,7 @@ export default function Auth({ className}: props) {
 					<button
 						type="button"
 						onClick={() => {
-							modal.setModal(<Register/>)
-							modal.show()
+							modal.show(<Register/>)
 						}}
 					>
 						Register
@@ -62,8 +61,7 @@ export default function Auth({ className}: props) {
 					<button
 						type="button"
 						onClick={async () => {
-							modal.setModal(<Login reloadProducts={reloadProducts} close={modal.close} />)
-							modal.show()
+							modal.show(<Login reloadProducts={reloadProducts} close={modal.close} />)
 						}}
 					>
 						Log in

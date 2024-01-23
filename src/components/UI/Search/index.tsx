@@ -5,6 +5,7 @@ import React from "react"
 import CheckBoxBlock from "../CheckBoxBlock"
 import { Button } from "@/components/material-tailwind"
 import SearchIcon from "@/../public/search.svg"
+import useToast from "@/hooks/modals/useToast"
 
 interface Props {
 	className?: string
@@ -37,9 +38,11 @@ export default function Search({ className, brandList, categoryList }: Props) {
 			)
 		router.push(query.toString())
 	}
+	const {show} = useToast()
 
 	return (
 		<div className={`${className} group relative right-auto flex w-1/2`}>
+			<Button onClick={()=>show("TEST")}>TEST</Button>
 			<div className="flex w-full">
 				<input
 					autoComplete="off"
