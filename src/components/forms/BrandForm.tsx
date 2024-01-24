@@ -3,17 +3,12 @@ import Form from "./index"
 import React from "react"
 import LabeledInput, { InputOptionStaticProps, InputGeneralProps } from "../ui/LabeledInput/index.tsx"
 import { clientValidations } from "./common.ts"
-
-const formFieldValues: {
-	name: string
-	description: string
-	image: File[]
-} = {
-	name: "",
-	description: "",
-	image: [],
-} as const
-const action = "/api/brand"
+import { Brand } from "@/lib/DAL/Models/Brand.ts"
+import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
+import Input from "../ui/Input/index.tsx"
+import { Textarea } from "@/components/material-tailwind"
+import FileUpload from "../ui/FileUpload/index.tsx"
+import useImageFiles from "@/hooks/useImageFiles.ts"
 
 const validation = {
 	name: clientValidations.name,
@@ -21,54 +16,51 @@ const validation = {
 	description: clientValidations.description,
 }
 
+type Props = {
+	brand?:Brand
+}
 
-type Props =
-	| {
-		method: "PUT"
-	}
-	| {
-		method: "PATCH"
-		targId?: string
-		targName?: string
-	}
+export default function BrandForm({brand}: Props) {
 
-export default function BrandForm(props: Props) {
-	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
-	const fieldProps: Record<
-		keyof typeof formFieldValues,
-		InputGeneralProps & InputOptionStaticProps
-	> = {
-		name: {
-			type: "text",
-			id: "name",
-			label: "Brand name",
-			placeholder: "Brand",
-			validator: validation.name,
-		},
-		description: {
-			type: "text",
-			id: "description",
-			label: "Brand description",
-			placeholder: "Text",
-			validator: validation.description,
-		},
-		image: {
-			type: "file",
-			id: "image",
-			label: "Brand image",
-			multiple: false,
-			accept: "image/jpeg",
-			validator: validation.image,
-		},
-	} as const
+	const action = brand?.id 
+		? (form:FormData)=>changeBrandAction(brand.id,form) 
+		: createBrandAction
+	const origImages = brand.image ? [`/brands/${brand.image}`] : []
+	const [name, setName] = React.useState(brand?.name||"")
+	const [description, setDescription] = React.useState(brand?.description||"")
+	const [image, setImage] = useImageFiles(origImages)
+
 	return (
 		<Form
 			className=""
 			action={action}
 			method={"PUT"}
-			fieldValues={fieldValues}
-			fieldProps={fieldProps}
-			setFieldValues={setFieldValues}
-		/>
+		>
+			<Input
+				crossOrigin={false}
+				label="Product Name label"
+				id="name"
+				name={"name"}
+				value={name}
+				validate={validation.name}
+				setValue={(str: string) => setName(str)}
+			/>
+			<Textarea
+				crossOrigin={false}
+				name={"description"}
+				label="Description"
+				value={description}
+				setValue={(str: string) => setDescription(str)}
+			/>
+			<FileUpload
+			id= "images"
+			label= "Product image"
+			value={image}
+			onChange={(files:File)=>setImage(file)}
+			accept= "image/jpeg"
+			preview
+			/>
+		
+		</Form>
 	)
 }

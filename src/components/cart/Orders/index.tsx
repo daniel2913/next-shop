@@ -6,7 +6,7 @@ import { getProductsByIdsAction } from "@/actions/getProducts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { Order } from "@/lib/DAL/Models/Order"
 import Complete from "@/components/ui/Order/Complete"
-import { completeOrder } from "@/actions/completeOrder"
+import { completeOrder } from "@/actions/order"
 
 type Props = {
 	completed:boolean

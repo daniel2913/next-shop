@@ -1,8 +1,10 @@
 import { char, jsonb, smallint, varchar } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import { MAX_SIZES, fileSchema, pgreDefaults, shop, validations } from "./common"
 import { sql } from "drizzle-orm"
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js"
+import { z } from "zod"
+import { handleImages } from "@/helpers/images"
 
 type TestType = Readonly<{
 	id: "number"
@@ -15,19 +17,17 @@ type TestType = Readonly<{
 	saved: "array"
 }>
 
-const UserValidations: Record<keyof User, Array<(...args: any) => any>> = {
-	id: [],
-	name: [validations.length("name", maxSizes.name, 1)],
-	passwordHash: [],
-	role: [validations.match("role", /(admin|user)/)],
-	image: [validations.imageMatch()],
-	cart: [
-		validations.length("cart", maxSizes.description),
-		validations.match("cart", /^\[.*\]$/),
-	],
-	votes: [],
-	saved:[]
-}
+const UserInsertValidation = z.object({
+	name:validations.name,
+	passwordHash:z.string().max(MAX_SIZES.hash).min(MAX_SIZES.hash),
+	role:z.enum(["user","admin"]).default("user"),
+	image:fileSchema
+		.transform(file=>handleImages(file,"users"))
+		.pipe(validations.imageName.default("template.jpg")),
+	cart:z.record(z.string(),z.number()).default({}),
+	votes:z.record(z.string(),z.number()).default({}),
+	saved:z.array(validations.id).default([])
+	})
 
 const UserCustomQuerys = {
 	updateVotes:
@@ -43,20 +43,6 @@ const UserCustomQuerys = {
 						name;
 			`)
 			return res.length > 0 ? (res[0].name as string) : null
-		},
-	updateCart:
-		(dataBase: PostgresJsDatabase) =>
-		async (id: number, cart: Record<number, number>) => {
-			const res = await dataBase.execute(sql`
-				UPDATE shop.users 
-					SET 
-						cart= ${cart}::json
-					WHERE
-							id = ${id}
-					RETURNING
-						id;
-			`)
-			return res.length > 0 ? true : false
 		},
 	clearAllSaved:
 		(dataBase:PostgresJsDatabase)=>
@@ -106,4 +92,4 @@ const UserPgreTable = shop.table(
 
 export type User = typeof UserPgreTable.$inferSelect
 
-export { UserPgreTable, UserValidations, UserCustomQuerys }
+export { UserPgreTable, UserInsertValidation, UserCustomQuerys }

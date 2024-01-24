@@ -10,7 +10,8 @@ import Selector from "../ui/Selector/index.tsx"
 import { getAllBrandNamesAction } from "@/actions/brand.ts"
 import { getAllCategoryNamesAction } from "@/actions/category.ts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
-import {Button} from "@/components/material-tailwind"
+import {Button, Textarea} from "@/components/material-tailwind"
+import useImageFiles from "@/hooks/useImageFiles.ts"
 
 const validation = {
 	name: clientValidations.name,
@@ -37,6 +38,7 @@ type Props = {
 	product?:PopulatedProduct
 }
 
+
 export default function ProductForm({product}: Props) {
 	
 	const action = product?.id 
@@ -48,22 +50,10 @@ export default function ProductForm({product}: Props) {
 	const [brand, setBrand] = React.useState(product?.brand?.name||"")
 	const [category, setCategory] = React.useState(product?.category?.name||"")
 	const [price, setPrice] = React.useState(product?.price||0)
-	const [images, setImages] = React.useState<File[]>([])
+	const [images, setImages] = useImageFiles(product?.images.map(image=>`/products/${image}`)||[])
 
 	React.useEffect(()=>{
 
-		async function fetchImages(imageUrls:string[]) {
-			let loadingBlobs: Promise<Blob>[] = []
-			for (const image of imageUrls) {
-				loadingBlobs.push(fetch(`/products/${image}`).then(res => res.blob()))
-			}
-			const loadedFiles = (await Promise.all(loadingBlobs)).map((blob,idx) =>
-				new File([blob], imageUrls[idx], { type: blob.type })
-			)
-			setImages([...images, ...loadedFiles.filter(file => file.type === "image/jpeg")])
-		}
-		if (!product?.id) return
-		fetchImages(product.images)
 		},[])
 
 
@@ -95,12 +85,12 @@ export default function ProductForm({product}: Props) {
 				validate={validation.name}
 				setValue={(str: string) => setName(str)}
 			/>
-			<Input
+			<Textarea
 				crossOrigin={false}
 				name={"description"}
 				label="Description"
 				value={description}
-				setValue={(str: string) => setDescription(str)}
+				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
 			<Selector
 				label="Brand"

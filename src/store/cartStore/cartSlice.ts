@@ -1,3 +1,4 @@
+import { setCartAction } from "@/actions/cart"
 import { StateCreator } from "zustand"
 
 type Items = Record<number, number>
@@ -17,15 +18,23 @@ export const validCartItemProps = [
 	"price",
 ] as const
 
-function updateAccount(cart: Items) {
-	fetch("/api/store", {
-		method: "PATCH",
-		headers: {
-			"content-type": "application/json",
-		},
-		body: JSON.stringify(cart),
-	})
+function deffer<T extends (args:any)=>any>(func:T,delay:number=5000){
+	let delayed = false
+	let storedArgs:Parameters<T>
+	return function deffered(...args:Parameters<T>){
+		storedArgs=args
+		if (!delayed)
+			setTimeout(()=>{
+				delayed = false
+				func.apply(null,storedArgs)
+			},delay)
+		delayed = true
+	}
 }
+
+const updateAccount = deffer(setCartAction,5000)
+
+
 
 export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
 	items: {},

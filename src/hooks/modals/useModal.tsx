@@ -18,5 +18,5 @@ export default function useModal() {
 		dialogRef?.current?.close()
 	}
 
-	return { show, close}
+	return {show, close}
 }

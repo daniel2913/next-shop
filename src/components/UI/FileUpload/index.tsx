@@ -3,7 +3,6 @@
 import { Button, Input } from "@/components/material-tailwind"
 import React from "react"
 import ImagesPreview from "../ImagesPreview"
-import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
 
 
 function fileListAdapter(inp: File | FileList | null): File[] {
@@ -13,19 +12,20 @@ function fileListAdapter(inp: File | FileList | null): File[] {
 }
 
 type Props = {
-	value: File[]
-	validate?: (files: File[]) => false | string
-	onChange: (files: File[]) => void
-	multiple: boolean
 	accept?: string
 	size?: number
 	label: string
 	id: string
 	className?: string
 	preview: boolean
+	value: File[]
+	multiple?: boolean
+	onChange:(file:File[])=>void
+	validate?: (files: File[]) => false | string
 }
 
 export default function FileUpload(props: Props) {
+	if (!props.multiple) props.multiple=false
 	const inpRef = React.useRef<HTMLInputElement>(null)
 	const [error, setError] = React.useState(" ")
 	React.useEffect(() => {
@@ -33,9 +33,13 @@ export default function FileUpload(props: Props) {
 			return
 		}
 		const data = new DataTransfer()
-		for (const file of props.value) {
-			data.items.add(file as File)
-		}
+		if (props.multiple)
+			for (const file of props.value) {
+				data.items.add(file as File)
+				if (!props.multiple) break
+			}
+		else
+			data.items.add(props.value[0])
 		inpRef.current.files = data.files
 	}, [props.value])
 
@@ -43,6 +47,7 @@ export default function FileUpload(props: Props) {
 	return (
 		<div className={`${props.className} flex flex-col`}>
 			<Input
+				crossOrigin={""}
 				containerProps={{
 					className: "h-4"
 				}}
@@ -55,7 +60,12 @@ export default function FileUpload(props: Props) {
 				name={props.id}
 				className="hidden"
 				type="file"
-				onChange={(e) => props.onChange([...props.value, ...fileListAdapter(e.currentTarget.files)])}
+				onChange={(e) => {
+					if (props.multiple)
+						props.onChange([...props.value, ...fileListAdapter(e.currentTarget.files)])
+					else
+						props.onChange(fileListAdapter(e.currentTarget.files).slice(0,1))
+				}}
 			/>
 			<Button
 				onClick={() => {

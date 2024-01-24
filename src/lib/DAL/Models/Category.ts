@@ -1,5 +1,7 @@
-import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import { MAX_SIZES, fileSchema, pgreDefaults, shop, validations } from "./common"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
+import { z } from "zod"
+import { handleImages } from "@/helpers/images"
 
 type TestType = Readonly<{
 	id: "number"
@@ -7,11 +9,14 @@ type TestType = Readonly<{
 	image: "string"
 }>
 
-const CategoryValidations = {
-	id: [],
-	name: [validations.length("name", maxSizes.name, 1)],
-	image: [validations.imageMatch()],
-}
+const CategoryInsertValidation = z.object({
+	name: validations.name,
+	description: validations.description,
+	image: fileSchema
+		.transform(file=>handleImages([file],"categories"))
+		.transform(names=>names ? names[0] : "template.jpg")
+		.pipe(validations.imageName)
+})
 
 const config = {
 	id: pgreDefaults.id,
@@ -26,4 +31,4 @@ const CategoryPgreTable = shop.table(
 
 export type Category = typeof CategoryPgreTable.$inferSelect
 
-export { CategoryPgreTable, CategoryValidations }
+export { CategoryPgreTable, CategoryInsertValidation}

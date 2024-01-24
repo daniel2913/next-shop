@@ -3,9 +3,7 @@ import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { jsonb, real, smallint, varchar } from "drizzle-orm/pg-core"
 import { pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
-import { sql } from "drizzle-orm"
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js/index"
-import { argv0 } from "process"
+import { z } from "zod"
 
 type TestType = Readonly<{
 	id: "number"
@@ -15,45 +13,14 @@ type TestType = Readonly<{
 	status: "string"
 }>
 
-const OrderValidations = {
-	id: [validations.id("id")],
-	rating: [],
-	user: [],
-	order: [],
-	status: [],
-}
-
-export type Order = typeof OrderPgreTable.$inferSelect
-
-const OrderCustomQueries = {
-	getActive: (dataBase: PostgresJsDatabase) => async () => {
-		const res = await dataBase.execute(sql`
-				SELECT * FROM shop.orders 
-					WHERE status='PROCESSING';
-			`)
-		return res.map((res) => ({
-			...res,
-			order: res.order,
-		})) as Order[]
-	},
-
-	create:
-		(dataBase: PostgresJsDatabase) =>
-		async (
-			userId: number,
-			order: Record<number, { amount: number; price: number }>
-		) => {
-			const res = await dataBase.execute(sql`
-				INSERT INTO shop.orders 
-					("user","order","status"
-				)
-					values(${userId}::smallint,${order}::json,'PROCESSING')
-				RETURNING
-					id
-			`)
-			return res.length > 0 ? true : false
-		},
-}
+const OrderInsertValidation = z.object({
+	user:validations.id,
+	order:z.record(validations.id,z.object({
+		amount:z.number().positive(),
+		price:z.number().positive()
+	})),
+	status:z.enum(["PROCESSING","COMPLETED"]).default("PROCESSING")
+})
 
 const config = {
 	id: pgreDefaults.id,
@@ -66,9 +33,12 @@ const config = {
 		.notNull()
 		.$type<Record<number, { amount: number; price: number }>>(),
 }
+
+export type Order = typeof OrderPgreTable.$inferSelect
+
 const OrderPgreTable = shop.table(
 	"orders",
 	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
 )
 
-export { OrderPgreTable, OrderValidations, OrderCustomQueries }
+export { OrderPgreTable, OrderInsertValidation}

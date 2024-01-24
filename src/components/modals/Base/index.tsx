@@ -5,10 +5,11 @@ import React from "react"
 
 export default function ModalBase() {
 	const dialogRef = React.useRef<HTMLDialogElement>(null)
-	const {bindDialog,children}=useModalStore()
+	const {bindDialog,children,setContent}=useModalStore()
 	React.useEffect(()=>bindDialog(dialogRef),[])
 	return (
 		<dialog
+			onClose={()=>setContent(null)}
 			ref={dialogRef}
 			className={`
 				fixed bottom-1/2 right-1/2  

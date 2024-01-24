@@ -2,19 +2,18 @@ import { Brand, BrandPgreTable } from "./Brand.ts"
 import { Category, CategoryPgreTable } from "./Category.ts"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import {
-	PgDatabase,
-	char,
 	integer,
 	real,
 	smallint,
 	uniqueIndex,
 	varchar,
 } from "drizzle-orm/pg-core"
-import { maxSizes, pgreDefaults, validations } from "./common"
+import { fileSchema, MAX_SIZES, pgreDefaults, validations} from "./common"
 import { shop } from "./common.ts"
-import { sql } from "drizzle-orm"
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js/driver"
 import { Discount } from "./Discount.ts"
+import { z } from "zod"
+import { BrandCache, CategoryCache } from "@/helpers/cachedGeters.ts"
+import { handleImages } from "@/helpers/images.ts"
 
 type TestType = Readonly<{
 	id: "number"
@@ -28,55 +27,47 @@ type TestType = Readonly<{
 	voters: "array"
 	rating: "number"
 }>
-const ProductValidations = {
-	id: [validations.id("id")],
-	name: [validations.length("name", maxSizes.name, 1)],
-	brand: [],
-	category: [],
-	description: [validations.length("description", maxSizes.description, 1)],
-	images: [validations.imagesMatch()],
-	price: [validations.minmax("price", Infinity, 1)],
-	votes: [validations.noDefault("votes")],
-	voters: [validations.noDefault("voters")],
-	rating: [validations.noDefault("rating")],
-}
 
-const ProductCustomQueries = {
-	openRating:
-		(dataBase: PostgresJsDatabase) => async (ids: number[], voter: number) => {
-			const res = await dataBase.execute(sql.raw(`
-				UPDATE shop.products
-					SET 
-						votes[cardinality(voters)+1]=null,
-						voters[cardinality(voters)+1]=${voter}
-					WHERE
-								id in (${ids})
-							AND
-								NOT ${voter} = ANY(voters)
-					RETURNING
-						rating, cardinality(voters) as voters;
-			`))
-			return res.length > 0
-				? (res[0] as { rating: number; voters: number })
-				: false
-		},
-	updateRatings:
-		(dataBase: PostgresJsDatabase) =>
-		async (id: number, vote: number, voter: number) => {
-			const res = await dataBase.execute(sql.raw(`
-				UPDATE shop.products 
-					SET 
-						votes[array_position(voters,${voter})]=${vote}
-					WHERE
-							id = ${id}
-					RETURNING
-						rating, cardinality(voters) as voters;
-			`))
-			return res.length > 0
-				? (res[0] as { rating: number; voters: number })
-				: false
-		},
-}
+const brandSchema = z
+	.string().or(z.number())
+	.transform(async(brand)=>{
+		const brands = await BrandCache.get()
+		let res = -1
+		if (typeof brand === "string")
+			res = brands.find(b=>b.name===brand)?.id || -1
+		else
+			res = brands.find(b=>b.id===brand)?.id || -1
+		return res 
+	})
+	.refine(n=>n>-1, {message:"Brand Does Not Exist"})
+
+const categorySchema = z
+	.string().or(z.number())
+	.transform(async(category)=>{
+		const categories = await CategoryCache.get()
+		let res = -1
+		if (typeof category === "string")
+			res = categories.find(c=>c.name===category)?.id || -1
+		else
+			res = categories.find(c=>c.id===category)?.id || -1
+		return res 
+	})
+	.refine(n=>n>-1, {message:"Category Does Not Exist"})
+
+
+const ProductInsertValidation = z.object({
+	name: validations.name,
+	description: validations.description,
+	brand: brandSchema,
+	category: categorySchema,
+	price: z.coerce.number().positive(),
+	images: z.array(fileSchema)
+		.transform(files=>handleImages(files,"products"))
+		.pipe(z.array(validations.imageName)
+			.default(["template.jpg"]
+		))
+})
+
 
 const config = {
 	id: pgreDefaults.id,
@@ -88,7 +79,7 @@ const config = {
 		.notNull()
 		.references(() => CategoryPgreTable.id),
 	description: pgreDefaults.description,
-	images: varchar("images", { length: maxSizes.image }).array().notNull(),
+	images: varchar("images", { length: MAX_SIZES.image }).array().notNull(),
 	price: real("price").notNull(),
 	votes: integer("votes").array().default([]).notNull(),
 	voters: smallint("voters").array().default([]).notNull(),
@@ -113,10 +104,10 @@ export type PopulatedProduct = Omit<
 	votes: number
 	voters: number
 	brand: Brand
-	favourite:boolean
+	favourite: boolean
 	category: Category
 	discount: Pick<Discount, "discount" | "expires">
 	ownVote: number
 }
 
-export { ProductPgreTable, ProductValidations, ProductCustomQueries }
+export { ProductPgreTable, ProductInsertValidation}

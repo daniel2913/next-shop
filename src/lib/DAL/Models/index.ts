@@ -1,58 +1,21 @@
 import { PgreModel } from "./base"
-import { BrandPgreTable, BrandValidations, Brand } from "./Brand"
-import { CategoryPgreTable, CategoryValidations, Category } from "./Category"
-import {
-	ProductPgreTable,
-	ProductValidations,
-	ProductCustomQueries,
-	Product,
-} from "./Product"
-import { UserPgreTable, UserValidations, User, UserCustomQuerys } from "./User"
-import { RatingPgreTable, RatingValidations, Rating } from "./Rating"
-import { Discount, DiscountPgreTable, DiscountValidations } from "./Discount"
-import {
-	Order,
-	OrderCustomQueries,
-	OrderPgreTable,
-	OrderValidations,
-} from "./Order"
+import { BrandPgreTable, BrandInsertValidation, Brand } from "./Brand"
+import { CategoryPgreTable, CategoryInsertValidation, Category } from "./Category"
+import {ProductPgreTable,ProductInsertValidation,Product,} from "./Product"
+import { UserPgreTable, UserInsertValidation, User} from "./User"
+import { Discount, DiscountPgreTable, DiscountInsertValidation } from "./Discount"
+import {Order,OrderPgreTable,OrderInsertValidation} from "./Order"
 
-export type { Brand, Category, Product, User }
+export type { Brand, Category, Product, User, Discount, Order }
 
-export const BrandModel = new PgreModel<typeof BrandPgreTable, Brand>(
-	BrandPgreTable,
-	BrandValidations
-)
+export const BrandModel = new PgreModel(BrandPgreTable,BrandInsertValidation)
 
-export const CategoryModel = new PgreModel<typeof CategoryPgreTable, Category>(
-	CategoryPgreTable,
-	CategoryValidations
-)
+export const CategoryModel = new PgreModel(CategoryPgreTable,CategoryInsertValidation)
 
-export const ProductModel = new PgreModel<
-	typeof ProductPgreTable,
-	Product,
-	typeof ProductCustomQueries
->(ProductPgreTable, ProductValidations, ProductCustomQueries)
+export const ProductModel = new PgreModel(ProductPgreTable, ProductInsertValidation)
 
-export const UserModel = new PgreModel<
-	typeof UserPgreTable,
-	User,
-	typeof UserCustomQuerys
->(UserPgreTable, UserValidations, UserCustomQuerys)
+export const UserModel = new PgreModel(UserPgreTable, UserInsertValidation)
 
-export const RatingModel = new PgreModel<typeof RatingPgreTable, Rating>(
-	RatingPgreTable,
-	RatingValidations
-)
+export const DiscountModel = new PgreModel(DiscountPgreTable,DiscountInsertValidation)
 
-export const DiscountModel = new PgreModel<typeof DiscountPgreTable, Discount>(
-	DiscountPgreTable,
-	DiscountValidations
-)
-
-export const OrderModel = new PgreModel<
-	typeof OrderPgreTable,
-	Order,
-	typeof OrderCustomQueries
->(OrderPgreTable, OrderValidations, OrderCustomQueries)
+export const OrderModel = new PgreModel(OrderPgreTable, OrderInsertValidation)

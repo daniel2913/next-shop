@@ -1,6 +1,7 @@
 import { smallint, timestamp } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { pgreDefaults, shop, validations } from "./common"
+import { z } from "zod"
 
 type TestType = Readonly<{
 	id: "number"
@@ -18,14 +19,13 @@ function expiresValidation(name: string) {
 	}
 }
 
-const DiscountValidations = {
-	id: [validations.id("discount")],
-	discount: [validations.minmax("discount", 99, 0)],
-	products: [],
-	brands: [],
-	categories: [],
-	expires: [expiresValidation("discount")],
-}
+const DiscountInsertValidation = z.object({
+	discount:z.number().positive().max(99),
+	products:z.array(validations.id).optional(),
+	brands:z.array(validations.id).optional(),
+	categories:z.array(validations.id).optional(),
+	expires:z.coerce.date()
+})
 
 const config = {
 	id: pgreDefaults.id,
@@ -33,7 +33,7 @@ const config = {
 	products: smallint("products").array().notNull().default([]),
 	categories: smallint("categories").array().notNull().default([]),
 	brands: smallint("brands").array().notNull().default([]),
-	expires: timestamp("expires")
+	expires: timestamp("expires",{mode:"date"})
 		.notNull()
 		.default(new Date(Date.now() + 5 * 60000)),
 }
@@ -45,4 +45,4 @@ const DiscountPgreTable = shop.table(
 
 export type Discount = typeof DiscountPgreTable.$inferSelect
 
-export { DiscountPgreTable, DiscountValidations }
+export { DiscountPgreTable, DiscountInsertValidation }

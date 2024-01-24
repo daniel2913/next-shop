@@ -3,18 +3,22 @@ import { randomUUID } from "crypto"
 
 export type Image = { file: File | null; name: string }
 
-export async function handleImages(images: File[], path: string): Promise<string[]|null> {
-
-	console.log(images.map(i=>i.name))
+export async function handleImages(images:File[],path:string):Promise<string[]|null>
+export async function handleImages(images:File,path:string):Promise<string|null>
+export async function handleImages(images: File|File[], path: string): Promise<string|string[]|null> {
+	const _images = Array.isArray(images) ? images : [images]
 	const prepImages: Promise<Image>[] = []
-	for (const i of images) {
-
+	for (const i of _images) {
 		const ext = i.type?.split("/").pop()
 		if (ext !== "jpeg" && ext !== "jpg") continue
 		const image = handleImage(i, path)
 		if (image !== null) prepImages.push(image)
 	}
-	return saveImages(await Promise.all(prepImages),path)
+	const res = await saveImages(await Promise.all(prepImages),path)
+ 	if (!res) return res
+	if (Array.isArray(images))
+		return res
+	return res[0]
 }
 
 export async function handleImage(image: File, path: string): Promise<Image> {

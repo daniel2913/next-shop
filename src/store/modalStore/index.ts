@@ -1,17 +1,32 @@
 import { create } from "zustand"
-import { BaseModalSlice, createBaseModalSlice } from "./baseSlice"
+import React from "react"
 
-
-const useModalStore = create<
-	BaseModalSlice
->()((...a) => ({
-	...createBaseModalSlice(...a),
+interface ModalState {
+	children: React.ReactNode
+	setContent: (content:React.ReactNode)=>void
+	dialogRef: React.RefObject<HTMLDialogElement> |null
+	bindDialog: (ref:React.RefObject<HTMLDialogElement>)=>void
+}
+export const useModalStore = create<ModalState>()((set) => ({
+		dialogRef:null,
+		children: null,
+		setContent: (content)=>set({children:content}),
+		bindDialog:(ref)=>set({dialogRef:ref}),
 }))
 
-const useToastStore = create<
-	BaseModalSlice
->()((...a) => ({
-	...createBaseModalSlice(...a),
+interface ToastState {
+	children: React.ReactNode
+	setContent: (content:React.ReactNode)=>void
+	show:()=>void
+	close:()=>void
+	isVisible:boolean
+}
+
+export const useToastStore = create<ToastState>()((set) => ({
+		isVisible:false,
+		children: null,
+		setContent: (content)=>set({children:content}),
+		show:()=>set({isVisible:true}),
+		close:()=>set({isVisible:false})
 }))
 
-export {useModalStore, useToastStore}

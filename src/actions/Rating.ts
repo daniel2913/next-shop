@@ -23,14 +23,18 @@ export async function getRating(ids:number[]):Promise<Record<number,number>>{
 export async function setRating(id:number,vote:number){
 	const session = await getServerSession(authOptions)
 	if (!session?.user?.role || session.user.role!=="user") return false
-
 	const user = await UserCache.get(session.user.name)
 	if (!user) return false
-	const res = await ProductModel.custom.updateRatings(
-		id,
-		vote,
-		user.id
-	)
+	const res = await ProductModel.raw(sql.raw`
+				UPDATE shop.products 
+					SET 
+						votes[array_position(voters,${user.id})]=${vote}
+					WHERE
+							id = ${id}
+					RETURNING
+						rating, cardinality(voters) as voters;
+		`)
 	if (!res) return false
 	return res
 }
+

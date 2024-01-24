@@ -1,5 +1,7 @@
+import { handleImages } from "@/helpers/images"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
-import { maxSizes, pgreDefaults, shop, validations } from "./common"
+import { fileSchema, pgreDefaults, shop, validations } from "./common"
+import { z } from "zod"
 
 type TestType = Readonly<{
 	id: "number"
@@ -8,12 +10,14 @@ type TestType = Readonly<{
 	image: "string"
 }>
 
-const BrandValidations = {
-	id: [],
-	name: [validations.length("name", maxSizes.name, 1)],
-	description: [validations.length("description", maxSizes.description, 1)],
-	image: [validations.imageMatch()],
-}
+const BrandInsertValidation = z.object({
+	name: validations.name,
+	description: validations.description,
+	image: fileSchema
+		.transform(file=>handleImages([file],"brands"))
+		.transform(names=>names ? names[0] : "template.jpg")
+		.pipe(validations.imageName)
+})
 
 const config = {
 	id: pgreDefaults.id,
@@ -29,4 +33,4 @@ const BrandPgreTable = shop.table(
 
 export type Brand = typeof BrandPgreTable.$inferSelect
 
-export { BrandPgreTable, BrandValidations }
+export { BrandPgreTable, BrandInsertValidation }
