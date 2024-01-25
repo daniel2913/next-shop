@@ -1,58 +1,55 @@
 "use client"
-import { InputGeneralProps, InputOptionStaticProps } from "../ui/LabeledInput"
+import { Category } from "@/lib/DAL/Models"
 import { clientValidations } from "./common"
-import Form, { FormFieldValidator, FormFieldValue } from "./index"
+import Form  from "./index"
 import React from "react"
+import { changeCategoryAction, createCategoryAction } from "@/actions/category"
+import FileUpload from "../ui/FileUpload"
+import Input from "../ui/Input"
+import useImageFiles from "@/hooks/useImageFiles"
 
-const formFieldValues:{
-	name:string
-	image:File[]
-} = {
-	name: "",
-	image: [] 
-	} as const
-
-const action = "/api/category"
-
-const validation: {
-	[i in keyof typeof formFieldValues]: FormFieldValidator
-} = {
+const validation = {
 	name: clientValidations.name,
 	image: clientValidations.images,
+	description: clientValidations.description,
 }
 
+type Props = {
+	category?:Category
+}
 
-export default function CategoryForm({
-	method = "PUT",
-}: {
-	method: "PUT" | "PATCH"
-}) {
-	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
-const fieldProps:Record<keyof typeof formFieldValues, InputGeneralProps&InputOptionStaticProps> = {
-	name: {
-		type: "text",
-		id: "name",
-		label: "Category name",
-		placeholder: "category",
-		validator: validation.name,
-	},
-	image: {
-		type: "file",
-		id: "image",
-		label: "Category image",
-		multiple: false,
-		accept: "image/jpeg",
-		validator: validation.image,
-	},
-} as const
+export default function CategoryForm({category}: Props) {
+
+	const action = category?.id 
+		? (form:FormData)=>changeCategoryAction(category.id,form) 
+		: createCategoryAction
+
+	const [name, setName] = React.useState(category?.name||"")
+	const [image, setImage] = useImageFiles((category && [`/categories/${category.image}`])||[])
+
 	return (
 		<Form
 			className=""
+			validations={validation}
 			action={action}
-			method="PUT"
-			fieldValues={fieldValues}
-			fieldProps={fieldProps}
-			setFieldValues={setFieldValues}
-		/>
+		>
+			<Input
+				crossOrigin={"false"}
+				label="category Name"
+				id="name"
+				name={"name"}
+				value={name}
+				validate={validation.name}
+				setValue={(str: string) => setName(str)}
+			/>
+			<FileUpload
+			id= "images"
+			label= "Product image"
+			value={image}
+			onChange={(files:File[])=>setImage(files)}
+			accept= "image/jpeg"
+			preview
+			/>
+		</Form>
 	)
 }

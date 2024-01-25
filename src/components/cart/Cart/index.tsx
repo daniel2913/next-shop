@@ -1,10 +1,12 @@
 "use client"
-import { getProductsByIdsAction } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/product"
 import CartRow from "./row"
 import { useSession } from "next-auth/react"
 import useCartStore from "@/store/cartStore"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { createOrderAction } from "@/actions/order"
+import useToast from "@/hooks/modals/useToast"
 
 type Props = {
 	close?: () => void
@@ -12,6 +14,7 @@ type Props = {
 
 export default function Cart({ close }: Props) {
 	const session = useSession()
+	const {show:showToast} = useToast()
 	const [products, setProducts] = React.useState<PopulatedProduct[]>([])
 	const [loading, setLoading] = React.useState(false)
 	const items = useCartStore((state) => state.items)
@@ -33,11 +36,9 @@ export default function Cart({ close }: Props) {
 		if (Object.keys(order).length !== Object.keys(items).length)
 			return "Error2!"
 
-		const res = await fetch("/api/order", {
-			method: "POST",
-			body: JSON.stringify(order),
-		})
-		if (res) resetCart()
+		const res = await createOrderAction(order)
+		if (res) showToast(res)
+		else resetCart()
 		setLoading(false)
 	}
 

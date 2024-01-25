@@ -3,7 +3,7 @@ import { useSearchParams } from "next/navigation"
 
 export default function useInfScroll<T extends any>(
 	items: Record<number, T>,
-	loadItems: (page: number | undefined, query: string ) => Promise<false | number>,
+	loadItems: (page: number | undefined, query: URLSearchParams ) => Promise<false | number>,
 	endRef: React.RefObject<HTMLDivElement>,
 	page: number = 10,
 ) {
@@ -17,7 +17,7 @@ export default function useInfScroll<T extends any>(
 	nextObserver.current = new IntersectionObserver(async (entries) => {
 		if (!hasMore.current) return false
 		if (!entries[0].isIntersecting) return false
-		const newItemsAmount = await loadItems(page,searchParams.toString())
+		const newItemsAmount = await loadItems(page,searchParams)
 			if (!newItemsAmount || newItemsAmount < page) hasMore.current = false
 	})
 	return nextObserver.current.disconnect()

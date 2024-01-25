@@ -1,7 +1,6 @@
 "use client"
 import Form from "./index"
 import React from "react"
-import LabeledInput, { InputOptionStaticProps, InputGeneralProps } from "../ui/LabeledInput/index.tsx"
 import { clientValidations } from "./common.ts"
 import { Brand } from "@/lib/DAL/Models/Brand.ts"
 import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
@@ -25,20 +24,20 @@ export default function BrandForm({brand}: Props) {
 	const action = brand?.id 
 		? (form:FormData)=>changeBrandAction(brand.id,form) 
 		: createBrandAction
-	const origImages = brand.image ? [`/brands/${brand.image}`] : []
+
 	const [name, setName] = React.useState(brand?.name||"")
 	const [description, setDescription] = React.useState(brand?.description||"")
-	const [image, setImage] = useImageFiles(origImages)
+	const [image, setImage] = useImageFiles((brand && [`/brands/${brand.image}`])||[])
 
 	return (
 		<Form
 			className=""
+			validations={validation}
 			action={action}
-			method={"PUT"}
 		>
 			<Input
-				crossOrigin={false}
-				label="Product Name label"
+				crossOrigin={"false"}
+				label="Brand Name"
 				id="name"
 				name={"name"}
 				value={name}
@@ -46,17 +45,16 @@ export default function BrandForm({brand}: Props) {
 				setValue={(str: string) => setName(str)}
 			/>
 			<Textarea
-				crossOrigin={false}
 				name={"description"}
 				label="Description"
 				value={description}
-				setValue={(str: string) => setDescription(str)}
+				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
 			<FileUpload
 			id= "images"
 			label= "Product image"
 			value={image}
-			onChange={(files:File)=>setImage(file)}
+			onChange={(files:File[])=>setImage(files)}
 			accept= "image/jpeg"
 			preview
 			/>

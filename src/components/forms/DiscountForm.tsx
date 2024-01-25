@@ -2,72 +2,47 @@
 import Form from "./index"
 import React from "react"
 import { InputGeneralProps, InputOptionDynamicProps, InputOptionStaticProps } from "@/components/ui/LabeledInput"
-import { Brand, Category } from "@/lib/DAL/Models"
+import { Brand, Category, Discount } from "@/lib/DAL/Models"
+import { changeDiscountAction, createDiscountAction } from "@/actions/discount" 
+import { Slider } from "@/components/material-tailwind"
 
-const formFieldValues: {
-	discount: string
-	brands: string[]
-	categories: string[]
-	expires: string
-} = {
-	discount: "0",
-	brands: [],
-	categories: [],
-	expires: Date.now().toString()
+const validation = {
+	discount: (discount:number)=>{
+		if (discount<1) return "Greater than 0"
+		if (discount>99) return "Less than 100"
+		if (Number.isInteger(discount)) return "Only integers"
+		return false
+	}
 }
-const action = "/api/discount"
 
-
-interface Props {
-	brandList: Brand[]
-	categoryList: Category[]
+type Props = {
+	discount: Discount
 }
-export default function DiscountForm({ brandList, categoryList }: Props) {
-	const [fieldValues, setFieldValues] = React.useState(formFieldValues)
 
-	const fieldProps: {
-		[I in keyof typeof formFieldValues]:
-		InputGeneralProps
-		& InputOptionStaticProps
-		& Omit<InputOptionDynamicProps, "value" | "setValue">
-	} = {
-		discount: {
-			type: "text",
-			id: "discount",
-			label: "Discount",
-			placeholder: "Product",
-		},
-		brands: {
-			type: "checkboxes",
-			view: "images",
-			id: "brands",
-			label: "Brands",
-			options: brandList.map((brand) => brand.name),
-			images: brandList.map((brand) => brand.image),
+export default function DiscountForm({discount}: Props) {
 
-		},
-		category: {
-			type: "checkboxes",
-			view: "images",
-			id: "categories",
-			label: "Categories",
-			options: categoryList.map((category) => category.name),
-			images: categoryList.map((category) => category.image),
-		},
-		expires: {
-			type: "text",
-			id: "products",
-			label: "Products",
-		},
-	} as const
+	const action = discount.id
+		? (form:FormData)=>changeDiscountAction(discount.id,form)
+		: createDiscountAction
+
+	const [value, setValue] = React.useState(discount.discount || 50)
+	const [brands, setBrands] = React.useState(discount.brands || [])
+	const [categories, setCategories] = React.useState(discount.categories || [])
+	const [expires,setExpires] = React.useState(discount.expires || Date.now()+1000*60*60*24)
+
 	return (
 		<Form
+			validations={validation}
 			className=""
 			action={action}
-			method="PUT"
-			fieldValues={fieldValues}
-			fieldProps={fieldProps}
-			setFieldValues={setFieldValues}
-		/>
+		>
+			<Slider
+				value={value}
+				max={99}
+				min={1}
+				title="Discount"
+				id="discount"
+			/>
+		</Form>
 	)
 }

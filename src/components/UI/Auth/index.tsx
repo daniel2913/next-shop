@@ -8,7 +8,6 @@ import Image from "next/image"
 import Exit from "@/../public/exit.svg"
 import useModal from "@/hooks/modals/useModal"
 const Login = dynamic(() => import("@/components/modals/Login"))
-const Register = dynamic(() => import("@/components/modals/Register"))
 
 interface props {
 	className?: string
@@ -50,14 +49,6 @@ export default function Auth({ className}: props) {
 			) : (
 				<div className="grid">
 					<span>{name}</span>
-					<button
-						type="button"
-						onClick={() => {
-							modal.show(<Register/>)
-						}}
-					>
-						Register
-					</button>
 					<button
 						type="button"
 						onClick={async () => {

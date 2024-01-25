@@ -2,7 +2,7 @@
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { UserCache } from "@/helpers/cachedGeters"
-import { UserModel } from "@/lib/DAL/Models"
+import { ProductModel, UserModel } from "@/lib/DAL/Models"
 import { getServerSession } from "next-auth"
 
 async function validateCart(cart: Record<number, number>) {
@@ -19,17 +19,25 @@ async function validateCart(cart: Record<number, number>) {
 
 export async function getCartAction(){
 	const session = await getServerSession(authOptions)
-	if (!session?.user?.name || session.user.role !== "user") return {}
+	if (!session?.user?.name || session.user.role !== "user") return "Not Authorized"
 	const user = await UserCache.get(session.user.name)
 	if (!user) throw "Bad Cache"
 	const cart = await validateCart(user.cart)
 	if (Object.keys(user.cart).length !== Object.keys(cart).length)
-	UserModel.patch(user.id,{cart}).then(_=>UserCache.revalidate(user.name))
+	UserModel.patch(user.id,{cart})
+		.then(res=>{
+			if (res)
+				UserCache.patch(user.name,{cart})
+		})
 	return cart
 }
 
 export async function setCartAction(cart:Record<string,number>){
 	const session = await getServerSession(authOptions)
-	if (!session?.user?.name || session.user.role !== "user") return {}
+	if (!session?.user || session.user.role !== "user") return "Not Authorized"
 	UserModel.patch(session.user.id,{cart})
+		.then(res=>{
+			if (res)
+				UserCache.patch(session.user.name,{cart})
+		})
 }

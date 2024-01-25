@@ -9,6 +9,7 @@ import { Button } from "@/components/material-tailwind"
 
 const Cart = dynamic(() => import("../Cart"))
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { getCartAction } from "@/actions/cart"
 
 type Props = {
 	getProducts: (query: {
@@ -37,7 +38,7 @@ export default function CartStatus({ getProducts,orders }: Props) {
 			}
 			synced.current = userId || -1
 			if (!userId || session.data?.user?.role==="admin") return false
-				const remoteCache = await (await fetch("api/store")).json()
+				const remoteCache = await getCartAction()
 				if (Object.keys(remoteCache).length > 0) {
 					if (Object.keys(localCache).length === 0) {
 						setLocalCache(remoteCache)
@@ -56,7 +57,7 @@ export default function CartStatus({ getProducts,orders }: Props) {
 	}, [session.data?.user?.id])
 
 	async function cartClickHandler() {
-		if (Object.values(localCache).length === 0 || data?.user?.role !== "user")
+		if (Object.values(localCache).length === 0 || session.data?.user?.role !== "user")
 			return false
 		const res = await modal.show(
 			<Cart

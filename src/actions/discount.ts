@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { DiscountModel, ProductModel } from "@/lib/DAL/Models"
 import { sql } from "drizzle-orm"
 import { DiscountCache } from "@/helpers/cachedGeters"
+import { modelGeneralAction } from "./common"
 
 export async function setDiscount(id: number, discount: number) {
 	const session = await getServerSession(authOptions)
@@ -95,3 +96,10 @@ export async function getAllDiscounts() {
 	return discounts
 }
 
+export async function createDiscountAction(form: FormData) {
+	return modelGeneralAction(DiscountModel,form)
+}
+
+export async function changeDiscountAction(id: number, form: FormData) {
+	return modelGeneralAction(DiscountModel,form,id)
+}

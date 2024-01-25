@@ -1,4 +1,5 @@
 "use client"
+import { validateLogin, validatePassword } from "@/helpers/validation"
 import { Button, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@/components/material-tailwind"
 import Input from "@/components/ui/Input"
 import useToast from "@/hooks/modals/useToast"
@@ -10,7 +11,7 @@ type Props = {
 	reloadProducts: () => void
 }
 
-function Register({close}:Props){
+function Register({ close }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
@@ -18,39 +19,41 @@ function Register({close}:Props){
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
 		const res = null
-		await setTimeout(()=>null,1000)
+		await setTimeout(() => null, 1000)
 		setLoading(false)
 		showToast("Not Implemented")
 	}
-	return(
-					<div
-						className="flex flex-col gap-2 mb-4"
-					>
-						<Input
-							type="text"
-							label="Username"
-							value={name}
-							setValue={setName}
-						/>
-						<Input
-							type="password"
-							label="Password"
-							value={password}
-							setValue={setPassword}
-						/>
-						<Button
-							disabled={loading}
-							type="submit"
-							onClick={() => handleRegistration({ name, password })}
-						>
-							Register
-						</Button>
-					</div>
+	return (
+		<div
+			className="flex flex-col gap-2 mb-4"
+		>
+			<Input
+				type="text"
+				label="Username"
+				value={name}
+				setValue={setName}
+				validate={validateLogin}
+			/>
+			<Input
+				type="password"
+				label="Password"
+				value={password}
+				setValue={setPassword}
+				validate={validatePassword}
+			/>
+			<Button
+				disabled={loading}
+				type="submit"
+				onClick={() => handleRegistration({ name, password })}
+			>
+				Register
+			</Button>
+		</div>
 
 	)
 }
 
-function Login({ close, reloadProducts }: Props){
+function Login({ close, reloadProducts }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
@@ -67,51 +70,51 @@ function Login({ close, reloadProducts }: Props){
 		showToast(res?.error || "Something bad happend")
 	}
 	return (
-					<div
-						className="flex flex-col gap-2 mb-4"
-					>
-						<Input
-							type="text"
+		<div
+			className="flex flex-col gap-2 mb-4"
+		>
+			<Input
+				type="text"
 				variant=""
-							label="Username"
-							value={name}
-							setValue={setName}
-						/>
-						<Input
-							type="password"
-							label="Password"
-							value={password}
-							setValue={setPassword}
-						/>
-						<Button
-							disabled={loading}
-							type="submit"
-							onClick={() => handleLogin({ name, password })}
-						>
-							Sign In
-						</Button>
-						<Button
-							disabled={loading}
-							type="submit"
-							onClick={() => handleLogin({ name: "user", password: "user" })}
-						>
-							Demo User
-						</Button>
-						<Button
-							disabled={loading}
-							type="submit"
-							onClick={() => handleLogin({ name: "admin", password: "admin" })}
-						>
-							Demo Admin
-						</Button>
-					</div>
+				label="Username"
+				value={name}
+				setValue={setName}
+			/>
+			<Input
+				type="password"
+				label="Password"
+				value={password}
+				setValue={setPassword}
+			/>
+			<Button
+				disabled={loading}
+				type="submit"
+				onClick={() => handleLogin({ name, password })}
+			>
+				Sign In
+			</Button>
+			<Button
+				disabled={loading}
+				type="submit"
+				onClick={() => handleLogin({ name: "user", password: "user" })}
+			>
+				Demo User
+			</Button>
+			<Button
+				disabled={loading}
+				type="submit"
+				onClick={() => handleLogin({ name: "admin", password: "admin" })}
+			>
+				Demo Admin
+			</Button>
+		</div>
 
 	)
 }
 
 export default function AuthModal(props: Props) {
 	return (
-		<Tabs 
+		<Tabs
 			className="
 				w-max h-max
 				lg:w-[33vw] lg:h-[45vh]
@@ -135,7 +138,7 @@ export default function AuthModal(props: Props) {
 					<Login {...props} />
 				</TabPanel>
 				<TabPanel value="register">
-					<Register {...props}/>
+					<Register {...props} />
 				</TabPanel>
 			</TabsBody>
 		</Tabs>

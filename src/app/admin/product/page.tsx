@@ -1,4 +1,4 @@
-import { getProductsByIdsAction } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/product"
 import ProductForm from "@/components/forms/ProductForm"
 
 export default async function AddProductPage() {

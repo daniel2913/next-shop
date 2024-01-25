@@ -4,6 +4,7 @@ import { jsonb, real, smallint, varchar } from "drizzle-orm/pg-core"
 import { pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
 import { z } from "zod"
+import { getProductsByIdsAction } from "@/actions/product.ts"
 
 type TestType = Readonly<{
 	id: "number"
@@ -13,12 +14,22 @@ type TestType = Readonly<{
 	status: "string"
 }>
 
+
 const OrderInsertValidation = z.object({
 	user:validations.id,
-	order:z.record(validations.id,z.object({
+	order:z.record(z.string(),z.object({
 		amount:z.number().positive(),
 		price:z.number().positive()
-	})),
+	}))
+		.refine(async order=>{
+			const products = await getProductsByIdsAction(Object.keys(order))
+			if (products.length !== Object.keys(order).length) return false
+			return products
+				.map((product) =>
+					product.price - (product.discount.discount * product.price) / 100 
+					=== order[product.id].price)
+				.reduce((prev,cur)=>prev&&cur,true)
+		},"Some order details are out of date"),
 	status:z.enum(["PROCESSING","COMPLETED"]).default("PROCESSING")
 })
 

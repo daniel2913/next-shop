@@ -3,7 +3,7 @@ import { clientValidations } from "./common.ts"
 import Form, { FormFieldValue } from "./index"
 import React from "react"
 import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
-import { changeProductAction, createProduct, getProductsByIdsAction } from "@/actions/getProducts.ts"
+import { changeProductAction, createProductAction, getProductsByIdsAction } from "@/actions/product"
 import Input from "../ui/Input/index.tsx"
 import FileUpload from "../ui/FileUpload/index.tsx"
 import Selector from "../ui/Selector/index.tsx"
@@ -43,8 +43,7 @@ export default function ProductForm({product}: Props) {
 	
 	const action = product?.id 
 		? (form:FormData)=>changeProductAction(product.id,form) 
-		: createProduct
-
+		: createProductAction
 	const [name, setName] = React.useState(product?.name||"")
 	const [description, setDescription] = React.useState(product?.description||"")
 	const [brand, setBrand] = React.useState(product?.brand?.name||"")
@@ -77,8 +76,8 @@ export default function ProductForm({product}: Props) {
 			}
 		>
 			<Input
-				crossOrigin={false}
-				label="Product Name label"
+				crossOrigin={"false"}
+				label="Product Name"
 				id="name"
 				name={"name"}
 				value={name}
@@ -86,7 +85,7 @@ export default function ProductForm({product}: Props) {
 				setValue={(str: string) => setName(str)}
 			/>
 			<Textarea
-				crossOrigin={false}
+				crossOrigin={"false"}
 				name={"description"}
 				label="Description"
 				value={description}
@@ -107,7 +106,7 @@ export default function ProductForm({product}: Props) {
 				fetchAction={getAllCategoryNamesAction}
 			/>
 			<Input
-				crossOrigin={false}
+				crossOrigin={"false"}
 				label="Price"
 				name="price"
 				type="number"

@@ -68,7 +68,6 @@ const ProductInsertValidation = z.object({
 		))
 })
 
-
 const config = {
 	id: pgreDefaults.id,
 	name: pgreDefaults.name,

@@ -1,4 +1,5 @@
 "use client"
+import useToast from "@/hooks/modals/useToast"
 import useProductStore from "@/store/productsStore/productStore"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
@@ -24,23 +25,24 @@ export default function Rating({
 	const [status, setStatus] = React.useState(
 		initOwnVote === 0 ? "You haven't rate this product yet!" : ""
 	)
+	const {show:showToast} = useToast()
 	const voteSetter = useProductStore(state=>state.updateVote)
 	const setVote = (vote:number)=>voteSetter(id,vote)
 	const [pending,startTransition] = React.useTransition()
 
 	async function handleRate(i: number) {
 		if (!session.data?.user?.id)
-			setStatus("Only authorized users can rate products!")
+			showToast("Only authorized users can rate products!")
 		else if (ownVote === -1)
-			setStatus("You can only rate products from your orders!")
+			showToast("You can only rate products you bought!")
 		else {
 			setStatus("")
 			startTransition(async ()=>{
 				const res = await setVote(i)
 				if (!res)
-					setStatus("Something went wrong...")
+					showToast("Something went wrong...")
 				else
-					setStatus("Thank you for your vote!")
+					setStatus("")
 			})
 		}
 	}

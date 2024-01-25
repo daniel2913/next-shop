@@ -1,22 +1,25 @@
 "use client"
 import { Button } from "@/components/material-tailwind"
+import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
 import React from "react"
 
 type Props = {
-	action: () => Promise<boolean>
+	action: (id:number) => Promise<false|string>
 	className:string
+	id:number
 }
 
-export default function Complete({ action, className }: Props) {
+export default function Complete({ action, className,id }: Props) {
 	const router = useRouter()
-	const [error, setError] = React.useState("")
+	// const {show:showToast} = useToast()
 	const [isPending, startTransition] = React.useTransition()
 	function handleClick() {
 		startTransition(() => {
-			const res = action().then((res) => { //TODO ERROR MESSAGE
-				if (res) router.refresh()
-				else setError("Some error ocured!")
+			const res = action(id).then((res) => {
+				if (!res) router.refresh()
+				else alert(res)
+				// else showToast("Some error ocured!")
 			})
 		})
 	}
@@ -28,7 +31,6 @@ export default function Complete({ action, className }: Props) {
 		>
 			Complete
 		</Button>
-			<span>{error}</span>
 	</div>
 	)
 }

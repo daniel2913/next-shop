@@ -2,11 +2,11 @@ import { getServerSession } from "next-auth"
 import Accordion from "@/components/ui/Acordion"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { OrderModel } from "@/lib/DAL/Models"
-import { getProductsByIdsAction } from "@/actions/getProducts"
+import { getProductsByIdsAction } from "@/actions/product"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { Order } from "@/lib/DAL/Models/Order"
 import Complete from "@/components/ui/Order/Complete"
-import { completeOrder } from "@/actions/completeOrder"
+import { completeOrder } from "@/actions/order"
 
 type Props = {
 	completed: boolean
@@ -87,8 +87,10 @@ export default async function OrderList() {
 								<Complete
 									className="bg-cyan-200 shadow-none text-black hover:shadow-none hover:bg-cyan-300"
 									key={order.order.id}
-									action={completeOrder.bind(null, data.id)}
+									action={completeOrder}
+									id = {order.order.id}
 								/>
+
 								</div>
 								: <></>
 						]}

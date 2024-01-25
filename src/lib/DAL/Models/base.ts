@@ -15,7 +15,6 @@ import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ZodObject,z } from "zod"
 import { deleteImages } from "@/helpers/images"
-import { getCiphers } from "crypto"
 
 export type ColumnsConfig<T extends Record<string, ColumnDataType>> = {
 	[Key in keyof T]: PgColumnBuilderBase<ColumnBuilderBaseConfig<T[Key], string>>
@@ -24,24 +23,19 @@ export type TestColumnsConfig<T, U extends ColumnsConfig<any>> = T extends U
 	? T
 	: "false"
 
-export type DataModels = PgreModel<any, any>
+export type DataModels = PgreModel<any, any,any> //???
 
 type Query<T extends Record<string, any> & { id: number }> = {
 	[Key in keyof T]?: string | string[] | RegExp
 }
 
-type Select<T extends Record<string, any> & { id: number }> = Record<
-	string,
-	keyof T
->
-
 interface DataModel<T extends Record<string,any>& {id: number }> {
 	columns: T
 	create: (obj: unknown) => Promise<T | null>
-	findOne: (query: Query<T>, select?: Select<T>) => Promise<T | null>
-	find: (query?: Query<T>, select?: Select<T>) => Promise<T[]>
-	delete: (id: number) => Promise<boolean>
-	patch: (targid: number, patch: Partial<T>) => Promise<boolean>
+	findOne: (query: Query<T>) => Promise<T | null>
+	find: (query?: Query<T>) => Promise<T[]>
+	delete: (id: number) => Promise<T|null>
+	patch: (targid: number, patch: Partial<T>) => Promise<T|null>
 	raw: (sql:SQL<any>)=>any
 }
 
@@ -49,7 +43,7 @@ const PGRE_LINK = process.env.PGRE_URL_DEV
 
 export class PgreModel<
 	U extends Table<TableConfig>,
-	T extends Record<keyof U["$inferSelect"], any> & {id: number},
+	T extends U["$inferSelect"] & {id: number},
 	Z extends ZodObject<any,any,any>
 > implements DataModel<T>
 {
@@ -104,7 +98,7 @@ export class PgreModel<
 		const props = await this.validations.parseAsync(obj) as T
 		const res = await this.write(props)
 		if (!res && (props.images || props.image))
-			this.deleteExtra(props.images || props.image)
+			this.deleteExtra(props.images as string[] || props.image as string)
 		return res ? (res as U["$inferInsert"] as T) : null
 	}
 
@@ -119,12 +113,12 @@ export class PgreModel<
 			.update(this.table)
 			.set(props)
 			.where(eq(this.table.id, targId))
-			.returning({ id: this.table.id })
-		if (!res && (props.images || props.image))
+			.returning()
+		if (!res[0] && (props.images || props.image))
 			this.deleteExtra(props.images || props.images)
-		if (res && (props.images || props.image))
-			this.deleteExtra(props.images || props.image, original.image || original.images)
-		return res.length > 0 ? true : null
+		if (res[0] && (props.images || props.image))
+			this.deleteExtra(props.images || props.image, original.image as string || original.images as string[])
+		return res.length > 0 ? res[0] as T : null
 		}
 
 	async findOne(query: Query<T>) {
@@ -133,7 +127,7 @@ export class PgreModel<
 			.from(this.table)
 			.where(this.makePgreQuery(query))
 			.limit(1)
-		return res[0] ? (res[0] as T) : null
+		return res[0] ? res[0] as T : null
 	}
 
 	async find(query?: Query<T>) {
@@ -151,12 +145,12 @@ export class PgreModel<
 		return this.model.insert(this.table).values(object).returning()
 	}
 	async delete(id: number) {
-		if (!id) return false
+		if (!id) return null
 		const res = await this.model
 			.delete(this.table)
 			.where(eq(this.table.id, id))
 			.returning()
-		return res.length > 0 ? true : false
+		return res[0] ? res[0] as T : null
 	}
 	
 	async raw(sql:SQL<any>){

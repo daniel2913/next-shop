@@ -1,7 +1,33 @@
 import { UserCache } from "@/helpers/cachedGeters"
-import authUser from "@/lib/DAL/controllers/userController/authUser"
+import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+
+interface Props {
+	name: string
+	password: string
+}
+async function authUser(props: Props | undefined) {
+	const password = props?.password
+	const name = props?.name
+	if (!(password && name)) return null
+	const hash = createHash("sha256")
+	hash.update(password)
+	hash.update(name)
+	const passwordHash = hash.digest("hex")
+	const user = await UserCache.get(props.name)
+	if (!user) return null
+	if (user.passwordHash === passwordHash) {
+		return {
+			id: user.id,
+			name: user.name,
+			image: user.image,
+			role: user.role || "user",
+		}
+	}
+	return null
+}
+
 
 export const authOptions: AuthOptions = {
 	providers: [

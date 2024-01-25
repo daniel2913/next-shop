@@ -7,7 +7,7 @@ export default function useToast() {
 	function show(Modal: React.ReactElement|string) {
 		setContent(Modal)
 		_show()
-		setTimeout(()=>_close(),2000)
+		setTimeout(()=>_close(),10000)
 	}
 	return {show}
 }
