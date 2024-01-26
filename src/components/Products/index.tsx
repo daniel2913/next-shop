@@ -8,12 +8,9 @@ type Props = {
 	products: PopulatedProduct[]
 }
 
-
 function keyCompare(oldObj: PopulatedProduct[], newObj: PopulatedProduct[]) {
-	const oldIds = oldObj.map(obj => obj.id)
-	const newIds = newObj.map(obj => obj.id)
-	return oldIds.toString() === newIds.toString()
-}
+const res = newObj.every((val,idx)=>val===oldObj[idx])
+	return res}
 
 export default function ProductList({ products: initProducts }: Props) {
 	let scrollProducts:null|PopulatedProduct[] = null
@@ -32,15 +29,10 @@ export default function ProductList({ products: initProducts }: Props) {
 			10,
 		)
 	}
-
 	const products = scrollProducts || initProducts
 
 	return (
 		<div className="bg-green-100">
-			<div className="">
-				<div className="" />
-				<div className="" />
-			</div>
 			<div
 				className="
 					h-full p-5
@@ -59,10 +51,10 @@ export default function ProductList({ products: initProducts }: Props) {
 					/>
 				))}
 				<div
-					className="bg-accent1-300"
+					className="relative bottom-96 invisible"
 					ref={endRef}
 				>
-					I KNOW WHERE YOU ARE
+					...
 				</div>
 			</div>
 		</div>

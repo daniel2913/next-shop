@@ -34,10 +34,11 @@ export async function getCartAction(){
 
 export async function setCartAction(cart:Record<string,number>){
 	const session = await getServerSession(authOptions)
-	if (!session?.user || session.user.role !== "user") return "Not Authorized"
+	if (!session?.user?.name || session.user.role !== "user") return "Not Authorized"
 	UserModel.patch(session.user.id,{cart})
 		.then(res=>{
 			if (res)
 				UserCache.patch(session.user.name,{cart})
 		})
+	return false
 }

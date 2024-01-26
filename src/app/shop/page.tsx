@@ -1,12 +1,10 @@
 import NavBar from "@/components/NavBar"
 import ProductList from "@/components/Products"
 import ProductStoreProvider from "@/components/Products/productsStoreProvider"
+import TopDiscountProducts from "@/components/Products/topDiscounts"
+import { DiscountCache } from "@/helpers/cachedGeters"
 import { getProducts } from "@/helpers/getProducts"
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-
-type Props = {
-	initProducts:PopulatedProduct[]
-}
+import { Suspense } from "react"
 
 
 export default async function Shop({
@@ -16,10 +14,12 @@ export default async function Shop({
 }) {
 	console.log("Generating props")
 	const initProducts = await getProducts(new URLSearchParams(searchParams))
+
 	return (
 		<div className="">
 		<ProductStoreProvider products={initProducts}>
-			<NavBar />
+			<NavBar/>
+			<TopDiscountProducts/>
 			<ProductList products={initProducts} />
 		</ProductStoreProvider>
 		</div>

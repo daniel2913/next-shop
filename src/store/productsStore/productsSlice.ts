@@ -1,5 +1,5 @@
 import { getRating, updateVoteAction } from "@/actions/vote"
-import { getProductsPageAction } from "@/actions/product"
+import { getProductsByIdsAction, getProductsPageAction } from "@/actions/product"
 import { addSaved, deleteSaved, getSaved } from "@/actions/savedProducts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { StateCreator } from "zustand"
@@ -11,6 +11,7 @@ export interface ProductsSlice {
 	clearProducts: () => void
 	setProducts: (products:PopulatedProduct[])=>void
 	reload: ()=> void
+	reloadSingle: (id:number)=>Promise<PopulatedProduct|null>
 	updateVote: (id:number,vote:number)=>Promise<false|{rating:number,voters:number}>
 	toggleFav: (id:number)=>Promise<false|string>
 }
@@ -19,19 +20,30 @@ export interface ProductsSlice {
 export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 	products:[] as PopulatedProduct[],
 	loadProducts: async (page:number|undefined,query:URLSearchParams) => {
-
-		const newProducts = await getProductsPageAction({
+		const oldProductIds = get().products.map(prod=>prod.id)
+		const newProducts = (await getProductsPageAction({
 				skip:Object.keys(get().products).length,
 				page,
 				brand: query.getAll("brand"),
 				category: query.getAll("category"),
 				name: query.get("name") || undefined
-		})
+		}))
+			.filter(prod=>!oldProductIds.includes(prod.id))
 		if (!newProducts) return false
+
 		set(state => ({products:[ ...state.products, ...newProducts]}))
 		return newProducts.length
 	},
 	setProducts: (products:PopulatedProduct[])=>set((state)=>({...state,products:products}),true),
+	reloadSingle: async(id)=>{
+		const oldProducts = get().products
+		const idx = oldProducts.findIndex(prod=>prod.id===id)
+		if (idx===-1) return null
+		const product = await getProductsByIdsAction(id.toString())
+		if (!product[0]) return null
+		set({products:oldProducts.with(idx,product[0])})
+		return product[0]
+	},
 	reload: async () =>{
 		const products = get().products
 		const [votes,favs] = await Promise.all([
@@ -55,8 +67,8 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 			let productIdx = products.findIndex(prod=>prod.id===id)
 			if (productIdx===-1) return false
 			const product = {...products[productIdx],rating:res.rating,voters:res.voters,ownVote:vote}
-			products[productIdx] = product
-			set({products:[...products]})
+			set({products:products.with(productIdx,product)})
+			console.log("check")
 			return res
 		},
 	toggleFav: async (id: number) => {

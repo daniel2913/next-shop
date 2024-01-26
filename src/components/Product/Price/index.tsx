@@ -1,4 +1,5 @@
 import { Discount } from "@/lib/DAL/Models/Discount"
+import React from "react"
 import Timer from "./Timer"
 interface props {
 	price: number
@@ -6,7 +7,7 @@ interface props {
 	className?: string
 }
 
-export default function Price({
+const Price = React.memo(function Price({
 	price,
 	discount = { discount: 0, expires: new Date() },
 	className,
@@ -27,4 +28,6 @@ export default function Price({
 	) : (
 		<div className="">{price}</div>
 	)
-}
+})
+
+export default Price

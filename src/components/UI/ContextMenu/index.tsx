@@ -1,4 +1,4 @@
-import { Popover, PopoverHandler, PopoverContent, Menu, MenuList, MenuHandler, MenuItem } from "@/components/material-tailwind"
+import {Menu, MenuList, MenuHandler, MenuItem } from "@/components/material-tailwind"
 import React from "react"
 
 type ContextMenuProps = {

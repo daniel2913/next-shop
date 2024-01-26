@@ -5,7 +5,7 @@ interface Props {
 	discount: number
 }
 
-export default function Discount({ discount, className }: Props) {
+const Discount = React.memo(function Discount({ discount, className }: Props) {
 	const lvls = ["none", "small", "medium", "high"]
 	const style = React.useMemo(() => lvls[(discount / 25) ^ 0], [discount])
 	return (
@@ -32,4 +32,5 @@ export default function Discount({ discount, className }: Props) {
 			</span>
 		</div>
 	)
-}
+})
+export default Discount

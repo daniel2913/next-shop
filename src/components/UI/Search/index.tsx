@@ -19,10 +19,8 @@ export default function Search({ className, brandList, categoryList }: Props) {
 
 	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
 	const categoryImages = categoryList.map((cat) =>`/categories/${cat.image}`)
-
 	const [brands, setBrands] = React.useState<string[]>([])
 	const [categories, setCategories] = React.useState<string[]>([])
-
 	async function onClick() {
 		const query = new URL("shop", "http://localhost:3000")
 		if (queryString) query.searchParams.set("name", queryString)

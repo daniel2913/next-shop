@@ -11,7 +11,7 @@ interface Props {
 	preview?: boolean
 }
 
-export default function Carousel({
+const Carousel = React.memo(function Carousel({
 	className,
 	children,
 	brandImage,
@@ -50,5 +50,5 @@ export default function Carousel({
 			<div className="absolute bottom-2 right-2 z-10">{discount}</div>
 		</div>
 	)
-}
-
+})
+export default Carousel

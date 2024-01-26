@@ -64,7 +64,7 @@ const ProductInsertValidation = z.object({
 	images: z.array(fileSchema)
 		.transform(files=>handleImages(files,"products"))
 		.pipe(z.array(validations.imageName)
-			.default(["template.jpg"]
+		.default(["template.jpg"]
 		))
 })
 

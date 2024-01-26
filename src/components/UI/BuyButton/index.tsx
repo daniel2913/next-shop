@@ -2,13 +2,14 @@
 import useCartStore from "@/store/cartStore"
 import AmmountSelector from "../AmmountSelector"
 import { useSession } from "next-auth/react"
+import React from "react"
 
 interface Props {
 	className: string
 	id: number
 }
 
-export default function BuyButton({ className, id }: Props) {
+const BuyButton = React.memo(function BuyButton({ className, id }: Props) {
 	const session = useSession()
 	const amount = useCartStore((state) => state.items[id])
 	const addItem = useCartStore((state) => state.addItem)
@@ -36,4 +37,5 @@ export default function BuyButton({ className, id }: Props) {
 			</button>
 		)
 	}
-}
+})
+export default BuyButton

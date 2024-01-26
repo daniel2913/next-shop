@@ -27,7 +27,7 @@ function deffer<T extends (args: any) => any>(func: T, delay: number = 5000) {
 	}
 }
 
-const updateAccount = deffer(setCartAction, 2000)
+const updateAccount = deffer(setCartAction, 200)
 
 const useCartStore = create<CartState>()(
 	persist(

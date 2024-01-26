@@ -2,7 +2,7 @@ import React from "react"
 import { useSearchParams } from "next/navigation"
 
 export default function useInfScroll<T extends any>(
-	items: Record<number, T>,
+	items: T[],
 	loadItems: (page: number | undefined, query: URLSearchParams ) => Promise<false | number>,
 	endRef: React.RefObject<HTMLDivElement>,
 	page: number = 10,
@@ -10,7 +10,6 @@ export default function useInfScroll<T extends any>(
 	const searchParams = useSearchParams()
 	const hasMore = React.useRef(true)
 	const nextObserver = React.useRef<IntersectionObserver | null>(null)
-	
 	React.useEffect(()=>{
 	hasMore.current = true
 	nextObserver.current?.disconnect()

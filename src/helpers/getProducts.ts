@@ -11,6 +11,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { sql } from "drizzle-orm"
 
+import { cookies } from 'next/headers'
 
 const unknownDiscount = {
 	id: -1,

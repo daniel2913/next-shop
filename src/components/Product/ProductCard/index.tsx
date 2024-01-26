@@ -5,7 +5,6 @@ import Discount from "../Discount"
 import Image from "next/image"
 import Price from "../Price"
 import Rating from "@/components/ui/Rating"
-import useProductStore from "@/store/productsStore/productStore"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { Card, CardBody } from "@/components/material-tailwind"
@@ -15,29 +14,9 @@ type Props = {
 	product: PopulatedProduct
 }
 
-function customCompare(oldObj: PopulatedProduct, newObj: PopulatedProduct) {
-	if (!(oldObj && newObj) && (oldObj || newObj)) return false
-	for (const key of Object.keys(oldObj) as (keyof typeof oldObj & keyof typeof newObj)[]) {
-		if (key === "rating" || key === "favourite" || key === "voters" || key === "votes" || key === "ownVote") continue
-		if (oldObj[key] !== newObj[key]) return false
-	}
-	return true
-}
+const ProductCard = React.memo(function ProductCard({ className, product }: Props) {
 
-
-export default function ProductCard({ className, product: initProduct }: Props) {
-	const storeProduct = useProductStore(state => state.products.find(prod => prod.id === initProduct.id)!, customCompare)
-	let product = storeProduct || initProduct
-	return (
-		<Card
-			className={`
-      	${className}
-				overflow-hidden rounded-md bg-cyan-200 p-2
-			`}
-		>
-			<CardBody
-				className="p-2"
-			>
+	const carousel = React.useMemo(()=>
 				<Carousel
 					previewClassName="absolute bottom-0 left-0 right-0 h-1/5"
 					carouselClassName="*:z-20"
@@ -47,7 +26,8 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 							className="w-12 -rotate-[20deg] text-lg font-bold"
 							discount={product.discount.discount}
 						/>
-					}
+
+			}
 					brandImage={
 						<Image
 							className="rounded-full"
@@ -56,12 +36,13 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 							src={`/brands/${product.brand.image}`}
 							width={30}
 						/>
-					}
+
+			}
 				>
-					{product.images.map((img, idx) => (
+		{product.images.map((img, idx) => (
 						<div
 							className="w-full h-full relative"
-							key={Math.random().toString()}
+							key={img+idx}
 							>
 						<Image
 							priority={idx === 0 ? true : false}
@@ -73,11 +54,24 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 							25vw
 							"
 							src={`/products/${img}`}
-							alt={product.name}
+							alt={img}
 						/>
 						</div>
 					))}
 				</Carousel>
+	,[product.images.toString(),product.discount.discount,product.brand.name])
+	return (
+		<Card
+			className={`
+      	${className}
+				overflow-hidden rounded-md bg-cyan-200 p-2
+			`}
+		>
+			<CardBody
+				className="p-2"
+			>
+				{carousel}
+
 				<div
 					className="
 				grid grid-cols-2
@@ -110,7 +104,6 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 					/>
 					<ProductMenu
 						product={product}
-						favourite={product.favourite}
 						className="justify-self-end"
 					/>
 					</div>
@@ -118,4 +111,6 @@ export default function ProductCard({ className, product: initProduct }: Props) 
 			</CardBody>
 		</Card>
 	)
-}
+})
+
+export default ProductCard

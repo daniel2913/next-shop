@@ -9,12 +9,11 @@ import Percentile from "@/../public/percent.svg"
 import Edit from "@/../public/edit.svg"
 import React, { Suspense } from "react"
 
-import { Button, Menu, MenuHandler, MenuItem, MenuList, Popover, PopoverContent, PopoverHandler, Slider } from "@/components/material-tailwind"
+import { Button,Popover, PopoverContent, PopoverHandler, Slider } from "@/components/material-tailwind"
 import useProductStore from "@/store/productsStore/productStore"
 import useModal from "@/hooks/modals/useModal"
 import { getAllDiscounts, getGroupDiscounts, setDiscount, setExpire, toggleDiscount } from "@/actions/discount"
 import { Discount } from "@/lib/DAL/Models/Discount"
-import DatePicker from "@/components/ui/DatePicker"
 import dynamic from "next/dynamic"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import ContextMenu from "@/components/ui/ContextMenu"
@@ -22,6 +21,7 @@ import ContextMenuItem from "@/components/ui/ContextMenu/ContextMenuItem"
 
 
 const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
+
 
 
 function DiscountConfigRow({ discount }: { discount: Discount }) {
@@ -184,10 +184,9 @@ function EditProduct({ product }: { product: PopulatedProduct }) {
 type Props = {
 	className?: string
 	product: PopulatedProduct
-	favourite: boolean
 }
 
-export default function ProductMenu({ className, product, favourite }: Props) {
+export default function ProductMenu({ className, product}: Props) {
 	const session = useSession()
 	const role = session.data?.user?.role || "user"
 	return (
@@ -217,7 +216,7 @@ export default function ProductMenu({ className, product, favourite }: Props) {
 					]
 					:
 					[
-						<ToggleFav key="fav" id={product.id} initFav={favourite} />
+						<ToggleFav key="fav" id={product.id} initFav={product.favourite} />
 					]
 			}
 		</ContextMenu>

@@ -1,7 +1,7 @@
+import "./global.css"
 import ModalBase from "@/components/modals/Base"
 import { ReactElement } from "react"
 import RootProviders from "./providers"
-import "./global.css"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
 import Toast from "@/components/ui/Toast"

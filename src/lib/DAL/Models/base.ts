@@ -66,7 +66,7 @@ export class PgreModel<
 		if (!PGRE_LINK) throw "No Database Address!"
 		this.model = drizzle(
 			postgres(PGRE_LINK, { max: 5, idle_timeout: 60 * 2 }),
-			{ logger: false }
+			{ logger: config.name === "products" ? true : false }
 		)
 	}
 

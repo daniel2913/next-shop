@@ -13,41 +13,33 @@ interface Props {
 	className: string
 }
 
-export default function Rating({
+const ratings = [1, 2, 3, 4, 5]
+const Rating = React.memo(function Rating({
 	id,
-	voters: initVoters,
-	ownVote: initOwnVote,
-	rating: initRating,
+	voters,
+	ownVote,
+	rating,
 	className,
-}: Props) {
-	const {voters,rating,ownVote} = useProductStore(state=>state.products.find(prod=>prod.id===id)!) || {voters: initVoters,rating: initRating,ownVote: initOwnVote}
+}: Props){
 	const session = useSession()
-	const [status, setStatus] = React.useState(
-		initOwnVote === 0 ? "You haven't rate this product yet!" : ""
-	)
-	const {show:showToast} = useToast()
+	const {show: showToast} = useToast()
 	const voteSetter = useProductStore(state=>state.updateVote)
 	const setVote = (vote:number)=>voteSetter(id,vote)
 	const [pending,startTransition] = React.useTransition()
 
 	async function handleRate(i: number) {
-		if (!session.data?.user?.id)
+		if (!session?.data?.user?.id)
 			showToast("Only authorized users can rate products!")
 		else if (ownVote === -1)
 			showToast("You can only rate products you bought!")
 		else {
-			setStatus("")
 			startTransition(async ()=>{
 				const res = await setVote(i)
 				if (!res)
 					showToast("Something went wrong...")
-				else
-					setStatus("")
 			})
 		}
 	}
-
-	const ratings = [1, 2, 3, 4, 5]
 	return (
 		<div className={`${className} `}>
 		<div
@@ -71,18 +63,11 @@ export default function Rating({
 							aspect-square h-full
 							${
 								i <= ownVote
-									? "fill-accent1-600"
+									? "fill-accent1-600 stroke-accent1-600"
 									: i <= (rating||0)
-									  ? "fill-accent1-400"
-									  : "fill-cyan-100"
+									  ? "fill-accent1-400 stroke-accent1-400"
+									  : "fill-cyan-100 stroke-teal-400"
 							} 
-							${
-								i <= ownVote
-									? "stroke-accent1-600"
-									: i <= (rating||0)
-									  ? "stroke-accent1-400"
-									  : "stroke-teal-400"
-							}																		
 						`}
 							/>
 						</button>
@@ -90,9 +75,16 @@ export default function Rating({
 				}),
 			]}
 		</div>
-			<span className="w-full text-xs text-accent1-300">
-				{status}
-			</span>
+				{
+					ownVote === 0 
+					? 
+						<span className="w-full text-xs text-accent1-300">
+								You Haven&apost Rated This Product Yet
+						</span>
+					: null
+				}
 		</div>
 	)
-}
+})
+
+export default Rating
