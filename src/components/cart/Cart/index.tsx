@@ -20,6 +20,7 @@ export default function Cart({ close }: Props) {
 	const items = useCartStore((state) => state.items)
 	const itemsSetter = useCartStore((state) => state.setItems)
 	const resetCart = () => itemsSetter({})
+	console.log("Order Render")
 
 	async function handleClick() {
 		setLoading(true)

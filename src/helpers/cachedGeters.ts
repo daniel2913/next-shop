@@ -2,12 +2,11 @@ import {
 	BrandModel,
 	CategoryModel,
 	DiscountModel,
+	ProductModel,
 	User,
 	UserModel,
 } from "@/lib/DAL/Models"
-import { Serializable } from "child_process"
 
-const maxLifeTime = 1000 * 60 * 15
 
 export function simpleCache<T extends () => Promise<any>>(
 	func: T,
@@ -17,8 +16,6 @@ export function simpleCache<T extends () => Promise<any>>(
 	let cacheMap: Map<number, ReturnType<T>> = new Map()
 	let fetching = false
 	let validUntil: number
-
-	function add() {}
 
 	function revalidate() {
 		if (!cache) {
@@ -44,7 +41,6 @@ export function simpleCache<T extends () => Promise<any>>(
 	}
 	return { get, revalidate }
 }
-
 export const BrandCache = simpleCache(() => BrandModel.find())
 export const CategoryCache = simpleCache(() => CategoryModel.find())
 export const DiscountCache = simpleCache(() => DiscountModel.find())
@@ -57,55 +53,6 @@ type safeRecordArgs = Record<string | number, safeSingleArgs & safeMultiArgs>
 type safeMRecordArgs = Record<string | number, safeRecordArgs>
 type SafeArg = safeSingleArgs & safeMultiArgs & safeRecordArgs & safeMRecordArgs
 type SafeFunction<T> = (...args: SafeArg[]) => T | T[]
-
-/* export function cacheModel<
-	model extends DataModel
->
-(functions:Record<string,Func>, maxLifeTime = 1000 * 60 * 1, maxSize = 30, stale = true) {
-	type CacheRecord = { value: Promise<Res|null>, fetching: boolean, validUntil: number }
-	const cache: Map<string, CacheRecord> = new Map()
-
-	async function add(func: Func, ...args: Args) {
-		let valuesPre = await func(args)
-		let values = (!Array.isArray(valuesPre)) ?  [valuesPre] : valuesPre
-		if (values.length===0) values = [null] 
-		for (const value of values) {
-			if (cache.size < maxSize) {
-				cache.set(JSON.stringify(args), { value: Promise.resolve(value), fetching: false, validUntil: Date.now() + maxLifeTime })
-			}
-			let stalest: { stalestKey: Args, validUntil: number } = { stalestKey: '', validUntil: Infinity }
-			for (const key of cache.keys()) {
-				const value = cache.get(key)!
-				if (value.validUntil < stalest.validUntil) {
-					stalest.stalestKey = key
-					stalest.validUntil = value.validUntil
-				}
-			}
-			cache.delete(stalest.stalestKey)
-			cache.set(JSON.stringify(args), { value:Promise.resolve(value), fetching: false, validUntil: Date.now() + maxLifeTime })
-		}
-		return true
-	}
-	function getAll(){
-		const objects = Object.values(cache) as CacheRecord[]
-		return objects.map(record=>record.value)
-	}
-	const res:any = {}
-	for (const [key,func] of Object.entries(functions)){
-		res[key] = {
-			add:(...args:any)=>add(func,args),
-			getAll:getAll
-		}
-	}
-	return res as {[i in keyof Rec]:{add:typeof add, getAll:typeof getAll}}
-
-}
-
-const list ={find:UserModel.find} 
-
-const exp = cacheModel<User,Parameters<typeof UserModel.find>,typeof UserModel.find,typeof list>(list)
-
-exp.find. */
 
 export function cachePar<T extends (arg: Args) => Promise<any>>(
 	func: T,
@@ -211,3 +158,6 @@ export const UserCache = cachePar(
 	10,
 	false
 )
+
+
+

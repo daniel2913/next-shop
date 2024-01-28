@@ -4,10 +4,12 @@ import React from "react"
 
 type Props = {
 	expires: Date
+	hide:()=>void
 }
 
-export default function Timer({ expires }: Props) {
+export default function Timer({ expires,hide }: Props) {
 	const [timeLeft, setTimeLeft] = React.useState(0)
+	if (timeLeft<=0) hide()
 	React.useEffect(() => {
 		const timer = setTimeout(
 			() => setTimeLeft(Math.max(+expires - Date.now(), 0)),

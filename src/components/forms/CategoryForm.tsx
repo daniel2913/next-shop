@@ -43,7 +43,7 @@ export default function CategoryForm({category}: Props) {
 				setValue={(str: string) => setName(str)}
 			/>
 			<FileUpload
-			id= "images"
+			id= "image"
 			label= "Product image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}

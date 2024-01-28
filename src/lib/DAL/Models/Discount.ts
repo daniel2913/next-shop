@@ -2,6 +2,7 @@ import { smallint, timestamp } from "drizzle-orm/pg-core"
 import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { pgreDefaults, shop, validations } from "./common"
 import { z } from "zod"
+import { BrandCache, CategoryCache} from "@/helpers/cachedGeters"
 
 type TestType = Readonly<{
 	id: "number"
@@ -19,11 +20,45 @@ function expiresValidation(name: string) {
 	}
 }
 
+const brandsSchema = z.array(z.string().or(z.number()))
+		.transform(async(brands)=>{
+			const allBrands = await BrandCache.get()
+			const res:number[][] = []
+			res.push(brands
+				.filter(brand=>typeof brand ==="number") 
+				.map(brand=>allBrands.find(b=>b.id===brand)?.id ||-1)
+			)
+			res.push(brands
+				.filter(brand=>typeof brand ==="string")
+				.map(brand=>allBrands.find(b=>b.name===brand)?.id ||-1 )
+			)
+			return res.flat()
+		})
+		.refine(n=>n.every(n=>n>-1),{message: "Brand Does Not Exist"})
+
+
+const categoriesSchema = z.array(z.string().or(z.number()))
+		.transform(async(categories)=>{
+			const allCategories = await CategoryCache.get()
+			const res:number[][] = []
+			res.push(categories
+				.filter(category=>typeof category ==="number") 
+				.map(category=>allCategories.find(b=>b.id===category)?.id ||-1)
+			)
+			res.push(categories
+				.filter(category=>typeof category ==="string")
+				.map(category=>allCategories.find(b=>b.name===category)?.id ||-1 )
+			)
+			
+			return res.flat()
+		})
+		.refine(n=>n.every(n=>n>-1),{message: "Category Does Not Exist"})
+
 const DiscountInsertValidation = z.object({
-	discount:z.number().positive().max(99),
+	discount:z.coerce.number().positive().max(99),
 	products:z.array(validations.id).optional(),
-	brands:z.array(validations.id).optional(),
-	categories:z.array(validations.id).optional(),
+	brands:brandsSchema, 	
+	categories:categoriesSchema,
 	expires:z.coerce.date()
 })
 

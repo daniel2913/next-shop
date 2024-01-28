@@ -1,4 +1,5 @@
 import { UserCache } from "@/helpers/cachedGeters"
+import { UserModel } from "@/lib/DAL/Models"
 import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -15,13 +16,13 @@ async function authUser(props: Props | undefined) {
 	hash.update(password)
 	hash.update(name)
 	const passwordHash = hash.digest("hex")
-	const user = await UserCache.get(props.name)
+	console.log("===>",props)
+	const user = await UserModel.findOne({name:props.name})
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
 		return {
 			id: user.id,
 			name: user.name,
-			image: user.image,
 			role: user.role || "user",
 		}
 	}
@@ -53,9 +54,11 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session }) {
 			if (!session.user?.name) return session
-			const { cart, votes, passwordHash, ...user } = await UserCache.get(
+			const { cart, votes, passwordHash, ...user } = await UserModel.findOne({name:session.user.name})
+
+				/* UserCache.get(
 				session.user.name
-			)
+			) */
 			if (!user) return session
 			session.user = user
 			return session

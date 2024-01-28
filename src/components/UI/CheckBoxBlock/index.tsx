@@ -44,6 +44,7 @@ function TextCheckBox({name,toggle,id,value }: TextCheckBoxProps) {
 				value={name}
 				onChange={toggle}
 			/>
+			<span>{name}</span>
 		</div>
 	)
 }

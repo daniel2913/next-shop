@@ -11,7 +11,6 @@ type TestType = Readonly<{
 
 const CategoryInsertValidation = z.object({
 	name: validations.name,
-	description: validations.description,
 	image: fileSchema
 		.transform(file=>handleImages([file],"categories"))
 		.transform(names=>names ? names[0] : "template.jpg")

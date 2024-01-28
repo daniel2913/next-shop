@@ -12,18 +12,12 @@ const Price = React.memo(function Price({
 	discount = { discount: 0, expires: new Date() },
 	className,
 }: props) {
-	const timeLeft = Number(discount.expires) - Date.now()
-	return discount.discount > 0 ? (
+	return (discount.discount > 0 && discount.expires>new Date()) ? (
 		<div className={`${className} text-inherit`}>
 			<s className="text-[.75em] text-gray-600 decoration-accent1-700">
 				{price}
 			</s>
-			<span className="text-accent1-700">{price - (price * 15) / 100}</span>
-			{timeLeft > 0 && timeLeft < 1000 * 60 * 60 * 6 ? (
-				<Timer
-					expires={new Date(Date.now() + 1000 * 60 * 5) /*discount.expires*/}
-				/>
-			) : null}
+			<span className="text-accent1-700">{price - (price * discount.discount) / 100}</span>
 		</div>
 	) : (
 		<div className="">{price}</div>

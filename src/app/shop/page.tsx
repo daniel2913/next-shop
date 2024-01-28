@@ -2,9 +2,8 @@ import NavBar from "@/components/NavBar"
 import ProductList from "@/components/Products"
 import ProductStoreProvider from "@/components/Products/productsStoreProvider"
 import TopDiscountProducts from "@/components/Products/topDiscounts"
-import { DiscountCache } from "@/helpers/cachedGeters"
+import { getProductsPageAction } from "@/actions/product"
 import { getProducts } from "@/helpers/getProducts"
-import { Suspense } from "react"
 
 
 export default async function Shop({
@@ -12,14 +11,17 @@ export default async function Shop({
 }: {
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
-	console.log("Generating props")
-	const initProducts = await getProducts(new URLSearchParams(searchParams))
+	const params = new URLSearchParams(searchParams)
+	const initProducts = await getProducts(params)
+	// PageAction({
+	// 	brand:params.getAll("brand")||undefined,
+	// 	category:params.getAll("category")||undefined
+	// })
 
 	return (
 		<div className="">
 		<ProductStoreProvider products={initProducts}>
 			<NavBar/>
-			<TopDiscountProducts/>
 			<ProductList products={initProducts} />
 		</ProductStoreProvider>
 		</div>

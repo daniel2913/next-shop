@@ -44,6 +44,7 @@ export default function Form({
 			payload.append(key,value)
 		}
 		setLoading(true)
+		console.log(payload)
 		const res = await action(payload)
 		setLoading(false)
 		if (!res) setStatus("Successful!")

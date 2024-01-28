@@ -6,6 +6,7 @@ import CheckBoxBlock from "../CheckBoxBlock"
 import { Button } from "@/components/material-tailwind"
 import SearchIcon from "@/../public/search.svg"
 import useToast from "@/hooks/modals/useToast"
+import useProductStore from "@/store/productsStore/productStore"
 
 interface Props {
 	className?: string
@@ -16,7 +17,7 @@ interface Props {
 export default function Search({ className, brandList, categoryList }: Props) {
 	const router = useRouter()
 	const [queryString, setQueryString] = React.useState<string>("")
-
+	const clearProducts = useProductStore(state=>state.clearProducts)
 	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
 	const categoryImages = categoryList.map((cat) =>`/categories/${cat.image}`)
 	const [brands, setBrands] = React.useState<string[]>([])
@@ -34,7 +35,9 @@ export default function Search({ className, brandList, categoryList }: Props) {
 				"brand",
 				encodeURIComponent(brands.join(","))
 			)
+		clearProducts()
 		router.push(query.toString())
+
 	}
 	const {show} = useToast()
 

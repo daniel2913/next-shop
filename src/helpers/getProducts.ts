@@ -1,4 +1,4 @@
-import { collectQueries } from "@/lib/DAL/controllers/universalControllers"
+"use server"
 import { Brand, Category, ProductModel, User } from "@/lib/DAL/Models"
 import {
 	BrandCache,
@@ -11,7 +11,6 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { sql } from "drizzle-orm"
 
-import { cookies } from 'next/headers'
 
 const unknownDiscount = {
 	id: -1,
@@ -38,9 +37,9 @@ const unknownCategory: Category = {
 const unknownUser: Omit<User, "passwordHash" | "cart"> = {
 	name: "Guest",
 	role: "guest",
-	image: "template.jpg",
 	id: -1,
 	votes: {},
+	saved:[],
 }
 
 export async function populateProducts(

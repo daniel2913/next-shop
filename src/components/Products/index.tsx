@@ -29,7 +29,7 @@ export default function ProductList({ products: initProducts }: Props) {
 			10,
 		)
 	}
-	const products = scrollProducts || initProducts
+	const products = scrollProducts ?? initProducts
 
 	return (
 		<div className="bg-green-100">

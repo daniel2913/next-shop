@@ -32,12 +32,10 @@ const brandSchema = z
 	.string().or(z.number())
 	.transform(async(brand)=>{
 		const brands = await BrandCache.get()
-		let res = -1
 		if (typeof brand === "string")
-			res = brands.find(b=>b.name===brand)?.id || -1
+			return brands.find(b=>b.name===brand)?.id || -1
 		else
-			res = brands.find(b=>b.id===brand)?.id || -1
-		return res 
+			return brands.find(b=>b.id===brand)?.id || -1
 	})
 	.refine(n=>n>-1, {message:"Brand Does Not Exist"})
 

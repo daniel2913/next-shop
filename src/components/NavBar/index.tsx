@@ -5,13 +5,13 @@ import Search from "../ui/Search"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 import { getProductsByIdsAction } from "@/actions/product"
 import OrderList from "../cart/Orders"
-import useToast from "@/hooks/modals/useToast"
-import {Button} from "@/components/material-tailwind"
-
-export const revalidate = 300
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import AdminPanel from "../admin/AdminPanel"
 
 
 export default async function NavBar() {
+	const session = await getServerSession(authOptions)
 	const [brands, categories] = await Promise.all([
 		BrandCache.get(),
 		CategoryCache.get(),
@@ -32,6 +32,10 @@ export default async function NavBar() {
 				categoryList={categories}
 			/>
 			<div className="flex items-center gap-4">
+				{session?.user?.role==="admin"
+					?<AdminPanel/>
+					:null
+				}
 				<CartStatus 
 					getProducts={getProductsByIdsAction}
 					orders={

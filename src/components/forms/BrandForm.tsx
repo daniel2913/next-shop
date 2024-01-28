@@ -51,7 +51,7 @@ export default function BrandForm({brand}: Props) {
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
 			<FileUpload
-			id= "images"
+			id= "image"
 			label= "Product image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}

@@ -1,13 +1,14 @@
 "use server"
 import { ProductModel } from "@/lib/DAL/Models"
 import { populateProducts } from "@/helpers/getProducts"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { parseFormData } from "@/lib/DAL/Models/common"
 import { ilike, inArray } from "drizzle-orm"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
-import { PgreModel } from "@/lib/DAL/Models/base"
 import { modelGeneralAction } from "./common"
+
+
+export async function getAllProductsAction(){
+	return await ProductModel.find()
+}
 
 export async function getProductsByIdsAction(query: string | string[] | RegExp) {
 	if (!query || (Array.isArray(query) && query.length === 0)) return []
@@ -37,7 +38,7 @@ export async function getProductsPageAction({
 		.offset(skip)
 		.limit(page)
 		.$dynamic()
-
+	console.log(brand,category)
 	if (brand && brand.length>0) {
 		let brandQuery:number[]
 		if (typeof brand[0] === "string") {

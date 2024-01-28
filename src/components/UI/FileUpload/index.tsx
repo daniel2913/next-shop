@@ -20,12 +20,14 @@ type Props = {
 	preview: boolean
 	value: File[]
 	multiple?: boolean
-	onChange:(file:File[])=>void
+	onChange: (file: File[]) => void
 	validate?: (files: File[]) => false | string
 }
 
-export default function FileUpload(props: Props) {
-	if (!props.multiple) props.multiple=false
+export default function FileUpload({
+	multiple = false,
+	...props
+}: Props) {
 	const inpRef = React.useRef<HTMLInputElement>(null)
 	const [error, setError] = React.useState(" ")
 	React.useEffect(() => {
@@ -33,13 +35,10 @@ export default function FileUpload(props: Props) {
 			return
 		}
 		const data = new DataTransfer()
-		if (props.multiple)
-			for (const file of props.value) {
-				data.items.add(file as File)
-				if (!props.multiple) break
-			}
-		else
-			data.items.add(props.value[0])
+		for (const file of props.value) {
+			data.items.add(file as File)
+			if (!multiple) break
+		}
 		inpRef.current.files = data.files
 	}, [props.value])
 
@@ -54,17 +53,17 @@ export default function FileUpload(props: Props) {
 				variant="standard"
 				inputRef={inpRef}
 				label={props.label}
-				multiple={props.multiple}
+				multiple={multiple}
 				accept={props.accept}
 				id={props.id}
 				name={props.id}
 				className="hidden"
 				type="file"
 				onChange={(e) => {
-					if (props.multiple)
+					if (multiple)
 						props.onChange([...props.value, ...fileListAdapter(e.currentTarget.files)])
 					else
-						props.onChange(fileListAdapter(e.currentTarget.files).slice(0,1))
+						props.onChange(fileListAdapter(e.currentTarget.files).slice(0, 1))
 				}}
 			/>
 			<Button
