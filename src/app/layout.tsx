@@ -4,7 +4,7 @@ import { ReactElement } from "react"
 import RootProviders from "./providers"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
-import Toast from "@/components/ui/Toast"
+import Toast from "@/components/UI/Toast"
 
 export const metadata = {
 	title: "Next shop",

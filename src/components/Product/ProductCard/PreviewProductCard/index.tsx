@@ -1,4 +1,4 @@
-import Carousel from "../../../ui/Carousel"
+import Carousel from "../../../UI/Carousel"
 import Price from "../../Price"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"

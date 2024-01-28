@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth"
-import Accordion from "@/components/ui/Acordion"
+import Accordion from "@/components/UI/Acordion"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { OrderModel } from "@/lib/DAL/Models"
 import { getProductsByIdsAction } from "@/actions/product"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { Order } from "@/lib/DAL/Models/Order"
-import Complete from "@/components/ui/Order/Complete"
+import Complete from "@/components/UI/Order/Complete"
 import { completeOrder } from "@/actions/order"
 
 type Props = {

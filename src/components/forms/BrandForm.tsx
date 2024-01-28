@@ -4,9 +4,9 @@ import React from "react"
 import { clientValidations } from "./common.ts"
 import { Brand } from "@/lib/DAL/Models/Brand.ts"
 import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
-import Input from "../ui/Input/index.tsx"
+import Input from "../UI/Input/index.tsx"
 import { Textarea } from "@/components/material-tailwind"
-import FileUpload from "../ui/FileUpload/index.tsx"
+import FileUpload from "../UI/FileUpload/index.tsx"
 import useImageFiles from "@/hooks/useImageFiles.ts"
 
 const validation = {

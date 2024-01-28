@@ -1,6 +1,6 @@
 "use client"
 import React, { FormEvent } from "react"
-import LabeledInput from "@/components/ui/LabeledInput"
+import LabeledInput from "@/components/UI/LabeledInput"
 
 export type FormFieldValue = string | File[] | string[]
 export interface FormFieldValidator {

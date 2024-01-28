@@ -16,8 +16,8 @@ import { getAllDiscounts, getGroupDiscounts, setDiscount, setExpire, toggleDisco
 import { Discount } from "@/lib/DAL/Models/Discount"
 import dynamic from "next/dynamic"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import ContextMenu from "@/components/ui/ContextMenu"
-import ContextMenuItem from "@/components/ui/ContextMenu/ContextMenuItem"
+import ContextMenu from "@/components/UI/ContextMenu"
+import ContextMenuItem from "@/components/UI/ContextMenu/ContextMenuItem"
 
 
 const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))

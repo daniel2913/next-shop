@@ -1,7 +1,7 @@
 "use client"
 import { validateLogin, validatePassword } from "@/helpers/validation"
 import { Button, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@/components/material-tailwind"
-import Input from "@/components/ui/Input"
+import Input from "@/components/UI/Input"
 import useToast from "@/hooks/modals/useToast"
 import { signIn } from "next-auth/react"
 import React from "react"

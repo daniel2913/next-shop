@@ -4,9 +4,9 @@ import useModal from "@/hooks/modals/useModal"
 import { Button } from "@/components/material-tailwind"
 import { useSession } from "next-auth/react"
 import dynamic from "next/dynamic"
-import ContextMenu from "../ui/ContextMenu"
+import ContextMenu from "../UI/ContextMenu"
 import Gear from "@/../public/gear.svg"
-import ContextMenuItem from "../ui/ContextMenu/ContextMenuItem"
+import ContextMenuItem from "../UI/ContextMenu/ContextMenuItem"
 
 const ProductForm = dynamic(()=>import("@/components/forms/ProductForm"))
 const BrandForm = dynamic(()=>import("@/components/forms/BrandForm"))

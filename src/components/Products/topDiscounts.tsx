@@ -3,7 +3,7 @@ import { populateProducts } from "@/helpers/getProducts"
 import { ProductModel } from "@/lib/DAL/Models"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import {or,inArray, desc, not, eq} from "drizzle-orm"
-import ProductCard from "../product/ProductCard"
+import ProductCard from "../Product/ProductCard"
 
 export default async function TopDiscountProducts(){
 	const topDiscounts = (await DiscountCache.get())

@@ -1,5 +1,5 @@
 "use client"
-import ProductCard from "@/components/product/ProductCard"
+import ProductCard from "@/components/Product/ProductCard"
 import useInfScroll from "@/hooks/useInfScroll"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import useProductStore from "@/store/productsStore/productStore"

@@ -4,8 +4,8 @@ import { clientValidations } from "./common"
 import Form  from "./index"
 import React from "react"
 import { changeCategoryAction, createCategoryAction } from "@/actions/category"
-import FileUpload from "../ui/FileUpload"
-import Input from "../ui/Input"
+import FileUpload from "../UI/FileUpload"
+import Input from "../UI/Input"
 import useImageFiles from "@/hooks/useImageFiles"
 
 const validation = {
