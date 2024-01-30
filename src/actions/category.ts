@@ -1,9 +1,6 @@
 "use server"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import { CategoryModel } from "@/lib/DAL/Models"
-import { parseFormData } from "@/lib/DAL/Models/common"
-import { getServerSession } from "next-auth"
 import { modelGeneralAction } from "./common"
 
 

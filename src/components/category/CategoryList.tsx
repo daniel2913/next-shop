@@ -1,16 +1,19 @@
 import {ProductModel} from "@/lib/DAL/Models"
 import React from "react"
-import CategoryCard from "./categoryCard"
+import CategoryCard from "./CategoryCard"
 import { CategoryCache } from "@/helpers/cachedGeters"
-import {sql} from "drizzle-orm"
+import {count} from "drizzle-orm"
 export default async function CategoryList() {
 	const categories = await CategoryCache.get()
-	const products = Object.fromEntries((
-		(await ProductModel.raw(sql.raw(`
-		SELECT products.category, COUNT(*) as products  FROM shop.products
-		GROUP BY products.category;
-	`)) as any as {category:number,products:number}[])
-	).map(row=>[row.category,row.products])
+	const stats = await ProductModel.model
+			.select({
+				category:ProductModel.table.category,
+				products:count()
+			})
+			.from(ProductModel.table)
+			.groupBy(ProductModel.table.category)
+	const products = Object.fromEntries(
+		stats.map(row=>[row.category,row.products])
 	)
 	return (
 		<div className="bg-green-100">

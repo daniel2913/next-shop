@@ -3,8 +3,10 @@ import React from "react"
 
 export default function useModal() {
 	const {dialogRef,setContent} = useModalStore(state=>state)
-
-	function show(Modal: React.ReactElement) {
+	const resolve = React.useRef<(val?:any)=>void>()
+	const closed = React.useRef(new Promise((res)=>{resolve.current=res}))
+	
+	function show(Modal: React.ReactNode) {
 		if (dialogRef?.current){
 			setContent(Modal)
 			dialogRef.current.showModal()
@@ -12,9 +14,15 @@ export default function useModal() {
 		else (
 			console.error("NO MODAL?")
 		)
+		closed.current = new Promise((res)=>{resolve.current=res})
+		dialogRef?.current?.addEventListener("close",()=>{alert("test");resolve.current?.()})
+		return closed.current
 	}
-	function close() {
+	
+	function close(val?:any) {
 		setContent(null)
+		debugger
+		resolve.current?.(val||true)
 		dialogRef?.current?.close()
 	}
 

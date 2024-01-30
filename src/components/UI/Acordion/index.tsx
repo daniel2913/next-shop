@@ -1,9 +1,9 @@
 "use client"
-import React, { ReactElement } from "react"
+import React  from "react"
 import { Accordion as BaseAccordion, AccordionHeader, AccordionBody } from "@/components/material-tailwind"
 type AccordionProps = {
-	children: ReactElement[]
-	className: string
+	children: React.ReactNode
+	className?: string
 	label: string
 }
 
@@ -16,7 +16,7 @@ export default function Accordion({
 	return (
 		<BaseAccordion
 			open={open}
-			className={`${className} flex flex-col`}
+			className={`${className}`}
 		>
 			<AccordionHeader
 				onClick={() => setOpen(!open)}
@@ -24,22 +24,7 @@ export default function Accordion({
 				{label}
 			</AccordionHeader>
 			<AccordionBody>
-			<div
-				aria-hidden={!open}
-				className={`
-					flex w-full flex-col items-center justify-center
-					`}
-			>
-				{children.map((child, idx) => (
-					<div
-						key={idx}
-						tabIndex={-100}
-						className="w-full bg-cyan-400 p-2"
-					>
-						{child}
-					</div>
-				))}
-			</div>
+				{children}
 			</AccordionBody>
 		</BaseAccordion>
 	)

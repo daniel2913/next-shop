@@ -43,6 +43,7 @@ const useCartStore = create<CartState>()(
 			},
 			setItems: (items: Items) => {
 				set((_) => {
+					debugger
 					updateAccount(items)
 					return { items }
 				})
@@ -65,9 +66,6 @@ const useCartStore = create<CartState>()(
 		}),{
 			name: "cart-store",
 			skipHydration: true,
-			partialize: (state) => ({
-				cart: state.items
-			}),
 		}
 ))
 

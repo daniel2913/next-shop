@@ -6,15 +6,6 @@ import { shop } from "./common.ts"
 import { z } from "zod"
 import { getProductsByIdsAction } from "@/actions/product.ts"
 
-type TestType = Readonly<{
-	id: "number"
-	user: "number"
-	rating: "number"
-	order: "json"
-	status: "string"
-}>
-
-
 const OrderInsertValidation = z.object({
 	user:validations.id,
 	order:z.record(z.string(),z.object({
@@ -47,9 +38,6 @@ const config = {
 
 export type Order = typeof OrderPgreTable.$inferSelect
 
-const OrderPgreTable = shop.table(
-	"orders",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>
-)
+const OrderPgreTable = shop.table("orders",config)
 
 export { OrderPgreTable, OrderInsertValidation}

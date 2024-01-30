@@ -86,7 +86,6 @@ export default function ProductForm({product}: Props) {
 				setValue={(str: string) => setName(str)}
 			/>
 			<Textarea
-				crossOrigin={"false"}
 				name={"description"}
 				label="Description"
 				value={description}
@@ -121,7 +120,7 @@ export default function ProductForm({product}: Props) {
 				name="price"
 				type="number"
 				value={price.toString()}
-				setValue={(str: string) => setPrice(+str)}
+				setValue={(str: string) => setPrice(+Number(str).toFixed(2))}
 			/>
 			<FileUpload
 			id= "images"

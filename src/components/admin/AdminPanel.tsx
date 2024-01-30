@@ -22,37 +22,25 @@ return(
 	<ContextMenu 
 			icon={<Gear height={"30px"} width={"30px"}/>}
 			className="flex gap-4">
-		<ContextMenuItem>
-		<Button
-			size="sm"
-			onClick={()=>show(<ProductForm/>)}
+		<ContextMenuItem
+			action={()=>show(<ProductForm/>)}
 		>
 			New Product
-		</Button>
 		</ContextMenuItem>
-			<ContextMenuItem>
-		<Button
-			size="sm"
-			onClick={()=>show(<BrandForm/>)}
-		>
+			<ContextMenuItem
+				action={()=>show(<BrandForm/>)}
+			>
 			New Brand
-		</Button>
 		</ContextMenuItem>
-			<ContextMenuItem>
-		<Button
-			size="sm"
-			onClick={()=>show(<CategoryForm/>)}
-		>
+			<ContextMenuItem
+				action={()=>show(<CategoryForm/>)}
+			>
 			New Category
-		</Button>
 		</ContextMenuItem>
-			<ContextMenuItem>
-		<Button
-			size="sm"
-			onClick={()=>show(<DiscountForm/>)}
-		>
+			<ContextMenuItem
+				action={()=>show(<DiscountForm/>)}
+			>
 			New Discount
-		</Button>
 		</ContextMenuItem>
 	</ContextMenu>
 )

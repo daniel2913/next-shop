@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth"
 
 async function validateCart(cart: Record<number, number>) {
 	if (Object.keys(cart).length === 0) return cart
-	const products = await ProductModel.find({ id: Object.keys(cart) })
+	const products = await ProductModel.find({ id: Object.keys(cart).map(Number) })
 	if (products.length === Object.keys(cart).length) return cart
 	const validCart: Record<number, number> = {}
 	for (const prod of products) {
@@ -19,7 +19,7 @@ async function validateCart(cart: Record<number, number>) {
 
 export async function getCartAction(){
 	const session = await getServerSession(authOptions)
-	if (!session?.user?.name || session.user.role !== "user") return "Not Authorized"
+	if (!session?.user?.name || session.user.role !== "user") return null
 	const user = await UserCache.get(session.user.name)
 	if (!user) throw "Bad Cache"
 	const cart = await validateCart(user.cart)
@@ -38,7 +38,7 @@ export async function setCartAction(cart:Record<string,number>){
 	UserModel.patch(session.user.id,{cart})
 		.then(res=>{
 			if (res)
-				UserCache.patch(session.user.name,{cart})
+				UserCache.patch(session.user!.name,{cart})
 		})
 	return false
 }

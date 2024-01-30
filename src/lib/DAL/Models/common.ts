@@ -19,6 +19,20 @@ export const MINMAX_VALUES = {
 export const IMAGE_MAX_SIZE = 500000
 export const IMAGE_MIME_TYPES = ["image/jpeg","image/jpg"]
 
+export function parseFormData(formData:FormData){
+	const POJO:any = {}
+	for (const [key,value] of formData.entries()){
+		if (key in POJO){
+			if (!Array.isArray(POJO[key]))
+				POJO[key] = [POJO[key],value]
+			else
+				POJO[key].push(value)
+		}
+		else
+			POJO[key] = value
+	}
+	return POJO as {[key:string]:unknown}
+}
 
 export const fileSchema = z
 		.instanceof(File)
@@ -26,7 +40,7 @@ export const fileSchema = z
 		.refine(file=>IMAGE_MIME_TYPES.includes(file.type),"File is not an image")
 
 export const pgreDefaults = {
-	id: smallint("id").primaryKey(),
+	id: smallint("id").primaryKey().notNull().default(undefined as any as number),
 	image: varchar("image", { length: MAX_SIZES.image }).notNull(),
 	name: varchar("name", { length: MAX_SIZES.name }).notNull(),
 	description: varchar("description", {

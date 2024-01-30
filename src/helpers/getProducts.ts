@@ -1,5 +1,5 @@
 "use server"
-import { Brand, Category, ProductModel, User } from "@/lib/DAL/Models"
+import { Brand, Category, User } from "@/lib/DAL/Models"
 import {
 	BrandCache,
 	CategoryCache,
@@ -9,17 +9,7 @@ import {
 import { PopulatedProduct, Product } from "@/lib/DAL/Models/Product"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { sql } from "drizzle-orm"
 
-
-const unknownDiscount = {
-	id: -1,
-	products: [],
-	brands: [],
-	categories: [],
-	discount: 0,
-	expires: new Date(),
-}
 
 const unknownBrand: Brand = {
 	name: "unknown",
@@ -102,44 +92,3 @@ export async function populateProducts(
 	return populatedProducts
 }
 
-export async function getProducts(searchParams: URLSearchParams) {
-	const [brands,categories] = await Promise.all([
-		BrandCache.get(),
-		CategoryCache.get()
-	])
-	const brand = searchParams.getAll("brand")
-		.filter(brand=>brands.find(_brand=>_brand.name===brand))
-		.map(brand=>brands.find(_brand=>_brand.name===brand)!.id)
-	const category = searchParams.getAll("category")
-		.filter(category=>categories.find(_category=>_category.name===category))
-		.map(category=>categories.find(_category=>_category.name===category)!.id)
-	const skip = searchParams.get("skip") || '0'
-	const page = searchParams.get("page") || '10'
-	const name = searchParams.get("name")
-	let constrains = ''
-	if (brand.length||category.length||name){
-		constrains = "WHERE "
-		if (brand.length){
-			constrains+=`brand IN (${brand}) `
-		}
-		if (brand.length & category.length)
-			constrains+= "AND "
-
-		if (category.length){
-			constrains+=`category IN (${category}) `
-		}
-		if ((brand.length || category.length)&&name)
-			constrains+= "AND "
-		if (name)
-			constrains+=`(name ILIKE '${name}%' OR name ILIKE '%${name}')`
-	}
-
-	const products = await ProductModel.raw(sql.raw(`
-		SELECT * FROM shop.products
-		${constrains}
-		LIMIT ${page} OFFSET ${skip};
-	`)) as any as Product[]
-
-	return await populateProducts(products)
-}
-	

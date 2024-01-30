@@ -1,10 +1,7 @@
+"use server"
 import { createHash } from "node:crypto"
-import { modelGeneralAction} from "./common"
-
 import { UserModel } from "@/lib/DAL/Models"
 import { validateLogin, validatePassword } from "@/helpers/validation"
-
-
 
 export async function registerUserAction(username: string, password: string) {
 	const props: { [key: string]: unknown } = {}
@@ -16,5 +13,5 @@ export async function registerUserAction(username: string, password: string) {
 	props.passwordHash = hash.digest("hex")
 	props.role = "user"
 	props.name = username
-	modelGeneralAction(UserModel, props)
+	return await UserModel.create(props) ? false : "Username is Taken"
 }

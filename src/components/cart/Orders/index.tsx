@@ -8,11 +8,8 @@ import { Order } from "@/lib/DAL/Models/Order"
 import Complete from "@/components/UI/Order/Complete"
 import { completeOrder } from "@/actions/order"
 
-type Props = {
-	completed:boolean
-}
 
-export default async function OrderList({completed}:Props) {
+export default async function OrderList() {
 	const session = await getServerSession(authOptions)
 	const status = completed ? "COMPLETED" : "PROCESSING"
 	if (!session?.user) return <div>Unauthorized</div>

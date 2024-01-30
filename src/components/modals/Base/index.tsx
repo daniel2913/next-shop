@@ -12,10 +12,9 @@ export default function ModalBase() {
 			onClose={()=>setContent(null)}
 			ref={dialogRef}
 			className={`
-				fixed bottom-1/2 right-1/2  
-				z-50
-				translate-x-1/2 translate-y-1/2
-				rounded-md bg-cyan-100 p-4
+				relative min-w-[20vw] max-w-[90vw] min-h-[30vh] max-h-[90vh]
+				z-40
+				rounded-md bg-cyan-100 p-5
 				`}
 		>
 			<button

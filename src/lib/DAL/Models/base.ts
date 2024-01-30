@@ -2,16 +2,13 @@ import {
 	Column,
 	ColumnBuilderBaseConfig,
 	ColumnDataType,
-	SQL,
 	SQLWrapper,
-	Table,
 	and,
 	eq,
 	inArray,
 	like,
-    sql,
 } from "drizzle-orm"
-import { AnyPgSelect, PgColumnBuilderBase, TableConfig, getTableConfig } from "drizzle-orm/pg-core"
+import {  PgColumn, PgColumnBuilderBase,  PgTableWithColumns,getTableConfig} from "drizzle-orm/pg-core"
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ZodObject, z } from "zod"
@@ -25,125 +22,57 @@ export type TestColumnsConfig<T, U extends ColumnsConfig<any>> = T extends U
 	: "false"
 
 
-type Query<T extends Record<string, any> & { id: number }> = {
-	[Key in keyof T]?: string | string[] | RegExp
+type Query<T extends Record<string,any>&{id:number}> = {
+	[Key in keyof T]?: 
+		| T[Key] 
+		| T[Key][]
+		| RegExp
 }
 
 export interface DataModel<T extends Record<string, any> & { id: number }> {
-	create: (obj: unknown) => Promise<T | null>
+	create: (obj: unknown|T) => Promise<T | null>
 	findOne: (query: Query<T>) => Promise<T | null>
 	find: (query?: Query<T>) => Promise<T[]>
 	delete: (id: number) => Promise<T | null>
-	patch: (targid: number, patch: Partial<T>) => Promise<T | null>
-	raw: (sql: SQL<any>) => any
-}
-function normalizeQuery(query: Record<string, number| string | string[] | RegExp|undefined>) {
-	const res: [string,typeof query[string]][] = []
-	for (const [key, value] of Object.entries(query)) {
-		if (!Array.isArray(value))
-			res.push([key, value])
-		else
-			res.push([key, value.sort()])
-	}
-	return Object.fromEntries(res.sort((a, b) => a[0].localeCompare(b[0])))
-}
-type CacheEntry = {
-	value: Promise<Record<string,any>|Record<string,any>[]> & Promise<{ id: number }>,
-	ids: number[],
-	created: number
+	patch: (targid: number, patch: unknown|Partial<T>) => Promise<T | null>
 }
 
-export class CacheClass{
-	private cacheByQuery: Map<string, CacheEntry>
-	private ttl: number = 10 * 60 * 1000
-	private maxSize: number = 20
-
-	constructor(maxSize?: number, ttl?: number) {
-		if (maxSize) this.maxSize = maxSize
-		if (ttl) this.ttl = ttl
-		this.cacheByQuery = new Map()
-	}
-
-	private deleteStalest() {
-		const stalest: { query: string, ttl: number } = { query: "", ttl: -Infinity }
-		const now = Date.now()
-		for (const [query, value] of this.cacheByQuery.entries()) {
-			const ttl = now - value.created
-			if (ttl > this.ttl) {
-				stalest.query = query
-				break
-			}
-			if (ttl < stalest.ttl) {
-				stalest.ttl = ttl
-				stalest.query = query
-			}
-		}
-		this.cacheByQuery.delete(stalest.query)
-	}
-
-	public async staleIds(ids: number[]) {
-		const staleQuerys: string[] = []
-		for (const [query, entry] of this.cacheByQuery.entries()) {
-			for (const id of entry.ids) {
-				if (ids.includes(id)) {
-					staleQuerys.push(query)
-					break
-				}
-			}
-		}
-		for (const query of staleQuerys)
-			this.cacheByQuery.delete(query)
-	}
-
-	private async addToCache(query: string, value: any) {
-		const newEntry: CacheEntry = {
-			ids: [value].flat().map(val=>val.id),
-			value: Promise.resolve(value),
-			created: Date.now()
-		}
-		if (this.cacheByQuery.size >= this.maxSize)
-			this.deleteStalest()
-		this.cacheByQuery.set(query, newEntry)
-	}
-
-	public async execute<T extends AnyPgSelect>(query: T) {
-
-		const queryStr = JSON.stringify(query.toSQL()) || "~"
-		const cached = this.cacheByQuery.get(queryStr)
-		if (cached && cached.created + this.ttl > Date.now()){
-			return cached.value as Awaited<T>
-		}
-		const res = await query
-		this.addToCache(queryStr, res)
-		return res
-	}
-}
-
-
+type BasePgTable = PgTableWithColumns<{
+    name: string;
+    schema: string;
+    columns: {
+        id: PgColumn<{
+            name: "id";
+            tableName: string;
+            dataType: "number";
+            columnType: "PgSmallInt";
+            data: number;
+            driverParam: string | number;
+            notNull: true;
+            hasDefault: true;
+            enumValues: undefined;
+            baseColumn: never;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>
 
 export class PgreModel<
-	U extends Table<TableConfig>,
-	T extends U["$inferSelect"] & { id: number },
-	Z extends ZodObject<any, any, any>
-> implements DataModel<T>
+	U extends BasePgTable,
+	Z extends ZodObject<any, any, any,U["$inferInsert"]>
+> implements DataModel<U["$inferSelect"]>
 {
 	public table: U
 	public filePath: string
 	public model: PostgresJsDatabase
 	private validations: ZodObject<any, any, any>
 
-	private cache: CacheClass
 
 	constructor(
-		table: U["$inferSelect"] extends T
-			? T extends U["$inferSelect"]
-			? U
-			: never
-			: never,
-		validations: Z,
+		table: U,
+		validations: ZodObject<any,any,any,U["$inferInsert"]>,
 	) {
 
-		this.cache = new CacheClass()
 		this.table = table
 		const config = getTableConfig(table)
 		this.validations = validations
@@ -154,13 +83,12 @@ export class PgreModel<
 		)
 	}
 
-
-
-	private makePgreQuery(queryI: Query<T>) {
-		const query = normalizeQuery(queryI)
+	private makePgreQuery(query: Query<U["$inferSelect"]>) {
 		const sqlQueryWrappers: SQLWrapper[] = []
 		for (const [key, value] of Object.entries(query)) {
+			
 			if (!(key in this.table && value)) continue
+			
 			const column = this.table[key as keyof U] as Column
 			if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value))
 			else if (value instanceof RegExp)
@@ -181,15 +109,16 @@ export class PgreModel<
 		deleteImages(toDelete, this.filePath)
 	}
 
-	async create(obj: unknown | z.infer<Z>) {
-		const props = await this.validations.parseAsync(obj) as T
-		const res = await this.write(props)
-		if (!res && (props.images || props.image))
-			this.deleteExtra(props.images as string[] || props.image as string)
-		return res ? (res as U["$inferInsert"] as T) : null
+	async create(obj: unknown|U["$inferSelect"]) {
+		const props = await this.validations.parseAsync(obj) as U["$inferInsert"]
+		const res = await this.model.insert(this.table).values(props).returning() 
+		if (!res[0] && ("images" in props || "image" in props))
+			this.deleteExtra((props as any).images as string[] || (props as any).image as string)
+		else res[0]
+		return res[0] ? res[0] as U["$inferSelect"] : null
 	}
 
-	async patch(targId: number, patch: Partial<z.infer<Z>>) {
+	async patch(targId: number, patch: Partial<z.infer<Z>>|unknown) {
 		if (!targId) return null
 		const [original, props] = await Promise.all([
 			this.findOne({ id: targId }),
@@ -204,34 +133,27 @@ export class PgreModel<
 		if (!res[0] && (props.images || props.image))
 			this.deleteExtra(props.images || props.images)
 		if (res[0] && (props.images || props.image))
-			this.deleteExtra(props.images || props.image, original.image as string || original.images as string[])
-		return res.length > 0 ? res[0] as T : null
+			this.deleteExtra((props as any).images || (props as any).image, (original as any).image as string || (original as any).images as string[])
+		return res[0] ? res[0] as U["$inferSelect"] : null
 	}
 
-	async findOne(query: Query<T>) {
-		const res = await this.cache.execute(this.model
+	async findOne(query: Query<U["$inferSelect"]>) {
+		const res = await this.model
 			.select()
 			.from(this.table)
 			.where(this.makePgreQuery(query))
-			.limit(1))
-		return res[0] ? res[0] as T : null
+			.limit(1)
+		return res[0] ? res[0]: null
 	}
 
-	async find(query?: Query<T>) {
-		
+	async find(query?: Query<U["$inferSelect"]>) {
 		if (!query) {
-			return ((await this.model.select().from(this.table)) || []) as T[]
+			return await this.model.select().from(this.table)
 		}
-
-		const req = this.model
+		return await this.model
 			.select()
 			.from(this.table)
-			.where(this.makePgreQuery(query))
-			.limit(10)
-		return await this.cache.execute(req) as T[]
-	}
-	write(object: T) {
-		return this.model.insert(this.table).values(object).returning()
+		  .where(this.makePgreQuery(query))
 	}
 	async delete(id: number) {
 		if (!id) return null
@@ -239,12 +161,6 @@ export class PgreModel<
 			.delete(this.table)
 			.where(eq(this.table.id, id))
 			.returning()
-		if (res[0]) this.cache.staleIds([id])
-		return res[0] ? res[0] as T : null
+		return res[0] ? res[0] as U["$inferSelect"] : null
 	}
-
-	async raw(sql: SQL<any>) {
-		return this.model.execute(sql)
-	}
-
 }

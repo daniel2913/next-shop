@@ -1,10 +1,9 @@
 "use client"
-import { MenuItem } from "@/components/material-tailwind"
 import React from "react"
 
 type ContextMenuItemProps = {
 	children: React.ReactNode
-	icon: React.ReactElement
+	icon?: React.ReactElement
 	action: () => any
 	className?: string
 }

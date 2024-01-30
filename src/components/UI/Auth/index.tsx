@@ -7,6 +7,7 @@ import dynamic from "next/dynamic"
 import Image from "next/image"
 import Exit from "@/../public/exit.svg"
 import useModal from "@/hooks/modals/useModal"
+import { useRouter } from "next/navigation"
 const Login = dynamic(() => import("@/components/modals/Login"))
 
 interface props {
@@ -15,6 +16,7 @@ interface props {
 
 export default function Auth({ className}: props) {
 	const session = useSession()
+	const router = useRouter()
 	const name = session.data?.user?.name ? session.data?.user?.name : "Guest"
 	const cartSetter = useCartStore((state) => state.setItems)
 	const purgeCart = () => cartSetter({})
@@ -24,22 +26,14 @@ export default function Auth({ className}: props) {
 		<div className={`${className}`}>
 			{session.data?.user?.name ? (
 				<div className="flex gap-2 align-items-center">
-					<Link href={`/profile/${name}`}>
-					<Image
-						width={30}
-						alt="Avatar"
-						height={30}
-						className="rounded-full"
-						src={`/users/${session.data.user.image || "template.jpg"}`}
-					/>
 					<h6>{name}</h6>
-					</Link>
 					<button
 						type="submit"
 						onClick={() => {
 							signOut({ redirect: false }).then((res) => {
 								purgeCart()
 								reloadProducts()
+								router.refresh()
 							})
 						}}
 					>

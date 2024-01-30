@@ -8,9 +8,6 @@ import { Order } from "@/lib/DAL/Models/Order"
 import Complete from "@/components/UI/Order/Complete"
 import { completeOrder } from "@/actions/order"
 
-type Props = {
-	completed: boolean
-}
 
 export default async function OrderList() {
 	const session = await getServerSession(authOptions)
@@ -18,10 +15,10 @@ export default async function OrderList() {
 	if (!session?.user) return <div>Unauthorized</div>
 	const orders = session.user.role === "admin"
 		? await OrderModel.find({ status })
-		: await OrderModel.find({ user: session.user.id.toString(), status })
+		: await OrderModel.find({ user: session.user.id, status })
 
 	const productSet = new Set(
-		orders.flatMap((order) => Object.keys(order.order))
+		orders.flatMap((order) => Object.keys(order.order).map(Number))
 	)
 	const products = await getProductsByIdsAction(Array.from(productSet))
 	const populatedOrders: {

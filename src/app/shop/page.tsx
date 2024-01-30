@@ -1,22 +1,20 @@
 import NavBar from "@/components/NavBar"
 import ProductList from "@/components/Products"
 import ProductStoreProvider from "@/components/Products/productsStoreProvider"
-import TopDiscountProducts from "@/components/Products/topDiscounts"
 import { getProductsPageAction } from "@/actions/product"
-import { getProducts } from "@/helpers/getProducts"
 
 
 export default async function Shop({
 	searchParams,
 }: {
-	searchParams: { [key: string]: string | string[] | undefined }
+	searchParams: Record<string,string>
 }) {
 	const params = new URLSearchParams(searchParams)
-	const initProducts = await getProducts(params)
-	// PageAction({
-	// 	brand:params.getAll("brand")||undefined,
-	// 	category:params.getAll("category")||undefined
-	// })
+	const brand = params.getAll("brand") || undefined
+	const category = params.getAll("category") || undefined
+	const name = params.get("name") || undefined
+	const initProducts = await getProductsPageAction({brand,category,name})
+	//const initProducts = await getProducts(params)
 
 	return (
 		<div className="">

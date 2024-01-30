@@ -38,10 +38,6 @@ export default async function NavBar() {
 				}
 				<CartStatus 
 					getProducts={getProductsByIdsAction}
-					orders={
-						<Suspense>
-							<OrderList completed={false}/>
-						</Suspense>}
 				/>
 				<Auth />
 			</div>

@@ -5,6 +5,7 @@ import Input from "@/components/UI/Input"
 import useToast from "@/hooks/modals/useToast"
 import { signIn } from "next-auth/react"
 import React from "react"
+import { registerUserAction } from "@/actions/user"
 
 type Props = {
 	close: () => void
@@ -18,16 +19,17 @@ function Register({ close }: Props) {
 	const { show: showToast } = useToast()
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
-		const res = null
-		await setTimeout(() => null, 1000)
+		const res = await registerUserAction(creds.name,creds.password)
 		setLoading(false)
-		showToast("Not Implemented")
+		if (res)
+			showToast(res)
 	}
 	return (
 		<div
 			className="flex flex-col gap-2 mb-4"
 		>
 			<Input
+				crossOrigin={"false"}
 				type="text"
 				label="Username"
 				value={name}
@@ -35,6 +37,7 @@ function Register({ close }: Props) {
 				validate={validateLogin}
 			/>
 			<Input
+				crossOrigin={"false"}
 				type="password"
 				label="Password"
 				value={password}
@@ -42,6 +45,7 @@ function Register({ close }: Props) {
 				validate={validatePassword}
 			/>
 			<Button
+				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleRegistration({ name, password })}
@@ -74,19 +78,21 @@ function Login({ close, reloadProducts }: Props) {
 			className="flex flex-col gap-2 mb-4"
 		>
 			<Input
+				crossOrigin={"false"}
 				type="text"
-				variant=""
 				label="Username"
 				value={name}
 				setValue={setName}
 			/>
 			<Input
+				crossOrigin={"false"}
 				type="password"
 				label="Password"
 				value={password}
 				setValue={setPassword}
 			/>
 			<Button
+				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name, password })}
@@ -94,6 +100,7 @@ function Login({ close, reloadProducts }: Props) {
 				Sign In
 			</Button>
 			<Button
+				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name: "user", password: "user" })}
@@ -101,6 +108,7 @@ function Login({ close, reloadProducts }: Props) {
 				Demo User
 			</Button>
 			<Button
+				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name: "admin", password: "admin" })}

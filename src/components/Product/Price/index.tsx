@@ -1,6 +1,5 @@
 import { Discount } from "@/lib/DAL/Models/Discount"
 import React from "react"
-import Timer from "./Timer"
 interface props {
 	price: number
 	discount: Pick<Discount, "discount" | "expires">
@@ -15,12 +14,12 @@ const Price = React.memo(function Price({
 	return (discount.discount > 0 && discount.expires>new Date()) ? (
 		<div className={`${className} text-inherit`}>
 			<s className="text-[.75em] text-gray-600 decoration-accent1-700">
-				{price}
+				{price.toFixed(2)}
 			</s>
-			<span className="text-accent1-700">{price - (price * discount.discount) / 100}</span>
+			<span className="text-accent1-700">{(price - (price * discount.discount) / 100).toFixed(2)}</span>
 		</div>
 	) : (
-		<div className="">{price}</div>
+		<div className="">{price.toFixed(2)}</div>
 	)
 })
 

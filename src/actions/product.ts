@@ -7,10 +7,10 @@ import { modelGeneralAction } from "./common"
 
 
 export async function getAllProductsAction(){
-	return await ProductModel.find()
+	return populateProducts(await ProductModel.find())
 }
 
-export async function getProductsByIdsAction(query: string | string[] | RegExp) {
+export async function getProductsByIdsAction(query: number | number[]) {
 	if (!query || (Array.isArray(query) && query.length === 0)) return []
 	const products = await ProductModel.find({ id: query })
 	return populateProducts(products)
@@ -38,7 +38,7 @@ export async function getProductsPageAction({
 		.offset(skip)
 		.limit(page)
 		.$dynamic()
-	console.log(brand,category)
+
 	if (brand && brand.length>0) {
 		let brandQuery:number[]
 		if (typeof brand[0] === "string") {

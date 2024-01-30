@@ -9,10 +9,9 @@ import { createOrderAction } from "@/actions/order"
 import useToast from "@/hooks/modals/useToast"
 
 type Props = {
-	close?: () => void
 }
 
-export default function Cart({ close }: Props) {
+export default function Cart() {
 	const session = useSession()
 	const {show:showToast} = useToast()
 	const [products, setProducts] = React.useState<PopulatedProduct[]>([])

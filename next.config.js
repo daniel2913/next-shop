@@ -2,11 +2,15 @@
 
 const nextConfig = {
 	experimental: {},
-	typescript:{
-		ignoreBuildErrors:true //FIX
+	typescript: {
+		ignoreBuildErrors: true //FIX
 	},
-	eslint:{
-		ignoreDuringBuilds:true
+	eslint: {
+		ignoreDuringBuilds: true
+	},
+	images: {
+		loader: 'custom',
+		loaderFile: './src/helpers/imageLoader.ts'
 	},
 	webpack(config) {
 		const fileLoaderRule = config.module.rules.find((rule) =>

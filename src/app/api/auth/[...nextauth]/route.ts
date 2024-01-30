@@ -16,7 +16,6 @@ async function authUser(props: Props | undefined) {
 	hash.update(password)
 	hash.update(name)
 	const passwordHash = hash.digest("hex")
-	console.log("===>",props)
 	const user = await UserModel.findOne({name:props.name})
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
@@ -54,13 +53,13 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session }) {
 			if (!session.user?.name) return session
-			const { cart, votes, passwordHash, ...user } = await UserModel.findOne({name:session.user.name})
-
-				/* UserCache.get(
-				session.user.name
-			) */
-			if (!user) return session
-			session.user = user
+			const fullUser = await UserCache.get(session.user.name) 
+			if (!fullUser) return session
+			session.user = {
+				id:fullUser.id,
+				role:fullUser.role,
+				name:fullUser.name
+			}
 			return session
 		},
 	},

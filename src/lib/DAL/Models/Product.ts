@@ -1,6 +1,5 @@
 import { Brand, BrandPgreTable } from "./Brand.ts"
 import { Category, CategoryPgreTable } from "./Category.ts"
-import { ColumnsConfig, TestColumnsConfig } from "./base"
 import {
 	integer,
 	real,
@@ -15,18 +14,6 @@ import { z } from "zod"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters.ts"
 import { handleImages } from "@/helpers/images.ts"
 
-type TestType = Readonly<{
-	id: "number"
-	name: "string"
-	brand: "number"
-	category: "number"
-	description: "string"
-	images: "array"
-	price: "number"
-	votes: "array"
-	voters: "array"
-	rating: "number"
-}>
 
 const brandSchema = z
 	.string().or(z.number())
@@ -58,12 +45,12 @@ const ProductInsertValidation = z.object({
 	description: validations.description,
 	brand: brandSchema,
 	category: categorySchema,
-	price: z.coerce.number().positive(),
-	images: z.array(fileSchema)
-		.transform(files=>handleImages(files,"products"))
+	price: z.coerce.number().positive().transform(n=>+n.toFixed(2)),
+	images: z.array(fileSchema).or(fileSchema)
+		.transform(files=>handleImages([files].flat(),"products"))
 		.pipe(z.array(validations.imageName)
 		.default(["template.jpg"]
-		))
+		)),
 })
 
 const config = {
@@ -80,11 +67,11 @@ const config = {
 	price: real("price").notNull(),
 	votes: integer("votes").array().default([]).notNull(),
 	voters: smallint("voters").array().default([]).notNull(),
-	rating: real("rating").default(0),
+	rating: real("rating").default(0).notNull(),
 }
-const ProductPgreTable = shop.table(
-	"products",
-	config as TestColumnsConfig<typeof config, ColumnsConfig<TestType>>,
+
+
+const ProductPgreTable = shop.table("products",config,
 	(table) => {
 		return {
 			uq: uniqueIndex().on(table.brand, table.name),
@@ -93,7 +80,6 @@ const ProductPgreTable = shop.table(
 )
 
 export type Product = typeof ProductPgreTable.$inferSelect
-export type LeanProduct = Omit<Product, "voters" | "discounts">
 export type PopulatedProduct = Omit<
 	Product,
 	"brand" | "category" | "votes" | "voters"

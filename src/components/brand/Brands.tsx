@@ -2,15 +2,19 @@ import {ProductModel } from "@/lib/DAL/Models"
 import React from "react"
 import BrandCard from "./BrandCard"
 import { BrandCache } from "@/helpers/cachedGeters"
-import {sql} from "drizzle-orm"
+import {count} from "drizzle-orm"
 export default async function BrandList() {
 	const brands = await BrandCache.get()
-	const products = Object.fromEntries((
-		(await ProductModel.raw(sql.raw(`
-		SELECT products.brand, COUNT(*) as products  FROM shop.products
-		GROUP BY products.brand;
-	`)) as any as {brand:number,products:number}[])
-	).map(row=>[row.brand,row.products])
+	const stats = await ProductModel.model
+			.select({
+				brand:ProductModel.table.brand,
+				products:count()
+			})
+			.from(ProductModel.table)
+			.groupBy(ProductModel.table.brand)
+
+	const products = Object.fromEntries(
+		stats.map(row=>[row.brand,row.products])
 	)
 	return (
 		<div className="bg-green-100">

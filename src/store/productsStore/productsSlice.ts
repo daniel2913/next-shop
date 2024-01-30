@@ -39,7 +39,7 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 		const oldProducts = get().products
 		const idx = oldProducts.findIndex(prod=>prod.id===id)
 		if (idx===-1) return null
-		const product = await getProductsByIdsAction(id.toString())
+		const product = await getProductsByIdsAction(id)
 		if (!product[0]) return null
 		set({products:oldProducts.with(idx,product[0])})
 		return product[0]
