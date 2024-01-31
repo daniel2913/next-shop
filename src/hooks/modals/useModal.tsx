@@ -15,8 +15,8 @@ export default function useModal() {
 			console.error("NO MODAL?")
 		)
 		closed.current = new Promise((res)=>{resolve.current=res})
-		dialogRef?.current?.addEventListener("close",()=>{alert("test");resolve.current?.()})
-		return closed.current
+		dialogRef?.current?.addEventListener("close",()=>{alert("test");console.log(resolve.current,closed.current);resolve.current?.()})
+		return closed
 	}
 	
 	function close(val?:any) {

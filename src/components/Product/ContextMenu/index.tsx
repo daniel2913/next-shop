@@ -58,7 +58,7 @@ function EditProduct({ product }: { product: PopulatedProduct }) {
 				<Suspense>
 					<ProductForm product={product} />
 				</Suspense>
-			).then(()=>{alert("We are here");reload()})}
+			).current.then(()=>{alert("We are here");reload()})}
 			icon={
 			<Edit
 				className="hove:stroke-accent1-300"

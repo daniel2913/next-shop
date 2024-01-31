@@ -28,14 +28,12 @@ function ModalConfirm(props: {message:string,resolver:(ans:boolean)=>void}) {
 			<div className="flex justify-center gap-16">
 				<Button
 					color="light-green"
-					type="button"
 					onClick={()=>{props.resolver(true)}}
 				>
 					Yes
 				</Button>
 				<Button
 					color="red"
-					type="button"
 					onClick={()=>props.resolver(false)}
 				>
 					No
