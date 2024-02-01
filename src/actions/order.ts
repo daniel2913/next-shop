@@ -2,21 +2,56 @@
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { UserCache } from "@/helpers/cachedGeters"
-import { OrderModel, ProductModel, User, UserModel } from "@/lib/DAL/Models"
+import { Order, OrderModel, ProductModel, User, UserModel } from "@/lib/DAL/Models"
 import { sql } from "drizzle-orm"
 import { getServerSession } from "next-auth"
-import { modelGeneralAction } from "./common"
+import { modelGeneralAction,  modelGeneralActionNoAuth } from "./common"
+import { getProductsByIdsAction } from "./product"
+import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 
-export async function getUserOrders(id?: number) {
-	const session = await getServerSession(authOptions)
-	if (!(session?.user?.id)) return "Not Authorized"
-	if (session.user.role === "user") id = session.user.id
-	if (!id) return []
-	return await OrderModel.find({user: id})
+
+type PopulatedOrder = {
+	order:Order
+	products:PopulatedProduct[]
 }
 
-export async function createOrderAction(form: FormData) {
-	return modelGeneralAction(OrderModel,form)
+export async function getOrdersAction(){
+	const session = await getServerSession(authOptions)
+	if (!(session?.user?.id)) return {completed:[],processing:[]}
+	let orders:Order[] = []
+	if (session?.user?.role !== "admin")
+		orders = await OrderModel.find({user: session.user.id})
+	else orders = await OrderModel.find() 
+	const productSet = new Set(
+		orders.flatMap((order) => Object.keys(order.order).map(Number))
+	)
+	const products = await getProductsByIdsAction(Array.from(productSet))
+	
+	const populatedOrders: {
+		completed:PopulatedOrder[]
+		processing:PopulatedOrder[]
+	} = {completed:[],processing:[]}
+	for (const order of orders) {
+		const populatedProducts: PopulatedProduct[] = []
+		for (const id in order.order) {
+			populatedProducts.push(products.find((prod) => +prod.id === +id)!)
+		}
+		if (order.status==="PROCESSING")
+			populatedOrders.processing.push({ products: populatedProducts, order })
+		else	
+			populatedOrders.completed.push({ products: populatedProducts, order })
+	}
+	return populatedOrders
+}
+
+export async function createOrderAction(order:Record<number,{price:number,amount:number}>) {
+	const session = await getServerSession(authOptions)
+	if (session?.user?.role!=="user") return "Not Authorized"
+	const props = {
+		order,
+		user: session.user.id,
+	}
+	return modelGeneralActionNoAuth(OrderModel,props)
 }
 
 export async function changeOrderAction(id: number, form: FormData) {

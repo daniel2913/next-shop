@@ -14,7 +14,9 @@ export async function handleImages(images: File|File[], path: string): Promise<s
 		const image = handleImage(i, path)
 		if (image !== null) prepImages.push(image)
 	}
-	const res = await saveImages(await Promise.all(prepImages),path)
+	const Images = await Promise.all(prepImages)
+	if (Images.length===0) Images[0] = {name:"template.jpg",file:null as any as File}
+	const res = await saveImages(Images,path)
  	if (!res) return res
 	if (Array.isArray(images))
 		return res

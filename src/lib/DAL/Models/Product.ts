@@ -46,11 +46,14 @@ const ProductInsertValidation = z.object({
 	brand: brandSchema,
 	category: categorySchema,
 	price: z.coerce.number().positive().transform(n=>+n.toFixed(2)),
-	images: z.array(fileSchema).or(fileSchema)
-		.transform(files=>handleImages([files].flat(),"products"))
+	images: z.array(fileSchema).or(fileSchema).optional()
+		.transform(files=>files
+			? handleImages([files].flat(),"products")
+			: undefined
+		)
 		.pipe(z.array(validations.imageName)
-		.default(["template.jpg"]
-		)),
+		.default(["template.jpg"])
+		),
 })
 
 const config = {

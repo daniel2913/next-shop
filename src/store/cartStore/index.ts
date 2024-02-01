@@ -43,7 +43,6 @@ const useCartStore = create<CartState>()(
 			},
 			setItems: (items: Items) => {
 				set((_) => {
-					debugger
 					updateAccount(items)
 					return { items }
 				})

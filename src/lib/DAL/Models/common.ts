@@ -19,20 +19,6 @@ export const MINMAX_VALUES = {
 export const IMAGE_MAX_SIZE = 500000
 export const IMAGE_MIME_TYPES = ["image/jpeg","image/jpg"]
 
-export function parseFormData(formData:FormData){
-	const POJO:any = {}
-	for (const [key,value] of formData.entries()){
-		if (key in POJO){
-			if (!Array.isArray(POJO[key]))
-				POJO[key] = [POJO[key],value]
-			else
-				POJO[key].push(value)
-		}
-		else
-			POJO[key] = value
-	}
-	return POJO as {[key:string]:unknown}
-}
 
 export const fileSchema = z
 		.instanceof(File)

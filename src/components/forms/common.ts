@@ -8,16 +8,15 @@ export const clientValidations = {
 			? "Name Required!"
 			: false
 	},
-	images: (value: FormFieldValue) => {
-		if (typeof value === "string")
-			return "Image can only be a file!"
-		if (!value) return false
-		const files = value instanceof File ? [value] : value
-		if (files.length === 0) return "Something strange"
-		for (const file of files) {
-			const ext = file.name.split(".").pop()
-			if (ext !== "jpeg" && ext !== "jpg")
-				return "Only jpegs!"
+	images: (valueIn: File[]|File|null) => {
+		if (!valueIn) return false
+		const value = [valueIn].flat()
+		if (value.length===0) return false
+		for (const file of value) {
+			if (file.size===0) continue
+			const ext = file.type
+			if (ext !== "image/jpeg" && ext !== "image/jpg")
+				return "Only jpegs!" + file.size
 			if (file.size > 1024 * 512)
 				return "Only under 0.5MB!"
 		}

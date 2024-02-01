@@ -42,33 +42,36 @@ function ToggleFav({ id, initFav }: { id: number, initFav: boolean }) {
 					/>
 			}
 		>
-		{	fav ? "Del from Favourite" : "Add to Favoutite"}
+			{fav ? "Del from Favourite" : "Add to Favoutite"}
 		</ContextMenuItem>
 	)
 }
 
 function EditProduct({ product }: { product: PopulatedProduct }) {
 	const modal = useModal()
-	const reloader = useProductStore(state=>state.reloadSingle)
-	const reload = ()=>reloader(product.id)
+	const reloader = useProductStore(state => state.reloadSingle)
+	const reload = () => reloader(product.id)
 	return (
 		<ContextMenuItem
 			className="appearance-none w-full flex justify-between"
-			action={() => modal.show(
-				<Suspense>
-					<ProductForm product={product} />
-				</Suspense>
-			).current.then(()=>{alert("We are here");reload()})}
+			action={() => {
+				modal.show(
+					<Suspense>
+						<ProductForm product={product} />
+					</Suspense>
+				).then(() => {reload()})
+
+			}}
 			icon={
-			<Edit
-				className="hove:stroke-accent1-300"
-				width={"20px"}
-				height={"20px"}
-			/>
+				< Edit
+					className="hove:stroke-accent1-300"
+					width={"20px"}
+					height={"20px"}
+				/>
 			}
 		>
 			Edit
-		</ContextMenuItem>
+		</ContextMenuItem >
 	)
 }
 
@@ -77,7 +80,7 @@ type Props = {
 	product: PopulatedProduct
 }
 
-export default function ProductMenu({ className, product}: Props) {
+export default function ProductMenu({ className, product }: Props) {
 	const session = useSession()
 	const role = session.data?.user?.role || "user"
 	return (

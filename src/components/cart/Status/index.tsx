@@ -7,9 +7,10 @@ import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 
 const Cart = dynamic(() => import("../Cart"))
-// const Orders = dynamic(()=> import("../Orders"))
+const OrderList = dynamic(()=> import("../Orders"))
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { getCartAction } from "@/actions/cart"
+import { Button } from "@material-tailwind/react"
 
 type Props = {
 	getProducts: (query: number | number[]) => Promise<PopulatedProduct[]>
@@ -64,13 +65,14 @@ export default function CartStatus({ getProducts}: Props) {
 		)
 	}
 	async function ordersClickHandler() {
-		if (session.data?.user?.role !== "user")
-			return false
-		modal.show("Nope")
+		modal.show(<OrderList/>)
 	}
 
 	return (
 	<>
+		<Button onClick={ordersClickHandler}>
+				Orders
+		</Button>
 		<button
 			type="button"
 			onClick={cartClickHandler}

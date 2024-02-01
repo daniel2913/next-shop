@@ -29,20 +29,6 @@ export default function FileUpload({
 	...props
 }: Props) {
 	const inpRef = React.useRef<HTMLInputElement>(null)
-	const [error, setError] = React.useState(" ")
-	React.useEffect(() => {
-		if (!inpRef.current) {
-			return
-		}
-		const data = new DataTransfer()
-		for (const file of props.value) {
-			data.items.add(file as File)
-			if (!multiple) break
-		}
-		inpRef.current.files = data.files
-	}, [props.value])
-
-
 	return (
 		<div className={`${props.className} flex flex-col`}>
 			<Input
@@ -74,11 +60,6 @@ export default function FileUpload({
 			>
 				UPLOAD
 			</Button>
-			{
-				props.validate
-					? <span className="text-accent1-600">{error}</span>
-					: null
-			}
 			{
 				props.preview
 					?

@@ -5,8 +5,11 @@ import { z } from "zod"
 const BrandInsertValidation = z.object({
 	name: validations.name,
 	description: validations.description,
-	image: fileSchema
-		.transform(file=>handleImages([file],"brands"))
+	image: fileSchema.optional()
+		.transform(file=>file 
+			?handleImages([file],"brands")
+			:undefined
+		)
 		.transform(names=>names ? names[0] : "template.jpg")
 		.pipe(validations.imageName)
 })

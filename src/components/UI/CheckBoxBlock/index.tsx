@@ -5,36 +5,36 @@ import React from 'react'
 
 type Props<T extends string[]> = {
 	className?: string
-	value:T[number][]
-	options: T
-	id:string
-	setValue: (value:T[number][]) => void
-}&(
-|{
-	view:"text"
-}
-|{
-	view:"images"
-	images:string[]
-}
-)
+	value: T
+	options: T|(()=>Promise<T>)
+	id: string
+	setValue: (value: T) => void
+} & (
+		| {
+			view: "text"
+		}
+		| {
+			view: "images"
+			images: string[]
+		}
+	)
 type TextCheckBoxProps = {
-	id:string
-	name:string
-	value:boolean
+	id: string
+	name: string
+	value: boolean
 	toggle: () => void
 }
 
 type ImageCheckBoxProps = {
-	id:string
-	name:string
-	image:string
-	value:boolean
+	id: string
+	name: string
+	image: string
+	value: boolean
 	toggle: () => void
 }
 
 
-function TextCheckBox({name,toggle,id,value }: TextCheckBoxProps) {
+function TextCheckBox({ name, toggle, id, value }: TextCheckBoxProps) {
 	return (
 		<div>
 			<input
@@ -48,7 +48,7 @@ function TextCheckBox({name,toggle,id,value }: TextCheckBoxProps) {
 		</div>
 	)
 }
-function ImageCheckBox({ name,image,value,toggle,id}: ImageCheckBoxProps) {
+function ImageCheckBox({ name, image, value, toggle, id }: ImageCheckBoxProps) {
 	const _id = `${name}-${image}`
 	return (
 		<div
@@ -96,30 +96,30 @@ export default function CheckBoxBlock<T extends string[]>({
 			{
 				options.map((option) => {
 					const toggle = () => {
-						if(value.indexOf(option)!==-1)
-							setValue(value.filter(val=>val!==option))
+						if (value.indexOf(option) !== -1)
+							setValue(value.filter(val => val !== option))
 						else
-							setValue([...value,option])
+							setValue([...value, option])
 					}
 					return props.view === "text"
-						? 
+						?
 						<TextCheckBox
 							key={`${id}-${option}`}
 							id={id}
-							value={value.indexOf(option)!==-1}
+							value={value.indexOf(option) !== -1}
 							name={option}
 							toggle={toggle}
 						/>
 						:
-							<ImageCheckBox
+						<ImageCheckBox
 							key={`${id}-${option}`}
 							id={id}
-							value={value.indexOf(option)!==-1}
+							value={value.indexOf(option) !== -1}
 							name={option}
 							image={props.images[options.indexOf(option)]}
 							toggle={toggle}
-							/>
-					
+						/>
+
 				})
 			}
 		</div>

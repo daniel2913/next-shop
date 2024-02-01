@@ -53,8 +53,8 @@ export default function ProductForm({product}: Props) {
 	const [price, setPrice] = React.useState(product?.price||0)
 	const [images, setImages] = useImageFiles(product?.images.map(image=>`/products/${image}`)||[])
 	
-	const brands = useAction(getAllBrandNamesAction)
-	const categories = useAction(getAllCategoryNamesAction)
+	const {value:brands} = useAction(getAllBrandNamesAction,[])
+	const {value:categories} = useAction(getAllCategoryNamesAction,[])
 
 
 	return (

@@ -43,7 +43,6 @@ export default function Search({ className, brandList, categoryList }: Props) {
 
 	return (
 		<div className={`${className} group relative right-auto flex w-1/2`}>
-			<Button onClick={()=>show("TEST")}>TEST</Button>
 			<div className="flex w-full">
 				<input
 					autoComplete="off"

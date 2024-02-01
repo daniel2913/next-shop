@@ -2,7 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { PgreModel } from "@/lib/DAL/Models/base"
 import { getServerSession } from "next-auth"
 
-export async function modelGeneralAction(model: PgreModel<any, any, any>, formOrProps: FormData | { [key: string]: unknown }, id?: number) {
+export async function modelGeneralAction(model: PgreModel<any, any>, formOrProps: FormData | Record<string,unknown>, id?: number) {
 
 	const session = await getServerSession(authOptions)
 	if (session?.user?.role !== "admin") return "Unauthorized"
@@ -25,9 +25,29 @@ export async function modelGeneralAction(model: PgreModel<any, any, any>, formOr
 	}
 }
 
+export async function modelGeneralActionNoAuth(model: PgreModel<any, any>, formOrProps: FormData | Record<string,unknown>, id?: number) {
+
+	const props = formOrProps instanceof FormData
+		? parseFormData(formOrProps)
+		: formOrProps
+
+	try {
+		const res = id !== undefined
+			? await model.patch(id, props)
+			: await model.create(props)
+		if (!res) {
+			return "???"
+		}
+		return false
+	} catch (error) {
+		console.error(error)
+		return String(error)
+	}
+}
 export function parseFormData(formData: FormData) {
 	const POJO: any = {}
 	for (const [key, value] of formData.entries()) {
+		if (value instanceof File && value.size===0) continue
 		if (key in POJO) {
 			if (!Array.isArray(POJO[key]))
 				POJO[key] = [POJO[key], value]

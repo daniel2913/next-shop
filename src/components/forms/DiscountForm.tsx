@@ -1,16 +1,15 @@
 "use client"
 import Form from "./index"
-import React from "react"
+import React  from "react"
 import { changeDiscountAction, createDiscountAction } from "@/actions/discount" 
-import { AccordionBody, AccordionHeader, Button, Input, Popover, PopoverContent, PopoverHandler} from "@/components/material-tailwind"
+import {  Input} from "@/components/material-tailwind"
 import Slider from "@/components/UI/Slider"
 import CheckBoxBlock from "../UI/CheckBoxBlock"
-import useAction from "@/hooks/useAction"
 import { getAllBrandNamesAction } from "@/actions/brand"
 import { getAllCategoryNamesAction } from "@/actions/category"
 import Accordion from "../UI/Acordion"
-import useProductList from "@/hooks/useProductList"
 import ProductList from "../UI/ProductList"
+import useAction from "@/hooks/useAction"
 
 const validation = {
 	discount: (discount:number)=>{
@@ -43,8 +42,9 @@ export default function DiscountForm({discount}: Props) {
 	const [categories, setCategories] = React.useState(discount?.categories || [])
 	const [expires,setExpires] = React.useState(discount?.expires || new Date(Date.now()+1000*60*60*24))
 	const [products,setProducts] = React.useState(discount?.products || [])
-	const allBrands = useAction(getAllBrandNamesAction)
-	const allCategories = useAction(getAllCategoryNamesAction)
+
+	const {value:allBrands} = useAction(getAllBrandNamesAction,[])
+	const {value:allCategories} = useAction(getAllCategoryNamesAction,[])
 
 	return (
 		<Form
@@ -67,7 +67,7 @@ export default function DiscountForm({discount}: Props) {
 				view="text"
 				value={brands}
 				setValue={(val)=>setBrands(val)}
-				options={allBrands||[]}
+				options={allBrands}
 			/>
 			</Accordion>
 			<Accordion label="Categories">
@@ -76,7 +76,7 @@ export default function DiscountForm({discount}: Props) {
 				view="text"
 				value={categories}
 				setValue={(val)=>setCategories(val)}
-				options={allCategories||[]}
+				options={allCategories}
 			/>
 			</Accordion>
 			<Accordion label="Products">

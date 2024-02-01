@@ -1,6 +1,7 @@
 "use client"
 export {
 	Button,
+	Switch,
 	ButtonGroup,
 	TabPanel,
 	TabsHeader,

@@ -4,8 +4,11 @@ import { handleImages } from "@/helpers/images"
 
 const CategoryInsertValidation = z.object({
 	name: validations.name,
-	image: fileSchema
-		.transform(file=>handleImages([file],"categories"))
+	image: fileSchema.optional()
+		.transform(file=>file 
+			?handleImages([file],"brands")
+			:undefined
+		)
 		.transform(names=>names ? names[0] : "template.jpg")
 		.pipe(validations.imageName)
 })

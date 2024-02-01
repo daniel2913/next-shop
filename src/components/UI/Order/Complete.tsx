@@ -11,15 +11,12 @@ type Props = {
 }
 
 export default function Complete({ action, className,id }: Props) {
-	const router = useRouter()
-	// const {show:showToast} = useToast()
+	const {show:showToast} = useToast()
 	const [isPending, startTransition] = React.useTransition()
 	function handleClick() {
 		startTransition(() => {
 			const res = action(id).then((res) => {
-				if (!res) router.refresh()
-				else alert(res)
-				// else showToast("Some error ocured!")
+				if (res) showToast(res)
 			})
 		})
 	}
