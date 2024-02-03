@@ -1,51 +1,40 @@
 "use client"
-import ProductCard from "@/components/Product/ProductCard"
+import ProductCard from "@/components/product/ProductCard"
 import useInfScroll from "@/hooks/useInfScroll"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import useProductStore from "@/store/productsStore/productStore"
 import React from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../UI/select"
+import Link from "next/link"
 type Props = {
 	products: PopulatedProduct[]
 }
 
 function keyCompare(oldObj: PopulatedProduct[], newObj: PopulatedProduct[]) {
-const res = newObj.every((val,idx)=>val===oldObj[idx])
-	return res}
+	const res = newObj.every((val, idx) => val === oldObj[idx])
+	return res
+}
 
 export default function ProductList({ products: initProducts }: Props) {
-	let scrollProducts:null|PopulatedProduct[] = null
+	let scrollProducts: null | PopulatedProduct[] = null
+	let inited = false
 	const endRef = React.useRef<HTMLDivElement>(null)
 	if (typeof window !== "undefined") {
-		//eslint-disable-next-line
-		let storeProducts = useProductStore(state => state.products, keyCompare)
-		//eslint-disable-next-line
+		const storeProducts = useProductStore(state => state.products, keyCompare)
+		const setProducts = useProductStore(state => state.setProducts)
+		inited = useProductStore(state => state.inited)
 		const loadProducts = useProductStore(state => state.loadProducts)
-		//eslint-disable-next-line
 		scrollProducts = useInfScroll(
 			storeProducts,
 			loadProducts,
 			endRef,
 			10,
 		)
+		React.useEffect(() => { if (!inited) setProducts(initProducts) }, [initProducts])
 	}
-	const products = scrollProducts ?? initProducts
-
+	const products = (inited && scrollProducts) || initProducts
+	const [open, setOpen] = React.useState(false)
 	return (
 		<div className="bg-background">
-			<Select>
-				<SelectTrigger>
-					<SelectValue/>
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value="1">
-						One
-					</SelectItem>
-					<SelectItem value="2">
-						Two
-					</SelectItem>
-				</SelectContent>
-			</Select>
 			<div
 				className="
 					h-full p-5 w-

@@ -2,11 +2,11 @@
 import { clientValidations } from "./common.ts"
 import Form, { FormFieldValue } from "./index"
 import React from "react"
-import PreviewProductCard from "@/components/Product/ProductCard/PreviewProductCard"
-import { changeProductAction, createProductAction, getProductsByIdsAction } from "@/actions/product"
+import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
+import { changeProductAction, createProductAction } from "@/actions/product"
 import Input from "../UI/Input"
 import FileUpload from "../UI/FileUpload/index.tsx"
-import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from "../UI/select.tsx"
+import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from "../UI/select"
 import { getAllBrandNamesAction } from "@/actions/brand.ts"
 import { getAllCategoryNamesAction } from "@/actions/category.ts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
@@ -78,20 +78,22 @@ export default function ProductForm({ product }: Props) {
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
-			<Select
-				name="brand"
-				value={brand}
-				onValueChange={(str: string) => setBrand(str)}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Brand"/>
-				</SelectTrigger>
-				<SelectContent className="z-50">
-					{brands.map((brand, idx) =>
-						<SelectItem value={brand} key={brand + idx}>{brand}</SelectItem>)
-					}
-				</SelectContent>
-			</Select>
+			<div className="z-[100]">
+				<Select
+					name="brand"
+					value={brand}
+					onValueChange={(str: string) => setBrand(str)}
+				>
+					<SelectTrigger>
+						<SelectValue placeholder="Brand" />
+					</SelectTrigger>
+					<SelectContent>
+						{brands.map((brand, idx) =>
+							<SelectItem value={brand} key={brand + idx}>{brand}</SelectItem>)
+						}
+					</SelectContent>
+				</Select>
+			</div>
 			<Select
 				defaultValue={product?.category.name || category}
 				name="category"
@@ -99,7 +101,7 @@ export default function ProductForm({ product }: Props) {
 				onValueChange={(str: string) => setCategory(str)}
 			>
 				<SelectTrigger>
-					<SelectValue placeholder="Category"/>
+					<SelectValue placeholder="Category" />
 				</SelectTrigger>
 				<SelectContent>
 					{categories.map((category, idx) =>

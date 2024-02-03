@@ -5,6 +5,8 @@ import RootProviders from "./providers"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
 import Toast from "@/components/UI/Toast"
+import { ScrollArea, ScrollBar } from "@/components/UI/scroll-area"
+import { RemoveScroll } from "react-remove-scroll"
 
 export const metadata = {
 	title: "Next shop",
@@ -19,7 +21,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 	const session = await getServerSession(authOptions)
 	return (
 		<>
-			<html lang="en">
+			<html className="w-full h-full" lang="en">
 				<head>
 					<meta charSet="UTF-8" />
 					<meta
@@ -28,7 +30,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 					/>
 					<title>Document</title>
 				</head>
-				<body className="w-full overflow-x-hidden">
+				<body className={`pr-[var(--removed-body-scroll-bar-size)] w-full h-full `}>
 					<RootProviders session={session}>
 						{children}
 						<ModalBase />

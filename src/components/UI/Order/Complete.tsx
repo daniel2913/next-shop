@@ -1,5 +1,5 @@
 "use client"
-import { Button } from "@/components/material-tailwind"
+import { Button } from "@/components/UI/button"
 import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
 import React from "react"

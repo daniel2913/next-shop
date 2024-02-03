@@ -7,7 +7,7 @@ export default function useModal() {
 	function show(Modal: React.ReactNode) {
 		if (dialogRef?.current){
 			setContent(Modal)
-			dialogRef.current.showModal()
+			dialogRef.current.show()
 		}
 		else (
 			console.error("NO MODAL?")

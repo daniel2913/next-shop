@@ -1,7 +1,6 @@
-import NavBar from "@/components/NavBar"
 import ProductList from "@/components/Products"
-import ProductStoreProvider from "@/components/Products/productsStoreProvider"
 import { getProductsPageAction } from "@/actions/product"
+import React from "react"
 
 
 export default async function Shop({
@@ -18,10 +17,9 @@ export default async function Shop({
 
 	return (
 		<div className="">
-		<ProductStoreProvider products={initProducts}>
-			<NavBar/>
 			<ProductList products={initProducts} />
-		</ProductStoreProvider>
 		</div>
 	)
 }
+		// <ProductStoreProvider products={initProducts}>
+		// </ProductStoreProvider>

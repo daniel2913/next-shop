@@ -10,6 +10,7 @@ export async function getAllBrandNamesAction() {
 
 export async function createBrandAction(form: FormData) {
 	return modelGeneralAction(BrandModel,form)
+		.catch(err=>{throw err})
 }
 
 export async function changeBrandAction(id: number, form: FormData) {

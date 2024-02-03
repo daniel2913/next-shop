@@ -1,6 +1,6 @@
 import React from "react"
 import {Category} from "@/lib/DAL/Models/index"
-import {Card, CardBody} from "@/components/material-tailwind"
+import {Card, CardContent} from "@/components/UI/card"
 import Image from "next/image"
 import Link from "next/link"
 type Props = {
@@ -13,7 +13,7 @@ export default function CategoryCard({category,products,className}:Props){
 		<Card
 			className={`${className} text-center`}
 		>
-			<CardBody
+			<CardContent
 				className="h-full w-full flex flex-col items-center"
 			>
 				<Link href={`/shop?category=${category.name}`}>
@@ -31,7 +31,7 @@ export default function CategoryCard({category,products,className}:Props){
 					{`${products} item${products%10===1 ? "" : "s"}`}
 				</span>
 				</Link>
-			</CardBody>
+			</CardContent>
 		</Card>
 	)
 }

@@ -1,5 +1,5 @@
 import {Brand} from "@/lib/DAL/Models/index"
-import {Card, CardBody} from "@/components/material-tailwind"
+import {Card, CardContent} from "@/components/UI/card"
 import Image from "next/image"
 import Link from "next/link"
 type Props = {
@@ -12,7 +12,7 @@ export default function BrandCard({brand,products,className}:Props){
 		<Card
 			className={`${className} text-center`}
 		>
-			<CardBody
+			<CardContent
 				className="h-full w-full flex flex-col items-center"
 			>
 				<Link href={`/shop?brand=${brand.name}`}>
@@ -30,7 +30,7 @@ export default function BrandCard({brand,products,className}:Props){
 					{`${products} item${products%10===1 ? "" : "s"}`}
 				</span>
 				</Link>
-			</CardBody>
+			</CardContent>
 		</Card>
 	)
 }

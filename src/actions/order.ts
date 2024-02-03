@@ -64,42 +64,32 @@ export async function completeOrder(id: number) {
 		OrderModel.findOne({id})
 	])
 	
-	if (!order) return "Order Not Found"
-	if (!session?.user?.role || session.user.role !== "admin") return "Not Authorized"
-	const user = await UserModel.findOne({id:order.user})
-	if (!user) return "User Not Found"
+	if (!order) throw "Order Not Found"
+	if (!session?.user?.role || session.user.role !== "admin") throw "Not Authorized"
 	const newProds = Object.keys(order.order)
-		.filter(prod=>!Object.keys(user.votes).includes(prod))
 		.map(Number)
 	const [res] = await Promise.all([
 		OrderModel.patch(id, { status: "COMPLETED" }),
-		openRating(newProds, user),
+		openRating(newProds, session.user.id),
 	])
-	if (!res) return "Error"
-	UserCache.revalidate(user.name)
+	if (!res) throw "Not Found"
 	return false
 }
 
-async function openRating(prodIds:number[], user:User) {
+async function openRating(prodIds:number[], userId:number) {
 	if (prodIds.length === 0) return
-	const res = await ProductModel.model.execute(sql`
+	const res = ProductModel.model.execute(sql`
 				UPDATE shop.products
 					SET 
-						votes[cardinality(voters)+1]=null,
-						voters[cardinality(voters)+1]=${user.id}
+						votes=array_append(votes,null),
+						voters=array_append(voters,${userId})
 					WHERE
 								id in ${prodIds}
 							AND
-								NOT ${user.id} = ANY(voters)
+								NOT ${userId} = ANY(voters)
 					RETURNING
 						id;
 	`)
-	if (!res.length) return 
-	const votes = user.votes
-	for (const id of prodIds){
-		votes[id] = 0
-	}
-	UserModel.patch(user.id,{votes}) 
 }
 
 

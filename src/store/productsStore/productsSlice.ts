@@ -14,10 +14,12 @@ export interface ProductsSlice {
 	reloadSingle: (id:number)=>Promise<PopulatedProduct|null>
 	updateVote: (id:number,vote:number)=>Promise<false|{rating:number,voters:number}>
 	toggleFav: (id:number)=>Promise<false|string>
+	inited:boolean
 }
 
 
 export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
+	inited:false,
 	products:[] as PopulatedProduct[],
 	loadProducts: async (page:number|undefined,query:URLSearchParams) => {
 		const oldProductIds = get().products.map(prod=>prod.id)
@@ -30,11 +32,10 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 		}))
 			.filter(prod=>!oldProductIds.includes(prod.id))
 		if (!newProducts) return false
-
-		set(state => ({products:[ ...state.products, ...newProducts]}))
+		set(state => ({products:[ ...state.products, ...newProducts],inited:true}))
 		return newProducts.length
 	},
-	setProducts: (products:PopulatedProduct[])=>set((state)=>({...state,products:products}),true),
+	setProducts: (products:PopulatedProduct[])=>set((state)=>({...state,products:products,inited:true}),true),
 	reloadSingle: async(id)=>{
 		const oldProducts = get().products
 		const idx = oldProducts.findIndex(prod=>prod.id===id)
@@ -93,8 +94,8 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 		return false
 	},
 	clearProducts: () => set((state)=>{
-		return {...state,products: []}
-	},true),
+		return {inited:false,products: []}
+	}),
 	getProduct: (id:number)=>{
 		return get().products.find(prod=>prod.id===id) || null
 	}

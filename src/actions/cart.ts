@@ -20,7 +20,7 @@ async function validateCart(cart: Record<number, number>) {
 export async function getCartAction(){
 	const session = await getServerSession(authOptions)
 	if (!session?.user?.name || session.user.role !== "user") return null
-	const user = await UserCache.get(session.user.name)
+	const user = await UserCache(session.user.name)
 	if (!user) throw "Bad Cache"
 	const cart = await validateCart(user.cart)
 	if (Object.keys(user.cart).length !== Object.keys(cart).length)

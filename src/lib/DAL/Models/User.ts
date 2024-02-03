@@ -7,7 +7,6 @@ const UserInsertValidation = z.object({
 	passwordHash:z.string().max(MAX_SIZES.hash).min(MAX_SIZES.hash),
 	role:z.enum(["user","admin"]).default("user"),
 	cart:z.record(z.coerce.number(),z.coerce.number()).default({}),
-	votes:z.record(z.coerce.number(),z.coerce.number()).default({}),
 	saved:z.array(validations.id).default([])
 	})
 
@@ -17,7 +16,6 @@ const config = {
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	cart: jsonb("cart").notNull().default({}).$type<Record<number, number>>(),
-	votes: jsonb("votes").notNull().default({}).$type<Record<number, number>>(),
 	saved: smallint("saved").array().notNull().default([])
 }
 

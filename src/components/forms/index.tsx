@@ -1,5 +1,5 @@
 "use client"
-import React, { FormEvent } from "react"
+import React from "react"
 import useToast from "@/hooks/modals/useToast"
 import { Button } from "../UI/button"
 

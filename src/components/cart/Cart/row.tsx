@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import Price from "@/components/Product/Price"
+import Price from "@/components/product/Price"
 import useCartStore from "@/store/cartStore"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 

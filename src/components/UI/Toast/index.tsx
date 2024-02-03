@@ -6,18 +6,14 @@ import Info from "@/../public/info.svg"
 import { useToastStore } from "@/store/modalStore"
 import { Alert, AlertTitle,AlertDescription } from "../alert"
 
-type Props = {
-	type:"error"|"info"
-}
 
-export default function Toast(props:Props){
-	if (!props.type) props.type="error"
-	const {isVisible,description,title} = useToastStore()
-	const Icon = props.type === "error" ? Exclaimation : Info
+export default function Toast(){
+	const {isVisible,description,title,type} = useToastStore()
+	const Icon = type === "error" ? Exclaimation : Info
 	return(
 		<Alert
 			className={`
-				${props.type==="error" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"}
+				${type==="error" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"}
 				${isVisible ? "translate-y-0" : "translate-y-full"}
 				fixed
 				h-1/6 w-1/2 right-1/2 bottom-0
@@ -27,7 +23,7 @@ export default function Toast(props:Props){
 			`}
 		>
 			<AlertTitle>
-				{title}
+				<Icon width="30px" height="30px"/>{title}
 			</AlertTitle>
 			<AlertDescription>
 				{description}
