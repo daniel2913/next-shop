@@ -5,18 +5,19 @@ import { useSession } from "next-auth/react"
 import useConfirm from "../../../hooks/modals/useConfirm"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
-
-const Cart = dynamic(() => import("../Cart"))
-const OrderList = dynamic(()=> import("../Orders"))
+import CartIcon from "@public/cart.svg" 
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { getCartAction } from "@/actions/cart"
-import { Button } from "@material-tailwind/react"
+import { Button } from "@/components/UI/button"
+
+const Cart = dynamic(() => import("../Cart"))
 
 type Props = {
 	getProducts: (query: number | number[]) => Promise<PopulatedProduct[]>
+	className:string
 }
 
-export default function CartStatus({ getProducts}: Props) {
+export default function CartStatus({ getProducts,className}: Props) {
 	const session = useSession()
 	let synced = React.useRef(-1)
 	const modal = useModal()
@@ -65,20 +66,17 @@ export default function CartStatus({ getProducts}: Props) {
 		)
 	}
 	async function ordersClickHandler() {
-		modal.show(<OrderList/>)
-	}
+			}
 
 	return (
-	<>
-		<Button onClick={ordersClickHandler}>
-				Orders
-		</Button>
-		<button
+	<div className={className}>
+		<Button
 			type="button"
 			onClick={cartClickHandler}
 		>
+			<CartIcon width="30px" height="30px"/>
 			{Object.values(localCache).reduce((sum, next) => sum + next, 0)}
-		</button>
-	</>
+		</Button>
+	</div>
 	)
 }

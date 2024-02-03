@@ -4,10 +4,10 @@ import React from "react"
 import { clientValidations } from "./common.ts"
 import { Brand } from "@/lib/DAL/Models/Brand.ts"
 import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
-import Input from "../UI/Input/index.tsx"
-import { Textarea } from "@/components/material-tailwind"
 import FileUpload from "../UI/FileUpload/index.tsx"
 import useImageFiles from "@/hooks/useImageFiles.ts"
+import Input from "../UI/Input"
+import { Textarea } from "../UI/textarea.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -36,17 +36,14 @@ export default function BrandForm({brand}: Props) {
 			action={action}
 		>
 			<Input
-				crossOrigin={"false"}
-				label="Brand Name"
+				label="Name"
 				id="name"
-				name={"name"}
 				value={name}
-				validate={validation.name}
-				setValue={(str: string) => setName(str)}
+				onChange={(e) => setName(e.currentTarget.value)}
 			/>
 			<Textarea
-				name={"description"}
 				label="Description"
+				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>

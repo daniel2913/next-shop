@@ -3,6 +3,8 @@ import useCartStore from "@/store/cartStore"
 import AmmountSelector from "../AmmountSelector"
 import { useSession } from "next-auth/react"
 import React from "react"
+import { Button } from "../button"
+import {cn} from "@/lib/utils"
 
 interface Props {
 	className: string
@@ -16,26 +18,30 @@ const BuyButton = React.memo(function BuyButton({ className, id }: Props) {
 	if (session.data?.user?.role==="admin"){
 		return null
 	}
-	if (amount) {
 		return (
+			<div className={cn(
+			`border-2 rounded-lg`
+			,className)}>
+			{
+				amount>0 
+				? 
 			<AmmountSelector
-				className={`${className}`}
 				id={id}
+				className="w-full h-full"
 			/>
-		)
-	} else {
-		return (
-			<button
+				:
+			<Button
 				type="button"
 				className={`
-					${className} w-16 min-w-fit 
-					rounded-md border-2 border-accent1-200 py-2
+					w-full h-full 
+					border-none py-2
 					text-xl font-bold uppercase`}
 				onClick={() => addItem(id)}
 			>
 				Buy
-			</button>
+			</Button>
+			}
+			</div>
 		)
-	}
-})
+	})
 export default BuyButton

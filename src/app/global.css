@@ -1,12 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+ 
 
-.scrollbar-hide::-webkit-scrollbar {
-	display: none;
+@layer base {
+  :root {
+		--teal: 164.21 36.19% 58.82%;
+		--tan:	84 9.43% 89.61%;
+		--rose: 345.56 80.6% 73.73%;
+		--purple: 236.8 31.91% 46.08%;
+		--gold: 49.15, 83.1%, 58.24%;
+		--lgreen: 78.89 38.03% 72.16%;
+
+    --background: var(--teal);
+    --foreground: var(--tan);
+
+    --card-foreground: var(--tan);
+    --card: var(--rose);
+ 
+    --popover: var(--tan);
+    --popover-foreground: var(--teal);
+ 
+    --primary: var(--rose);
+    --primary-foreground: var(--tan);
+ 
+    --secondary: var(--purple);
+    --secondary-foreground: var(--tan);
+ 
+    --muted: var(--lgreen);
+    --muted-foreground: var(--rose);
+ 
+    --accent: var(--gold);
+    --accent-foreground: var(--tan);
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: var(--tan);
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+ 
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+ 
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
 }
-
-.scrollbar-hide {
-	-ms-overflow-style: none;
-	scrollbar-width: none;
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

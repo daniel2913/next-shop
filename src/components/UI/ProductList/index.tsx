@@ -3,9 +3,12 @@
 import { getAllProductsAction } from "@/actions/product"
 import useAction from "@/hooks/useAction"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import { Input, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@/components/material-tailwind"
 import React from "react"
-import Accordion from "@/components/UI/Acordion"
+import {Accordion, AccordionContent} from "@/components/UI/accordion"
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../table"
+import Input from "../Input"
+import {Tabs,TabsList,TabsContent,TabsTrigger} from "../tabs"
+import { AccordionItem, AccordionTrigger } from "@comps/UI/accordion"
 type Props =
 	{
 		name?: string
@@ -35,48 +38,48 @@ const ProductList = React.memo(function ProductList(props: Props) {
 	return (
 		<>
 			<Input
-				label="Name Filter"
-				crossOrigin={"false"}
+				name="Name Filter"
 				value={filter}
 				onChange={(e) => setFilter(e.currentTarget.value)}
 			/>
-			<Tabs
-				value="brand"
-			>
-				<TabsHeader>
-					<Tab value="brand">
+			<Tabs>
+				<TabsList defaultValue="brand">
+					<TabsTrigger value="brand">
 						Sort by Brand
-					</Tab>
-					<Tab value="category">
+					</TabsTrigger>
+					<TabsTrigger value="category">
 						Sort by Category
-					</Tab>
-				</TabsHeader>
-				<TabsBody animate={{}}>
-					<TabPanel value="brand">
+					</TabsTrigger>
+				</TabsList>
+					<TabsContent value="brand">
+						<Accordion type="multiple">
 						{Object.entries(grouped.productsByBrand).map(group =>
-							<Accordion
+							<AccordionItem 
+								value={group[0]}
 								key={`brand-${group[0]}`}
-								className=""
-								label={group[0]}
-							>{
-									<table>
-										<thead>
-											<tr>
+							>
+								<AccordionTrigger>
+									{group[0]}
+								</AccordionTrigger>
+								<AccordionContent>
+									<Table>
+										<TableHeader>
+											<TableRow>
 												<th>  </th>
 												<th>ID</th>
 												<th>Name</th>
 												<th>Category</th>
 												<th>Price</th>
-											</tr>
-										</thead>
-										<tbody>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
 											{group[1].filter(prod => prod.name.includes(filter)).map(product =>
-												<tr
+												<TableRow
 													key={`brand-${product.brand}-${product.name}`}
 													onClick={() => props.onChange(product.id)}
 													className={`cursor-pointer bg-blend-lighten hover:bg-accent1-100`}
 												>
-													<th>
+													<TableCell>
 														<input
 															type="checkbox"
 															value={product.id}
@@ -84,47 +87,49 @@ const ProductList = React.memo(function ProductList(props: Props) {
 															onChange={() => props.onChange(product.id)}
 															checked={props.value.includes(product.id)}
 														/>
-													</th>
-													<th>{product.id}</th>
-													<th>{product.name}</th>
-													<th>{product.category.name}</th>
-													<th>{product.price}</th>
-												</tr>
+													</TableCell>
+													<TableCell>{product.id}</TableCell>
+													<TableCell>{product.name}</TableCell>
+													<TableCell>{product.category.name}</TableCell>
+													<TableCell>{product.price}</TableCell>
+												</TableRow>
 											)}
-										</tbody>
-									</table>
-
-								}
-							</Accordion>)
+										</TableBody>
+									</Table>
+								</AccordionContent>
+							</AccordionItem>)
 						}
-					</TabPanel>
-					<TabPanel value="category">
+						</Accordion>
+					</TabsContent>
+					<TabsContent value="category">
+						<Accordion type="multiple">
 						{Object.entries(grouped.productsByCategory).map(group =>
-							<Accordion
+							<AccordionItem 
+								value={group[0]}
 								key={`category-${group[0]}`}
-								className=""
-								label={group[0]}
-							>{
-									<table>
-										<thead>
-											<tr>
+							>
+								<AccordionTrigger>
+									{group[0]}
+								</AccordionTrigger>
+								<AccordionContent>
+									<Table>
+										<TableHeader>
+											<TableRow>
 												<th>  </th>
 												<th>ID</th>
 												<th>Name</th>
 												<th>Brand</th>
 												<th>Price</th>
-											</tr>
-										</thead>
-										<tbody>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
 											{group[1].filter(prod => prod.name.includes(filter)).map(product =>
-												<tr
-													key={`category-${product.brand}-${product.name}`}
+												<TableRow
+													key={`brand-${product.brand}-${product.name}`}
 													onClick={() => props.onChange(product.id)}
-													className={`
-													cursor-pointer bg-blend-lighten hover:bg-accent1-100
-												`}
+													className={`cursor-pointer bg-blend-lighten hover:bg-accent1-100`}
 												>
-													<th>
+													<TableCell>
 														<input
 															type="checkbox"
 															value={product.id}
@@ -132,20 +137,21 @@ const ProductList = React.memo(function ProductList(props: Props) {
 															onChange={() => props.onChange(product.id)}
 															checked={props.value.includes(product.id)}
 														/>
-													</th>
-													<th>{product.id}</th>
-													<th>{product.name}</th>
-													<th>{product.brand.name}</th>
-													<th>{product.price.toFixed(2)}</th>
-												</tr>
+													</TableCell>
+													<TableCell>{product.id}</TableCell>
+													<TableCell>{product.name}</TableCell>
+													<TableCell>{product.brand.name}</TableCell>
+													<TableCell>{product.price}</TableCell>
+												</TableRow>
 											)}
-										</tbody>
-									</table>}
-							</Accordion>)
+										</TableBody>
+									</Table>
+								</AccordionContent>
+							</AccordionItem>)
 						}
-					</TabPanel>
-				</TabsBody>
-			</Tabs>
+						</Accordion>
+					</TabsContent>
+				</Tabs>
 		</>
 	)
 })

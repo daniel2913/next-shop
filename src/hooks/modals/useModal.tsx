@@ -2,7 +2,7 @@ import {useModalStore} from "../../store/modalStore"
 import React from "react"
 
 export default function useModal() {
-	const {dialogRef,setContent} = useModalStore(state=>state)
+	const {dialogRef,setContent} = useModalStore()
 	
 	function show(Modal: React.ReactNode) {
 		if (dialogRef?.current){
@@ -14,7 +14,7 @@ export default function useModal() {
 		)
 		let resolve:(val:any)=>void
 		const res = new Promise((res)=>{resolve=res})
-		dialogRef?.current?.addEventListener("close",()=>{console.log(resolve,res);resolve(12)})
+		dialogRef?.current?.addEventListener("close",()=>resolve(1))
 		return res
 	}
 	

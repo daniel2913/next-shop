@@ -10,8 +10,8 @@ import useProductStore from "@/store/productsStore/productStore"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import ContextMenu from "@/components/UI/ContextMenu"
-import ContextMenuItem from "@/components/UI/ContextMenu/ContextMenuItem"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/UI/dropdown-menu"
+import { Button } from "@/components/UI/button"
 
 const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
 
@@ -20,20 +20,19 @@ function ToggleFav({ id, initFav }: { id: number, initFav: boolean }) {
 	const favToggler = useProductStore(state => state.toggleFav)
 	const toggleFav = () => favToggler(id)
 	return (
-		<ContextMenuItem
-			action={toggleFav}
-			icon={
+		<Button
+			onClick={toggleFav}
+		>
+			{
 				fav
-					?
-					<Cross
+					?<Cross
 						className="group-hover:stroke-accent1-500"
 						width={"20px"}
 						height={"20px"}
 						color="black"
 						stroke="black"
 					/>
-					:
-					<Heart
+					:<Heart
 						className="group-hover:fill-accent1-300"
 						width={"20px"}
 						height={"20px"}
@@ -41,9 +40,8 @@ function ToggleFav({ id, initFav }: { id: number, initFav: boolean }) {
 						stroke="black"
 					/>
 			}
-		>
 			{fav ? "Del from Favourite" : "Add to Favoutite"}
-		</ContextMenuItem>
+		</Button>
 	)
 }
 
@@ -52,26 +50,21 @@ function EditProduct({ product }: { product: PopulatedProduct }) {
 	const reloader = useProductStore(state => state.reloadSingle)
 	const reload = () => reloader(product.id)
 	return (
-		<ContextMenuItem
+		<Button
 			className="appearance-none w-full flex justify-between"
-			action={() => {
+			onClick={() => {
 				modal.show(
-					<Suspense>
 						<ProductForm product={product} />
-					</Suspense>
-				).then(() => {reload()})
-
+				).then(() => { reload() })
 			}}
-			icon={
+		>
 				< Edit
 					className="hove:stroke-accent1-300"
 					width={"20px"}
 					height={"20px"}
 				/>
-			}
-		>
 			Edit
-		</ContextMenuItem >
+		</Button>
 	)
 }
 
@@ -84,10 +77,9 @@ export default function ProductMenu({ className, product }: Props) {
 	const session = useSession()
 	const role = session.data?.user?.role || "user"
 	return (
-		<ContextMenu
-			className={className}
-			icon={
-				role === "admin"
+		<DropdownMenu modal={false}>
+			<DropdownMenuTrigger>
+				{role === "admin"
 					?
 					<Gear
 						width={"25px"}
@@ -100,19 +92,22 @@ export default function ProductMenu({ className, product }: Props) {
 						height={"25px"}
 						className="align-middle"
 					/>
-			}
-		>
-			{
-				role === "admin"
-					?
-					[
-						<EditProduct key="edit" product={product} />,
+				}
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
+				{role === "admin"
+					? [
+						<DropdownMenuItem key="edit">
+							<EditProduct  product={product} />
+						</DropdownMenuItem>,
 					]
-					:
-					[
-						<ToggleFav key="fav" id={product.id} initFav={product.favourite} />
+					: [
+						<DropdownMenuItem key="fav">
+							<ToggleFav id={product.id} initFav={product.favourite} />
+						</DropdownMenuItem>,
 					]
-			}
-		</ContextMenu>
+				}
+			</DropdownMenuContent>
+		</DropdownMenu>
 	)
 }

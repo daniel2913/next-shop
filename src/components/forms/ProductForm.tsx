@@ -4,15 +4,15 @@ import Form, { FormFieldValue } from "./index"
 import React from "react"
 import PreviewProductCard from "@/components/Product/ProductCard/PreviewProductCard"
 import { changeProductAction, createProductAction, getProductsByIdsAction } from "@/actions/product"
-import Input from "../UI/Input/index.tsx"
+import Input from "../UI/Input"
 import FileUpload from "../UI/FileUpload/index.tsx"
-import Selector from "../UI/Selector/index.tsx"
+import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from "../UI/select.tsx"
 import { getAllBrandNamesAction } from "@/actions/brand.ts"
 import { getAllCategoryNamesAction } from "@/actions/category.ts"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
-import {Button, Option, Textarea} from "@/components/material-tailwind"
 import useImageFiles from "@/hooks/useImageFiles.ts"
 import useAction from "@/hooks/useAction.ts"
+import { Textarea } from "../UI/textarea.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -25,36 +25,24 @@ const validation = {
 	},
 }
 
-type ProductProps = {
-	id?:number
-	name: string
-	description: string
-	brand: string
-	price: number
-	category: string
-	images: string[]
-}
-
 type Props = {
-	product?:PopulatedProduct
+	product?: PopulatedProduct
 }
 
+export default function ProductForm({ product }: Props) {
 
-export default function ProductForm({product}: Props) {
-	
-	const action = product?.id 
-		? (form:FormData)=>changeProductAction(product.id,form) 
+	const action = product?.id
+		? (form: FormData) => changeProductAction(product.id, form)
 		: createProductAction
-	const [name, setName] = React.useState(product?.name||"")
-	const [description, setDescription] = React.useState(product?.description||"")
-	const [brand, setBrand] = React.useState(product?.brand?.name||"")
-	//const brand = product?.brand?.name || ""
-	const [category, setCategory] = React.useState(product?.category?.name||"")
-	const [price, setPrice] = React.useState(product?.price||0)
-	const [images, setImages] = useImageFiles(product?.images.map(image=>`/products/${image}`)||[])
-	
-	const {value:brands} = useAction(getAllBrandNamesAction,[])
-	const {value:categories} = useAction(getAllCategoryNamesAction,[])
+	const [name, setName] = React.useState(product?.name || "")
+	const [description, setDescription] = React.useState(product?.description || "")
+	const [brand, setBrand] = React.useState(product?.brand?.name || "")
+	const [category, setCategory] = React.useState(product?.category?.name || "")
+	const [price, setPrice] = React.useState(product?.price || 0)
+	const [images, setImages] = useImageFiles(product?.images.map(image => `/products/${image}`) || [])
+
+	const { value: brands } = useAction(getAllBrandNamesAction, [])
+	const { value: categories } = useAction(getAllCategoryNamesAction, [])
 
 
 	return (
@@ -77,59 +65,63 @@ export default function ProductForm({product}: Props) {
 			}
 		>
 			<Input
-				crossOrigin={"false"}
 				label="Product Name"
 				id="name"
 				name={"name"}
 				value={name}
-				validate={validation.name}
-				setValue={(str: string) => setName(str)}
+				onChange={(e) => setName(e.currentTarget.value)}
 			/>
 			<Textarea
-				name={"description"}
 				label="Description"
+				name={"description"}
+				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
-			<Selector
-				label="Brand"
-				id="brand"
+			<Select
+				name="brand"
 				value={brand}
-				onChange={(str:string)=>setBrand(str)}
+				onValueChange={(str: string) => setBrand(str)}
 			>
-				{brands?.map((brand,idx)=>
-					<Option value={brand} key={brand+idx}>{brand}</Option>)
-				|| <Option>Loading...</Option>
-				}
-			</Selector>
-			<Selector
-				label="Category"
-				id="category"
+				<SelectTrigger>
+					<SelectValue placeholder="Brand"/>
+				</SelectTrigger>
+				<SelectContent className="z-50">
+					{brands.map((brand, idx) =>
+						<SelectItem value={brand} key={brand + idx}>{brand}</SelectItem>)
+					}
+				</SelectContent>
+			</Select>
+			<Select
+				defaultValue={product?.category.name || category}
+				name="category"
 				value={category}
-				onChange={(str:string)=>setCategory(str)}
+				onValueChange={(str: string) => setCategory(str)}
 			>
-				{categories?.map((category,idx)=>
-					<Option value={category} key={category+idx}>{category}</Option>)
-				|| <Option>Loading...</Option>
-				}
-				
-			</Selector>
+				<SelectTrigger>
+					<SelectValue placeholder="Category"/>
+				</SelectTrigger>
+				<SelectContent>
+					{categories.map((category, idx) =>
+						<SelectItem value={category} key={category + idx}>{category}</SelectItem>)
+					}
+				</SelectContent>
+			</Select>
 			<Input
-				crossOrigin={"false"}
 				label="Price"
 				name="price"
 				type="number"
 				value={price.toString()}
-				setValue={(str: string) => setPrice(+Number(str).toFixed(2))}
+				onChange={(e) => setPrice(+Number(e.target.value).toFixed(2))}
 			/>
 			<FileUpload
-			id= "images"
-			label= "Product image"
-			multiple
-			value={images}
-			onChange={(files:File[])=>setImages(files)}
-			accept= "image/jpeg"
-			preview
+				id="images"
+				label="Product image"
+				multiple
+				value={images}
+				onChange={(files: File[]) => setImages(files)}
+				accept="image/jpeg"
+				preview
 			/>
 		</Form>
 	)

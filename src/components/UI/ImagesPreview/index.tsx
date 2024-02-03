@@ -1,5 +1,5 @@
 import React from "react"
-
+import Cross from "@public/cross.svg"
 interface Props {
 	className: string
 	images: File[]
@@ -38,7 +38,7 @@ export default function ImagesPreview({ images, delImage, className }: Props) {
 							className="absolute right-0 top-0 text-accent1-500"
 							onClick={() => delImage(idx)}
 						>
-							X
+							<Cross className="stroke-destructive" width="15px" height="15px"/>
 						</button>
 						<img
 							alt=""

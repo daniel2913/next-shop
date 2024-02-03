@@ -1,49 +1,50 @@
-"use client"
+import * as React from "react"
 
-import React, { ComponentProps } from "react"
-import {Input as BaseInput} from "@/components/material-tailwind"
+import { cn } from "@/lib/utils"
+import { Label } from "../label"
 
-type Props = {
-	validate?:(val:string)=>false|string
-	value?:string
-	setValue?:(val:string)=>void
-	error?:string
-	type?: "text"|"password"|"number"
-} & ComponentProps<typeof BaseInput>
-
-export default function Input(props:Props){
-	let [value,setValue] = React.useState(props.value||"")
-	const [error, setError] = React.useState(props.error||" ")
-	React.useEffect(()=>{
-		if (props.setValue){
-			props.setValue(value)
-		}
-	},[value,props.setValue])
-	
-	return(
-		<>
-			<BaseInput
-				label={props.label}
-				onBlur={() => setError(props.validate?.(value)||"")}
-				error={!!error&&error!==" "}
-				success={!error}
-				id={props.id}
-				name={props.name}
-				type={props.type||"text"}
-				value={value}
-				onChange={(e)=>setValue(e.currentTarget.value)}
-			/>
-			{
-				!props.validate
-				? null
-				:
-			<label
-				htmlFor={props.id || ""}
-				className="text-accent1-600 min-h-4"
-			>
-				{error}
-			</label>
-			}
-		</>
-	)
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+	error?:boolean
+	label?:string
 }
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+		if (!props.id && props.label) props.id = Math.random().toString()
+    return (
+			<div className="group w-fit flex-grow relative flex flex-col-reverse">
+      <input
+        {...props}
+				name={props.name||props.id||undefined}
+				aria-invalid={props.error ? "true" : undefined}
+        type={type}
+        className={cn(
+          `flex peer h-[2em] w-full rounded-md border border-input
+					bg-background px-3 py-2 text-sm ring-offset-background
+					file:border-0 file:bg-transparent file:text-sm file:font-medium
+					placeholder:text-muted-foreground 
+					disabled:cursor-not-allowed disabled:opacity-50 font-semibold
+					invalid:border-destructive invalid:text-destructive
+					aria-[invalid]:border-destructive aria-[invalid]:text-destructive
+					`,
+          className,
+        )}
+        ref={ref}
+      />
+				{props.label
+				? <Label 
+						className="text-md leading-5 peer-invalid:text-destructive peer-aria-[invalid]:text-destructive"
+						htmlFor={props.id}
+					>
+						{props.label}
+					</Label>
+				:null
+				}
+			</div>
+    )
+  }
+)
+Input.displayName = "Input"
+export {Input}
+export default Input

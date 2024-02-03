@@ -1,5 +1,5 @@
-import {Menu, MenuList, MenuHandler, MenuItem } from "@/components/material-tailwind"
 import React from "react"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../dropdown-menu"
 
 type ContextMenuProps = {
 	children: React.ReactElement[]
@@ -8,8 +8,8 @@ type ContextMenuProps = {
 }
 export default function ContextMenu({ children, className, icon }: ContextMenuProps) {
 	return (
-		<Menu>
-				<MenuHandler
+		<DropdownMenu>
+				<DropdownMenuTrigger
 					className={`${className || ""}`}
 				>
 					<button
@@ -17,11 +17,11 @@ export default function ContextMenu({ children, className, icon }: ContextMenuPr
 					>
 						{icon}
 					</button>
-				</MenuHandler>
-				<MenuList>
-						{children.map((child,idx)=><MenuItem key={idx}>{child}</MenuItem>)}
-				</MenuList>
-		</Menu>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent>
+						{children.map((child,idx)=><DropdownMenuItem key={idx}>{child}</DropdownMenuItem>)}
+				</DropdownMenuContent>
+		</DropdownMenu>
 	)
 }
 

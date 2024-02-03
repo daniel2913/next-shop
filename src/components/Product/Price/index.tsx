@@ -12,11 +12,11 @@ const Price = React.memo(function Price({
 	className,
 }: props) {
 	return (discount.discount > 0 && discount.expires>new Date()) ? (
-		<div className={`${className} text-inherit`}>
+		<div className={`${className} text-inherit flex gap-4`}>
 			<s className="text-[.75em] text-gray-600 decoration-accent1-700">
 				{price.toFixed(2)}
 			</s>
-			<span className="text-accent1-700">{(price - (price * discount.discount) / 100).toFixed(2)}</span>
+			<span className="text-secondary font-semibold">{(price - (price * discount.discount) / 100).toFixed(2)}</span>
 		</div>
 	) : (
 		<div className="">{price.toFixed(2)}</div>

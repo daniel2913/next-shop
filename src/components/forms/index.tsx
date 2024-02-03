@@ -1,7 +1,7 @@
 "use client"
 import React, { FormEvent } from "react"
-import LabeledInput from "@/components/UI/LabeledInput"
 import useToast from "@/hooks/modals/useToast"
+import { Button } from "../UI/button"
 
 export type FormFieldValue = string | File[] | string[]
 export interface FormFieldValidator {
@@ -23,7 +23,7 @@ export default function Form({
 	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false)
-	const {show:showToast} = useToast()
+	const {error:showError,info:showStatus} = useToast()
 	
 	async function submitHandler(e: FormData) {
 		const payload = new FormData()
@@ -31,16 +31,17 @@ export default function Form({
 			if (validations[key]) {
 				const entryInvalid = validations[key](value)
 				if (entryInvalid) {
-					showToast(`${key}: ${entryInvalid}`)
+					showError(entryInvalid,`${key} validation`)
 					return
 				}
 			}
 			payload.append(key,value)
 		}
 		setLoading(true)
-		const res = await action(payload) || "Successful!"
-		setLoading(false)
-		showToast(res)
+		action(payload)
+			.then(res=> showStatus(res||"Successful!","Server response"))
+			.catch(res=> showError(res.message||"Some Error","Server response"))
+			.finally(()=>setLoading(false))
 	}
 
 	return (
@@ -50,12 +51,12 @@ export default function Form({
 				className="flex flex-col gap-3 "
 			>
 				{children}
-					<button
+					<Button
 						disabled={loading}
 						type="submit"
 					>
 						{loading ? "Loading..." : "Send"}
-					</button>
+					</Button>
 			</form>
 			{preview || null}
 		</div>

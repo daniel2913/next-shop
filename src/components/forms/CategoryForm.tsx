@@ -34,8 +34,7 @@ export default function CategoryForm({category}: Props) {
 			action={action}
 		>
 			<Input
-				crossOrigin={"false"}
-				label="category Name"
+				label="Category Name"
 				id="name"
 				name={"name"}
 				value={name}

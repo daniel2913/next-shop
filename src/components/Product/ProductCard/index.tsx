@@ -1,114 +1,101 @@
-"use client"
 import BuyButton from "@/components/UI/BuyButton"
-import Carousel from "../../UI/Carousel"
+import { Carousel, CarouselItem, CarouselNext, CarouselPrevious, CarouselContent, CarouselApi } from "../../UI/carousel"
 import Discount from "../Discount"
 import Image from "next/image"
 import Price from "../Price"
 import Rating from "@/components/UI/Rating"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import { Card, CardBody } from "@/components/material-tailwind"
 import ProductMenu from "../ContextMenu"
+import { Card, CardContent } from "@/components/UI/card"
 type Props = {
-	className: string
 	product: PopulatedProduct
 }
 
 const ProductCard = React.memo(function ProductCard({ className, product }: Props) {
-
-	const carousel = React.useMemo(()=>
-				<Carousel
-					previewClassName="absolute bottom-0 left-0 right-0 h-1/5"
-					carouselClassName="*:z-20"
-					className="h-full relative"
-					discount={
-						<Discount
-							className="w-12 -rotate-[20deg] text-lg font-bold"
-							discount={product.discount.discount}
-						/>
-
-			}
-					brandImage={
-						<Image
-							className="rounded-full"
-							alt={product.brand.name}
-							height={30}
-							src={`/brands/${product.brand.image}`}
-							width={30}
-						/>
-
-			}
-				>
-		{product.images.map((img, idx) => (
-						<div
-							className="w-full h-full relative"
-							key={img+idx}
-							>
-						<Image
-							priority={idx === 0 ? true : false}
-							className="object-cover"
-							fill
-							sizes="
-							(max-width:640px) 40vw
-							(max-width:1024px) 10vw
-							25vw
-							"
-							src={`/products/${img}`}
-							alt={img}
-						/>
-						</div>
-					))}
-				</Carousel>
-	,[product.images.toString(),product.discount.discount,product.brand.name])
 	return (
 		<Card
 			className={`
-      	${className}
-				overflow-hidden rounded-md bg-cyan-200 p-2
+				border-2 w-lgCardX h-lgCardY
 			`}
 		>
-			<CardBody
-				className="p-2"
-			>
-				{carousel}
-
-				<div
-					className="
-				grid grid-cols-2
+			<CardContent
+				className="
+				pt-2 px-4
+				grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr]
 			"
-				>
-					<Rating
-						id={product.id}
-						ownVote={product.ownVote}
-						rating={product.rating || 0}
-						voters={product.voters}
-						className="col-span-2 max-h-8 justify-self-center mb-2"
+			>
+				<Carousel className="relative rounded-lg overflow-hidden h-full col-span-2">
+					<CarouselContent>
+						{product.images.map((img, idx) => (
+							<CarouselItem
+								key={`${img}-${idx}`}
+								className="relative h-48 ">
+								<Image
+									fill
+									className="object-cover"
+									sizes="
+							30vw
+							(min-width:640px) 30vw
+							(min-width:1024px) 25vw
+							"
+									src={`/products/${img}`}
+									alt={img}
+								/>
+							</CarouselItem>
+						))}
+					</CarouselContent>
+					<CarouselPrevious
+						className="absolute disabled:opacity-30 opacity-50 left-4 bottom-1/2 -translate-y-1/2"
 					/>
-					<h3 className="text-2xl leading-6 h-12 text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
-						{product.name}
-					</h3>
+					<CarouselNext
+						className="absolute disabled:opacity-30 opacity-50 right-4 bottom-1/2 -translate-y-1/2"
+					/>
+					<Discount
+						className="absolute right-12 bottom-12 w-12 -rotate-[20deg] text-lg font-bold"
+						discount={product.discount.discount}
+					/>
+					<Image
+						className="absolute left-2 opacity-60 hover:opacity-100 top-2 rounded-full object-contain"
+						alt={product.brand.name}
+						height={30}
+						width={30}
+						src={`/brands/${product.brand.image}`}
+					/>
+				</Carousel>
+				<Rating
+					id={product.id}
+					ownVote={product.ownVote}
+					rating={product.rating || 0}
+					voters={product.voters}
+					className="col-span-2 justify-self-center"
+				/>
+				<h3 className="text-2xl leading-6 text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
+					{product.name}
+				</h3>
 
-					<span className="text-xl font-semibold">{product.brand.name}</span>
-					<span className="justify-self-end text-lg capitalize text-gray-600">
-						{product.category.name}
-					</span>
-					<Price
-						className="text-2xl"
-						discount={product.discount}
-						price={product.price}
-					/>
-					<div className="flex gap-2 justify-end">
+				<span className="text-xl self-start text-ellipsis overflow-hiddenfont-semibold">
+					{product.brand.name}
+				</span>
+				<span className="justify-self-end text-ellipsis overflow-hidden text-lg capitalize text-gray-600">
+					{product.category.name}
+				</span>
+				<Price
+					className="text-2xl"
+					discount={product.discount}
+					price={product.price}
+				/>
+				<div className="flex gap-2 justify-end">
 					<BuyButton
-						className="justify-self-center h-12"
+						className="justify-self-center self-center w-4/5 h-3/4"
 						id={product.id}
 					/>
 					<ProductMenu
 						product={product}
 						className="justify-self-end"
 					/>
-					</div>
 				</div>
-			</CardBody>
+			</CardContent>
 		</Card>
 	)
 })

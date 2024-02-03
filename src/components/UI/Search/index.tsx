@@ -3,23 +3,26 @@ import type { Brand, Category } from "@/lib/DAL/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
 import CheckBoxBlock from "../CheckBoxBlock"
-import { Button } from "@/components/material-tailwind"
+import { Button } from "@/components/UI/button"
 import SearchIcon from "@/../public/search.svg"
-import useToast from "@/hooks/modals/useToast"
 import useProductStore from "@/store/productsStore/productStore"
+import Input from "../Input"
+import { Popover, PopoverContent, PopoverTrigger } from "../popover"
 
 interface Props {
 	className?: string
-	brandList: Brand[]
-	categoryList: Category[]
+	brandsPromise: Promise<Brand[]>
+	categoriesPromise: Promise<Category[]>
 }
 
-export default function Search({ className, brandList, categoryList }: Props) {
+export default function Search({ className, brandsPromise, categoriesPromise }: Props) {
 	const router = useRouter()
+	const brandList = React.use(brandsPromise)
+	const categoryList = React.use(categoriesPromise)
 	const [queryString, setQueryString] = React.useState<string>("")
-	const clearProducts = useProductStore(state=>state.clearProducts)
+	const clearProducts = useProductStore(state => state.clearProducts)
 	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
-	const categoryImages = categoryList.map((cat) =>`/categories/${cat.image}`)
+	const categoryImages = categoryList.map((cat) => `/categories/${cat.image}`)
 	const [brands, setBrands] = React.useState<string[]>([])
 	const [categories, setCategories] = React.useState<string[]>([])
 	async function onClick() {
@@ -39,39 +42,46 @@ export default function Search({ className, brandList, categoryList }: Props) {
 		router.push(query.toString())
 
 	}
-	const {show} = useToast()
 
 	return (
-		<div className={`${className} group relative right-auto flex w-1/2`}>
-			<div className="flex w-full">
-				<input
+		<Popover>
+			<div className={`
+				${className} group relative right-auto flex w-1/2
+				flex overflow-hidden
+				focus-within:w-[30rem] transition-[width] w-40
+				border-2 rounded-lg border-cyan-400"
+			`}>
+				<Input
 					autoComplete="off"
 					className="
-            w-4/5 rounded-l-lg border-2 border-r-0 h-full
-          	border-cyan-600 border-r-transparent bg-cyan-100 px-2
+						flex-grow
+            rounded-l-lg border-none h-full
+           	bg-cyan-100 rounded-r-none
+						text-black
+						font-medium text-2xl
           "
-					type="search"
 					name="searchQuery"
 					id="searchQuery"
 					value={queryString}
 					onChange={(e) => setQueryString(e.currentTarget.value)}
 				/>
+				<PopoverTrigger>
+					^
+				</PopoverTrigger>
 				<Button
 					className="
             rounded-r-lg rounded-l-none h-full
-						border-cyan-600 border-2 border-l-0
-						text-center p-0 border-l-transparent
+						text-center p-0 w-12 flex-grow-0
 						bg-accent1-400 text-teal-400 text-md
-						hover:!shadow-none shadow-none
 						px-1
           "
 					type="button"
 					onClick={onClick}
 				>
-					<SearchIcon width="25px" height="25px"/>
+					<SearchIcon width="25px" height="25px" />
 				</Button>
 			</div>
-			<div
+			<PopoverContent
 				tabIndex={0}
 				className="
         	absolute top-8 rounded-lg z-30 hidden w-full
@@ -79,10 +89,10 @@ export default function Search({ className, brandList, categoryList }: Props) {
         "
 			>
 				<CheckBoxBlock
-					id = "category"
+					id="category"
 					className="flex overflow-x-scroll w-full"
 					value={categories}
-					options={categoryList.map(cat=>cat.name)}
+					options={categoryList.map(cat => cat.name)}
 					setValue={setCategories}
 					view="images"
 					images={categoryImages}
@@ -91,12 +101,12 @@ export default function Search({ className, brandList, categoryList }: Props) {
 					id="brand"
 					className="flex overflow-x-scroll w-full"
 					value={brands}
-					options={brandList.map(brand=>brand.name)}
+					options={brandList.map(brand => brand.name)}
 					setValue={setBrands}
 					view="images"
 					images={brandImages}
 				/>
-			</div>
-		</div>
+			</PopoverContent>
+		</Popover>
 	)
 }

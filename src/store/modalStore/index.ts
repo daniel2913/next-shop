@@ -16,17 +16,16 @@ export const useModalStore = create<ModalState>()((set) => ({
 
 interface ToastState {
 	children: React.ReactNode
-	setContent: (content:React.ReactNode)=>void
-	show:()=>void
-	close:()=>void
+	type:"error"|"info"
+	title:string
+	description:string
 	isVisible:boolean
 }
 
 export const useToastStore = create<ToastState>()((set) => ({
 		isVisible:false,
-		children: null,
-		setContent: (content)=>set({children:content}),
-		show:()=>set({isVisible:true}),
-		close:()=>set({isVisible:false})
+		description: "",
+		title:"",
+		type:"error",
 }))
 

@@ -1,11 +1,12 @@
 "use client"
 import { validateLogin, validatePassword } from "@/helpers/validation"
-import { Button, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@/components/material-tailwind"
 import Input from "@/components/UI/Input"
 import useToast from "@/hooks/modals/useToast"
 import { signIn } from "next-auth/react"
 import React from "react"
 import { registerUserAction } from "@/actions/user"
+import { Button } from "@/components/UI/button"
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/UI/tabs"
 
 type Props = {
 	close: () => void
@@ -19,7 +20,7 @@ function Register({ close }: Props) {
 	const { show: showToast } = useToast()
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
-		const res = await registerUserAction(creds.name,creds.password)
+		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
 		if (res)
 			showToast(res)
@@ -29,23 +30,20 @@ function Register({ close }: Props) {
 			className="flex flex-col gap-2 mb-4"
 		>
 			<Input
-				crossOrigin={"false"}
 				type="text"
 				label="Username"
 				value={name}
-				setValue={setName}
+				onChange={() => setName}
 				validate={validateLogin}
 			/>
 			<Input
-				crossOrigin={"false"}
 				type="password"
 				label="Password"
 				value={password}
-				setValue={setPassword}
+				onChange={setPassword}
 				validate={validatePassword}
 			/>
 			<Button
-				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleRegistration({ name, password })}
@@ -78,21 +76,18 @@ function Login({ close, reloadProducts }: Props) {
 			className="flex flex-col gap-2 mb-4"
 		>
 			<Input
-				crossOrigin={"false"}
 				type="text"
 				label="Username"
 				value={name}
-				setValue={setName}
+				onChange={(e)=>setName(e.currentTarget.value)}
 			/>
 			<Input
-				crossOrigin={"false"}
 				type="password"
 				label="Password"
 				value={password}
-				setValue={setPassword}
+				onChange={(e)=>setPassword(e.currentTarget.value)}
 			/>
 			<Button
-				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name, password })}
@@ -100,7 +95,6 @@ function Login({ close, reloadProducts }: Props) {
 				Sign In
 			</Button>
 			<Button
-				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name: "user", password: "user" })}
@@ -108,7 +102,6 @@ function Login({ close, reloadProducts }: Props) {
 				Demo User
 			</Button>
 			<Button
-				placeholder={null}
 				disabled={loading}
 				type="submit"
 				onClick={() => handleLogin({ name: "admin", password: "admin" })}
@@ -129,26 +122,20 @@ export default function AuthModal(props: Props) {
 				flex flex-col justify-start
 			"
 			value="login">
-			<TabsHeader
-				className=""
-			>
-				<Tab value="login">
+			<TabsList>
+				<TabsTrigger value="login">
 					Login
-				</Tab>
-				<Tab value="register">
+				</TabsTrigger>
+				<TabsTrigger value="register">
 					Register
-				</Tab>
-			</TabsHeader>
-			<TabsBody
-				className="my-auto"
-			>
-				<TabPanel value="login">
-					<Login {...props} />
-				</TabPanel>
-				<TabPanel value="register">
-					<Register {...props} />
-				</TabPanel>
-			</TabsBody>
+				</TabsTrigger>
+			</TabsList>
+			<TabsContent value="login">
+				<Login {...props} />
+			</TabsContent>
+			<TabsContent value="register">
+				<Register {...props} />
+			</TabsContent>
 		</Tabs>
 	)
 }

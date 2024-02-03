@@ -1,60 +1,68 @@
 "use client"
-import Accordion from "@/components/UI/Acordion"
 import { completeOrder, getOrdersAction } from "@/actions/order"
 import React, { Suspense }  from "react"
 import useAction from "@/hooks/useAction"
-import { Button, Switch } from "@/components/material-tailwind"
+import {Button} from "@/components/UI/button"
+import { Switch } from "@/components/UI/switch"
 import { useSession } from "next-auth/react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/UI/accordion"
+import { Table,TableHead,TableBody,TableRow,TableCell } from "@/components/UI/table"
 
 const List = React.memo(function List({completed}:{completed:boolean}){
 	const session = useSession()
 	const {value:orders,setValue:setOrders,reload} = useAction(getOrdersAction,{completed:[],processing:[]})
 	return(<>
 		<Button onClick={()=>reload()}>Reload</Button>
+		<Accordion 
+			type="multiple"
+		>
 		{(completed ? orders?.completed||[] : orders?.processing||[])
-				.map((order) => {
+				.map((order,orderIdx) => {
 			const data = {
 				user: +order.order.user,
 				id: +order.order.id,
 				prodIds: Object.keys(order.order.order).map(Number),
 			}
 			return (
-				<Accordion
+				<AccordionItem
+					value={`${orderIdx}`}
 					key={order.order.id}
-					className=""
-					label={`Order-${order.order.id} - ${order.order.user}`}
-				>
+							>
+				<AccordionTrigger>
+					{`Order-${order.order.id} - ${order.order.user}`}
+				</AccordionTrigger>
+				<AccordionContent>
 					{[
-						<table
+						<Table
 							key={order.order.id + "table"}
 							className="w-full"
 						>
-							<thead>
-								<tr
+							<TableHead>
+								<TableRow
 									className="flex flex-initial justify-evenly justify-items-center"
 								>
-									<th className="basis-1/12">ID</th>
-									<th className="basis-1/3">Product Name</th>
-									<th className="basis-1/4">Brand</th>
-									<th className="basis-1/12">Amount</th>
-								</tr>
-							</thead>
-							<tbody>
+									<TableCell className="basis-1/12">ID</TableCell>
+									<TableCell className="basis-1/3">Product Name</TableCell>
+									<TableCell className="basis-1/4">Brand</TableCell>
+									<TableCell className="basis-1/12">Amount</TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
 								{order.products.map((product) => {
 									return (
-										<tr
+										<TableRow
 											key={`${product.id}-${order.order.id}`}
 											className="flex justify-evenly justify-items-center"
 										>
-											<td className="basis-1/12 text-center">{product.id}</td>
-											<td className="basis-1/3 text-center">{product.name}</td>
-											<td className="basis-1/4 text-center">{product.brand.name}</td>
-											<td className="basis-1/12 text-center">{order.order.order[product.id].amount}</td>
-										</tr>
+											<TableCell className="basis-1/12 text-center">{product.id}</TableCell>
+											<TableCell className="basis-1/3 text-center">{product.name}</TableCell>
+											<TableCell className="basis-1/4 text-center">{product.brand.name}</TableCell>
+											<TableCell className="basis-1/12 text-center">{order.order.order[product.id].amount}</TableCell>
+										</TableRow>
 									)
 								})}
-							</tbody>
-						</table>,
+							</TableBody>
+						</Table>,
 						session?.data?.user?.role === "admin" && order.order.status === "PROCESSING"
 							?
 								<Button
@@ -74,10 +82,12 @@ const List = React.memo(function List({completed}:{completed:boolean}){
 								</Button>
 							: <></>
 					]}
-				</Accordion>
+				</AccordionContent>
+				</AccordionItem>
 			)
 		}
 		)}
+		</Accordion>
 	</>)
 })
 
@@ -96,9 +106,8 @@ export default function OrderList() {
 			</label>
 			<Switch
 				id="completed"
-				crossOrigin={"false"}
 				checked={completed}
-				onChange={() => setCompleted(c => !c)}
+				onCheckedChange={setCompleted}
 			/>
 			</div>
 			<Suspense fallback="Loading...">

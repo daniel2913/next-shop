@@ -1,8 +1,8 @@
-"use client"
-
-import { Button, Input } from "@/components/material-tailwind"
 import React from "react"
 import ImagesPreview from "../ImagesPreview"
+import {Input} from "@/components/UI/Input/index"
+import { Label } from "../label"
+import { Button } from "../button"
 
 
 function fileListAdapter(inp: File | FileList | null): File[] {
@@ -21,28 +21,19 @@ type Props = {
 	value: File[]
 	multiple?: boolean
 	onChange: (file: File[]) => void
-	validate?: (files: File[]) => false | string
 }
 
 export default function FileUpload({
 	multiple = false,
 	...props
 }: Props) {
-	const inpRef = React.useRef<HTMLInputElement>(null)
 	return (
 		<div className={`${props.className} flex flex-col`}>
 			<Input
-				crossOrigin={""}
-				containerProps={{
-					className: "h-4"
-				}}
-				variant="standard"
-				inputRef={inpRef}
-				label={props.label}
+				name={props.label}
 				multiple={multiple}
 				accept={props.accept}
 				id={props.id}
-				name={props.id}
 				className="hidden"
 				type="file"
 				onChange={(e) => {
@@ -52,14 +43,12 @@ export default function FileUpload({
 						props.onChange(fileListAdapter(e.currentTarget.files).slice(0, 1))
 				}}
 			/>
-			<Button
-				onClick={() => {
-					console.log(inpRef.current)
-					inpRef.current?.click()
-				}}
+			<Label
+				className="w-fit cursor-pointer"
+				htmlFor={props.id}
 			>
-				UPLOAD
-			</Button>
+			<Button className="pointer-events-none" type="button">	UPLOAD </Button>
+			</Label>
 			{
 				props.preview
 					?

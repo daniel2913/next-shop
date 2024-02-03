@@ -4,6 +4,8 @@ import useConfirm from "@/hooks/modals/useConfirm"
 import useCartStore from "@/store/cartStore"
 import { Product } from "@/lib/DAL/Models"
 import { useSession } from "next-auth/react"
+import Plus from "@public/plus.svg"
+import Minus from "@public/minus.svg"
 
 interface Props {
 	className: string
@@ -28,22 +30,22 @@ export default function AmmountSelector({ className, id }: Props) {
 	}
 	return (
 		<div
-			className={`${className} flex w-fit min-w-[4ch] justify-between text-center text-4xl font-semibold text-accent1-600`}
+			className={`${className} flex justify-between font-semibold text-secondary-600`}
 		>
 			<button
 				type="button"
-				className="text-inherit"
+				className="text-inherit flex justify-center items-center mr-auto flex-grow leading-4"
 				onClick={() => clickHandler(amount - 1)}
 			>
-				-
+				<Minus className="stroke-2 stroke-secondary" width="15px" height="15px"/>
 			</button>
-			<span className="text-inherit">{amount}</span>
+			<span className="text-inherit grow-0 text-center w-[3ch] overflow-clip text-3xl basis-8">{amount}</span>
 			<button
 				type="button"
-				className="text-inherit"
+				className="text-inherit flex justify-center items-center ml-auto flex-grow leading-4 "
 				onClick={() => clickHandler(amount + 1)}
 			>
-				+
+				<Plus className="stroke-2 stroke-secondary" width="15px" height="15px"/>
 			</button>
 		</div>
 	)

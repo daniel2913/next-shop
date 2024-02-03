@@ -4,12 +4,13 @@ import useProductStore from "@/store/productsStore/productStore"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
 import React from "react"
+import { cn } from "@/lib/utils"
 
 interface Props {
-	id:number
-	voters:number
-	rating:number
-	ownVote:number
+	id: number
+	voters: number
+	rating: number
+	ownVote: number
 	className: string
 }
 
@@ -20,12 +21,12 @@ const Rating = React.memo(function Rating({
 	ownVote,
 	rating,
 	className,
-}: Props){
+}: Props) {
 	const session = useSession()
-	const {show: showToast} = useToast()
-	const voteSetter = useProductStore(state=>state.updateVote)
-	const setVote = (vote:number)=>voteSetter(id,vote)
-	const [pending,startTransition] = React.useTransition()
+	const { show: showToast } = useToast()
+	const voteSetter = useProductStore(state => state.updateVote)
+	const setVote = (vote: number) => voteSetter(id, vote)
+	const [pending, startTransition] = React.useTransition()
 
 	async function handleRate(i: number) {
 		if (!session?.data?.user?.id)
@@ -33,7 +34,7 @@ const Rating = React.memo(function Rating({
 		else if (ownVote === -1)
 			showToast("You can only rate products you bought!")
 		else {
-			startTransition(async ()=>{
+			startTransition(async () => {
 				const res = await setVote(i)
 				if (!res)
 					showToast("Something went wrong...")
@@ -41,48 +42,40 @@ const Rating = React.memo(function Rating({
 		}
 	}
 	return (
-		<div className={`${className} `}>
-		<div
-			title={`${rating} from ${voters} voter${voters % 10 === 1 ? "" : "s"}`}
-			className={`flex flex-wrap justify-center`}
+		<div 
+			className={cn(
+			`flex flex-wrap gap-1 justify-center`
+			, className)
+			}
+			title={rating>0&&`
+				${rating} from ${voters} voter${voters % 10 === 1 ? "" : "s"}`
+			|| "No Votes"
+			}
 		>
-			{[
-				ratings.map((i) => {
-					return (
-						<button
-							disabled={pending}
-							type="button"
+				{ratings.map((i) =>
+					<button
+						disabled={ownVote === -1}
+						type="button"
+						key={`${i}-${Math.random()}`}
+						onClick={() => handleRate(i)}
+						className=""
+						id={`${i}`}
+					>
+						<Star
 							key={`${i}-${Math.random()}`}
-							onClick={() => handleRate(i)}
-							className=""
-							id={`${i}`}
-						>
-							<Star
-								key={`${i}-${Math.random()}`}
-								className={`
+							className={`
 							aspect-square h-full
-							${
-								i <= ownVote
-									? "fill-accent1-600 stroke-accent1-600"
-									: i <= (rating||0)
-									  ? "fill-accent1-400 stroke-accent1-400"
-									  : "fill-cyan-100 stroke-teal-400"
-							} 
-						`}
-							/>
-						</button>
-					)
-				}),
-			]}
-		</div>
-				{
-					ownVote === 0 
-					? 
-						<span className="w-full text-xs text-accent1-300">
-								You Haven&apost Rated This Product Yet
-						</span>
-					: null
-				}
+								${i <= ownVote
+									? "fill-accent"
+									: i <= (rating || 0)
+										? "fill-secondary"
+										: "fill-foreground"
+								}
+								${ownVote===0 && "stroke-accent"}
+							`}
+						/>
+					</button>
+				)}
 		</div>
 	)
 })

@@ -1,6 +1,8 @@
 "use client"
 import Image from 'next/image'
 import React from 'react'
+import { Checkbox } from '../checkbox'
+import { Label } from '../label'
 
 
 type Props<T extends string[]> = {
@@ -35,17 +37,17 @@ type ImageCheckBoxProps = {
 
 
 function TextCheckBox({ name, toggle, id, value }: TextCheckBoxProps) {
+	const _id = React.useId()
 	return (
-		<div>
-			<input
+		<Label htmlFor={_id} className='flex gap-2 hover:text-primary items-center text-inherit cursor-pointer'>
+			<Checkbox
 				name={id}
-				type="checkbox"
+				id={_id}
 				checked={value}
-				value={name}
-				onChange={toggle}
+				onCheckedChange={toggle}
 			/>
-			<span>{name}</span>
-		</div>
+			<span className='text-center text-inherit'>{name}</span>
+		</Label>
 	)
 }
 function ImageCheckBox({ name, image, value, toggle, id }: ImageCheckBoxProps) {
@@ -57,12 +59,13 @@ function ImageCheckBox({ name, image, value, toggle, id }: ImageCheckBoxProps) {
 			<input
 				id={_id}
 				name={id}
+				hidden
 				className='hidden peer'
 				type="checkbox"
 				checked={value}
 				onChange={toggle}
 			/>
-			<label
+			<Label
 				htmlFor={_id}
 				className={`
 					peer-checked:opacity-100
@@ -76,7 +79,7 @@ function ImageCheckBox({ name, image, value, toggle, id }: ImageCheckBoxProps) {
 					alt={name}
 					fill
 				/>
-			</label>
+			</Label>
 		</div>
 	)
 }

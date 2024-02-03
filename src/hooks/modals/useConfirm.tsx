@@ -1,4 +1,4 @@
-import { Button } from "@/components/material-tailwind"
+import { Button } from "@/components/UI/button"
 import React from "react"
 import useModal from "./useModal"
 
@@ -21,25 +21,23 @@ export default function useConfirm(defaultMessage = "Are you sure?") {
 
 function ModalConfirm(props: {message:string,resolver:(ans:boolean)=>void}) {
 	return (
-		<>
+		<div>
 			<p
 				className="mb-4 text-lg font-medium"
 			>{props.message}</p>
 			<div className="flex justify-center gap-16">
 				<Button
-					color="light-green"
 					onClick={()=>{props.resolver(true)}}
 				>
 					Yes
 				</Button>
 				<Button
-					color="red"
 					onClick={()=>props.resolver(false)}
 				>
 					No
 				</Button>
 			</div>
-		</>
+		</div>
 	)
 }
 
