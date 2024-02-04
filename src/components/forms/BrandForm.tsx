@@ -8,6 +8,7 @@ import FileUpload from "../UI/FileUpload/index.tsx"
 import useImageFiles from "@/hooks/useImageFiles.ts"
 import Input from "../UI/Input"
 import { Textarea } from "../UI/textarea.tsx"
+import { Label } from "../UI/label.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -35,26 +36,35 @@ export default function BrandForm({brand}: Props) {
 			validations={validation}
 			action={action}
 		>
+			<Label>
+			Brand Name
 			<Input
-				label="Name"
+				name="name"
 				id="name"
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
 			/>
+			</Label>
+			<Label>
+			Description
 			<Textarea
-				label="Description"
+				name="description"
 				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
+			</Label>
+			<Label>
+			Logo
 			<FileUpload
 			id= "image"
-			label= "Product image"
+			name="image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}
 			accept= "image/jpeg"
 			preview
 			/>
+			</Label>
 		
 		</Form>
 	)

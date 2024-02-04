@@ -1,5 +1,5 @@
 import {useToastStore} from "../../store/modalStore"
-import React from "react"
+import { ServerErrorType } from "../useAction"
 
 export default function useToast() {
 	const _close= ()=>useToastStore.setState({isVisible:false})
@@ -16,5 +16,13 @@ export default function useToast() {
 		useToastStore.setState({title,description,type:"info",isVisible:true})
 		setTimeout(()=>_close(),10000)
 	}
-	return {show,error,info}
+	function handleResponse<T>(resp:T|ServerErrorType): resp is T{
+		if (resp && typeof resp === "object" && "error" in resp){
+			useToastStore.setState({title:resp.title||"Server response",description:resp.error,type:"error",isVisible:true})
+			setTimeout(()=>_close(),10000)
+			return false
+		}
+		return true
+	}
+	return {show,error,info, handleResponse}
 }

@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "../table"
 import Input from "../Input"
 import {Tabs,TabsList,TabsContent,TabsTrigger} from "../tabs"
 import { AccordionItem, AccordionTrigger } from "@comps/UI/accordion"
+import {Label} from "@comps/UI/label"
 type Props =
 	{
 		name?: string
@@ -37,11 +38,14 @@ const ProductList = React.memo(function ProductList(props: Props) {
 	}, [products])
 	return (
 		<>
+			<Label>
+			Name Filter
 			<Input
 				name="Name Filter"
 				value={filter}
 				onChange={(e) => setFilter(e.currentTarget.value)}
 			/>
+			</Label>
 			<Tabs>
 				<TabsList defaultValue="brand">
 					<TabsTrigger value="brand">

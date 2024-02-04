@@ -1,12 +1,17 @@
 import React from "react";
-export default function useAction<T extends Promise<any>>(func:()=>T,init:Awaited<T>){
-	const [value,setValue] = React.useState<Awaited<T>>(init)
+import useToast from "./modals/useToast";
+
+export type ServerErrorType = {error:string, title:string}
+
+export default function useAction<T>(func:()=>Promise<T|ServerErrorType>,init:T){
+	const [value,setValue] = React.useState(init)
+	const {handleResponse} = useToast()
 	const [_,set] = React.useState(0)
 	React.useEffect(()=>{
 		async function execute(){
-			console.log("Reloading")
-			const res = await func()
-			setValue(res)
+			const res = (await func())
+			if (handleResponse(res)!==null)
+				setValue(res as T)
 		}
 		execute()
 	},[_])

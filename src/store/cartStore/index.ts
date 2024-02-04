@@ -16,14 +16,20 @@ interface CartState {
 function deffer<T extends (args: any) => any>(func: T, delay: number = 5000) {
 	let delayed = false
 	let storedArgs: Parameters<T>
+	let result:Promise<ReturnType<T>>
 	return function deffered(...args: Parameters<T>) {
 		storedArgs = args
-		if (!delayed)
+		if (!delayed){
+			let resolve:(val:ReturnType<T>)=>void
+			result = new Promise(res=>{resolve=res})
 			setTimeout(() => {
 				delayed = false
-				func.apply(null, storedArgs)
+				return func.apply(null, storedArgs)
 			}, delay)
+			return result
+		}
 		delayed = true
+		return result
 	}
 }
 
@@ -37,7 +43,9 @@ const useCartStore = create<CartState>()(
 				set((state) => {
 					const newItems = { ...state.items }
 					newItems[id] = 1
-					if (!noUpd) updateAccount(newItems)
+					if (!noUpd) {
+						const res = updateAccount(newItems)
+					}
 					return { items: { ...state.items, [id]: 1 } }
 				})
 			},

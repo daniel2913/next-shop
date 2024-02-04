@@ -12,7 +12,7 @@ const UserInsertValidation = z.object({
 
 const config = {
 	id: pgreDefaults.id,
-	name: pgreDefaults.name.unique(),
+	name: varchar("name",{length:20}).notNull(),
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
 	cart: jsonb("cart").notNull().default({}).$type<Record<number, number>>(),

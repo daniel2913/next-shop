@@ -3,10 +3,12 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { ProductModel, UserModel} from "@/lib/DAL/Models"
 import {inArray, sql} from "drizzle-orm"
+import { ServerError } from "./common"
 
-export async function getRating(ids:number[]):Promise<Record<number,number>>{
+export async function getRatingAction(ids:number[]){
+	try{
 	const session = await getServerSession(authOptions)
-	if (!session?.user?.role || session.user.role!=="user") return {}
+	if (session?.user?.role!=="user") return {} as Record<number,number>
 	const res = await ProductModel.model
 		.select({
 			id:ProductModel.table.id,
@@ -18,7 +20,11 @@ export async function getRating(ids:number[]):Promise<Record<number,number>>{
 	const ownVotes = res
 		.filter(row=>row.voters.includes(session.user!.id!))
 		.map(row=>[row.id,row.votes[row.voters.indexOf(session.user!.id!)!]])
-	return Object.fromEntries(ownVotes)
+	return Object.fromEntries(ownVotes) as Record<number,number>
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
 }
 
 async function setRating(id:number,user:number,vote:number){
@@ -28,18 +34,25 @@ async function setRating(id:number,user:number,vote:number){
 						votes[array_position(voters,${user})]=${vote}
 					WHERE
 							id = ${id}
+						AND
+							${user} = ANY(voters)
 					RETURNING
 						rating, cardinality(voters) as voters;
 		`)
-	if (!res.length) return null
+	if (!res.length) throw ServerError.notFound()
 	return res[0] as {rating:number, voters:number}
 }
 
 export async function updateVoteAction(id:number, vote: number){
+	try{
 	const session = await getServerSession(authOptions)
-	if (!session?.user?.id) throw "Not Authorized"
+	if (!session?.user?.id) throw ServerError.notAuthed()
 	const res1 = await setRating(id,session.user.id,vote)
-	if (!res1) throw "Not Authorized"
+	if (!res1)  throw new ServerError("You can only rate existing products that you bought","Not Authorized")
 	return res1
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
 }
 

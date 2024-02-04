@@ -1,13 +1,14 @@
+"use client"
 import BuyButton from "@/components/UI/BuyButton"
-import { Carousel, CarouselItem, CarouselNext, CarouselPrevious, CarouselContent, CarouselApi } from "../../UI/carousel"
-import Discount from "../Discount"
 import Image from "next/image"
 import Price from "../Price"
 import Rating from "@/components/UI/Rating"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
-import ProductMenu from "../ContextMenu"
 import { Card, CardContent } from "@/components/UI/card"
+
+import ProductCarousel from "../ProductCarousel"
+import ProductMenu from "../ContextMenu"
 type Props = {
 	product: PopulatedProduct
 }
@@ -25,44 +26,29 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 				grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr]
 			"
 			>
-				<Carousel className="relative rounded-lg overflow-hidden h-full col-span-2">
-					<CarouselContent>
-						{product.images.map((img, idx) => (
-							<CarouselItem
-								key={`${img}-${idx}`}
-								className="relative h-48 ">
-								<Image
-									fill
-									className="object-cover"
-									sizes="
-							30vw
-							(min-width:640px) 30vw
-							(min-width:1024px) 25vw
-							"
-									src={`/products/${img}`}
-									alt={img}
-								/>
-							</CarouselItem>
-						))}
-					</CarouselContent>
-					<CarouselPrevious
-						className="absolute disabled:opacity-30 opacity-50 left-4 bottom-1/2 -translate-y-1/2"
-					/>
-					<CarouselNext
-						className="absolute disabled:opacity-30 opacity-50 right-4 bottom-1/2 -translate-y-1/2"
-					/>
-					<Discount
-						className="absolute right-12 bottom-12 w-12 -rotate-[20deg] text-lg font-bold"
-						discount={product.discount.discount}
-					/>
-					<Image
-						className="absolute left-2 opacity-60 hover:opacity-100 top-2 rounded-full object-contain"
-						alt={product.brand.name}
-						height={30}
-						width={30}
-						src={`/brands/${product.brand.image}`}
-					/>
-				</Carousel>
+				<React.Suspense>
+				<ProductCarousel 
+					brand={
+						<Image
+							className="absolute top-1 left-1 rounded-full opacity-60 hover:opacity-100"
+							width={30}
+							height={30}
+							src={`/brands/${product.brand.image}`}
+							alt={product.brand.name}
+						/>
+					}
+					discount={product.discount.discount}>
+					{product.images.map((img,idx)=>
+						<Image
+							className="rounded-lg h-full"
+							width={245}
+							height={195}
+							src={`/products/${img}`}
+							alt={img}
+						/>
+					)}
+				</ProductCarousel>
+				</React.Suspense>
 				<Rating
 					id={product.id}
 					ownVote={product.ownVote}
@@ -90,10 +76,12 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 						className="justify-self-center self-center w-4/5 h-3/4"
 						id={product.id}
 					/>
+					<React.Suspense fallback={"..."}>
 					<ProductMenu
 						product={product}
 						className="justify-self-end"
 					/>
+					</React.Suspense>
 				</div>
 			</CardContent>
 		</Card>

@@ -13,10 +13,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
 		if (!props.id && props.label) props.id = Math.random().toString()
     return (
-			<div className="group w-fit flex-grow relative flex flex-col-reverse">
       <input
         {...props}
-				name={props.name||props.id||undefined}
 				aria-invalid={props.error ? "true" : undefined}
         type={type}
         className={cn(
@@ -32,16 +30,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         ref={ref}
       />
-				{props.label
-				? <Label 
-						className="text-md leading-5 peer-invalid:text-destructive peer-aria-[invalid]:text-destructive"
-						htmlFor={props.id}
-					>
-						{props.label}
-					</Label>
-				:null
-				}
-			</div>
     )
   }
 )

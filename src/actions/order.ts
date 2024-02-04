@@ -5,8 +5,8 @@ import { UserCache } from "@/helpers/cachedGeters"
 import { Order, OrderModel, ProductModel, User, UserModel } from "@/lib/DAL/Models"
 import { sql } from "drizzle-orm"
 import { getServerSession } from "next-auth"
-import { modelGeneralAction,  modelGeneralActionNoAuth } from "./common"
-import { getProductsByIdsAction } from "./product"
+import { ServerError, modelGeneralAction,  modelGeneralActionNoAuth } from "./common"
+import { getProductsByIds, getProductsByIdsAction } from "./product"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 
 
@@ -16,16 +16,19 @@ type PopulatedOrder = {
 }
 
 export async function getOrdersAction(){
+	try{
 	const session = await getServerSession(authOptions)
-	if (!(session?.user?.id)) return {completed:[],processing:[]}
+	if (!(session?.user?.id)) throw ServerError.notAuthed()
 	let orders:Order[] = []
 	if (session?.user?.role !== "admin")
 		orders = await OrderModel.find({user: session.user.id})
 	else orders = await OrderModel.find() 
+	
 	const productSet = new Set(
 		orders.flatMap((order) => Object.keys(order.order).map(Number))
 	)
-	const products = await getProductsByIdsAction(Array.from(productSet))
+
+	const products = await getProductsByIds(Array.from(productSet))
 	
 	const populatedOrders: {
 		completed:PopulatedOrder[]
@@ -42,11 +45,15 @@ export async function getOrdersAction(){
 			populatedOrders.completed.push({ products: populatedProducts, order })
 	}
 	return populatedOrders
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
 }
 
 export async function createOrderAction(order:Record<number,{price:number,amount:number}>) {
 	const session = await getServerSession(authOptions)
-	if (session?.user?.role!=="user") return "Not Authorized"
+	if (session?.user?.role!=="user") return ServerError.notAuthed().emmit()
 	const props = {
 		order,
 		user: session.user.id,
@@ -59,21 +66,26 @@ export async function changeOrderAction(id: number, form: FormData) {
 }
 
 export async function completeOrder(id: number) {
+	try{
 	const [session, order] = await Promise.all([
 		getServerSession(authOptions),
 		OrderModel.findOne({id})
 	])
 	
-	if (!order) throw "Order Not Found"
-	if (!session?.user?.role || session.user.role !== "admin") throw "Not Authorized"
+	if (!order) throw ServerError.notFound()
+	if (session?.user?.role !== "admin") throw ServerError.notAllowed()
 	const newProds = Object.keys(order.order)
 		.map(Number)
 	const [res] = await Promise.all([
 		OrderModel.patch(id, { status: "COMPLETED" }),
 		openRating(newProds, session.user.id),
 	])
-	if (!res) throw "Not Found"
+	if (!res) throw ServerError.notFound()
 	return false
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
 }
 
 async function openRating(prodIds:number[], userId:number) {

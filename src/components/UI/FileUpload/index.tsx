@@ -14,8 +14,8 @@ function fileListAdapter(inp: File | FileList | null): File[] {
 type Props = {
 	accept?: string
 	size?: number
-	label: string
 	id: string
+	name:string
 	className?: string
 	preview: boolean
 	value: File[]
@@ -30,7 +30,7 @@ export default function FileUpload({
 	return (
 		<div className={`${props.className} flex flex-col`}>
 			<Input
-				name={props.label}
+				name={props.name}
 				multiple={multiple}
 				accept={props.accept}
 				id={props.id}

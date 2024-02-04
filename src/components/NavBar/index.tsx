@@ -33,7 +33,6 @@ export default async function NavBar() {
 			}
 			<CartStatus
 				className="ml-auto"
-				getProducts={getProductsByIdsAction}
 			/>
 			<Auth className="ml-8" />
 		</header>

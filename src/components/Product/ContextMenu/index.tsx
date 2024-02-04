@@ -96,16 +96,16 @@ export default function ProductMenu({ className, product }: Props) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				{role === "admin"
-					? [
+					? <>
 						<DropdownMenuItem key="edit">
 							<EditProduct  product={product} />
 						</DropdownMenuItem>,
-					]
-					: [
+					</>
+					: <>
 						<DropdownMenuItem key="fav">
 							<ToggleFav id={product.id} initFav={product.favourite} />
 						</DropdownMenuItem>,
-					]
+					</>
 				}
 			</DropdownMenuContent>
 		</DropdownMenu>

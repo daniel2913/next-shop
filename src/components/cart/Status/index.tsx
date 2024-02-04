@@ -9,23 +9,28 @@ import CartIcon from "@public/cart.svg"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { getCartAction } from "@/actions/cart"
 import { Button } from "@/components/UI/button"
+import Loading from "@/components/UI/Loading"
+import useProductStore from "@/store/productsStore/productStore"
+import useToast from "@/hooks/modals/useToast"
 
 const Cart = dynamic(() => import("../Cart"))
+const Login = dynamic(() => import("@/components/modals/Login"))
 
 type Props = {
-	getProducts: (query: number | number[]) => Promise<PopulatedProduct[]>
 	className:string
 }
 
-export default function CartStatus({ getProducts,className}: Props) {
+export default function CartStatus({className}: Props) {
 	const session = useSession()
 	let synced = React.useRef(-1)
+	const reloadProducts = useProductStore(state=>state.reload)
 	const modal = useModal()
+	const {handleResponse} = useToast()
 	const localCache = useCartStore((state) => state.items)
 	const persist = useCartStore.persist
 	const setLocalCache = useCartStore((state) => state.setItems)
 	const confirmOverwrite = useConfirm(
-		"Do you want to use your local cart cache?"
+		"Your cart already has items in it. Do you want to overwrite it?"
 	)
 	React.useEffect(() => {
 		if (!persist.hasHydrated()) persist.rehydrate()
@@ -39,7 +44,7 @@ export default function CartStatus({ getProducts,className}: Props) {
 			synced.current = userId || -1
 			if (!userId || session.data?.user?.role==="admin") return null
 				const remoteCache = await getCartAction()
-				if (!remoteCache || typeof remoteCache === "string") return null
+				if (!handleResponse(remoteCache)) return null
 				if (Object.keys(remoteCache).length > 0) {
 					if (Object.keys(localCache).length === 0) {
 						setLocalCache(remoteCache)
@@ -60,13 +65,10 @@ export default function CartStatus({ getProducts,className}: Props) {
 
 	async function cartClickHandler() {
 		if (Object.values(localCache).length === 0 || session.data?.user?.role !== "user")
-			return false
-		modal.show(
-			<Cart/>
-		)
+			modal.show(<Login close={modal.close}/>)
+		else 
+			modal.show(<Cart/>)
 	}
-	async function ordersClickHandler() {
-			}
 
 	return (
 	<div className={className}>

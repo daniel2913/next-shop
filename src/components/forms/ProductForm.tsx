@@ -13,6 +13,7 @@ import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
 import useImageFiles from "@/hooks/useImageFiles.ts"
 import useAction from "@/hooks/useAction.ts"
 import { Textarea } from "../UI/textarea.tsx"
+import { Label } from "../UI/label.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -64,21 +65,26 @@ export default function ProductForm({ product }: Props) {
 				/>
 			}
 		>
+			<Label>
+			Product Name
 			<Input
-				label="Product Name"
 				id="name"
 				name={"name"}
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
 			/>
+			</Label>
+			<Label>
+			Description
 			<Textarea
-				label="Description"
 				name={"description"}
 				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
-			<div className="z-[100]">
+			</Label>
+			<Label>
+			Brand
 				<Select
 					name="brand"
 					value={brand}
@@ -93,7 +99,9 @@ export default function ProductForm({ product }: Props) {
 						}
 					</SelectContent>
 				</Select>
-			</div>
+				</Label>
+			<Label>
+			Category
 			<Select
 				defaultValue={product?.category.name || category}
 				name="category"
@@ -109,6 +117,9 @@ export default function ProductForm({ product }: Props) {
 					}
 				</SelectContent>
 			</Select>
+			</Label>
+			<Label>
+			Price
 			<Input
 				label="Price"
 				name="price"
@@ -116,15 +127,19 @@ export default function ProductForm({ product }: Props) {
 				value={price.toString()}
 				onChange={(e) => setPrice(+Number(e.target.value).toFixed(2))}
 			/>
+			</Label>
+			<Label>
+			Images
 			<FileUpload
 				id="images"
-				label="Product image"
+				name="images"
 				multiple
 				value={images}
 				onChange={(files: File[]) => setImages(files)}
 				accept="image/jpeg"
 				preview
 			/>
+			</Label>
 		</Form>
 	)
 }

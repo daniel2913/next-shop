@@ -7,90 +7,112 @@ import React from "react"
 import { registerUserAction } from "@/actions/user"
 import { Button } from "@/components/UI/button"
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/UI/tabs"
+import useProductStore from "@/store/productsStore/productStore"
+import { Label } from "@/components/UI/label"
+import Form from "@/components/forms"
 
 type Props = {
-	close: () => void
-	reloadProducts: () => void
+	close?: () => void
 }
 
 function Register({ close }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
-	const { show: showToast } = useToast()
+	const { show: showToast, handleResponse } = useToast()
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
 		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
-		if (res)
-			showToast(res)
+		if (handleResponse(res)!==null)
+			close?.()
 	}
 	return (
-		<div
+		<form
 			className="flex flex-col gap-2 mb-4"
+			onSubmit={(e)=>{
+				e.preventDefault()
+				handleRegistration({name,password})
+			}}
 		>
+
+			<Label>
+			Username
 			<Input
 				type="text"
-				label="Username"
+				name="username"
 				value={name}
-				onChange={() => setName}
-				validate={validateLogin}
+				onChange={(e) => setName(e.currentTarget.value)}
+				pattern="^[a-zA-Z][a-zA-Z0-9]{4,20}$"
 			/>
+			</Label>
+			<Label>
+			Password
 			<Input
 				type="password"
-				label="Password"
+				name="password"
 				value={password}
-				onChange={setPassword}
-				validate={validatePassword}
+				onChange={(e)=>setPassword(e.currentTarget.value)}
+				pattern={`^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!#$%&? "]).*$`}
 			/>
+			</Label>
 			<Button
 				disabled={loading}
 				type="submit"
-				onClick={() => handleRegistration({ name, password })}
 			>
 				Register
 			</Button>
-		</div>
+		</form>
 
 	)
 }
 
-function Login({ close, reloadProducts }: Props) {
+function Login({close}: Props) {
+	const reloadProducts = useProductStore(state=>state.reload)
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
-	const { show: showToast } = useToast()
+	const { error } = useToast()
 	async function handleLogin(creds: { name: string; password: string }) {
 		setLoading(true)
 		const res = await signIn("credentials", { ...creds, redirect: false })
 		setLoading(false)
 		if (res?.ok) {
-			close()
 			reloadProducts()
+			close?.()
 			return
 		}
-		showToast(res?.error || "Something bad happend")
+		error("Invalid username or password","Authentication Error")
 	}
 	return (
-		<div
+		<form
 			className="flex flex-col gap-2 mb-4"
+			onSubmit={(e)=>{
+				e.preventDefault()
+				handleLogin({name,password})
+			}}
 		>
+			<Label>
+				Username
 			<Input
 				type="text"
-				label="Username"
+				name="username"
 				value={name}
 				onChange={(e)=>setName(e.currentTarget.value)}
 			/>
+			</Label>
+			<Label>
+				Password
 			<Input
 				type="password"
-				label="Password"
+				name="password"
 				value={password}
 				onChange={(e)=>setPassword(e.currentTarget.value)}
 			/>
+			</Label>
 			<Button
 				disabled={loading}
 				type="submit"
-				onClick={() => handleLogin({ name, password })}
 			>
 				Sign In
 			</Button>
@@ -108,7 +130,7 @@ function Login({ close, reloadProducts }: Props) {
 			>
 				Demo Admin
 			</Button>
-		</div>
+		</form>
 
 	)
 }
@@ -121,7 +143,7 @@ export default function AuthModal(props: Props) {
 				lg:w-[33vw] lg:h-[45vh]
 				flex flex-col justify-start
 			"
-			value="login">
+			defaultValue="login">
 			<TabsList>
 				<TabsTrigger value="login">
 					Login

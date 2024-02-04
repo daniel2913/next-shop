@@ -7,19 +7,23 @@ import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { createOrderAction } from "@/actions/order"
 import useToast from "@/hooks/modals/useToast"
+import calcPrice from "@/helpers/discount"
+import dynamic from "next/dynamic"
+
+const Login = dynamic(()=>import("@/components/modals/Login"))
+
 
 type Props = {
 }
 
 export default function Cart() {
 	const session = useSession()
-	const {show:showToast} = useToast()
+	const {handleResponse,error} = useToast()
 	const [products, setProducts] = React.useState<PopulatedProduct[]>([])
 	const [loading, setLoading] = React.useState(false)
 	const items = useCartStore((state) => state.items)
 	const itemsSetter = useCartStore((state) => state.setItems)
 	const resetCart = () => itemsSetter({})
-	console.log("Order Render")
 
 	async function handleClick() {
 		setLoading(true)
@@ -27,38 +31,40 @@ export default function Cart() {
 		if (Object.keys(items).length === 0) return false
 		for (const id in items) {
 			const product = products.find((product) => product.id === +id)
-			if (!product) return "Error!"
-			const price =
-				product.price - (product.price * product.discount.discount) / 100
+			if (!product) {
+				error("Some of the products are no longer available","Catalog changed")
+				return
+			}
+			const price = calcPrice(product.price,product.discount.discount)
 			const amount = items[+id]
 			order[id] = { price, amount }
 		}
 		if (Object.keys(order).length !== Object.keys(items).length)
-			return "Error2!"
+			error("Internal Error","Internal Error")
 
 		const res = await createOrderAction(order)
-		if (res) showToast(res)
-		else resetCart()
+		if (handleResponse(res))
+			resetCart()
 		setLoading(false)
 	}
 
 	const totalAmount = Object.values(items).reduce((sum, next) => sum + next, 0)
-	const totalPrice = products.reduce(
-		(total, next) =>
-			total +
-			(next.price - (next.price * next.discount.discount) / 100) *
-				items[next.id],
-		0
+	const totalPrice = products.reduce((total, next) => total +
+		calcPrice(next.price,next.discount.discount) * items[next.id],0
 	)
 	React.useEffect(() => {
 		async function updateCart() {
-			setProducts(await getProductsByIdsAction(Object.keys(items)))
+			const res = await getProductsByIdsAction(Object.keys(items).map(Number))
+			if (handleResponse(res))
+				setProducts(res)
 		}
 		updateCart()
 	}, [Object.keys(items).length])
-	if (!session?.data?.user?.name) return false
+	if (!session?.data?.user?.name){
+		error("Only authenticated users","Not Authorized")
+	}
 	return loading ? (
-		<div className="h-8 w-8 animate-spin bg-accent1-500">c</div>
+		<div className="h-8 w-8 animate-spin bg-secondary text-accent">C</div>
 	) : (
 		<div
 			className="

@@ -7,6 +7,7 @@ import { changeCategoryAction, createCategoryAction } from "@/actions/category"
 import FileUpload from "../UI/FileUpload"
 import Input from "../UI/Input"
 import useImageFiles from "@/hooks/useImageFiles"
+import { Label } from "../UI/label"
 
 const validation = {
 	name: clientValidations.name,
@@ -33,22 +34,26 @@ export default function CategoryForm({category}: Props) {
 			validations={validation}
 			action={action}
 		>
+			<Label>
+			Category Name
 			<Input
-				label="Category Name"
 				id="name"
 				name={"name"}
 				value={name}
-				validate={validation.name}
-				setValue={(str: string) => setName(str)}
+				onChange={(e) => setName(e.currentTarget.value)}
 			/>
+			</Label>
+			<Label>
+			Image
 			<FileUpload
 			id= "image"
-			label= "Product image"
+			name="image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}
 			accept= "image/jpeg"
 			preview
 			/>
+			</Label>
 		</Form>
 	)
 }

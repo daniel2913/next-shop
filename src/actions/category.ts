@@ -1,12 +1,17 @@
 "use server"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import { CategoryModel } from "@/lib/DAL/Models"
-import { modelGeneralAction } from "./common"
+import { ServerError, modelGeneralAction } from "./common"
 
 
 export async function getAllCategoryNamesAction(){
+	try{
 	const res = await CategoryCache.get()
 	return res.map(cat=>cat.name)
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
 }
 
 export async function createCategoryAction(form: FormData) {

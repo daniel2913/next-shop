@@ -2,6 +2,7 @@
 import React from "react"
 import useToast from "@/hooks/modals/useToast"
 import { Button } from "../UI/button"
+import { ServerErrorType } from "@/hooks/useAction"
 
 export type FormFieldValue = string | File[] | string[]
 export interface FormFieldValidator {
@@ -10,7 +11,7 @@ export interface FormFieldValidator {
 type Props = {
 	className: string
 	validations: Record<string, (val: any) => false | string>
-	action: (payload: FormData) => Promise<false | string>
+	action: (payload: FormData) => Promise<false | ServerErrorType>
 	children: React.ReactNode
 	preview?: React.ReactElement
 }
@@ -23,7 +24,7 @@ export default function Form({
 	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false)
-	const {error:showError,info:showStatus} = useToast()
+	const {handleResponse,error:showError} = useToast()
 	
 	async function submitHandler(e: FormData) {
 		const payload = new FormData()
@@ -38,10 +39,9 @@ export default function Form({
 			payload.append(key,value)
 		}
 		setLoading(true)
-		action(payload)
-			.then(res=> showStatus(res||"Successful!","Server response"))
-			.catch(res=> showError(res.message||"Some Error","Server response"))
-			.finally(()=>setLoading(false))
+		const res = await action(payload)
+		handleResponse(res)
+		setLoading(false)
 	}
 
 	return (

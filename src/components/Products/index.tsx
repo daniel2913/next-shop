@@ -1,10 +1,11 @@
 "use client"
-import ProductCard from "@/components/product/ProductCard"
 import useInfScroll from "@/hooks/useInfScroll"
 import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import useProductStore from "@/store/productsStore/productStore"
 import React from "react"
-import Link from "next/link"
+import ProductCard from "../product/ProductCard"
+
+
 type Props = {
 	products: PopulatedProduct[]
 }
@@ -14,7 +15,7 @@ function keyCompare(oldObj: PopulatedProduct[], newObj: PopulatedProduct[]) {
 	return res
 }
 
-export default function ProductList({ products: initProducts }: Props) {
+export default function ProductList({ products: initProducts}: Props) {
 	let scrollProducts: null | PopulatedProduct[] = null
 	let inited = false
 	const endRef = React.useRef<HTMLDivElement>(null)
@@ -32,7 +33,6 @@ export default function ProductList({ products: initProducts }: Props) {
 		React.useEffect(() => { if (!inited) setProducts(initProducts) }, [initProducts])
 	}
 	const products = (inited && scrollProducts) || initProducts
-	const [open, setOpen] = React.useState(false)
 	return (
 		<div className="bg-background">
 			<div

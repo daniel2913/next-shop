@@ -6,13 +6,11 @@ import { Label } from "./label"
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 	error?:boolean
-	label:string
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
     return (
-			<div className="group w-fit flex-grow relative flex flex-col-reverse">
       <textarea
         {...props}
 				name={props.name||props.id||undefined}
@@ -22,16 +20,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         ref={ref}
       />
-				{props.label
-				? <Label 
-						className="text-md leading-5 peer-invalid:text-destructive peer-aria-[invalid]:text-destructive"
-						htmlFor={props.id}
-					>
-						{props.label}
-					</Label>
-				:null
-				}
-			</div>
     )
   }
 )

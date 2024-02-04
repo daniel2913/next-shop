@@ -13,7 +13,8 @@ const OrderInsertValidation = z.object({
 		price:z.number().positive()
 	}))
 		.refine(async order=>{
-			const products = await getProductsByIdsAction(Object.keys(order))
+			const products = await getProductsByIdsAction(Object.keys(order).map(Number))
+			if ("error" in products) return false
 			if (products.length !== Object.keys(order).length) return false
 			return products
 				.map((product) =>

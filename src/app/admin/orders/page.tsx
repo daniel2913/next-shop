@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth"
-import Accordion from "@/components/UI/accordion"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { OrderModel } from "@/lib/DAL/Models"
 import { getProductsByIdsAction } from "@/actions/product"
@@ -21,6 +20,7 @@ export default async function OrderList() {
 		orders.flatMap((order) => Object.keys(order.order).map(Number))
 	)
 	const products = await getProductsByIdsAction(Array.from(productSet))
+	
 	const populatedOrders: {
 		order: Order
 		products: PopulatedProduct[]

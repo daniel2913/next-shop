@@ -23,10 +23,9 @@ const Rating = React.memo(function Rating({
 	className,
 }: Props) {
 	const session = useSession()
-	const { show: showToast } = useToast()
+	const { show: showToast, handleResponse } = useToast()
 	const voteSetter = useProductStore(state => state.updateVote)
 	const setVote = (vote: number) => voteSetter(id, vote)
-	const [pending, startTransition] = React.useTransition()
 
 	async function handleRate(i: number) {
 		if (!session?.data?.user?.id)
@@ -34,48 +33,45 @@ const Rating = React.memo(function Rating({
 		else if (ownVote === -1)
 			showToast("You can only rate products you bought!")
 		else {
-			startTransition(async () => {
-				const res = await setVote(i)
-				if (!res)
-					showToast("Something went wrong...")
-			})
+			const res = await setVote(i)
+			handleResponse(res)
 		}
 	}
 	return (
-		<div 
+		<div
 			className={cn(
-			`flex flex-wrap gap-1 justify-center`
-			, className)
+				`flex flex-wrap gap-1 justify-center`
+				, className)
 			}
-			title={rating>0&&`
+			title={rating > 0 && `
 				${rating} from ${voters} voter${voters % 10 === 1 ? "" : "s"}`
-			|| "No Votes"
+				|| "No Votes"
 			}
 		>
-				{ratings.map((i) =>
-					<button
-						disabled={ownVote === -1}
-						type="button"
+			{ratings.map((i) =>
+				<button
+					disabled={ownVote === -1}
+					type="button"
+					key={`${i}-${Math.random()}`}
+					onClick={() => handleRate(i)}
+					className=""
+					id={`${i}`}
+				>
+					<Star
 						key={`${i}-${Math.random()}`}
-						onClick={() => handleRate(i)}
-						className=""
-						id={`${i}`}
-					>
-						<Star
-							key={`${i}-${Math.random()}`}
-							className={`
+						className={`
 							aspect-square h-full
 								${i <= ownVote
-									? "fill-accent"
-									: i <= (rating || 0)
-										? "fill-secondary"
-										: "fill-foreground"
-								}
-								${ownVote===0 && "stroke-accent"}
+								? "fill-accent"
+								: i <= (rating || 0)
+									? "fill-secondary"
+									: "fill-foreground"
+							}
+								${ownVote === 0 && "stroke-accent"}
 							`}
-						/>
-					</button>
-				)}
+					/>
+				</button>
+			)}
 		</div>
 	)
 })
