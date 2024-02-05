@@ -40,6 +40,7 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 					discount={product.discount.discount}>
 					{product.images.map((img,idx)=>
 						<Image
+							key={`${img}-${idx}`}
 							className="rounded-lg h-full"
 							width={245}
 							height={195}

@@ -11,7 +11,7 @@ export interface ProductsSlice {
 	loadProducts:(page:number|undefined,query:URLSearchParams,) => Promise<number|false>
 	clearProducts: () => void
 	setProducts: (products:PopulatedProduct[])=>void
-	reload: ()=> void
+	reload: ()=> Promise<false|ServerErrorType>
 	reloadSingle: (id:number)=>Promise<PopulatedProduct|ServerErrorType>
 	updateVote: (id:number,vote:number)=>Promise<ServerErrorType|{rating:number,voters:number}>
 	toggleFav: (id:number)=>Promise<false|ServerErrorType>
@@ -63,6 +63,7 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 			}
 		))
 		set({products:newProducts})
+		return false
 	},
 	updateVote: async (id:number,vote:number)=>{
 			const res = await updateVoteAction(id,vote)

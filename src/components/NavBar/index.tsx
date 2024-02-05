@@ -1,40 +1,31 @@
 import React  from "react"
 import Auth from "../UI/Auth"
 import CartStatus from "../cart/Status"
-import Search from "../UI/Search"
-import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
-import { getProductsByIdsAction } from "@/actions/product"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import AdminPanel from "../admin/AdminPanel"
-
+import AuthContainer from "../UI/Auth/container"
+import Link from "next/link"
+import Catalogue from "@public/journal.svg"
+import Home from "@public/home.svg"
 
 export default async function NavBar() {
 	const session = await getServerSession(authOptions)
-	const brands = BrandCache.get()
-	const categories = CategoryCache.get()
 	return (
-		<header
-			className="
-				relative left-0 right-0 top-0
-				flex h-12 items-center
-				bg-secondary px-5
-				py-1"
-		>
-			<div className="h-full w-20 bg-accent1-400" />
-			<Search
-				className="mx-auto h-4/5"
-				brandsPromise={brands}
-				categoriesPromise={categories}
-			/>
-			{session?.user?.role === "admin"
-				? <AdminPanel className="ml-4" />
-				: null
-			}
+		<>
+			<Link href="./" className="order-1 basis-0 flex-auto flex items-center flex-col sm:flex-row">
+				<Home width={"30px"} height={"30px"}/>
+				Home
+			</Link>
+			<Link href="./" className="order-1 basis-0 flex-auto items-center flex flex-col sm:flex-row">
+				<Catalogue width={"30px"} height={"30px"}/>
+				Catalogue
+			</Link>
 			<CartStatus
-				className="ml-auto"
+				className="flex-auto basis-0 order-3"
 			/>
-			<Auth className="ml-8" />
-		</header>
+			<AuthContainer className="flex-auto basis-0 order-3">
+				<Auth className="" />
+			</AuthContainer>
+		</>
 	)
 }

@@ -10,23 +10,35 @@ import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/UI/tabs"
 import useProductStore from "@/store/productsStore/productStore"
 import { Label } from "@/components/UI/label"
 import Form from "@/components/forms"
+import { usePathname, useRouter } from "next/navigation"
 
 type Props = {
 	close?: () => void
+	redirect?:string
 }
 
-function Register({ close }: Props) {
+function Register({ close,redirect }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
-	const { show: showToast, handleResponse } = useToast()
+	const router = useRouter()
+	const { error, handleResponse } = useToast()
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
 		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
-		if (handleResponse(res)!==null)
-			close?.()
-	}
+		if (handleResponse(res)===null) return
+		const signRes = await signIn("credentials",{...creds, redirect:false},)
+		if (!signRes?.ok){
+			error("Unknown Error","Internal Error")
+			return
+		}
+		if (redirect)
+			router.push(redirect)
+		if (close)
+			close()
+
+	}	
 	return (
 		<form
 			className="flex flex-col gap-2 mb-4"
@@ -35,7 +47,6 @@ function Register({ close }: Props) {
 				handleRegistration({name,password})
 			}}
 		>
-
 			<Label>
 			Username
 			<Input
@@ -67,19 +78,25 @@ function Register({ close }: Props) {
 	)
 }
 
-function Login({close}: Props) {
+function Login({close,redirect}: Props) {
 	const reloadProducts = useProductStore(state=>state.reload)
+	const products = useProductStore(state=>state.products)
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
-	const { error } = useToast()
+	const router = useRouter()
+	const { error,handleResponse } = useToast()
 	async function handleLogin(creds: { name: string; password: string }) {
 		setLoading(true)
-		const res = await signIn("credentials", { ...creds, redirect: false })
-		setLoading(false)
+		const res = await signIn("credentials", { ...creds, redirect:false})
 		if (res?.ok) {
-			reloadProducts()
-			close?.()
+		handleResponse(await reloadProducts())
+		setLoading(false)
+			if (redirect)
+				router.push(redirect)
+			else if (close)
+				close()
+		setLoading(false)
 			return
 		}
 		error("Invalid username or password","Authentication Error")
@@ -135,7 +152,7 @@ function Login({close}: Props) {
 	)
 }
 
-export default function AuthModal(props: Props) {
+export default function AuthModule(props: Props) {
 	return (
 		<Tabs
 			className="

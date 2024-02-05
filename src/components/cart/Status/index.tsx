@@ -12,6 +12,8 @@ import { Button } from "@/components/UI/button"
 import Loading from "@/components/UI/Loading"
 import useProductStore from "@/store/productsStore/productStore"
 import useToast from "@/hooks/modals/useToast"
+import useResponsive from "@/hooks/useWidth"
+import Link from "next/link"
 
 const Cart = dynamic(() => import("../Cart"))
 const Login = dynamic(() => import("@/components/modals/Login"))
@@ -24,11 +26,13 @@ export default function CartStatus({className}: Props) {
 	const session = useSession()
 	let synced = React.useRef(-1)
 	const reloadProducts = useProductStore(state=>state.reload)
+	const mode = useResponsive()
 	const modal = useModal()
 	const {handleResponse} = useToast()
 	const localCache = useCartStore((state) => state.items)
 	const persist = useCartStore.persist
 	const setLocalCache = useCartStore((state) => state.setItems)
+	const itemsCount = Object.values(localCache).reduce((sum, next) => sum + next, 0)
 	const confirmOverwrite = useConfirm(
 		"Your cart already has items in it. Do you want to overwrite it?"
 	)
@@ -69,16 +73,30 @@ export default function CartStatus({className}: Props) {
 		else 
 			modal.show(<Cart/>)
 	}
-
-	return (
-	<div className={className}>
-		<Button
+	const content = <>
+			<CartIcon width="30px" height="30px"/>
+			Cart
+		{
+			itemsCount
+					?
+					<div className="absolute overflow-hidden -top-4 left-1/2 w-6 aspect-square rounded-full bg-accent border-tan border-1">
+					<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+						{itemsCount}
+					</span>
+					</div>
+					:null
+				}
+	</>
+	return ( mode==="desktop"
+		?<Button
 			type="button"
+				className={`${className} justify-center relative flex flex-row`}
 			onClick={cartClickHandler}
 		>
-			<CartIcon width="30px" height="30px"/>
-			{Object.values(localCache).reduce((sum, next) => sum + next, 0)}
+			{content}
 		</Button>
-	</div>
+		:<Link href="/shop/cart" className={`${className} relative flex flex-col items-center`}>
+				{content}
+		</Link>
 	)
 }

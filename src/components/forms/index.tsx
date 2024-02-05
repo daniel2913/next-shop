@@ -24,7 +24,7 @@ export default function Form({
 	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false)
-	const {handleResponse,error:showError} = useToast()
+	const {handleResponse,error:showError, info:showStatus} = useToast()
 	
 	async function submitHandler(e: FormData) {
 		const payload = new FormData()
@@ -40,7 +40,8 @@ export default function Form({
 		}
 		setLoading(true)
 		const res = await action(payload)
-		handleResponse(res)
+		if (handleResponse(res))
+			showStatus("Successful")
 		setLoading(false)
 	}
 

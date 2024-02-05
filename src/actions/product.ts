@@ -46,8 +46,8 @@ type Params = {
 }
 
 const querySchema = z.object({
-	brand: z.array(z.string()).optional(),
-	category: z.array(z.string()).optional(),
+	brand: z.array(z.string()).optional().transform(ar=>ar&&ar?.length>0 ? ar : undefined),
+	category: z.array(z.string()).optional().transform(ar=>ar&&ar?.length>0 ? ar : undefined),
 	name: z.string().optional(),
 	skip: z.coerce.number().default(0),
 	page: z.coerce.number().default(10)
