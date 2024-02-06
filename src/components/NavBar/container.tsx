@@ -16,10 +16,10 @@ export default function NavBarContainer({ children, search }: Props) {
 	if (!visible) return null
 	return (
 		mode === "desktop"
-			? <div
+			? <header
 				className="
 				fixed left-0 right-0 top-0 z-[100]
-				flex h-12 items-center
+				flex items-center h-12 mb-2
 				bg-secondary px-5 animate-slide-down
 				py-1 "
 			>
@@ -27,19 +27,19 @@ export default function NavBarContainer({ children, search }: Props) {
 					{search}
 				</div>
 				{children}
-			</div>
+			</header>
 			:
-			<div className="z-[100] fixed justify-between animate-slide-up left-0 right-0 bottom-0 h-12 flex justify-between bg-secondary px-2">
+			<header className="z-[100] h-12 mt-2 fixed justify-between animate-slide-up left-0 right-0 bottom-0 flex justify-between bg-secondary px-2">
 				<Drawer modal={false}>
 					<DrawerTrigger className="flex basis-0 flex-auto flex-col items-center order-2">
 						<Glass width="30px" height="30px" className="bg-tan opacity-80 rounded-full"/>
 						search
 					</DrawerTrigger>
-					<DrawerContent className="w-full bg-secondary items-end">
+					<DrawerContent className="w-full h-fit pb-12 bg-secondary items-end">
 						{search}
 					</DrawerContent>
 				</Drawer>
 					{children}
-			</div>
+			</header>
 	)
 }

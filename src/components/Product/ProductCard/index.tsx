@@ -37,7 +37,8 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 							alt={product.brand.name}
 						/>
 					}
-					discount={product.discount.discount}>
+					discount={product.discount.discount}
+					>
 					{product.images.map((img,idx)=>
 						<Image
 							key={`${img}-${idx}`}

@@ -10,8 +10,8 @@ export default async function Shop({
 	searchParams: Record<string,string>
 }) {
 	const params = new URLSearchParams(searchParams)
-	const brand = params.getAll("brand") || undefined
-	const category = params.getAll("category") || undefined
+	const brand = params.getAll("brand")
+	const category = params.getAll("category")
 	const name = params.get("name") || undefined
 	const initProducts = await getProductsPageAction({brand,category,name})
 	if ("error" in initProducts) return <div>Error!</div>

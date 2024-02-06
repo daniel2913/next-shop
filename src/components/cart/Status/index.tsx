@@ -6,11 +6,8 @@ import useConfirm from "../../../hooks/modals/useConfirm"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import CartIcon from "@public/cart.svg" 
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import { getCartAction } from "@/actions/cart"
 import { Button } from "@/components/UI/button"
-import Loading from "@/components/UI/Loading"
-import useProductStore from "@/store/productsStore/productStore"
 import useToast from "@/hooks/modals/useToast"
 import useResponsive from "@/hooks/useWidth"
 import Link from "next/link"
@@ -22,50 +19,72 @@ type Props = {
 	className:string
 }
 
-export default function CartStatus({className}: Props) {
+type Items = Record<string,number>
+
+function mergeCarts(cart1:Items,cart2:Items){
+	console.log("merge")
+	const result = structuredClone(cart1)
+	const included = Object.keys(result)
+	for (const [id,amount] of Object.entries(cart2)){
+		if (included.includes(id))
+			result[id]=result[id]+amount
+		else
+			result[id]=amount
+	}
+	return result
+}
+
+
+export function CartControl(){
+	const {error} = useToast()
 	const session = useSession()
-	let synced = React.useRef(-1)
-	const reloadProducts = useProductStore(state=>state.reload)
-	const mode = useResponsive()
-	const modal = useModal()
-	const {handleResponse} = useToast()
-	const localCache = useCartStore((state) => state.items)
+	const confirm = useConfirm()
 	const persist = useCartStore.persist
-	const setLocalCache = useCartStore((state) => state.setItems)
-	const itemsCount = Object.values(localCache).reduce((sum, next) => sum + next, 0)
-	const confirmOverwrite = useConfirm(
-		"Your cart already has items in it. Do you want to overwrite it?"
-	)
-	React.useEffect(() => {
-		if (!persist.hasHydrated()) persist.rehydrate()
-	}, [])
+	const synced = React.useRef(-1)
+	const updateCart = useCartStore(state=>state.setItemsAndUpdate)
 	React.useEffect(() => {
 		async function getCache() {
-			const userId = session.data?.user?.id
-			if (synced.current === userId) {
-				return false
+			if (!persist.hasHydrated()) persist.rehydrate()
+			if (session.data?.user?.role !== "user") {
+				synced.current=session.data?.user?.id || -1
+				return
 			}
-			synced.current = userId || -1
-			if (!userId || session.data?.user?.role==="admin") return null
-				const remoteCache = await getCartAction()
-				if (!handleResponse(remoteCache)) return null
-				if (Object.keys(remoteCache).length > 0) {
-					if (Object.keys(localCache).length === 0) {
-						setLocalCache(remoteCache)
-					} else if (
-						JSON.stringify(remoteCache) !== JSON.stringify(localCache)
-					) {
-						confirmOverwrite().then((ans) => {
-							if (!ans) {
-								setLocalCache(remoteCache)
-							}
-						})
-					}
+			if (!persist.hasHydrated) throw "Critical error"
+			if (synced.current === session.data.user.id) return
+			
+			let cart = await getCartAction()
+			if ("error" in cart){
+				error("Could not sync with database","Connection Error")
+				return
+			}
+			synced.current = session.data.user.id
+			const localCart = useCartStore.getState().items
+			console.log(localCart,cart)
+			const haveLocal = Object.keys(localCart).length>0
+			const haveRemote = Object.keys(cart).length>0
+			if (!haveRemote) return
+			if (haveLocal && JSON.stringify(localCart)!==JSON.stringify(cart))
+				if ((await confirm("Do you want to keep items from your local cart?")))
+					updateCart(mergeCarts(cart,localCart))
+				else {
+					persist.clearStorage()
+					useCartStore.setState({items:cart})
 				}
+			else useCartStore.setState({items:cart})
+			console.log("end")
 		}
-		if (session.data?.user?.role === "user" && session.data.user.id>0)
-		getCache()
+			getCache()
 	}, [session.data?.user?.id])
+	return null
+}
+
+
+export default function CartStatus({className}: Props) {
+	const session = useSession()
+	const mode = useResponsive()
+	const modal = useModal()
+	const localCache = useCartStore((state) => state.items)
+	const itemsCount = Object.values(localCache).reduce((sum, next) => sum + next, 0)
 
 	async function cartClickHandler() {
 		if (Object.values(localCache).length === 0 || session.data?.user?.role !== "user")

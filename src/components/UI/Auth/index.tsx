@@ -6,10 +6,11 @@ import dynamic from "next/dynamic"
 import { Button } from "../button"
 import Exit from "@/../public/exit.svg"
 import useModal from "@/hooks/modals/useModal"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Orders from "@public/note.svg"
 import useResponsive from "@/hooks/useWidth"
 import Link from "next/link"
+import React from "react"
 
 const OrderList = dynamic(() => import("@/components/cart/Orders"))
 
@@ -17,13 +18,22 @@ interface props {
 	className?: string
 }
 
+export function ProductControl(){
+	const session = useSession()
+	const {reload} = useProductStore.getState()
+	React.useEffect(()=>{
+		reload()
+		console.log(useProductStore.getState().products)
+		if (!session.data?.user)
+			useCartStore.setState({items:{}})
+
+	},[session.data?.user])
+	return null
+}
+
 export default function Auth({ className }: props) {
 	const session = useSession()
-	const router = useRouter()
 	const mode = useResponsive()
-	const cartSetter = useCartStore((state) => state.setItems)
-	const purgeCart = () => cartSetter({})
-	const reloadProducts = useProductStore(state => state.reload)
 	const modal = useModal()
 	return (
 		<>
@@ -52,9 +62,6 @@ export default function Auth({ className }: props) {
 						type="submit"
 						onClick={async () => {
 							await signOut({ redirect: false })
-							purgeCart()
-							reloadProducts()
-							router.refresh()
 						}}
 					>
 					<Exit className="stroke-2" height="30px" width="30px" />

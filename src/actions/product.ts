@@ -1,7 +1,7 @@
 "use server"
 import { ProductModel } from "@/lib/DAL/Models"
 import { populateProducts } from "@/helpers/getProducts"
-import { ilike, inArray } from "drizzle-orm"
+import { and, ilike, inArray } from "drizzle-orm"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 import { ServerError, modelGeneralAction } from "./common"
 import { z } from "zod"
@@ -24,6 +24,7 @@ export async function getAllProductsAction() {
 
 export async function getProductsByIds(query:number|number[]){
 		query = z.number().or(z.array(z.number())).parse(query)
+		if (Array.isArray(query) && query.length===0) return []
 		const products = await ProductModel.find({ id: query })
 		return populateProducts(products)
 }
@@ -57,37 +58,34 @@ const querySchema = z.object({
 export async function getProductsPageAction(params: Params) {
 	try{
 	const { brand, category, name, skip, page, } =querySchema.parse(params)
-	let query = ProductModel.model
-		.select()
-		.from(ProductModel.table)
-		.offset(+skip)
-		.limit(+page)
-		.$dynamic()
-
+		console.log(category)
+	let brandIds:number[]
 	if (brand && brand.length > 0) {
-		let brandQuery: number[]
 		const brands = await BrandCache.get()
-		brandQuery = brand
+		brandIds = brand
 			.filter(brand => brands.find(_brand => _brand.name === brand))
 			.map(brand => brands.find(_brand => _brand.name === brand)!.id)
-		if (brandQuery.length > 0)
-			query = query.where(inArray(ProductModel.table.brand, brandQuery))
 	}
-
+	let categoryIds:number[]
 	if (category && category.length > 0) {
-		let categoryQuery: number[]
 		const categories = await CategoryCache.get()
-		categoryQuery = category
+		categoryIds = category
 			.filter(category => categories.find(_category => _category.name === category))
 			.map(category => categories.find(_category => _category.name === category)!.id)
-		if (categoryQuery.length > 0)
-			query = query.where(inArray(ProductModel.table.category, categoryQuery))
 	}
+	const products = ProductModel.model
+		.select()
+		.from(ProductModel.table)
+		.where(and(
+			brandIds?.length &&	inArray(ProductModel.table.brand,brandIds) || undefined,
+			categoryIds?.length &&	inArray(ProductModel.table.category,categoryIds) || undefined,
+			name?.length &&	ilike(ProductModel.table.name,`%${name}%`) || undefined,
+			))
+		.offset(+skip)
+		.limit(+page)
 
-	if (name && name.length > 0) {
-		query.where(ilike(ProductModel.table.name, `%${name}%`))
-	}
-	return populateProducts(await query)
+	console.log(products.toSQL())
+	return populateProducts(await products)
 
 	}
 	catch(error){

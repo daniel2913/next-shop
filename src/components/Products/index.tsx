@@ -20,7 +20,7 @@ export default function ProductList({ products: initProducts}: Props) {
 	let inited = false
 	const endRef = React.useRef<HTMLDivElement>(null)
 	if (typeof window !== "undefined") {
-		const storeProducts = useProductStore(state => state.products, keyCompare)
+		const storeProducts = useProductStore(state => state.products)
 		const setProducts = useProductStore(state => state.setProducts)
 		inited = useProductStore(state => state.inited)
 		const loadProducts = useProductStore(state => state.loadProducts)

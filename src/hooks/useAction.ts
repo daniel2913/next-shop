@@ -5,15 +5,18 @@ export type ServerErrorType = {error:string, title:string}
 
 export default function useAction<T>(func:()=>Promise<T|ServerErrorType>,init:T){
 	const [value,setValue] = React.useState(init)
+	const [loading,setLoading] = React.useState(true)
 	const {handleResponse} = useToast()
 	const [_,set] = React.useState(0)
 	React.useEffect(()=>{
 		async function execute(){
-			const res = (await func())
-			if (handleResponse(res)!==null)
+			setLoading(true)
+			const res = await func()
+			setLoading(false)
+			if (handleResponse(res))
 				setValue(res as T)
 		}
 		execute()
 	},[_])
-	return {value,setValue,reload:()=>set(s=>++s)}
+	return {value,setValue,loading,reload:()=>set(s=>++s)}
 }

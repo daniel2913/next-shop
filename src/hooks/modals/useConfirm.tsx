@@ -1,25 +1,25 @@
 import { Button } from "@/components/UI/button"
 import React from "react"
-import useModal from "./useModal"
+import { useModalStore } from "@/store/modalStore"
 
 export default function useConfirm(defaultMessage = "Are you sure?") {
-	const {show:_show,close} = useModal()
-	
-	function show(message?:string) {
-		let resolver:(res:boolean)=>void
-		const result = new Promise((resolve) => {
-			resolver = (res:boolean)=>{
-				resolve(res)
-				close()
-				}
+	function show(message?: string) {
+		const { dialogRef, setContent } = useModalStore.getState()
+		return new Promise(res => {
+			setContent(<ModalConfirm
+				resolver={(val: boolean) => {
+					res(val)
+					dialogRef?.current?.close()
+				}}
+				message={message || defaultMessage}
+			/>)
+			dialogRef?.current?.show()
 		})
-		_show(<ModalConfirm resolver={resolver} message={message || defaultMessage}/> )
-		return result
-		}
+	}
 	return show
 }
 
-function ModalConfirm(props: {message:string,resolver:(ans:boolean)=>void}) {
+function ModalConfirm(props: { message: string, resolver: (ans: boolean) => void }) {
 	return (
 		<div>
 			<p
@@ -27,12 +27,12 @@ function ModalConfirm(props: {message:string,resolver:(ans:boolean)=>void}) {
 			>{props.message}</p>
 			<div className="flex justify-center gap-16">
 				<Button
-					onClick={()=>{props.resolver(true)}}
+					onClick={() => { props.resolver(true) }}
 				>
 					Yes
 				</Button>
 				<Button
-					onClick={()=>props.resolver(false)}
+					onClick={() => props.resolver(false)}
 				>
 					No
 				</Button>

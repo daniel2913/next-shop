@@ -3,25 +3,26 @@ import { persist } from "zustand/middleware"
 import { setCartAction } from "@/actions/cart"
 
 
-type Items = Record<number, number>
+type Items = Record<string, number>
 
 interface CartState {
 	items: Items
+	synced: number
 	addItem: (item: number, noUpd?: boolean) => void
 	discardItem: (id: number, noUpd?: boolean) => void
 	setAmmount: (id: number, amnt: number, noUpd?: boolean) => void
-	setItems: (items: Items) => void
+	setItemsAndUpdate: (items: Items) => void
 }
 
 function deffer<T extends (args: any) => any>(func: T, delay: number = 5000) {
 	let delayed = false
 	let storedArgs: Parameters<T>
-	let result:Promise<ReturnType<T>>
+	let result: Promise<ReturnType<T>>
 	return function deffered(...args: Parameters<T>) {
 		storedArgs = args
-		if (!delayed){
-			let resolve:(val:ReturnType<T>)=>void
-			result = new Promise(res=>{resolve=res})
+		if (!delayed) {
+			let resolve: (val: ReturnType<T>) => void
+			result = new Promise(res => { resolve = res })
 			setTimeout(() => {
 				delayed = false
 				return func.apply(null, storedArgs)
@@ -33,47 +34,39 @@ function deffer<T extends (args: any) => any>(func: T, delay: number = 5000) {
 	}
 }
 
-const updateAccount = deffer(setCartAction, 200)
+const updateAccount = setCartAction
 
 const useCartStore = create<CartState>()(
 	persist(
 		(set, get) => ({
+			synced: -1,
 			items: {},
-			addItem: (id: number, noUpd?: boolean) => {
-				set((state) => {
-					const newItems = { ...state.items }
-					newItems[id] = 1
-					if (!noUpd) {
-						const res = updateAccount(newItems)
-					}
-					return { items: { ...state.items, [id]: 1 } }
-				})
+			addItem: (id: number) => {
+				const items = structuredClone(get().items)
+				items[id] = 1
+				updateAccount(items)
+				set({items})
 			},
-			setItems: (items: Items) => {
-				set((_) => {
-					updateAccount(items)
-					return { items }
-				})
+			setItemsAndUpdate: (items: Items) => {
+				updateAccount(items)
+				set({ items })
 			},
-			discardItem: (id: number, noUpd?: boolean) => {
-				set((state) => {
-					const { [id]: _, ...items } = state.items
-					if (!noUpd) updateAccount(items)
-					return { items }
-				})
+			discardItem: (id: number) => {
+				const {[id]:_,...items} = get().items
+				updateAccount(items)
+				set({items})
 			},
-			setAmmount: (id: number, amnt: number, noUpd?: boolean) => {
-				set((state) => {
-					const { [id]: _, ...items } = state.items
-					if (amnt > 0) items[id] = amnt
-					if (!noUpd) updateAccount(items)
-					return { items }
-				})
-			}
-		}),{
-			name: "cart-store",
-			skipHydration: true,
-		}
-))
+			setAmmount: (id: number, amnt: number) => {
+				const items = get().items
+				items[id] = amnt
+				updateAccount(items)
+				set({ items })
+			},
+		}), {
+		name: "cart-store",
+		partialize: state => ({ items: state.items }),
+		skipHydration: true,
+	}
+	))
 
 export default useCartStore

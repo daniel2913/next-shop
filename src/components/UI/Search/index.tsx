@@ -1,54 +1,50 @@
 "use client"
-import type { Brand, Category } from "@/lib/DAL/Models"
 import { useRouter } from "next/navigation"
-import React from "react"
-import CheckBoxBlock from "../CheckBoxBlock"
+import React, { FormEvent } from "react"
 import { Button } from "@/components/UI/button"
 import SearchIcon from "@/../public/search.svg"
 import useProductStore from "@/store/productsStore/productStore"
 import Input from "../Input"
-import { Popover, PopoverContent, PopoverTrigger } from "../popover"
+import { ToggleGroup} from "../toggle-group"
 
-interface Props {
+type Props = {
 	className?: string
-	brandsPromise: Promise<Brand[]>
-	categoriesPromise: Promise<Category[]>
+	categoryItems:React.ReactNode[]
+	brandItems:React.ReactNode[]
 }
 
-export default function Search({ className, brandsPromise, categoriesPromise }: Props) {
-	const router = useRouter()
-	const brandList = React.use(brandsPromise)
-	const categoryList = React.use(categoriesPromise)
-	const [queryString, setQueryString] = React.useState<string>("")
-	const clearProducts = useProductStore(state => state.clearProducts)
-	const brandImages = brandList.map((brand) => `/brands/${brand.image}`)
-	const categoryImages = categoryList.map((cat) => `/categories/${cat.image}`)
-	const [brands, setBrands] = React.useState<string[]>([])
+export default function Search({ className, brandItems,categoryItems}: Props) {
+	const [brands,setBrands] = React.useState<string[]>([])
 	const [categories, setCategories] = React.useState<string[]>([])
-	async function onClick() {
-		const query = new URL("shop", "http://localhost:3000")
-		if (queryString) query.searchParams.set("name", queryString)
-		if (categories.length)
-			query.searchParams.set(
+	const [name,setName] = React.useState("")
+	const router = useRouter()
+	async function onSubmit(e:FormEvent) {
+		console.log([...(new FormData(e.currentTarget)).entries()])
+		e.preventDefault()
+		const query = new URL("/shop", "http://localhost:3000")
+		if (name) query.searchParams.set("name", name)
+		console.log(categories)
+		for (const category of categories)
+			query.searchParams.append(
 				"category",
-				encodeURIComponent(categories.join(","))
+				category
 			)
-		if (brands.length)
-			query.searchParams.set(
+		for (const brand of brands)
+			query.searchParams.append(
 				"brand",
-				encodeURIComponent(brands.join(","))
+				brand
 			)
-		clearProducts()
+		useProductStore.setState({products:[]})
 		router.push(query.toString())
-
+		router.refresh()
 	}
 
 	return (
-		<Popover>
-			<div className={`
-				${className} group relative right-auto flex w-1/2
+			<form
+				onSubmit={onSubmit}
+				className={`
+				${className} group relative right-auto flex w-full
 				flex overflow-hidden
-				focus-within:w-[30rem] transition-[width] w-40
 				border-2 rounded-lg border-cyan-400"
 			`}>
 				<Input
@@ -60,14 +56,10 @@ export default function Search({ className, brandsPromise, categoriesPromise }: 
 						text-black
 						font-medium text-2xl
           "
-					name="searchQuery"
-					id="searchQuery"
-					value={queryString}
-					onChange={(e) => setQueryString(e.currentTarget.value)}
+					value={name}
+					name="name"
+					onChange={(e) => setName(e.currentTarget.value)}
 				/>
-				<PopoverTrigger>
-					^
-				</PopoverTrigger>
 				<Button
 					className="
             rounded-r-lg rounded-l-none h-full
@@ -75,38 +67,26 @@ export default function Search({ className, brandsPromise, categoriesPromise }: 
 						bg-accent1-400 text-teal-400 text-md
 						px-1
           "
-					type="button"
-					onClick={onClick}
+					type="submit"
 				>
 					<SearchIcon width="25px" height="25px" />
 				</Button>
-			</div>
-			<PopoverContent
-				tabIndex={0}
-				className="
-        	absolute top-8 rounded-lg z-30 hidden w-full
-          overflow-x-hidden bg-accent2-300 group-focus-within:block
-        "
-			>
-				<CheckBoxBlock
-					id="category"
-					className="flex overflow-x-scroll w-full"
+				<ToggleGroup
+					type="multiple"
+					variant="outline"
 					value={categories}
-					options={categoryList.map(cat => cat.name)}
-					setValue={setCategories}
-					view="images"
-					images={categoryImages}
-				/>
-				<CheckBoxBlock
-					id="brand"
-					className="flex overflow-x-scroll w-full"
+					onValueChange={(str:string[])=>setCategories(str)}
+				>
+					{categoryItems}
+				</ToggleGroup>
+				<ToggleGroup
+					type="multiple"
+					variant="outline"
 					value={brands}
-					options={brandList.map(brand => brand.name)}
-					setValue={setBrands}
-					view="images"
-					images={brandImages}
-				/>
-			</PopoverContent>
-		</Popover>
+					onValueChange={(str:string[])=>setBrands(str)}
+				>
+					{brandItems}
+				</ToggleGroup>
+			</form>
 	)
 }

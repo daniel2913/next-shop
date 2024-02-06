@@ -14,7 +14,7 @@ export default function useModal() {
 		)
 		let resolve:(val:any)=>void
 		const res = new Promise((res)=>{resolve=res})
-		dialogRef?.current?.addEventListener("close",()=>resolve(1))
+		dialogRef?.current?.addEventListener("close",()=>{resolve(1)})
 		return res
 	}
 	

@@ -10,9 +10,10 @@ import Minus from "@public/minus.svg"
 interface Props {
 	className: string
 	id: Product["id"]
+	confirmation?:boolean
 }
 
-export default function AmmountSelector({ className, id }: Props) {
+export default function AmmountSelector({ className, id, confirmation}: Props) {
 	const confirm = useConfirm("Are you sure you want to discard this item?")
 	const { data } = useSession()
 	const amount = useCartStore((state) => state.items[id] || 0)
@@ -23,9 +24,12 @@ export default function AmmountSelector({ className, id }: Props) {
 	const setAmmount = (amnt: number) => ammountSetter(id, amnt, !data?.user)
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
+			if (confirmation)
 			confirm().then((ans) => {
 				return ans ? discardItem() : false
 			})
+			else
+				discardItem()
 		} else setAmmount(newAmount)
 	}
 	return (

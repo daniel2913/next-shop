@@ -27,6 +27,7 @@ const BuyButton = React.memo(function BuyButton({ className, id }: Props) {
 				? 
 			<AmmountSelector
 				id={id}
+				confirmation
 				className="w-full h-full"
 			/>
 				:
