@@ -118,7 +118,6 @@ export default function DiscountForm({ discount }: Props) {
 				type="datetime-local"
 				value={expires.toJSON().slice(0, 16)}
 				onChange={(e) => {
-					console.log(expires, e, e.currentTarget.value)
 					setExpires(new Date(e.currentTarget.value))
 				}
 				}

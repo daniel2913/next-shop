@@ -5,8 +5,6 @@ import RootProviders from "./providers"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
 import Toast from "@/components/UI/Toast"
-import { ScrollArea, ScrollBar } from "@/components/UI/scroll-area"
-import { RemoveScroll } from "react-remove-scroll"
 
 export const metadata = {
 	title: "Next shop",
@@ -26,7 +24,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 					<meta charSet="UTF-8" />
 					<meta
 						name="viewport"
-						content="width=device-width, initial-scale=1.0"
+						content="width=device-width, initial-scale=1.0, maximux-scale=1.0, user-scalable=0"
 					/>
 					<title>Document</title>
 				</head>

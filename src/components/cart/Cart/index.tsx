@@ -11,9 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Image from "next/image"
 import AmmountSelector from "@/components/UI/AmmountSelector"
 import { Button } from "@/components/UI/button"
-import Loading from "@/components/UI/Loading"
-import { useRouter } from "next/navigation"
-import { ScrollArea } from "@/components/UI/scroll-area"
 import useAction from "@/hooks/useAction"
 
 type Props = {
@@ -37,9 +34,9 @@ export function CartTable({products}:Props){
 				setLoading(false)
 				return
 			}
-			const price = calcPrice(product.price,product.discount.discount)
+			const price = calcPrice(product.price,product.discount)
 			const amount = items[+id]
-			order[id] = { price, amount }
+			order[+id] = { price, amount }
 		}
 		if (Object.keys(order).length !== Object.keys(items).length){
 			error("Internal Error","Internal Error")
@@ -54,7 +51,7 @@ export function CartTable({products}:Props){
 
 	const totalAmount = Object.values(items).reduce((sum, next) => sum + next, 0)
 	const totalPrice = products.reduce((total, next) => total +
-		calcPrice(next.price,next.discount.discount) * items[next.id]||0,0
+		calcPrice(next.price,next.discount) * items[next.id]||0,0
 	)
 	if (Object.keys(items).length===0)
 		return <div className="h-full w-full flex justify-center items-center"><h3 className="block">wow such empty</h3></div>

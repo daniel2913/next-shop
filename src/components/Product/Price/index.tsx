@@ -1,25 +1,23 @@
-import { Discount } from "@/lib/DAL/Models/Discount"
+import calcPrice from "@/helpers/discount"
 import React from "react"
 interface props {
 	price: number
-	discount: Pick<Discount, "discount" | "expires">
+	discount:number
 	className?: string
 }
 
 const Price = React.memo(function Price({
 	price,
-	discount = { discount: 0, expires: new Date() },
+	discount,
 	className,
 }: props) {
-	return (discount.discount > 0 && discount.expires>new Date()) ? (
+	return (
 		<div className={`${className} text-inherit flex gap-4`}>
 			<s className="text-[.75em] text-gray-600 decoration-accent1-700">
 				{price.toFixed(2)}
 			</s>
-			<span className="text-secondary font-semibold">{(price - (price * discount.discount) / 100).toFixed(2)}</span>
+			<span className="text-secondary font-semibold">{calcPrice(price,discount)}</span>
 		</div>
-	) : (
-		<div className="">{price.toFixed(2)}</div>
 	)
 })
 

@@ -13,7 +13,7 @@ type Props = {
 	product: PopulatedProduct
 }
 
-const ProductCard = React.memo(function ProductCard({ className, product }: Props) {
+const ProductCard = React.memo(function ProductCard({product }: Props) {
 	return (
 		<Card
 			className={`
@@ -26,7 +26,6 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 				grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr]
 			"
 			>
-				<React.Suspense>
 				<ProductCarousel 
 					brand={
 						<Image
@@ -37,7 +36,7 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 							alt={product.brand.name}
 						/>
 					}
-					discount={product.discount.discount}
+					discount={product.discount}
 					>
 					{product.images.map((img,idx)=>
 						<Image
@@ -50,10 +49,9 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 						/>
 					)}
 				</ProductCarousel>
-				</React.Suspense>
 				<Rating
 					id={product.id}
-					ownVote={product.ownVote}
+					ownVote={product.ownVote} 
 					rating={product.rating || 0}
 					voters={product.voters}
 					className="col-span-2 justify-self-center"
@@ -78,12 +76,10 @@ const ProductCard = React.memo(function ProductCard({ className, product }: Prop
 						className="justify-self-center self-center w-4/5 h-3/4"
 						id={product.id}
 					/>
-					<React.Suspense fallback={"..."}>
 					<ProductMenu
 						product={product}
 						className="justify-self-end"
 					/>
-					</React.Suspense>
 				</div>
 			</CardContent>
 		</Card>

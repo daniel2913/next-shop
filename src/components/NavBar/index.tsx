@@ -1,29 +1,40 @@
-import React  from "react"
+import React from "react"
 import Auth from "../UI/Auth"
 import CartStatus from "../cart/Status"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import AuthContainer from "../UI/Auth/container"
 import Link from "next/link"
 import Catalogue from "@public/journal.svg"
 import Home from "@public/home.svg"
+import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
+import Search from "../UI/Search"
+import SearchContainer from "../UI/Search/container"
 
-export default async function NavBar() {
-	const session = await getServerSession(authOptions)
+export default async function Navbar() {
+	const [brands, categories] = await Promise.all([BrandCache.get(), CategoryCache.get()])
 	return (
 		<>
-			<Link href="./" className="order-1 basis-0 flex-auto flex items-center flex-col sm:flex-row">
-				<Home width={"30px"} height={"30px"}/>
+
+			<Link href="./" className="basis-0 flex-auto flex items-center flex-col sm:flex-row">
+				<Home width={"30px"} height={"30px"} />
 				Home
 			</Link>
-			<Link href="./" className="order-1 basis-0 flex-auto items-center flex flex-col sm:flex-row">
-				<Catalogue width={"30px"} height={"30px"}/>
+
+			<Link href="./" className="basis-0 flex-auto items-center flex flex-col sm:flex-row">
+				<Catalogue width={"30px"} height={"30px"} />
 				Catalogue
 			</Link>
+
+			<SearchContainer className="flex-auto basis-0">
+				<Search
+					className="h-full"
+					allBrands={brands}
+					allCategories={categories}
+				/>
+			</SearchContainer>
 			<CartStatus
-				className="flex-auto basis-0 order-3"
+				className="flex-auto basis-0"
 			/>
-			<AuthContainer className="flex-auto basis-0 order-3">
+			<AuthContainer className="flex-auto basis-0">
 				<Auth className="" />
 			</AuthContainer>
 		</>

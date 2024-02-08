@@ -15,7 +15,7 @@ import { Button } from "@/components/UI/button"
 
 const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
 
-function ToggleFav({ id, initFav }: { id: number, initFav: boolean }) {
+export function ToggleFav({ id, initFav }: { id: number, initFav: boolean }) {
 	const fav = useProductStore(state => state.products.find(prod => prod.id === id)?.favourite) ?? initFav
 	const favToggler = useProductStore(state => state.toggleFav)
 	const toggleFav = () => favToggler(id)

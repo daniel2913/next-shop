@@ -19,7 +19,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         className={cn(
           `flex peer h-[2em] w-full rounded-md border border-input
-					bg-background px-3 py-2 text-sm ring-offset-background
+					bg-background px-3 py-2 text-sm ring-0 focus-visible:outline-none
+					focus-visible:shadow-md shadow-accent
 					file:border-0 file:bg-transparent file:text-sm file:font-medium
 					placeholder:text-muted-foreground 
 					disabled:cursor-not-allowed disabled:opacity-50 font-semibold

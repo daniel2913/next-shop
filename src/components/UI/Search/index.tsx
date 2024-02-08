@@ -1,29 +1,29 @@
 "use client"
-import { useRouter } from "next/navigation"
 import React, { FormEvent } from "react"
 import { Button } from "@/components/UI/button"
 import SearchIcon from "@/../public/search.svg"
 import useProductStore from "@/store/productsStore/productStore"
 import Input from "../Input"
-import { ToggleGroup} from "../toggle-group"
+import { ToggleGroup, ToggleGroupItem } from "../toggle-group"
+import Image from "next/image"
+import { Brand, Category } from "@/lib/DAL/Models"
+import useResponsive from "@/hooks/useWidth"
 
 type Props = {
 	className?: string
-	categoryItems:React.ReactNode[]
-	brandItems:React.ReactNode[]
+	allBrands: Brand[]
+	allCategories: Category[]
 }
 
-export default function Search({ className, brandItems,categoryItems}: Props) {
-	const [brands,setBrands] = React.useState<string[]>([])
+export default function Search({ className, allBrands, allCategories }: Props) {
+	const [brands, setBrands] = React.useState<string[]>([])
 	const [categories, setCategories] = React.useState<string[]>([])
-	const [name,setName] = React.useState("")
-	const router = useRouter()
-	async function onSubmit(e:FormEvent) {
-		console.log([...(new FormData(e.currentTarget)).entries()])
+	const [name, setName] = React.useState("")
+	const mode = useResponsive()
+	async function onSubmit(e: FormEvent) {
 		e.preventDefault()
 		const query = new URL("/shop", "http://localhost:3000")
 		if (name) query.searchParams.set("name", name)
-		console.log(categories)
 		for (const category of categories)
 			query.searchParams.append(
 				"category",
@@ -34,59 +34,87 @@ export default function Search({ className, brandItems,categoryItems}: Props) {
 				"brand",
 				brand
 			)
-		useProductStore.setState({products:[]})
-		router.push(query.toString())
-		router.refresh()
+		history.pushState({ brands, categories, name }, "", query.toString())
+		useProductStore.getState().navigate(query.searchParams)
 	}
 
 	return (
 			<form
 				onSubmit={onSubmit}
 				className={`
-				${className} group relative right-auto flex w-full
-				flex overflow-hidden
-				border-2 rounded-lg border-cyan-400"
+				${className} group relative right-auto w-full
+				sm:border-2 mt-8 sm:mt-0 rounded-lg flex flex-col 
 			`}>
+			<div className="flex items-start p-4 pt-8 sm:p-0 sm:items-center sm:h-full">
 				<Input
 					autoComplete="off"
 					className="
-						flex-grow
-            rounded-l-lg border-none h-full
-           	bg-cyan-100 rounded-r-none
-						text-black
+						rounded-none
+          	rounded-l-lg border-none h-8
+          	bg-cyan-100 rounded-r-none
+						text-black p-1 
 						font-medium text-2xl
           "
+					autoFocus={mode==="mobile"}
 					value={name}
 					name="name"
 					onChange={(e) => setName(e.currentTarget.value)}
 				/>
 				<Button
 					className="
-            rounded-r-lg rounded-l-none h-full
+            rounded-r-lg rounded-l-none h-8
 						text-center p-0 w-12 flex-grow-0
-						bg-accent1-400 text-teal-400 text-md
-						px-1
+						bg-primary text-teal-400 text-md
+						px-1 flex justify-center items-center
           "
 					type="submit"
 				>
-					<SearchIcon width="25px" height="25px" />
+					<SearchIcon width="30px" height="30px" />
 				</Button>
-				<ToggleGroup
-					type="multiple"
-					variant="outline"
-					value={categories}
-					onValueChange={(str:string[])=>setCategories(str)}
-				>
-					{categoryItems}
-				</ToggleGroup>
-				<ToggleGroup
-					type="multiple"
-					variant="outline"
-					value={brands}
-					onValueChange={(str:string[])=>setBrands(str)}
-				>
-					{brandItems}
-				</ToggleGroup>
+				</div>
+				<div className="
+					sm:absolute left-0 right-0 bottom-full sm:bottom-auto sm:top-full
+					z-[100] bg-secondary border-2 rounded-lg sm:hidden sm:group-focus-within:block
+					
+				">
+					<ToggleGroup
+						type="multiple"
+						value={categories}
+						onValueChange={(str: string[]) => setCategories(str)}
+					>
+							{
+								allCategories.map(category =>
+									<ToggleGroupItem className="w-12" name="category" value={category.name} key={category.name}>
+										<Image
+											alt={category.name}
+											src={`/categories/${category.image}`}
+											height={60}
+											width={60}
+										/>
+										<input name="category" hidden readOnly value={category.name} checked={categories.includes(category.name)} />
+									</ToggleGroupItem>
+								)
+							}
+					</ToggleGroup>
+					<ToggleGroup
+						type="multiple"
+						value={brands}
+						onValueChange={(str: string[]) => setBrands(str)}
+					>
+							{
+								allBrands.map(brand =>
+									<ToggleGroupItem className="w-12" name="brand" value={brand.name} key={brand.name}>
+										<Image
+											alt={brand.name}
+											src={`/brands/${brand.image}`}
+											height={60}
+											width={60}
+										/>
+										<input name="brand" hidden readOnly value={brand.name} checked={brands.includes(brand.name)} />
+									</ToggleGroupItem>
+								)}
+					</ToggleGroup>
+					</div>
 			</form>
 	)
 }

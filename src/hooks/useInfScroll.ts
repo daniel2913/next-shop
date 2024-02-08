@@ -1,19 +1,17 @@
 import React from "react"
 import { useSearchParams } from "next/navigation"
-import useProductStore from "@/store/productsStore/productStore"
 
 export default function useInfScroll<T extends any>(
 	items: T[],
 	loadItems: (page: number | undefined, query: URLSearchParams ) => Promise<false | number>,
 	endRef: React.RefObject<HTMLDivElement>,
-	page: number = 10,
+	page: number = 20,
 ) {
 	const searchParams = useSearchParams()
 	const hasMore = React.useRef(true)
 	const nextObserver = React.useRef<IntersectionObserver | null>(null)
 	React.useEffect(()=>{
 	hasMore.current = true
-	useProductStore.setState({products:[],inited:false})
 	nextObserver.current?.disconnect()
 	nextObserver.current = new IntersectionObserver(async (entries) => {
 		if (!hasMore.current) return false

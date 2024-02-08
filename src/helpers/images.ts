@@ -24,14 +24,11 @@ export async function handleImages(images: File|File[], path: string): Promise<s
 }
 
 export async function handleImage(image: File, path: string): Promise<Image> {
-	console.log(`Checking ${image.name}`);
 	
 	if (await FileStorage.exists(image.name, path)) {
-		console.log("Has it")
 		return { name: image.name, file: null }
 	}
 	const imageName = `${randomUUID().replace("-", "").slice(0, 8)}.jpg`
-	console.log(`New name is ${imageName}`)
 	return { name: imageName, file: image }
 }
 

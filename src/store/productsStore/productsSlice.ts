@@ -7,10 +7,8 @@ import { ServerErrorType } from "@/hooks/useAction"
 
 export interface ProductsSlice {
 	products: PopulatedProduct[]
-	getProduct: (id:number)=>PopulatedProduct|null
 	loadProducts:(page:number|undefined,query:URLSearchParams,) => Promise<number|false>
-	clearProducts: () => void
-	setProducts: (products:PopulatedProduct[])=>void
+	navigate:(query:URLSearchParams,page?:number)=>void
 	reload: ()=> Promise<false|ServerErrorType>
 	reloadSingle: (id:number)=>Promise<PopulatedProduct|ServerErrorType>
 	updateVote: (id:number,vote:number)=>Promise<ServerErrorType|{rating:number,voters:number}>
@@ -18,26 +16,38 @@ export interface ProductsSlice {
 	inited:boolean
 }
 
-
-export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
-	inited:false,
-	products:[] as PopulatedProduct[],
-	loadProducts: async (page:number|undefined,query:URLSearchParams) => {
-		const oldProductIds = get().products.map(prod=>prod.id)
-		const res = (await getProductsPageAction({
-				skip:Object.keys(get().products).length,
+async function queryProducts(query:URLSearchParams,skip?:number,page?:number){
+		const res = await getProductsPageAction({
+				skip,
 				page,
 				brand: query.getAll("brand"),
 				category: query.getAll("category"),
 				name: query.get("name") || undefined
-		}))
+		})
 		if ("error" in res)	return false
+		return res
+}
+
+
+
+export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
+	inited:false,
+	products:[],
+	loadProducts: async (page:number|undefined,query:URLSearchParams) => {
+		const oldProductIds = get().products.map(prod=>prod.id)
+		const res = await queryProducts(query,Object.keys(get().products).length,page,)
+		if (!res)	return false
 		const newProducts = res.filter(prod=>!oldProductIds.includes(prod.id))
 		if (!newProducts) return false
 		set(state => ({products:[ ...state.products, ...newProducts],inited:true}))
 		return newProducts.length
 	},
-	setProducts: (products:PopulatedProduct[])=>set((state)=>({...state,products:products,inited:true}),true),
+	navigate: async(query,page=20)=>{
+		const products = await queryProducts(query,0,page)
+		if (!products) return false
+		set({products})
+		return products.length
+	},
 	reloadSingle: async(id)=>{
 		const oldProducts = get().products
 		const idx = oldProducts.findIndex(prod=>prod.id===id)
@@ -97,11 +107,6 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 		set({products:oldProds})
 		return false
 	},
-	clearProducts: () => set((state)=>{
-		return {inited:false,products: []}
-	}),
-	getProduct: (id:number)=>{
-		return get().products.find(prod=>prod.id===id) || null
-	}
+
 
 })

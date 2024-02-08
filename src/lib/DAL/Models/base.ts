@@ -6,7 +6,7 @@ import {
 	and,
 	eq,
 	inArray,
-	like,
+	ilike,
 } from "drizzle-orm"
 import {  PgColumn, PgColumnBuilderBase,  PgTableWithColumns,getTableConfig} from "drizzle-orm/pg-core"
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
@@ -32,7 +32,7 @@ type Query<T extends Record<string,any>&{id:number}> = {
 export interface DataModel<T extends Record<string, any> & { id: number }> {
 	create: (obj: unknown|T) => Promise<T | null>
 	findOne: (query: Query<T>) => Promise<T | null>
-	find: (query?: Query<T>) => Promise<T[]>
+	find: (query?: Query<T>,page?:number,skip?:number) => Promise<T[]>
 	delete: (id: number) => Promise<T | null>
 	patch: (targid: number, patch: unknown|Partial<T>) => Promise<T | null>
 }
@@ -92,7 +92,7 @@ export class PgreModel<
 			const column = this.table[key as keyof U] as Column
 			if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value))
 			else if (value instanceof RegExp)
-				sqlQueryWrappers.push(like(column, `%${value.toString().slice(1, -1)}%`))
+				sqlQueryWrappers.push(ilike(column, `%${value.toString().slice(1, -1)}%`))
 			else sqlQueryWrappers.push(eq(column, value))
 		}
 		return and(...sqlQueryWrappers)
@@ -146,14 +146,12 @@ export class PgreModel<
 		return res[0] ? res[0]: null
 	}
 
-	async find(query?: Query<U["$inferSelect"]>) {
-		if (!query) {
-			return await this.model.select().from(this.table)
-		}
-		return await this.model
-			.select()
-			.from(this.table)
-		  .where(this.makePgreQuery(query))
+	async find(query?: Query<U["$inferSelect"]>,page:number=20,skip:number=0) {
+		let req = this.model.select().from(this.table).$dynamic()
+		if (query) req = req.where(this.makePgreQuery(query))
+		if (page) req = req.limit(page)
+		if (skip) req = req.offset(skip)
+		return await req
 	}
 	async delete(id: number) {
 		if (!id) return null

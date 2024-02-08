@@ -23,7 +23,6 @@ export function ProductControl(){
 	const {reload} = useProductStore.getState()
 	React.useEffect(()=>{
 		reload()
-		console.log(useProductStore.getState().products)
 		if (!session.data?.user)
 			useCartStore.setState({items:{}})
 

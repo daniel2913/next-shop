@@ -6,9 +6,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "../popover"
 import Account from "@public/account.svg"
 import { Button } from "../button"
 import useModal from "@/hooks/modals/useModal"
-import Link from "next/link"
 import dynamic from "next/dynamic"
-import { usePathname } from "next/navigation"
+import { Drawer, DrawerContent, DrawerTrigger } from "../drawer"
+
 const Login = dynamic(() => import("@/components/modals/Login"))
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
 export default function AuthContainer({ children, className }: Props) {
 	const mode = useResponsive()
 	const modal = useModal()
-	const path = usePathname()
+	const [drawerOpen,setDrawerOpen] = React.useState(false)
 	const session = useSession()
 	if (!session.data?.user?.name)
 		return (
@@ -37,13 +37,22 @@ export default function AuthContainer({ children, className }: Props) {
 					Log In
 				</Button>
 				:
-				<Link
-					className={`${className} flex flex-col items-center`}
-					href={`/api/auth/signin?redirect=${path}`}
+				<Drawer  
+					onOpenChange={setDrawerOpen}
+					open={drawerOpen}
+					modal={false}
 				>
+					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className="flex basis-0 flex-auto flex-col items-center order-3">
 					<Account width={"30px"} height={"30px"} />
 					Log In
-				</Link>
+					</DrawerTrigger>
+					<DrawerContent 
+						onSubmit={()=>setDrawerOpen(false)}
+						className="grid justify-center content-start w-full pb-14 border-x-0 h-dvh bg-secondary"
+					>
+						<Login/>
+					</DrawerContent>
+				</Drawer>
 
 		)
 	return (

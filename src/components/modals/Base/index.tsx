@@ -8,7 +8,7 @@ import { RemoveScroll } from "react-remove-scroll"
 export default function ModalBase() {
 	const dialogRef = React.useRef<HTMLDialogElement>(null)
 	const {bindDialog,children,setContent}=useModalStore()
-	React.useEffect(()=>{console.log("WE ARE BIDEND");bindDialog(dialogRef)},[])
+	React.useEffect(()=>bindDialog(dialogRef),[])
 	return (
 		<dialog
 			onClose={()=>setContent(null)}

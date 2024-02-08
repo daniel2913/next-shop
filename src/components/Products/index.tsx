@@ -4,15 +4,10 @@ import type { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import useProductStore from "@/store/productsStore/productStore"
 import React from "react"
 import ProductCard from "../product/ProductCard"
-
+import {shallow} from "zustand/shallow"
 
 type Props = {
 	products: PopulatedProduct[]
-}
-
-function keyCompare(oldObj: PopulatedProduct[], newObj: PopulatedProduct[]) {
-	const res = newObj.every((val, idx) => val === oldObj[idx])
-	return res
 }
 
 export default function ProductList({ products: initProducts}: Props) {
@@ -20,17 +15,16 @@ export default function ProductList({ products: initProducts}: Props) {
 	let inited = false
 	const endRef = React.useRef<HTMLDivElement>(null)
 	if (typeof window !== "undefined") {
-		const storeProducts = useProductStore(state => state.products)
-		const setProducts = useProductStore(state => state.setProducts)
-		inited = useProductStore(state => state.inited)
-		const loadProducts = useProductStore(state => state.loadProducts)
+		const storeProducts = useProductStore(state => state.products, shallow)
+		inited = useProductStore.getState().inited
+		const loadProducts = useProductStore.getState().loadProducts
 		scrollProducts = useInfScroll(
 			storeProducts,
 			loadProducts,
 			endRef,
-			10,
+			20,
 		)
-		React.useEffect(() => { if (!inited) setProducts(initProducts) }, [initProducts])
+		React.useEffect(() => { if (!inited) {useProductStore.setState({products:initProducts,inited:true})}}, [])
 	}
 	const products = (inited && scrollProducts) || initProducts
 	return (

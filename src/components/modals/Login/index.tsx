@@ -1,5 +1,4 @@
 "use client"
-import { validateLogin, validatePassword } from "@/helpers/validation"
 import Input from "@/components/UI/Input"
 import useToast from "@/hooks/modals/useToast"
 import { signIn } from "next-auth/react"
@@ -9,7 +8,6 @@ import { Button } from "@/components/UI/button"
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/UI/tabs"
 import useProductStore from "@/store/productsStore/productStore"
 import { Label } from "@/components/UI/label"
-import Form from "@/components/forms"
 import { usePathname, useRouter } from "next/navigation"
 
 type Props = {
@@ -42,15 +40,16 @@ function Register({ close,redirect }: Props) {
 	return (
 		<form
 			className="flex flex-col gap-2 mb-4"
-			onSubmit={(e)=>{
+			onSubmit={async (e)=>{
 				e.preventDefault()
-				handleRegistration({name,password})
+				await handleRegistration({name,password})
 			}}
 		>
 			<Label>
 			Username
 			<Input
 				type="text"
+				autoFocus={true}
 				name="username"
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
@@ -64,7 +63,7 @@ function Register({ close,redirect }: Props) {
 				name="password"
 				value={password}
 				onChange={(e)=>setPassword(e.currentTarget.value)}
-				pattern={`^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!#$%&? "]).*$`}
+				pattern={`^.*(?=.{5,})`}
 			/>
 			</Label>
 			<Button
@@ -104,14 +103,17 @@ function Login({close,redirect}: Props) {
 	return (
 		<form
 			className="flex flex-col gap-2 mb-4"
-			onSubmit={(e)=>{
+			onSubmit={async (e)=>{
 				e.preventDefault()
-				handleLogin({name,password})
+				e.stopPropagation()
+				await handleLogin({name,password})
+				dispatchEvent(new Event('submit'))
 			}}
 		>
 			<Label>
 				Username
 			<Input
+				autoFocus={true}
 				type="text"
 				name="username"
 				value={name}
@@ -156,7 +158,7 @@ export default function AuthModule(props: Props) {
 	return (
 		<Tabs
 			className="
-				w-max h-max
+				w-max h-max mt-8 sm:mt-0
 				lg:w-[33vw] lg:h-[45vh]
 				flex flex-col justify-start
 			"

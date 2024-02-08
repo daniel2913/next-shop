@@ -87,13 +87,12 @@ export type PopulatedProduct = Omit<
 	Product,
 	"brand" | "category" | "votes" | "voters"
 > & {
-	votes: number
 	voters: number
 	brand: Brand
-	favourite: boolean
 	category: Category
-	discount: Pick<Discount, "discount" | "expires">
-	ownVote: number
+	discount: number
+	ownVote:number
+	favourite:boolean
 }
 
 export { ProductPgreTable, ProductInsertValidation}

@@ -1,7 +1,6 @@
 import ProductList from "@/components/Products"
 import { getProductsPageAction } from "@/actions/product"
 import React from "react"
-import ProductCard from "@/components/product/ProductCard"
 
 
 export default async function Shop({
@@ -9,13 +8,13 @@ export default async function Shop({
 }: {
 	searchParams: Record<string,string>
 }) {
+	console.log("SHOP SERVER RERENDER")
 	const params = new URLSearchParams(searchParams)
-	const brand = params.getAll("brand")
-	const category = params.getAll("category")
+	const brand = params.get("brand")?.split(",")
+	const category = params.get("category")?.split(",")
 	const name = params.get("name") || undefined
 	const initProducts = await getProductsPageAction({brand,category,name})
 	if ("error" in initProducts) return <div>Error!</div>
-	//const initProducts = await getProducts(params)
 
 	return (
 		<div className="">
@@ -23,5 +22,3 @@ export default async function Shop({
 		</div>
 	)
 }
-		// <ProductStoreProvider products={initProducts}>
-		// </ProductStoreProvider>
