@@ -10,31 +10,28 @@ interface Props {
 	id: number
 	voters: number
 	rating: number
-	ownVote: number
+	value: number
+	onChange:(val:number)=>void
 	className: string
+	size?:number
 }
 
 const ratings = [1, 2, 3, 4, 5]
 const Rating = React.memo(function Rating({
-	id,
 	voters,
-	ownVote,
+	value,
+	onChange,
 	rating,
+	size=30,
 	className,
 }: Props) {
 	const session = useSession()
-	const { show: showToast, handleResponse } = useToast()
-	const voteSetter = useProductStore(state => state.updateVote)
-	const setVote = (vote: number) => voteSetter(id, vote)
-
+	const { show: showToast} = useToast()
 	async function handleRate(i: number) {
 		if (!session?.data?.user?.id)
 			showToast("Only authorized users can rate products!")
-		else if (ownVote === -1)
-			showToast("You can only rate products you bought!")
 		else {
-			const res = await setVote(i)
-			handleResponse(res)
+			onChange(i)
 		}
 	}
 	return (
@@ -50,7 +47,7 @@ const Rating = React.memo(function Rating({
 		>
 			{ratings.map((i) =>
 				<button
-					disabled={ownVote === -1}
+					disabled={value===-1}
 					type="button"
 					key={`${i}-${Math.random()}`}
 					onClick={() => handleRate(i)}
@@ -58,16 +55,18 @@ const Rating = React.memo(function Rating({
 					id={`${i}`}
 				>
 					<Star
+						width={size}
+						height={size}
 						key={`${i}-${Math.random()}`}
 						className={`
 							aspect-square h-full
-								${i <= ownVote
+								${i <= value
 								? "fill-accent"
 								: i <= (rating || 0)
 									? "fill-secondary"
 									: "fill-foreground"
 							}
-								${ownVote === 0 && "stroke-accent"}
+								${value === 0 && "stroke-accent"}
 							`}
 					/>
 				</button>

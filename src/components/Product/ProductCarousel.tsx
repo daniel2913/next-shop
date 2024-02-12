@@ -5,13 +5,14 @@ import Discount from "./Discount";
 
 type Props = {
 	children: React.ReactNode
-	brand:React.ReactNode
-	discount: number
+	brand?:React.ReactNode
+	discount?: number
+	className?:string
 }
 
-export default function ProductCarousel({children,discount,brand}:Props) {
+export default function ProductCarousel({children,discount,brand,className}:Props) {
 	return (
-		<Carousel className="relative rounded-lg overflow-hidden h-full col-span-2">
+		<Carousel className={`${className} relative rounded-lg overflow-hidden h-full col-span-2`}>
 			<CarouselContent className="h-full">
 				{[children].flat().map((child, idx) => (
 					<CarouselItem className="h-full" key={idx}>

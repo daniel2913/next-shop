@@ -1,21 +1,21 @@
 "use client"
-import Input from "@/components/UI/Input"
-import useToast from "@/hooks/modals/useToast"
-import { signIn } from "next-auth/react"
-import React from "react"
 import { registerUserAction } from "@/actions/user"
+import Input from "@/components/UI/Input"
 import { Button } from "@/components/UI/button"
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/UI/tabs"
-import useProductStore from "@/store/productsStore/productStore"
 import { Label } from "@/components/UI/label"
-import { usePathname, useRouter } from "next/navigation"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/UI/tabs"
+import useToast from "@/hooks/modals/useToast"
+import useProductStore from "@/store/productsStore/productStore"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import React from "react"
 
 type Props = {
 	close?: () => void
-	redirect?:string
+	redirect?: string
 }
 
-function Register({ close,redirect }: Props) {
+function Register({ close, redirect }: Props) {
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
@@ -25,10 +25,10 @@ function Register({ close,redirect }: Props) {
 		setLoading(true)
 		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
-		if (handleResponse(res)===null) return
-		const signRes = await signIn("credentials",{...creds, redirect:false},)
-		if (!signRes?.ok){
-			error("Unknown Error","Internal Error")
+		if (handleResponse(res) === null) return
+		const signRes = await signIn("credentials", { ...creds, redirect: false },)
+		if (!signRes?.ok) {
+			error("Unknown Error", "Internal Error")
 			return
 		}
 		if (redirect)
@@ -36,37 +36,38 @@ function Register({ close,redirect }: Props) {
 		if (close)
 			close()
 
-	}	
+	}
 	return (
 		<form
-			className="flex flex-col gap-2 mb-4"
-			onSubmit={async (e)=>{
+			className="flex items-center flex-col gap-2 mb-4"
+			onSubmit={async (e) => {
 				e.preventDefault()
-				await handleRegistration({name,password})
+				await handleRegistration({ name, password })
 			}}
 		>
 			<Label>
-			Username
-			<Input
-				type="text"
-				autoFocus={true}
-				name="username"
-				value={name}
-				onChange={(e) => setName(e.currentTarget.value)}
-				pattern="^[a-zA-Z][a-zA-Z0-9]{4,20}$"
-			/>
+				Username
+				<Input
+					type="text"
+					autoFocus={true}
+					name="username"
+					value={name}
+					onChange={(e) => setName(e.currentTarget.value)}
+					pattern="^[a-zA-Z][a-zA-Z0-9]{4,20}$"
+				/>
 			</Label>
 			<Label>
-			Password
-			<Input
-				type="password"
-				name="password"
-				value={password}
-				onChange={(e)=>setPassword(e.currentTarget.value)}
-				pattern={`^.*(?=.{5,})`}
-			/>
+				Password
+				<Input
+					type="password"
+					name="password"
+					value={password}
+					onChange={(e) => setPassword(e.currentTarget.value)}
+					pattern={`....*`}
+				/>
 			</Label>
 			<Button
+				className="mt-2"
 				disabled={loading}
 				type="submit"
 			>
@@ -77,78 +78,78 @@ function Register({ close,redirect }: Props) {
 	)
 }
 
-function Login({close,redirect}: Props) {
-	const reloadProducts = useProductStore(state=>state.reload)
-	const products = useProductStore(state=>state.products)
+function Login({ close, redirect }: Props) {
+	const reloadProducts = useProductStore(state => state.reload)
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
 	const router = useRouter()
-	const { error,handleResponse } = useToast()
+	const { error, handleResponse } = useToast()
 	async function handleLogin(creds: { name: string; password: string }) {
-		setLoading(true)
-		const res = await signIn("credentials", { ...creds, redirect:false})
+		const res = await signIn("credentials", { ...creds, redirect: false })
 		if (res?.ok) {
-		handleResponse(await reloadProducts())
-		setLoading(false)
+			handleResponse(await reloadProducts())
 			if (redirect)
 				router.push(redirect)
 			else if (close)
 				close()
-		setLoading(false)
 			return
 		}
-		error("Invalid username or password","Authentication Error")
+		error("Invalid username or password", "Authentication Error")
 	}
 	return (
 		<form
-			className="flex flex-col gap-2 mb-4"
-			onSubmit={async (e)=>{
+			className="flex flex-col items-center gap-2 mb-4"
+			onSubmit={async (e) => {
+				setLoading(true)
 				e.preventDefault()
 				e.stopPropagation()
-				await handleLogin({name,password})
+				await handleLogin({ name, password })
+				setLoading(false)
 				dispatchEvent(new Event('submit'))
 			}}
 		>
 			<Label>
 				Username
-			<Input
-				autoFocus={true}
-				type="text"
-				name="username"
-				value={name}
-				onChange={(e)=>setName(e.currentTarget.value)}
-			/>
+				<Input
+					autoFocus={true}
+					type="text"
+					name="username"
+					value={name}
+					onChange={(e) => setName(e.currentTarget.value)}
+				/>
 			</Label>
 			<Label>
 				Password
-			<Input
-				type="password"
-				name="password"
-				value={password}
-				onChange={(e)=>setPassword(e.currentTarget.value)}
-			/>
+				<Input
+					type="password"
+					name="password"
+					value={password}
+					onChange={(e) => setPassword(e.currentTarget.value)}
+				/>
 			</Label>
-			<Button
-				disabled={loading}
-				type="submit"
-			>
-				Sign In
-			</Button>
-			<Button
-				disabled={loading}
-				type="submit"
-				onClick={() => handleLogin({ name: "user", password: "user" })}
-			>
-				Demo User
-			</Button>
-			<Button
-				disabled={loading}
-				type="submit"
-				onClick={() => handleLogin({ name: "admin", password: "admin" })}
-			>
-				Demo Admin
-			</Button>
+			<div className="flex gap-4 mt-2">
+				<Button
+					disabled={loading}
+					type="submit"
+				>
+					Sign In
+				</Button>
+				<Button
+					disabled={loading}
+					type="button"
+					onClick={() => handleLogin({ name: "user", password: "user" })}
+				>
+					Demo User
+				</Button>
+				<Button
+					disabled={loading}
+					type="button"
+					onClick={() => handleLogin({ name: "admin", password: "admin" })}
+				>
+					Demo Admin
+				</Button>
+			</div>
 		</form>
 
 	)

@@ -1,15 +1,28 @@
 import React from "react";
+import Spinner from "@public/loading.svg"
 
-export default function Loading({children}:{children:React.ReactNode}){
-	return(
-		<React.Suspense fallback={
-			<div className="h-40 w-40 bg-red-400 relative">
-				<span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin">
-					Loading
-				</span>
+type Props = {
+	children: React.ReactNode
+	fallback?: React.ReactNode
+	loading?: boolean
+}
+export default function Loading(props: Props) {
+	const fallback = props.fallback
+		?
+		props.fallback
+		:
+		<div className="h-full w-full relative">
+			<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ">
+				<Spinner className="animate-spin" width={"50px"} height={"50px"}/>
 			</div>
-			}>
-		{children}
-		</React.Suspense>
+		</div>
+	return (
+		props.loading
+			?
+			fallback
+			:
+			<React.Suspense fallback={fallback}>
+				{props.children}
+			</React.Suspense>
 	)
 }

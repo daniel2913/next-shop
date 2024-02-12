@@ -17,15 +17,16 @@ export default function NavBarContainer({ children}: Props) {
 		mode === "desktop"
 			? <header
 				className="
+				pr-[var(--removed-body-scroll-bar-size)]
 				fixed left-0 right-0 top-0 z-[100]
 				flex items-center h-12 mb-2
 				bg-secondary px-5 animate-slide-down
-				py-1 "
+				py-1 pointer-events-auto"
 			>
 				{children}
 			</header>
 			:
-			<header  className="z-[100] h-12 mt-2 fixed justify-between animate-slide-up left-0 right-0 bottom-0 flex justify-between bg-secondary px-2">
+			<header  className="z-[100] pointer-events-auto h-12 mt-2 fixed justify-between animate-slide-up left-0 right-0 bottom-0 flex justify-between bg-secondary px-2">
 					{children}
 			</header>
 	)

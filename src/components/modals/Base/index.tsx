@@ -1,28 +1,29 @@
 "use client"
-import { ScrollArea, ScrollBar } from "@/components/UI/scroll-area"
+import { Dialog, DialogContent, DialogHeader, DialogPortal, DialogTitle } from "@/components/UI/dialog"
 import { useModalStore } from "@/store/modalStore"
-import Cross from "@public/cross.svg"
 import React from "react"
-import { RemoveScroll } from "react-remove-scroll"
+
+
+
 
 export default function ModalBase() {
-	const dialogRef = React.useRef<HTMLDialogElement>(null)
-	const {bindDialog,children,setContent}=useModalStore()
-	React.useEffect(()=>bindDialog(dialogRef),[])
+	const {open,title,header,children,onClose}=useModalStore()
 	return (
-		<dialog
-			onClose={()=>setContent(null)}
-			ref={dialogRef}
-			onClick={(e)=>{if (e.target === e.currentTarget) e.currentTarget.close()}}
-			className={`
-				${RemoveScroll.classNames.zeroRight}
-				z-50 fixed top-1/2 -translate-y-1/2
-				rounded-md bg-secondary 
-				border-secondary-foreground p-2 pt-5
-			`}
+		<Dialog
+			open={open}
+			onOpenChange={(open)=>{
+				useModalStore.setState({open})
+				if (!open) onClose()
+			}}
 		>
-			<ScrollArea type="auto" className="bg-background min-w-[40vw] max-w-[90vw] min-h-[30vh] max-h-[80vh]">
-			<div 
+			<DialogPortal>
+			<DialogTitle>{title}</DialogTitle>
+			<DialogHeader>{header}</DialogHeader>
+			<DialogContent className="flex justify-center items-center w-fit h-fit max-h-[80vh] max-w-[80vw]">{children}</DialogContent>
+			</DialogPortal>
+		</Dialog>
+	)}
+			/* <div 
 				onClick={()=>dialogRef.current?.close()}
 				className="
 				z-40 fixed left-0 right-0 top-0 bottom-0
@@ -42,8 +43,5 @@ export default function ModalBase() {
 			>
 			<Cross width="20px" height="20px"/>
 			</button>
-			<ScrollBar className="z-50"/>
-			</ScrollArea>
-		</dialog>
 	)
-}
+} */

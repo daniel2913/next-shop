@@ -3,7 +3,7 @@ import { ServerErrorType } from "../useAction"
 
 export default function useToast() {
 	const _close= ()=>useToastStore.setState({isVisible:false})
-	
+
 	function show(description:string,title:string="",type:"error"|"info"="error") {
 		useToastStore.setState({title,description,type,isVisible:true})
 		setTimeout(()=>_close(),10000)

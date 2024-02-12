@@ -26,7 +26,7 @@ export default function AuthContainer({ children, className }: Props) {
 			mode === "desktop"
 				?
 				<Button
-					className={`${className} p-1 flex`}
+					className={`${className} p-1 flex gap-2`}
 					variant="secondary"
 					type="button"
 					onClick={async () => {
@@ -42,7 +42,7 @@ export default function AuthContainer({ children, className }: Props) {
 					open={drawerOpen}
 					modal={false}
 				>
-					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className="flex basis-0 flex-auto flex-col items-center order-3">
+					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className={`${className} flex basis-0 flex-auto flex-col items-center`}>
 					<Account width={"30px"} height={"30px"} />
 					Log In
 					</DrawerTrigger>
@@ -57,7 +57,7 @@ export default function AuthContainer({ children, className }: Props) {
 		)
 	return (
 			<Popover>
-				<PopoverTrigger className={`${className} flex flex-col items-center`}>
+				<PopoverTrigger className={`${className} flex flex-col sm:flex-row sm:gap-2 items-center`}>
 					<Account width={"30px"} height={"30px"} />
 					Account
 				</PopoverTrigger>

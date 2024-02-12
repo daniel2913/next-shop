@@ -25,6 +25,28 @@ export async function addSavedAction(id:number){
 		return ServerError.fromError(error).emmit()
 	}
 }
+
+export async function toggleSavedAction(id:number){
+	try{
+	const session = await getServerSession(authOptions)
+	if (!session?.user?.role || session.user.role!=="user") throw ServerError.notAuthed()
+	const user = await UserCache.get(session.user.name)
+	if (!user) throw ServerError.hidden("Bad Cache at deleteSaved")
+	const ans = user.saved.includes(id)
+	if (ans) 
+		user.saved = user.saved.filter(oldId=>oldId!==id)
+	else
+		user.saved.push(id)
+	const res = await UserModel.patch(user.id,{saved:user.saved})
+	if (!res) throw ServerError.unknown()
+	UserCache.patch(user.name,user)
+	return !ans 
+	}
+	catch(error){
+		return ServerError.fromError(error).emmit()
+	}
+}
+
 export async function deleteSavedAction(id:number){
 	try{
 	const session = await getServerSession(authOptions)

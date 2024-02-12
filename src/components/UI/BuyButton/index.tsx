@@ -8,10 +8,11 @@ import {cn} from "@/lib/utils"
 
 interface Props {
 	className: string
+	confirm?:boolean
 	id: number
 }
 
-const BuyButton = React.memo(function BuyButton({ className, id }: Props) {
+const BuyButton = React.memo(function BuyButton({ className,confirm, id }: Props) {
 	const session = useSession()
 	const amount = useCartStore((state) => state.items[id])
 	const addItem = useCartStore((state) => state.addItem)
@@ -26,8 +27,9 @@ const BuyButton = React.memo(function BuyButton({ className, id }: Props) {
 				amount>0 
 				? 
 			<AmmountSelector
-				id={id}
-				confirmation
+				value={amount}
+				onChange={(val:number)=>useCartStore.getState().setAmmount(id,val,!session.data?.user)}
+				confirm={confirm}
 				className="w-full h-full"
 			/>
 				:

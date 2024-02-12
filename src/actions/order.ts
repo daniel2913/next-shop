@@ -3,7 +3,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { UserCache } from "@/helpers/cachedGeters"
 import { Order, OrderModel, ProductModel, User, UserModel } from "@/lib/DAL/Models"
-import { sql } from "drizzle-orm"
+import { eq, sql } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { ServerError, modelGeneralAction,  modelGeneralActionNoAuth } from "./common"
 import { getProductsByIds, getProductsByIdsAction } from "./product"
@@ -19,11 +19,13 @@ export async function getOrdersAction(){
 	try{
 	const session = await getServerSession(authOptions)
 	if (!(session?.user?.id)) throw ServerError.notAuthed()
-	let orders:Order[] = []
+	let query = OrderModel.model
+			.select()
+			.from(OrderModel.table)
+			.$dynamic()
 	if (session?.user?.role !== "admin")
-		orders = await OrderModel.find({user: session.user.id})
-	else orders = await OrderModel.find() 
-	
+		query = query.where(eq(OrderModel.table.user,session.user.id))
+	const orders = await query 
 	const productSet = new Set(
 		orders.flatMap((order) => Object.keys(order.order).map(Number))
 	)

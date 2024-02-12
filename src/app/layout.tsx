@@ -1,17 +1,21 @@
 import "./global.css"
-import ModalBase from "@/components/modals/Base"
 import { ReactElement } from "react"
 import RootProviders from "./providers"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
-import Toast from "@/components/UI/Toast"
+import dynamic from "next/dynamic"
+import { Toaster } from "@/components/UI/toaster"
+import ToastBase from "@/components/UI/Toast/index"
 
 export const metadata = {
 	title: "Next shop",
 	description: "This is shop and it is in next",
 }
 
-interface LayoutProps {
+const ModalBase = dynamic(()=>import("@/components/modals/Base"),{ssr:false})
+// const Toaster = dynamic(()=>import("@/components/UI/toaster").then(module=>module.Toaster),{ssr:false})
+
+type LayoutProps = {
 	children: ReactElement
 }
 
@@ -32,7 +36,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 					<RootProviders session={session}>
 						{children}
 						<ModalBase />
-						<Toast/>
+						<ToastBase/>
 					</RootProviders>
 				</body>
 			</html>

@@ -3,6 +3,7 @@ import React from "react"
 import BrandCard from "./BrandCard"
 import { BrandCache } from "@/helpers/cachedGeters"
 import {count} from "drizzle-orm"
+import { ScrollArea, ScrollBar } from "../UI/scroll-area"
 export default async function BrandList() {
 	const brands = await BrandCache.get()
 	const stats = await ProductModel.model
@@ -17,15 +18,10 @@ export default async function BrandList() {
 		stats.map(row=>[row.brand,row.products])
 	)
 	return (
-		<div className="bg-green-100">
-			<div
-				className="
-					h-full p-5
-					grid sm:grid-cols-2  gap-y-8
-					md:grid-cols-3 lg:grid-cols-4
-					items-center justify-items-center
-				"
-			>
+		<>
+				<h2>Brands</h2>
+				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
+				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
 				{brands.map((brand) => (
 					<BrandCard 
 						className="h-30 w-40 p-2 rounded-md bg-cyan-200"
@@ -34,7 +30,9 @@ export default async function BrandList() {
 						products={products[brand.id.toString()]||0}
 					/>
 				))}
-			</div>
-		</div>
+				</div>
+			<ScrollBar orientation="horizontal"/>
+			</ScrollArea>
+		</>
 	)
 }

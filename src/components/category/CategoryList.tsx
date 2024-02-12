@@ -3,6 +3,7 @@ import React from "react"
 import CategoryCard from "./CategoryCard"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import {count} from "drizzle-orm"
+import { ScrollArea, ScrollBar } from "../UI/scroll-area"
 export default async function CategoryList() {
 	const categories = await CategoryCache.get()
 	const stats = await ProductModel.model
@@ -16,15 +17,10 @@ export default async function CategoryList() {
 		stats.map(row=>[row.category,row.products])
 	)
 	return (
-		<div className="bg-green-100">
-			<div
-				className="
-					h-full p-5
-					grid sm:grid-cols-2  gap-y-8
-					md:grid-cols-3 lg:grid-cols-4
-					items-center justify-items-center
-				"
-			>
+		<>
+				<h2>Categories</h2>
+				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
+				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
 				{categories.map((category) => (
 					<CategoryCard
 						className="h-30 w-40 p-2 rounded-md bg-cyan-200"
@@ -33,7 +29,9 @@ export default async function CategoryList() {
 						products={products[category.id.toString()]||0}
 					/>
 				))}
-			</div>
-		</div>
+					</div>
+			<ScrollBar orientation="horizontal"/>
+		</ScrollArea>
+		</>
 	)
 }

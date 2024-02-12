@@ -1,27 +1,17 @@
-import {useModalStore} from "../../store/modalStore"
+import { useModalStore } from "../../store/modalStore"
 import React from "react"
 
 export default function useModal() {
-	const {dialogRef,setContent} = useModalStore()
-	
-	function show(Modal: React.ReactNode) {
-		if (dialogRef?.current){
-			setContent(Modal)
-			dialogRef.current.show()
-		}
-		else (
-			console.error("NO MODAL?")
-		)
-		let resolve:(val:any)=>void
-		const res = new Promise((res)=>{resolve=res})
-		dialogRef?.current?.addEventListener("close",()=>{resolve(1)})
-		return res
-	}
-	
-	function close(val?:any) {
-		setContent(null)
-		dialogRef?.current?.close()
+	const clear = useModalStore(state=>state.clear)
+	function show(children: React.ReactNode, title = "", header = "") {
+		return new Promise((res) => {
+			useModalStore.setState({ children, title, header, open: true, onClose:res })
+		})
 	}
 
-	return {show, close}
+	function close(val?: any) {
+		clear(val)
+	}
+
+	return { show, close }
 }

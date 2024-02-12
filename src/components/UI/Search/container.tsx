@@ -17,7 +17,7 @@ export default function SearchContainer({children,className}:Props){
 		mode === "desktop"
 			?	<div className={className}>{children}</div>
 			:	
-				<Drawer onOpenChange={setDrawerOpen} open={drawerOpen} modal={false}>
+				<Drawer onOpenChange={setDrawerOpen} open={drawerOpen}>
 					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className={`${className} flex flex-auto flex-col items-center`} >
 						<Glass width="30px" height="30px" className="bg-tan opacity-80 rounded-full"/>
 						Search

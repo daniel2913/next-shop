@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
-
-const nextConfig = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: false,
+})
+const nextConfig = withBundleAnalyzer({
 	experimental: {},
 	typescript: {
-		ignoreBuildErrors: true //FIX
+		ignoreBuildErrors: true //FIsg
 	},
 	eslint: {
 		ignoreDuringBuilds: true
@@ -35,5 +37,5 @@ const nextConfig = {
 		};
 		return config;
 	},
-};
+});
 module.exports = nextConfig;

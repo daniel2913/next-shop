@@ -11,6 +11,8 @@ import { Button } from "@/components/UI/button"
 import useToast from "@/hooks/modals/useToast"
 import useResponsive from "@/hooks/useWidth"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/UI/drawer"
+import { BellElectricIcon } from "lucide-react"
+import Loading from "@/components/UI/Loading"
 
 const Cart = dynamic(() => import("../Cart"))
 const Login = dynamic(() => import("@/components/modals/Login"))
@@ -50,7 +52,7 @@ export function CartControl(){
 			if (!persist.hasHydrated) throw "Critical error"
 			if (synced.current === session.data.user.id) return
 			
-			let cart = await getCartAction()
+			const cart = await getCartAction()
 			if ("error" in cart){
 				error("Could not sync with database","Connection Error")
 				return
@@ -82,21 +84,22 @@ export default function CartStatus({className}: Props) {
 	const itemsCount = Object.values(cart).reduce((sum, next) => sum + next, 0)
 	const [drawerOpen,setDrawerOpen] = React.useState(false)
 	async function cartClickHandler() {
-		if (Object.values(cart).length === 0 || session.data?.user?.role !== "user")
-			modal.show(<Login close={modal.close}/>)
+		if (session.data?.user?.role !== "user")
+			modal.show(<Loading><Login close={modal.close}/></Loading>)
 		else 
-			modal.show(<Cart/>)
+			modal.show(<Loading><Cart/></Loading>)
 	}
 	const content = <>
+			<div className="relative  w-wull">
 			<CartIcon width="30px" height="30px"/>
-			Cart
 		{
 			itemsCount
 					?
 					<div className="
-						absolute overflow-hidden -top-4 left-1/2 sm:top-1/2
-						sm:-translate-y-1/2 sm:left-1/4 w-6 aspect-square
-						rounded-full bg-accent border-tan border-1
+						absolute overflow-hidden 
+						-top-4 left-1/2 text-lg
+						sm:top-1/2 sm:-translate-y-1/2 sm:-left-6
+						w-6 aspect-square rounded-full bg-accent border-tan border-1
 					">
 					<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 						{itemsCount}
@@ -104,11 +107,13 @@ export default function CartStatus({className}: Props) {
 					</div>
 					:null
 				}
+			</div>
+			Cart
 	</>
 	return ( mode==="desktop"
 		?<Button
 			type="button"
-				className={`${className} bg-transparent hover:bg-transparent justify-center relative flex flex-row`}
+				className={`${className} relative bg-transparent hover:bg-transparent justify-center relative flex gap-2 flex-row`}
 			onClick={cartClickHandler}
 		>
 			{content}
@@ -117,9 +122,8 @@ export default function CartStatus({className}: Props) {
 				<Drawer  
 					onOpenChange={setDrawerOpen}
 					open={drawerOpen}
-					modal={false}
 				>
-					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className="flex basis-0 flex-auto flex-col items-center">
+					<DrawerTrigger  onClick={()=>setDrawerOpen(true)} className={`${className} flex relative basis-0 flex-auto flex-col items-center`}>
 						{content}
 					</DrawerTrigger>
 					<DrawerContent 
@@ -128,7 +132,9 @@ export default function CartStatus({className}: Props) {
 							grid justify-center content-start w-full pb-14
 							border-x-0 h-dvh bg-secondary
 					">
+					<Loading>
 						{session.data?.user ? <Cart/> : <Login/>}
+					</Loading>
 					</DrawerContent>
 				</Drawer>
 	)

@@ -12,6 +12,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
     return (
       <textarea
+				onKeyDown={e=>{if (e.key==="Escape") e.currentTarget.blur()}}
         {...props}
 				name={props.name||props.id||undefined}
         className={cn(

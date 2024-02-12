@@ -16,6 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         {...props}
 				aria-invalid={props.error ? "true" : undefined}
+				onKeyDown={e=>{if (e.key==="Escape") e.currentTarget.blur()}}
         type={type}
         className={cn(
           `flex peer h-[2em] w-full rounded-md border border-input

@@ -11,27 +11,30 @@ type Props = {
 export default function CategoryCard({category,products,className}:Props){
 	return (
 		<Card
-			className={`${className} text-center`}
+			title={category.name}
+			className={`w-40 h-30 text-center`}
 		>
+			<Link href={`/shop?category=${category.name}`}>
 			<CardContent
-				className="h-full w-full flex flex-col items-center"
+				className="h-full p-2 rounded-lg w-full bg-secondary flex flex-col items-center"
 			>
-				<Link href={`/shop?category=${category.name}`}>
 				<div
 					className="relative h-28 w-28"
 				>
 				<Image
-					fill
+					className="rounded-lg h-full w-full"
+					width={245}
+					height={195}
 					alt={category.name}
 					src={`/categories/${category.image}`}
 				/>
 				</div>
-				<h3>{category.name}</h3>
-				<span>
+				<h3 className="text-2xl w-full font-semibold overflow-hidden overflow-ellipsis">{category.name}</h3>
+				<span className="text-xl font-medium">
 					{`${products} item${products%10===1 ? "" : "s"}`}
 				</span>
-				</Link>
 			</CardContent>
+			</Link>
 		</Card>
 	)
 }

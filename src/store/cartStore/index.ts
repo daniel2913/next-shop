@@ -57,10 +57,15 @@ const useCartStore = create<CartState>()(
 				set({items})
 			},
 			setAmmount: (id: number, amnt: number) => {
-				const items = get().items
-				items[id] = amnt
+				let items:Items = {}
+				if (amnt > 0)
+					items = {...get().items,[id]:amnt}
+				else{
+					const {[id]:_,..._items} = get().items
+					items = _items
+				}
+				set({items})
 				updateAccount(items)
-				set({ items })
 			},
 		}), {
 		name: "cart-store",

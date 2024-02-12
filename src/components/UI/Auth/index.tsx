@@ -1,73 +1,52 @@
 "use client"
-import { signOut, useSession } from "next-auth/react"
+import Exit from "@/../public/exit.svg"
 import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productsStore/productStore"
-import dynamic from "next/dynamic"
-import { Button } from "../button"
-import Exit from "@/../public/exit.svg"
-import useModal from "@/hooks/modals/useModal"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import Orders from "@public/note.svg"
-import useResponsive from "@/hooks/useWidth"
-import Link from "next/link"
+import { signOut, useSession } from "next-auth/react"
 import React from "react"
+import { Button } from "../button"
+import { useRouter } from "next/navigation"
 
-const OrderList = dynamic(() => import("@/components/cart/Orders"))
 
-interface props {
+type Props = {
 	className?: string
 }
 
-export function ProductControl(){
+export function ReloadOnUserChange(){
+	const router = useRouter()
 	const session = useSession()
-	const {reload} = useProductStore.getState()
 	React.useEffect(()=>{
-		reload()
-		if (!session.data?.user)
-			useCartStore.setState({items:{}})
-
-	},[session.data?.user])
+		router.refresh()
+	}
+	,[session])
 	return null
 }
 
-export default function Auth({ className }: props) {
+export function ProductControl() {
 	const session = useSession()
-	const mode = useResponsive()
-	const modal = useModal()
+	const reload = useProductStore(state => state.reload)
+	React.useEffect(() => {
+		reload()
+		if (!session.data?.user)
+			useCartStore.setState({ items: {} })
+
+	}, [session.data?.user, reload])
+	return null
+}
+
+export default function Auth({ className }: Props) {
 	return (
 		<>
-			{session.data?.user?.name
-				?
-				<>
-					{mode==="desktop"
-					?
-					<Button
-						className="flex gap-2"
-						variant="secondary"
-						onClick={() => modal.show(<OrderList />)}>
-						<Orders className="p-1" height="30px" width="30px" /> Orders
-					</Button>
-					:
-					<Link
-						href="/shop/orders"
-						className="flex flex-col items-center"
-					>
-						<Orders className="p-1" height="30px" width="30px" /> Orders
-					</Link>
-					}
-					<Button
-						className="p-1"
-						variant="destructive"
-						type="submit"
-						onClick={async () => {
-							await signOut({ redirect: false })
-						}}
-					>
-					<Exit className="stroke-2" height="30px" width="30px" />
-					</Button>
-				</>
-				:	null			
-			}
+			<Button
+				className="p-1"
+				variant="destructive"
+				type="submit"
+				onClick={async () => {
+					await signOut({ redirect: false })
+				}}
+			>
+				<Exit className="stroke-2" height="30px" width="30px" />
+			</Button>
 		</>
 	)
 }

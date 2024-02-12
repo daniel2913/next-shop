@@ -5,6 +5,7 @@ import { pgreDefaults, validations } from "./common"
 import { shop } from "./common.ts"
 import { z } from "zod"
 import { getProductsByIdsAction } from "@/actions/product.ts"
+import calcPrice from "@/helpers/discount.ts"
 
 const OrderInsertValidation = z.object({
 	user:validations.id,
@@ -17,9 +18,7 @@ const OrderInsertValidation = z.object({
 			if ("error" in products) return false
 			if (products.length !== Object.keys(order).length) return false
 			return products
-				.map((product) =>
-					product.price - (product.discount.discount * product.price) / 100 
-					=== order[product.id].price)
+				.map((product) => calcPrice(product.price,product.discount)=== order[product.id].price)
 				.reduce((prev,cur)=>prev&&cur,true)
 		},"Some order details are out of date"),
 	status:z.enum(["PROCESSING","COMPLETED"]).default("PROCESSING")

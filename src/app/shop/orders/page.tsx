@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import OrderList from "@/components/cart/Orders";
+import Orders from "@/components/cart/Orders";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -9,7 +9,7 @@ export default async function OrderPage(){
 	if (!session?.user?.role) redirect(`/api/auth/signin?redirect=${encodeURIComponent("/shop/order")}`)
 	return(
 		<div className="h-full flex justify-center items-center">
-			<OrderList/>
+			<Orders/>
 		</div>
 	)
 }

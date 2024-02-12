@@ -4,20 +4,20 @@ import { ProductModel } from "@/lib/DAL/Models"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import {or,inArray, desc, not, eq} from "drizzle-orm"
 import ProductCard from "../product/ProductCard"
+import { ScrollArea, ScrollBar } from "../UI/scroll-area"
 
 export default async function TopDiscountProducts(){
 	const topDiscounts = (await DiscountCache.get())
-		//.filter(discount=>+discount.expires>Date.now())
+		.filter(discount=>+discount.expires>Date.now())
 		.sort((a,b)=>a.discount-b.discount)
 	const topDiscounted:PopulatedProduct[] = [] 
-	let i = 0
-	while (topDiscounted.length<10 && i<topDiscounts.length){
 
-		const condition1 = topDiscounts[i].brands.length>0
-			? inArray(ProductModel.table.brand,topDiscounts[i].brands)
+	for (const discount of topDiscounts){
+		const condition1 = discount.brands.length>0
+			? inArray(ProductModel.table.brand,discount.brands)
 			: eq(ProductModel.table.id,-1)
-		const condition2 = topDiscounts[i].categories.length>0
-			? inArray(ProductModel.table.category,topDiscounts[i].categories)
+		const condition2 = discount.categories.length>0
+			? inArray(ProductModel.table.category,discount.categories)
 			: eq(ProductModel.table.id,-1)
 		topDiscounted.push(...await populateProducts(await ProductModel.model
 				.select()
@@ -25,20 +25,20 @@ export default async function TopDiscountProducts(){
 				.where(or(condition1,condition2))
 				.orderBy(desc(ProductModel.table.price))
 				))
-		i++
+		if (topDiscounted.length>=10) break
 	}
+	if (topDiscounted.length===0) return null
 	return(
-		<div className="
-			flex overflow-x-scroll gap-2 bg-accent1-200
-			flex-shrink-0 flex-grow w-fit
-		">
+				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
+				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
 			{topDiscounted.slice(0,10).map(product=>
 				<ProductCard
-					className="w-40 h-[22rem]"
 					key = {product.id}
 					product={product}
 				/>
 			)}
-		</div>
+			</div>
+			<ScrollBar/>
+		</ScrollArea>
 	)
 }

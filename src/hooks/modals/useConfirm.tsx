@@ -3,17 +3,23 @@ import React from "react"
 import { useModalStore } from "@/store/modalStore"
 
 export default function useConfirm(defaultMessage = "Are you sure?") {
+	const clear = useModalStore(state=>state.clear)
 	function show(message?: string) {
-		const { dialogRef, setContent } = useModalStore.getState()
-		return new Promise(res => {
-			setContent(<ModalConfirm
-				resolver={(val: boolean) => {
-					res(val)
-					dialogRef?.current?.close()
-				}}
-				message={message || defaultMessage}
-			/>)
-			dialogRef?.current?.show()
+		return new Promise((res) => {
+			useModalStore.setState({
+				children: <ModalConfirm
+					resolver={(val: boolean) => {
+						res(val)
+						clear()
+					}}
+					message={message || defaultMessage}
+				/>,
+				open:true,
+				title:"Confirmation",
+				header:"Are you sure?",
+				onClose:()=>res(false),
+				}
+			)
 		})
 	}
 	return show

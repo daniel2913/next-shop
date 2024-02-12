@@ -1,31 +1,38 @@
 import { create } from "zustand"
 import React from "react"
 
-interface ModalState {
+type ModalState = {
 	children: React.ReactNode
-	setContent: (content:React.ReactNode)=>void
-	dialogRef: React.RefObject<HTMLDialogElement> |null
-	bindDialog: (ref:React.RefObject<HTMLDialogElement>)=>void
+	onClose: (val?: any) => any
+	open: boolean
+	title: string
+	header: string
+	clear: (val?: any) => void
 }
-export const useModalStore = create<ModalState>()((set) => ({
-		dialogRef:null,
-		children: null,
-		setContent: (content)=>set({children:content}),
-		bindDialog:(ref)=>set({dialogRef:ref}),
+export const useModalStore = create<ModalState>()((set, get) => ({
+	onClose: () => undefined,
+	children: null,
+	open: false,
+	title: "",
+	header: "",
+	clear: (val) => {
+		get().onClose(val)
+		set(useModalStore.getInitialState())
+	}
 }))
 
-interface ToastState {
+type ToastState = {
 	children: React.ReactNode
-	type:"error"|"info"
-	title:string
-	description:string
-	isVisible:boolean
+	type: "error" | "info"
+	title: string
+	description: string
+	isVisible: boolean
 }
 
 export const useToastStore = create<ToastState>()((set) => ({
-		isVisible:false,
-		description: "",
-		title:"",
-		type:"error",
+	isVisible: false,
+	description: "",
+	title: "",
+	type: "error",
 }))
 

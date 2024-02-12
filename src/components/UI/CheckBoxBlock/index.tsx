@@ -40,11 +40,12 @@ function TextCheckBox({ name, toggle, id, value }: TextCheckBoxProps) {
 	const _id = React.useId()
 	return (
 		<Label htmlFor={_id} className='flex gap-2 hover:text-primary items-center text-inherit cursor-pointer'>
-			<Checkbox
+			<input
+				type="checkbox"
 				name={id}
 				id={_id}
 				checked={value}
-				onCheckedChange={toggle}
+				onChange={toggle}
 			/>
 			<span className='text-center text-inherit'>{name}</span>
 		</Label>

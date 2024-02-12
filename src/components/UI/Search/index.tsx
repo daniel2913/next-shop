@@ -8,6 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from "../toggle-group"
 import Image from "next/image"
 import { Brand, Category } from "@/lib/DAL/Models"
 import useResponsive from "@/hooks/useWidth"
+import { usePathname, useRouter } from "next/navigation"
 
 type Props = {
 	className?: string
@@ -17,6 +18,8 @@ type Props = {
 
 export default function Search({ className, allBrands, allCategories }: Props) {
 	const [brands, setBrands] = React.useState<string[]>([])
+	const router = useRouter()
+	const path = usePathname()
 	const [categories, setCategories] = React.useState<string[]>([])
 	const [name, setName] = React.useState("")
 	const mode = useResponsive()
@@ -34,8 +37,14 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 				"brand",
 				brand
 			)
-		history.pushState({ brands, categories, name }, "", query.toString())
-		useProductStore.getState().navigate(query.searchParams)
+		if (path==="/shop"){
+			history.pushState({ brands, categories, name }, "", query.toString())
+			useProductStore.getState().navigate(query.searchParams)
+		}
+		else {
+			useProductStore.setState({products:[],inited:false})
+			router.push(query.toString())	
+		}
 	}
 
 	return (
@@ -50,7 +59,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 					autoComplete="off"
 					className="
 						rounded-none
-          	rounded-l-lg border-none h-8
+          	rounded-l-md border-none h-8
           	bg-cyan-100 rounded-r-none
 						text-black p-1 
 						font-medium text-2xl
@@ -62,7 +71,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 				/>
 				<Button
 					className="
-            rounded-r-lg rounded-l-none h-8
+            rounded-r-md rounded-l-none h-8
 						text-center p-0 w-12 flex-grow-0
 						bg-primary text-teal-400 text-md
 						px-1 flex justify-center items-center
