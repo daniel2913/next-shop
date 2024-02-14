@@ -4,15 +4,15 @@ import { ServerErrorType } from "../useAction"
 export default function useToast() {
 	const _close= ()=>useToastStore.setState({isVisible:false})
 
-	function show(description:string,title:string="",type:"error"|"info"="error") {
+	function show(description:string,title="",type:"error"|"info"="error") {
 		useToastStore.setState({title,description,type,isVisible:true})
 		setTimeout(()=>_close(),10000)
 	}
-	function error(description:string,title:string=""){
+	function error(description:string,title=""){
 		useToastStore.setState({title,description,type:"error",isVisible:true})
 		setTimeout(()=>_close(),10000)
 	}
-	function info(description:string,title:string=""){
+	function info(description:string,title=""){
 		useToastStore.setState({title,description,type:"info",isVisible:true})
 		setTimeout(()=>_close(),10000)
 	}

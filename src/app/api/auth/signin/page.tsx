@@ -1,5 +1,4 @@
-import AuthModule from "@/components/modals/Login"
-import { useRouter, useSearchParams } from "next/navigation"
+import AuthModule from "@comps/modals/Login"
 
 type Props = {
 	searchParams: Record<string,string>

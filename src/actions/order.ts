@@ -1,12 +1,12 @@
 "use server"
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { Order, OrderModel, ProductModel, User, UserModel } from "@/lib/DAL/Models"
+import { Order, OrderModel, ProductModel} from "@/lib/Models"
 import { eq, inArray, sql } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { ServerError, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
-import { getProductsByIds, getProductsByIdsAction } from "./product"
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { getProductsByIds} from "./product"
+import { PopulatedProduct } from "@/lib/Models/Product"
 
 
 export type PopulatedOrder = {
@@ -90,7 +90,6 @@ export async function completeOrderAction(id: number) {
 }
 
 async function openRating(prodIds: number[], userId: number) {
-	console.log(`Open ${prodIds} for ${userId}`)
 	if (prodIds.length === 0) return
 	const res = await ProductModel.model.execute(sql`
 				UPDATE shop.products
@@ -104,7 +103,6 @@ async function openRating(prodIds: number[], userId: number) {
 					RETURNING
 						id;
 	`)
-	console.log(res)
 }
 
 export async function deleteOrdersAction(inp: number | number[]) {

@@ -1,15 +1,15 @@
 "use client"
 
 import useToast from "@/hooks/modals/useToast"
-import { Discount } from "@/lib/DAL/Models"
+import { Discount } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "../UI/button"
-import { GenericTable } from "../UI/ProductList"
+import { Button } from "../ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
 import { deleteDiscountsAction } from "@/actions/discount"
 import DiscountForm from "../forms/DiscountForm"
+import GenericSelectTable from "../ui/GenericSelectTable"
 
 type Props = {
 	discounts: Discount[]
@@ -38,7 +38,7 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 					Delete
 				</Button>
 			</div>
-			<GenericTable
+			<GenericSelectTable
 				items={discounts}
 				value={selected}
 				onChange={onChange}

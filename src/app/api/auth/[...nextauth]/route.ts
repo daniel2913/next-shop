@@ -1,5 +1,6 @@
 import { UserCache } from "@/helpers/cachedGeters"
-import { UserModel } from "@/lib/DAL/Models"
+import {env} from "process"
+import { UserModel } from "@/lib/Models"
 import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -67,7 +68,7 @@ export const authOptions: AuthOptions = {
 		maxAge: 30 * 24 * 60 * 60,
 		updateAge: 24 * 60 * 60,
 	},
-	secret: "FsLlSA0KpXaM7sHNlqrgpO9SlZBsR0/33ndqledspqQ=",
+	secret:env.NEXTAUTH_SECRET, 
 	pages: {
 		newUser: "/shop",
 	},

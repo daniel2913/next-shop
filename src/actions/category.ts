@@ -1,6 +1,6 @@
 "use server"
 import { CategoryCache } from "@/helpers/cachedGeters"
-import { CategoryModel } from "@/lib/DAL/Models"
+import { CategoryModel } from "@/lib/Models"
 import { ServerError, modelGeneralAction } from "./common"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
@@ -29,7 +29,7 @@ export async function deleteCategoriesAction(inp:number|number[]){
 		.where(inArray(CategoryModel.table.id,ids))
 		.returning({id:CategoryModel.table.id})
 	if (res.length)
-		await CategoryCache.revalidate()
+		CategoryCache.revalidate()
 	return res.length
 	}
 	catch(error){

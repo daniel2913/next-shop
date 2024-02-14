@@ -1,13 +1,13 @@
 "use client"
 import Image from "next/image"
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
+import { PopulatedProduct } from "@/lib/Models/Product"
 import ProductCarousel from "../product/ProductCarousel"
-import { ScrollArea } from "../UI/scroll-area"
-import BuyButton from "../UI/BuyButton"
-import Rating from "../UI/Rating"
-import useProductStore from "@/store/productsStore/productStore"
+import { ScrollArea } from "../ui/ScrollArea"
+import Rating from "../product/Rating"
+import useProductStore from "@/store/productStore"
 import useToast from "@/hooks/modals/useToast"
 import React from "react"
+import BuyButton from "../product/BuyButton"
 
 type Props = {
 	product:PopulatedProduct

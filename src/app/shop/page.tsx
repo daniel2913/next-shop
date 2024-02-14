@@ -1,4 +1,4 @@
-import ProductList from "@/components/Products"
+import ProductList from "@comps/product/ProductList"
 import { getProductsPageAction } from "@/actions/product"
 import React from "react"
 

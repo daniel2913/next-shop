@@ -1,6 +1,6 @@
 import { getAllProductsAction } from "@/actions/product";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import ProductsAdmin from "@/components/product/ProductsAdmin";
+import ProductsAdmin from "@comps/product/ProductsAdmin";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";

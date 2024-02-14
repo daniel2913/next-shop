@@ -2,8 +2,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
-import { DiscountModel } from "@/lib/DAL/Models";
-import DiscountsAdmin from "@/components/discount/DiscountsAdmin";
+import { DiscountModel } from "@/lib/Models";
+import DiscountsAdmin from "@comps/discount/DiscountsAdmin";
 
 export default async function Admindiscounts(){
 

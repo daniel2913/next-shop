@@ -2,10 +2,8 @@ import {
 	BrandModel,
 	CategoryModel,
 	DiscountModel,
-	ProductModel,
-	User,
 	UserModel,
-} from "@/lib/DAL/Models"
+} from "@/lib/Models"
 
 
 export function simpleCache<T extends () => Promise<any>>(
@@ -13,7 +11,6 @@ export function simpleCache<T extends () => Promise<any>>(
 	maxLifeTime = 1000 * 60 * 15
 ) {
 	let cache: ReturnType<T>
-	let cacheMap: Map<number, ReturnType<T>> = new Map()
 	let fetching = false
 	let validUntil: number
 
@@ -47,14 +44,7 @@ export const DiscountCache = simpleCache(() => DiscountModel.find())
 
 type Args = string
 
-type safeSingleArgs = string & number & RegExp
-type safeMultiArgs = Array<safeSingleArgs>
-type safeRecordArgs = Record<string | number, safeSingleArgs & safeMultiArgs>
-type safeMRecordArgs = Record<string | number, safeRecordArgs>
-type SafeArg = safeSingleArgs & safeMultiArgs & safeRecordArgs & safeMRecordArgs
-type SafeFunction<T> = (...args: SafeArg[]) => T | T[]
-
-export function cachePar<T extends (arg: Args) => Promise<any>>(
+export function cacheParam<T extends (arg: Args) => Promise<any>>(
 	func: T,
 	maxLifeTime = 1000 * 60 * 1,
 	maxSize = 30,
@@ -152,12 +142,9 @@ export function cachePar<T extends (arg: Args) => Promise<any>>(
 	return { get, revalidate, patch, present }
 }
 
-export const UserCache = cachePar(
+export const UserCache = cacheParam(
 	(name: string) => UserModel.findOne({ name }),
 	1000 * 10,
 	10,
 	false
 )
-
-
-

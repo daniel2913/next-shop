@@ -1,7 +1,7 @@
 "use server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { ProductModel, UserModel} from "@/lib/DAL/Models"
+import { ProductModel} from "@/lib/Models"
 import {inArray, sql} from "drizzle-orm"
 import { ServerError } from "./common"
 

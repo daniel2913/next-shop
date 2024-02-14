@@ -1,17 +1,17 @@
 "use client"
 
 import useToast from "@/hooks/modals/useToast"
-import { Brand } from "@/lib/DAL/Models"
+import { Brand } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "../UI/button"
-import { GenericTable } from "../UI/ProductList"
+import { Button } from "@comps/ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
-import BrandForm from "../forms/BrandForm"
+import BrandForm from "@comps/forms/BrandForm"
 import { deleteBrandsAction } from "@/actions/brand"
-import DiscountForm from "../forms/DiscountForm"
+import DiscountForm from "@comps/forms/DiscountForm"
 import useConfirm from "@/hooks/modals/useConfirm"
+import GenericSelectTable from "@comps/ui/GenericSelectTable"
 
 type Props = {
 	brands: Brand[]
@@ -59,7 +59,7 @@ export default function BrandsAdmin({ brands, className }: Props) {
 					Discount
 				</Button>
 			</div>
-			<GenericTable
+			<GenericSelectTable
 				items={brands}
 				value={selected}
 				onChange={onChange}

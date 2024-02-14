@@ -1,6 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { PgreModel } from "@/lib/DAL/Models/base"
-import { DrizzleError } from "drizzle-orm"
+import { PgreModel } from "@/lib/Models/base"
 import { getServerSession } from "next-auth"
 import { PostgresError } from "postgres"
 import { ZodError } from "zod"
@@ -44,7 +43,7 @@ export class ServerError{
 	public publicError:string
 	public error:unknown
 	public title:string 
-	constructor(error:string,title:string="Server Error"){
+	constructor(error:string,title="Server Error"){
 		this.publicError = error
 		this.title = title
 	}
@@ -102,18 +101,18 @@ export class ServerError{
 
 
 export function parseFormData(formData: FormData) {
-	const POJO: any = {}
+	const pojo: any = {}
 	for (const [key, value] of formData.entries()) {
 		if (value instanceof File && value.size===0) continue
-		if (key in POJO) {
-			if (!Array.isArray(POJO[key]))
-				POJO[key] = [POJO[key], value]
+		if (key in pojo) {
+			if (Array.isArray(pojo[key]))
+				pojo[key].push(value)
 			else
-				POJO[key].push(value)
+				pojo[key] = [pojo[key], value]
 		}
 		else
-			POJO[key] = value
+			pojo[key] = value
 	}
-	return POJO as { [key: string]: unknown }
+	return pojo as { [key: string]: unknown }
 }
 

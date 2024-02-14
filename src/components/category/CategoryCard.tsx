@@ -1,18 +1,18 @@
 import React from "react"
-import {Category} from "@/lib/DAL/Models/index"
-import {Card, CardContent} from "@/components/UI/card"
+import {Category} from "@/lib/Models/index"
+import {Card, CardContent} from "@comps/ui/Card"
 import Image from "next/image"
 import Link from "next/link"
 type Props = {
 	category:Category
 	products:number
-	className:string
+	className?:string
 }
 export default function CategoryCard({category,products,className}:Props){
 	return (
 		<Card
 			title={category.name}
-			className={`w-40 h-30 text-center`}
+			className={`${className} w-40 h-30 text-center`}
 		>
 			<Link href={`/shop?category=${category.name}`}>
 			<CardContent

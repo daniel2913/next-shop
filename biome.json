@@ -18,9 +18,9 @@
 			},
 			"style": {
 				"noNegationElse": "warn",
-				"nonNullAssertions":"off",
 				"useNamingConvention": "off",
-				"noUnusedTemplateLiteral":"off"
+				"noNonNullAssertion": "off",
+				"noUnusedTemplateLiteral": "off"
 			},
 			"complexity": {
 				"useSimplifiedLogicExpression": "warn",

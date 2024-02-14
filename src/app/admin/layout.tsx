@@ -8,6 +8,9 @@ export default function AdminLayout({ children }: { children: ReactElement }) {
 				className="
 					h-12 px-8 items-center text-3xl font-bold bg-secondary fixed left-0 right-0 top-0 flex justify-between
 				">
+				<Link href="/shop/home">
+					Shop
+				</Link>
 				<Link href="/admin/orders">
 					Orders
 				</Link>

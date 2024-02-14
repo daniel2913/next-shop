@@ -1,23 +1,16 @@
 "use client"
 
-import { PopulatedProduct } from "@/lib/DAL/Models/Product"
 import React from "react"
-import { Accordion, AccordionContent } from "@/components/UI/accordion"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@comps/UI/table"
-import Input from "@comps/UI/Input"
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@comps/UI/tabs"
-import { AccordionItem, AccordionTrigger } from "@comps/UI/accordion"
-import { Label } from "@comps/UI/label"
-import { EditProduct } from "@/components/product/ContextMenu"
+import { Accordion, AccordionContent } from "@comps/ui/Accordion"
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@comps/ui/Tabs"
+import { AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
 import { useRouter } from "next/navigation"
-import { Order } from "@/lib/DAL/Models"
-import { GenericTable } from "../UI/ProductList"
-import Complete from "../UI/Order/Complete"
-import { Button } from "../UI/button"
+import { Button } from "../ui/Button"
 import { PopulatedOrder, completeOrderAction } from "@/actions/order"
 import useToast from "@/hooks/modals/useToast"
 import useModal from "@/hooks/modals/useModal"
 import { CartTable } from "../cart/Cart"
+import GenericSelectTable from "../ui/GenericSelectTable"
 
 type Props =
 	{
@@ -36,11 +29,11 @@ type Props =
 
 function OrderTable(props:Omit<Props,"orders">&{orders:PopulatedOrder[]}) {
 	const router = useRouter()
-	const {handleResponse,info} = useToast()
+	const {handleResponse} = useToast()
 	const [loading,setLoading] = React.useState(false)
 	const {show} = useModal()
 	return (
-		<GenericTable
+		<GenericSelectTable
 			name={props.name}
 			columns={{
 				Id: order => order.id,

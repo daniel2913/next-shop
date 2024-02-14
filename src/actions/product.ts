@@ -1,7 +1,7 @@
 "use server"
-import { ProductModel, BrandModel, CategoryModel, DiscountModel } from "@/lib/DAL/Models"
+import { ProductModel} from "@/lib/Models"
 import { populateProducts } from "@/helpers/getProducts"
-import { and, or, eq, ilike, inArray, gt, sql } from "drizzle-orm"
+import { inArray } from "drizzle-orm"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
 import { ServerError, modelGeneralAction } from "./common"
 import { z } from "zod"
@@ -24,8 +24,8 @@ export async function getAllProductsAction() {
 	}
 }
 
-export async function getProductsByIds(query: number | number[]) {
-	query = z.number().or(z.array(z.number())).parse(query)
+export async function getProductsByIds(inp: number | number[]) {
+	const query = z.number().or(z.array(z.number())).parse(inp)
 	if (Array.isArray(query) && query.length === 0) return []
 	const products = await ProductModel.find({ id: query })
 	return populateProducts(products)

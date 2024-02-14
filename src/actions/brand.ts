@@ -1,6 +1,6 @@
 "use server"
 import { BrandCache } from "@/helpers/cachedGeters"
-import { BrandModel } from "@/lib/DAL/Models"
+import { BrandModel } from "@/lib/Models"
 import { ServerError, modelGeneralAction } from "./common"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
@@ -27,14 +27,13 @@ export async function deleteBrandsAction(inp:number|number[]){
 		.where(inArray(BrandModel.table.id,ids))
 		.returning({id:BrandModel.table.id})
 	if (res.length)
-		await BrandCache.revalidate()
+		BrandCache.revalidate()
 	return res.length
 	}
 	catch(error){
 		ServerError.fromError(error).emmit()
 	}
 }
-
 export async function createBrandAction(form: FormData) {
 	const res = await modelGeneralAction(BrandModel,form)
 	if (typeof res === "object" && !("error" in res)) BrandCache.revalidate()

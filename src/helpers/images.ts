@@ -1,4 +1,4 @@
-import { FileStorage } from "@/lib/DAL/FileStorage"
+import { FileStorage } from "@/lib/FileStorage"
 import { randomUUID } from "crypto"
 
 export type Image = { file: File | null; name: string }

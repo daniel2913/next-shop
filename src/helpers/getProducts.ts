@@ -1,12 +1,12 @@
 "use server"
-import { Brand, Category, User } from "@/lib/DAL/Models"
+import { Brand, Category, User } from "@/lib/Models"
 import {
 	BrandCache,
 	CategoryCache,
 	DiscountCache,
 	UserCache,
 } from "./cachedGeters"
-import { PopulatedProduct, Product } from "@/lib/DAL/Models/Product"
+import { PopulatedProduct, Product } from "@/lib/Models/Product"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
@@ -66,7 +66,7 @@ export async function populateProducts(
 		const voters = product.votes
 			.filter(Boolean)
 			.reduce(prev => ++prev, 0)
-		const favourite = user.saved?.includes(product.id) || false
+		const favourite = user.saved.includes(product.id)
 		return {
 			...product,
 			favourite,

@@ -1,10 +1,8 @@
 import React from "react"
-import Navbar from "@/components/NavBar"
-import NavBarContainer from "@/components/NavBar/container"
-import Search from "@/components/UI/Search"
-import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
-import { CartControl } from "@/components/cart/Status"
-import { ProductControl } from "@/components/UI/Auth"
+import Navbar from "@comps/navbar/Navbar"
+import NavBarContainer from "@comps/navbar/NavbarContainer"
+import { CartControl } from "@comps/cart/Status"
+import { ProductControl } from "@/components/navbar/auth/Auth"
 
 type Props = {
 	children: React.ReactNode

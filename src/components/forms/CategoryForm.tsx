@@ -1,13 +1,13 @@
 "use client"
-import { Category } from "@/lib/DAL/Models"
+import { Category } from "@/lib/Models"
 import { clientValidations } from "./common"
-import Form  from "./index"
+import Form from './common'
 import React from "react"
 import { changeCategoryAction, createCategoryAction } from "@/actions/category"
-import FileUpload from "../UI/FileUpload"
-import Input from "../UI/Input"
+import FileUpload from "../ui/ImageUpload"
+import Input from "../ui/Input"
 import useImageFiles from "@/hooks/useImageFiles"
-import { Label } from "../UI/label"
+import { Label } from "../ui/Label"
 
 const validation = {
 	name: clientValidations.name,
@@ -37,7 +37,6 @@ export default function CategoryForm({category}: Props) {
 			<Label>
 			Category Name
 			<Input
-				id="name"
 				name={"name"}
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
@@ -46,7 +45,6 @@ export default function CategoryForm({category}: Props) {
 			<Label>
 			Image
 			<FileUpload
-			id= "image"
 			name="image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}

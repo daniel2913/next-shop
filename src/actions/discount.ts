@@ -1,6 +1,6 @@
 "use server"
 
-import { DiscountModel } from "@/lib/DAL/Models"
+import { DiscountModel } from "@/lib/Models"
 import { DiscountCache } from "@/helpers/cachedGeters"
 import { ServerError, modelGeneralAction } from "./common"
 import { inArray } from "drizzle-orm"
@@ -29,7 +29,7 @@ export async function deleteDiscountsAction(inp:number|number[]){
 		.where(inArray(DiscountModel.table.id,ids))
 		.returning({id:DiscountModel.table.id})
 	if (res.length)
-		await DiscountCache.revalidate()
+		DiscountCache.revalidate()
 	return res.length
 	}
 	catch(error){

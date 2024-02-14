@@ -1,19 +1,19 @@
 "use client"
-import { clientValidations } from "./common.ts"
-import Form, { FormFieldValue } from "./index"
+import { FormFieldValue, clientValidations } from './common.tsx'
+import Form from './common.tsx'
 import React from "react"
-import PreviewProductCard from "@/components/product/ProductCard/PreviewProductCard"
+import PreviewProductCard from "@comps/product/Preview.tsx"
 import { changeProductAction, createProductAction } from "@/actions/product"
-import Input from "../UI/Input"
-import FileUpload from "../UI/FileUpload/index.tsx"
-import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from "../UI/select"
+import Input from "../ui/Input.tsx"
+import FileUpload from "../ui/ImageUpload.tsx"
+import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from "../ui/Select.tsx"
 import { getAllBrandNamesAction } from "@/actions/brand.ts"
 import { getAllCategoryNamesAction } from "@/actions/category.ts"
-import { PopulatedProduct } from "@/lib/DAL/Models/Product.ts"
+import { PopulatedProduct } from "@/lib/Models/Product.ts"
 import useImageFiles from "@/hooks/useImageFiles.ts"
 import useAction from "@/hooks/useAction.ts"
-import { Textarea } from "../UI/textarea.tsx"
-import { Label } from "../UI/label.tsx"
+import { Textarea } from "../ui/Textarea.tsx"
+import { Label } from "../ui/Label.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -68,7 +68,6 @@ export default function ProductForm({ product }: Props) {
 			<Label>
 			Product Name
 			<Input
-				id="name"
 				name={"name"}
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
@@ -78,7 +77,6 @@ export default function ProductForm({ product }: Props) {
 			Description
 			<Textarea
 				name={"description"}
-				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
@@ -131,7 +129,6 @@ export default function ProductForm({ product }: Props) {
 			<Label>
 			Images
 			<FileUpload
-				id="images"
 				name="images"
 				multiple
 				value={images}

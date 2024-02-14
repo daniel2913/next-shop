@@ -2,8 +2,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
-import { BrandModel } from "@/lib/DAL/Models";
-import BrandsAdmin from "@/components/brand/BrandsAdmin";
+import { BrandModel } from "@/lib/Models";
+import BrandsAdmin from "@comps/brand/BrandsAdmin";
 
 export default async function AdminBrands(){
 

@@ -1,9 +1,9 @@
 "use server"
+
 import { createHash } from "node:crypto"
-import { UserModel } from "@/lib/DAL/Models"
+import { UserModel } from "@/lib/Models"
 import { validateLogin, validatePassword } from "@/helpers/validation"
 import { ServerError } from "./common"
-import { headers } from "next/headers"
 
 export async function registerUserAction(username: string, password: string) {
 	try{

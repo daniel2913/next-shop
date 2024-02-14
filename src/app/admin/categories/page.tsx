@@ -2,8 +2,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
-import { CategoryModel } from "@/lib/DAL/Models";
-import CategoriesAdmin from "@/components/category/CategoriesAdmin";
+import { CategoryModel } from "@/lib/Models";
+import CategoriesAdmin from "@comps/category/CategoriesAdmin";
 
 export default async function AdminCategories(){
 

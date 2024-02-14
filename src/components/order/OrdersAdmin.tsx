@@ -4,7 +4,7 @@ import React from "react"
 import useToast from "@/hooks/modals/useToast"
 import useModal from "@/hooks/modals/useModal"
 import { useRouter } from "next/navigation"
-import { Button } from "../UI/button"
+import { Button } from "../ui/Button"
 import { PopulatedOrder, deleteOrdersAction } from "@/actions/order"
 import OrderList from "./OrderList"
 import useConfirm from "@/hooks/modals/useConfirm"
@@ -25,7 +25,6 @@ export default function OrdersAdmin({orders,className}:Props){
 	const [selected, setSelected] = React.useState<number[]>([])
 	const [loading, setLoading] = React.useState(false)
 	const { handleResponse } = useToast()
-	const {show} = useModal()
 	const confirm = useConfirm()
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)

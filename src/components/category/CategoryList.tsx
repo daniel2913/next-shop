@@ -1,9 +1,10 @@
-import {ProductModel} from "@/lib/DAL/Models"
+import {ProductModel} from "@/lib/Models"
 import React from "react"
 import CategoryCard from "./CategoryCard"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import {count} from "drizzle-orm"
-import { ScrollArea, ScrollBar } from "../UI/scroll-area"
+import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
+
 export default async function CategoryList() {
 	const categories = await CategoryCache.get()
 	const stats = await ProductModel.model

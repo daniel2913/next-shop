@@ -1,15 +1,9 @@
 "use client"
-import Form from "./index"
+import Form from './common.tsx'
 import React from "react"
 import { changeDiscountAction, createDiscountAction } from "@/actions/discount"
-import CheckBoxBlock from "../UI/CheckBoxBlock"
-import { getAllBrandNamesAction } from "@/actions/brand"
-import { getAllCategoryNamesAction } from "@/actions/category"
-import ProductList from "../UI/ProductList"
-import useAction from "@/hooks/useAction"
-import { Slider } from "../UI/Slider.tsx"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../UI/accordion.tsx"
-import Input from "../UI/Input/index.tsx"
+import { Slider } from '../ui/Slider.tsx'
+import { Label } from '../ui/Label.tsx'
 
 const validation = {
 	discount: (discount: number) => {
@@ -34,7 +28,7 @@ type Props = {
 export default function DiscountForm({ discount }: Props) {
 
 	const action = discount?.id !== undefined
-		? (form: FormData) => changeDiscountAction(discount!.id, form)
+		? (form: FormData) => changeDiscountAction(discount.id!, form)
 		: createDiscountAction
 
 	const [value, setValue] = React.useState(discount?.discount || 50)
@@ -53,20 +47,24 @@ export default function DiscountForm({ discount }: Props) {
 			{(discount?.brands?.length || "" )&& `${discount?.brands?.length} brands`}
 			{(discount?.categories?.length || "" )&& `${discount?.categories?.length} categories`}
 			</span>
-			{value}
+			<Label>
+			Discount
 			<Slider
 				value={[value]}
 				onValueChange={(e) => setValue(Math.floor(e[0]))}
 				max={99}
 				min={1}
 				title="Discount"
-				id="discount"
 				name="discount"
 			/>
+			<span className='w-full text-center'>		
+			{value}
+			</span>
+			</Label>
+			<Label>
+			Expires
 			<input
-				id="expires"
 				name="expires"
-				//label="Expires"
 				type="datetime-local"
 				value={expires.toJSON().slice(0, 16)}
 				onChange={(e) => {
@@ -74,6 +72,7 @@ export default function DiscountForm({ discount }: Props) {
 				}
 				}
 			/>
+			</Label>
 			{(discount?.products || []).map(product=>
 				<input type="checkbox" checked name="products" value={product} hidden readOnly />
 			)}

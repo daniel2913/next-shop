@@ -1,5 +1,5 @@
-import {Brand} from "@/lib/DAL/Models/index"
-import {Card, CardContent} from "@/components/UI/card"
+import {Brand} from "@/lib/Models/index"
+import {Card, CardContent} from "@comps/ui/Card"
 import Image from "next/image"
 import Link from "next/link"
 type Props = {
@@ -11,7 +11,7 @@ export default function BrandCard({brand,products,className}:Props){
 	return (
 		<Card
 			title={brand.name}
-			className={`w-40 h-30 text-center`}
+			className={`${className} w-40 h-30 text-center`}
 		>
 			<Link href={`/shop?brand=${brand.name}`}>
 			<CardContent

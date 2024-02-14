@@ -2,7 +2,7 @@
 
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { UserModel } from "@/lib/DAL/Models"
+import { UserModel } from "@/lib/Models"
 import { UserCache } from "@/helpers/cachedGeters"
 import { ServerError } from "./common"
 

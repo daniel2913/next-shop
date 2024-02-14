@@ -1,14 +1,13 @@
 "use client"
-import Form from "./index"
+import Form, { clientValidations } from './common.tsx'
 import React from "react"
-import { clientValidations } from "./common.ts"
-import { Brand } from "@/lib/DAL/Models/Brand.ts"
+import { Brand } from "@/lib/Models/Brand.ts"
 import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
-import FileUpload from "../UI/FileUpload/index.tsx"
+import FileUpload from "../ui/ImageUpload.tsx"
 import useImageFiles from "@/hooks/useImageFiles.ts"
-import Input from "../UI/Input"
-import { Textarea } from "../UI/textarea.tsx"
-import { Label } from "../UI/label.tsx"
+import Input from "../ui/Input.tsx"
+import { Textarea } from "../ui/Textarea.tsx"
+import { Label } from "../ui/Label.tsx"
 
 const validation = {
 	name: clientValidations.name,
@@ -40,7 +39,6 @@ export default function BrandForm({brand}: Props) {
 			Brand Name
 			<Input
 				name="name"
-				id="name"
 				value={name}
 				onChange={(e) => setName(e.currentTarget.value)}
 			/>
@@ -49,7 +47,6 @@ export default function BrandForm({brand}: Props) {
 			Description
 			<Textarea
 				name="description"
-				id="description"
 				value={description}
 				onChange={(e) => setDescription(e.currentTarget.value)}
 			/>
@@ -57,7 +54,6 @@ export default function BrandForm({brand}: Props) {
 			<Label>
 			Logo
 			<FileUpload
-			id= "image"
 			name="image"
 			value={image}
 			onChange={(files:File[])=>setImage(files)}

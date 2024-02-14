@@ -1,11 +1,11 @@
-import { IMAGE_MIME_TYPES } from "@/lib/DAL/Models/common"
+import { IMAGE_MIME_TYPES } from "@/lib/Models/common"
 import React from "react"
 
 export default function useImageFiles(imageUrls:string[]){
 	const [images,setImages] = React.useState<File[]>([])
 	React.useEffect(()=>{
 		async function fetchImages(imageUrls:string[]) {
-			let loadingBlobs: Promise<Blob>[] = []
+			const loadingBlobs: Promise<Blob>[] = []
 			for (const image of imageUrls) {
 				loadingBlobs.push(fetch(image).then(res => res.blob()))
 			}

@@ -2,17 +2,16 @@
 "use client"
 
 import useToast from "@/hooks/modals/useToast"
-import { Category } from "@/lib/DAL/Models"
+import { Category } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "../UI/button"
-import { GenericTable } from "../UI/ProductList"
+import { Button } from "../ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
-import { deleteBrandsAction } from "@/actions/brand"
 import DiscountForm from "../forms/DiscountForm"
 import CategoryForm from "../forms/CategoryForm"
 import { deleteCategoriesAction } from "@/actions/category"
+import GenericSelectTable from "../ui/GenericSelectTable"
 
 type Props = {
 	categories: Category[]
@@ -57,7 +56,7 @@ export default function CategoriesAdmin({ categories, className }: Props) {
 					Discount
 				</Button>
 			</div>
-			<GenericTable
+			<GenericSelectTable
 				items={categories}
 				value={selected}
 				onChange={onChange}
