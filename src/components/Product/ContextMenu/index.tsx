@@ -33,17 +33,21 @@ export function ToggleFav({ value,onClick }: { value: boolean, onClick: ()=>void
 	)
 }
 
-export function EditProduct({ product }: { product: PopulatedProduct }) {
+type EditProps = {
+	product:PopulatedProduct
+	className?:string
+	onClose?:()=>void
+}
+
+export function EditProduct({ product,className,onClose}:EditProps) {
 	const modal = useModal()
-	const reloader = useProductStore(state => state.reloadSingle)
-	const reload = () => reloader(product.id)
 	return (
 		<Button
-			className="p-0 appearance-none w-full flex justify-between"
+			className={`${className} p-0 bg-transparent hover:bg-transparent appearance-none w-full flex justify-between`}
 			onClick={() => {
 				modal.show(
 					<ProductForm product={product} />
-				).then(() => { reload() })
+				).then(() => onClose?.())
 			}}
 		>
 			< Edit

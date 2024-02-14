@@ -1,36 +1,37 @@
 import { smallint, timestamp } from "drizzle-orm/pg-core"
-import { ColumnsConfig, TestColumnsConfig } from "./base"
 import { pgreDefaults, shop, validations } from "./common"
 import { z } from "zod"
 import { BrandCache, CategoryCache} from "@/helpers/cachedGeters"
 
-const brandsSchema = z.string().or(z.number()).or(z.array(z.string().or(z.number())))
+const brandsSchema = z.string().or(z.number()).or(z.array(z.string()).or(z.array(z.number())))
 		.transform(async(brands)=>{
 			const allBrands = await BrandCache.get()
 			const res:number[][] = []
 			res.push([brands].flat()
-				.filter(brand=>typeof brand ==="number") 
-				.map(brand=>allBrands.find(b=>b.id===brand)?.id ||-1)
+				.filter(brand=>!Number.isNaN(+brand)) 
+				.map(brand=>allBrands.find(b=>b.id===+brand)?.id ||-1)
 			)
 			res.push([brands].flat()
-				.filter(brand=>typeof brand ==="string")
+				.filter(brand=>Number.isNaN(+brand))
 				.map(brand=>allBrands.find(b=>b.name===brand)?.id ||-1 )
 			)
+			console.log(brands)
+			console.log(res)
 			return res.flat()
 		})
 		.refine(n=>n.every(n=>n>-1),{message: "Brand Does Not Exist"})
 
 
-const categoriesSchema = z.string().or(z.number()).or(z.array(z.string().or(z.number())))
+const categoriesSchema = z.string().or(z.number()).or(z.array(z.string()).or(z.array(z.number())))
 		.transform(async(categories)=>{
 			const allCategories = await CategoryCache.get()
 			const res:number[][] = []
 			res.push([categories].flat()
-				.filter(category=>typeof category ==="number") 
-				.map(category=>allCategories.find(b=>b.id===category)?.id ||-1)
+				.filter(category=>!Number.isNaN(+category)) 
+				.map(category=>allCategories.find(b=>b.id===+category)?.id ||-1)
 			)
 			res.push([categories].flat()
-				.filter(category=>typeof category ==="string")
+				.filter(category=>Number.isNaN(+category))
 				.map(category=>allCategories.find(b=>b.name===category)?.id ||-1 )
 			)
 			

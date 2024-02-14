@@ -32,6 +32,7 @@ const ProductCard = React.memo(function ProductCard({ product:initProduct }: Pro
 		const res = await useProductStore.getState().toggleFav(product.id)
 		if (handleResponse(res)) setProduct({...product,favourite:res})
 	}
+	const reload = useProductStore(state=>state.reloadSingle)
 	React.useEffect(()=>{
 		setProduct(state=>({...state,ownVote:initProduct.ownVote,favourite:initProduct.favourite}))
 	},[initProduct.ownVote,initProduct.favourite])
@@ -103,7 +104,7 @@ const ProductCard = React.memo(function ProductCard({ product:initProduct }: Pro
 					<div className="justify-self-end">
 						{
 							session.data?.user?.role === "admin"
-								? <EditProduct product={product} />
+								? <EditProduct onClose={()=>reload(product.id)} product={product} />
 								:
 								<ToggleFav
 									value={product.favourite}

@@ -57,14 +57,14 @@ export default function AuthContainer({ children, className }: Props) {
 		)
 	return (
 			<Popover>
-				<PopoverTrigger className={`${className} flex flex-col sm:flex-row sm:gap-2 items-center`}>
+				<PopoverTrigger className={`${className} flex flex-col md:flex-row md:gap-2 items-center`}>
 					<Account width={"30px"} height={"30px"} />
 					Account
 				</PopoverTrigger>
 				<PopoverContent
 					side={mode === "desktop" ? "bottom" : "top"}
 					sideOffset={20}
-					className="flex flex-col gap-2 w-full sm:w-fit sm:flex-row"
+					className="flex flex-col gap-2 w-full md:w-fit md:flex-row"
 				>
 					{children}
 				</PopoverContent>
