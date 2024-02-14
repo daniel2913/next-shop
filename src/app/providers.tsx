@@ -18,7 +18,7 @@ export function ResponsiveProvider({children}:ResponsiveProps){
 			window.addEventListener("resize",onChange)
 			return ()=>window.removeEventListener("resize",onChange)
 		},
-		()=>window.innerWidth>640 ? "desktop" : "mobile",
+		()=>window.innerWidth>768 ? "desktop" : "mobile",
 		()=>"desktop"
 	) as "desktop"|"mobile"
 	return(

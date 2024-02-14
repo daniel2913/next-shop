@@ -37,7 +37,7 @@ const Rating = React.memo(function Rating({
 	return (
 		<div
 			className={cn(
-				`flex flex-wrap gap-1 justify-center`
+				`flex flex-nowrap gap-1 justify-center`
 				, className)
 			}
 			title={rating > 0 && `
@@ -51,7 +51,7 @@ const Rating = React.memo(function Rating({
 					type="button"
 					key={`${i}-${Math.random()}`}
 					onClick={() => handleRate(i)}
-					className=""
+					className="w-1/5"
 					id={`${i}`}
 				>
 					<Star
@@ -59,6 +59,7 @@ const Rating = React.memo(function Rating({
 						height={size}
 						key={`${i}-${Math.random()}`}
 						className={`
+							max-w-[${size}] w-full
 							aspect-square h-full
 								${i <= value
 								? "fill-accent"

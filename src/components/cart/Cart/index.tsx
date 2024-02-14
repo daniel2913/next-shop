@@ -1,5 +1,5 @@
 "use client"
-import { getProductsByIdsAction } from "@/actions/product"
+import { getProductsByIds, getProductsByIdsAction } from "@/actions/product"
 import useCartStore from "@/store/cartStore"
 import React from "react"
 import { PopulatedProduct } from "@/lib/DAL/Models/Product"
@@ -15,26 +15,28 @@ import { ScrollArea, ScrollBar } from "@/components/UI/scroll-area"
 import Loading from "@/components/UI/Loading"
 
 type Props = {
-	products: PopulatedProduct[]
+	products?: PopulatedProduct[]
 	order: Record<string, { amount: number, price: number }>
 	interactive?: boolean
 }
 export function CartTable({ products, order, interactive }: Props) {
-	const totalAmount = Object.values(order).reduce((sum, next) => sum + next.amount, 0)
-	const totalPrice = Object.values(order).reduce((total, next) => total + next.price, 0)
+	if (!products)
+		products = useAction(()=>getProductsByIds(Object.keys(order).map(Number)),[]).value
+	const totalAmount = Object.values(order).reduce((sum, next) => sum + (next.amount||0), 0)
+	const totalPrice = Object.values(order).reduce((total, next) => total + (next.price*next.amount||0), 0)
 	const setter = useCartStore(state => state.setAmmount)
 	return (
 		<>
 			<Table className="table-auto w-fit">
 				<TableHeader>
-					<TableRow className=" *:p-1 *:text-center text-center text-xl sm:text-2xl text-accent">
+					<TableRow className=" *:p-1 *:text-center text-center text-xl md:text-2xl text-accent">
 						<TableHead className="w-1/6">
 							Image
 						</TableHead>
 						<TableHead className="w-1/5">
 							Product
 						</TableHead>
-						<TableHead className="w-1/6 hidden sm:table-cell">
+						<TableHead className="w-1/6 hidden md:table-cell">
 							Brand
 						</TableHead>
 						<TableHead className="w-1/12">
@@ -52,16 +54,17 @@ export function CartTable({ products, order, interactive }: Props) {
 					{products
 						.filter(product => Object.keys(order)
 							.includes(product.id.toString())
+						&& order[product.id].amount>0
 						)
 						.map((product) => (
-							<TableRow key={product.id} className="w-full *:p-1 overflow-hidden text-ellipsis text-xl sm:text-2xl text-center">
+							<TableRow key={product.id} className="w-full *:p-1 overflow-hidden text-ellipsis text-xl md:text-2xl text-center">
 								<TableCell className="relative w-20 h-16">
 									<Image alt={product.name} src={`/products/${product.images[0]}`} fill />
 								</TableCell>
-								<TableCell className="text-md sm:text-lg">
+								<TableCell className="text-md md:text-lg">
 									{product.name}
 								</TableCell>
-								<TableCell className="hidden sm:table-cell">
+								<TableCell className="hidden md:table-cell">
 									{product.brand.name}
 								</TableCell>
 								<TableCell>
@@ -83,7 +86,7 @@ export function CartTable({ products, order, interactive }: Props) {
 					<TableRow className="text-2xl capitalize text-center text-accent">
 						<TableCell />
 						<TableCell />
-						<TableCell className="hidden sm:table-cell" />
+						<TableCell className="hidden md:table-cell" />
 						<TableCell />
 						<TableCell>
 							{totalAmount}
@@ -137,7 +140,7 @@ export default function Cart() {
 		order[product.id] = { price: calcPrice(product.price, product.discount), amount: items[product.id] }
 	}
 	return (
-		<div className="sm:w-[60vw] sm:h-[70vh] flex flex-col">
+		<div className="md:min-w-[60vw] md:min-h-[70vh] flex flex-col">
 			<Loading loading={loading}>
 				<ScrollArea className="h-full w-full" type="always">
 					<CartTable interactive products={products} order={order} />

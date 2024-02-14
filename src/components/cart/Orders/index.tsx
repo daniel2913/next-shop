@@ -1,5 +1,5 @@
 "use client"
-import { completeOrder, getOrdersAction } from "@/actions/order"
+import { completeOrderAction, getOrdersAction } from "@/actions/order"
 import React  from "react"
 import useAction, { ServerErrorType } from "@/hooks/useAction"
 import {Button} from "@/components/UI/button"
@@ -49,7 +49,7 @@ const OrderList = React.memo(function OrderList({completed,orders,setOrders}:Pro
 									color="cyan"
 									className="block ml-auto"
 									onClick={async ()=>{
-											const res = await completeOrder(data.id)
+											const res = await completeOrderAction(data.id)
 											if (handleResponse(res))
 												setOrders({
 												completed:[...orders!.completed,orders!.processing.find(o=>o?.order.id===order.order.id)!],
@@ -76,7 +76,7 @@ export default function Orders() {
 	const {value:orders,loading,setValue:setOrders,reload} = useAction(getOrdersAction,{completed:[],processing:[]})
 	const completedDef = React.useDeferredValue(completed)
 	return (
-		<div className=" flex flex-col h-dvh w-dvw sm:h-[70vh] sm:w-[60vw]">
+		<div className=" flex flex-col h-dvh w-dvw md:h-[70vh] md:w-fit md:min-w-[60vw]">
 			<div className="ml-auto w-fit flex-grow-0 items-center flex gap-4">
 			<Button className={`
 					bg-transparent hover:bg-transparent

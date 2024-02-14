@@ -19,7 +19,7 @@ export async function getRatingAction(ids:number[]){
 		.where(inArray(ProductModel.table.id,ids))
 	const ownVotes = res
 		.filter(row=>row.voters.includes(session.user!.id!))
-		.map(row=>[row.id,row.votes[row.voters.indexOf(session.user!.id!)!]])
+		.map(row=>[row.id,row.votes[row.voters.indexOf(session.user!.id!)!]||0])
 	return Object.fromEntries(ownVotes) as Record<number,number>
 	}
 	catch(error){

@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: false,
-})
-const nextConfig = withBundleAnalyzer({
+const nextConfig = {
 	experimental: {},
 	typescript: {
 		ignoreBuildErrors: true //FIsg
@@ -37,5 +34,5 @@ const nextConfig = withBundleAnalyzer({
 		};
 		return config;
 	},
-});
+};
 module.exports = nextConfig;

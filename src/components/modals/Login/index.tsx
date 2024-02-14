@@ -159,7 +159,7 @@ export default function AuthModule(props: Props) {
 	return (
 		<Tabs
 			className="
-				w-max h-max mt-8 sm:mt-0
+				w-max h-max mt-8 md:mt-0
 				lg:w-[33vw] lg:h-[45vh]
 				flex flex-col justify-start
 			"

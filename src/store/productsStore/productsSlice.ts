@@ -65,13 +65,15 @@ export const createProductsSlice: StateCreator<ProductsSlice> = (set, get) => ({
 			]) 
 		if ("error" in votes) return votes
 		if ("error" in favs) return favs
+		console.log(votes[76])
 		const newProducts = products.map(prod=>(
 			{
 				...prod,
-				ownVote:votes[prod.id] || -1,
+				ownVote:votes[prod.id] ?? -1,
 				favourite: favs.includes(prod.id)
 			}
 		))
+		console.log(newProducts)
 		set({products:newProducts})
 		return false
 	},

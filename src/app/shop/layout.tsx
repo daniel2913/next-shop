@@ -12,7 +12,7 @@ type Props = {
 
 export default async function ShopLayout({ children }: Props) {
 	return (
-			<div className="pb-12 sm:pt-12 sm:pb-0">
+			<div className="pb-12 md:pt-12 md:pb-0">
 			<NavBarContainer>
 				<Navbar />
 			</NavBarContainer>

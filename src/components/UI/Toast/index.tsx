@@ -16,7 +16,7 @@ export default function Toast(){
 				${type==="error" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"}
 				${isVisible ? "block" : "hidden"}
 				fixed animate-slide-up
-				h-1/6 w-1/2 right-1/2 sm:bottom-0 bottom-12
+				h-1/6 w-1/2 right-1/2 md:bottom-0 bottom-12
 				md:h-1/4 md:w-1/5 md:right-4
 				transition-transform z-[90]
 				duration-300

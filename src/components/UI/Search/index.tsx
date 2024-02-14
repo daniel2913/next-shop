@@ -8,7 +8,8 @@ import { ToggleGroup, ToggleGroupItem } from "../toggle-group"
 import Image from "next/image"
 import { Brand, Category } from "@/lib/DAL/Models"
 import useResponsive from "@/hooks/useWidth"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { ScrollArea, ScrollBar } from "../scroll-area"
 
 type Props = {
 	className?: string
@@ -17,15 +18,22 @@ type Props = {
 }
 
 export default function Search({ className, allBrands, allCategories }: Props) {
-	const [brands, setBrands] = React.useState<string[]>([])
+	const params = useSearchParams()
+	const initBrands = params.get("brand")
+		? params.getAll("brand")
+		: []
+	const initCategories = params.get("category")
+		? params.getAll("category")
+		: []
+	const [brands, setBrands] = React.useState<string[]>(initBrands)
+	const [categories, setCategories] = React.useState<string[]>(initCategories)
 	const router = useRouter()
 	const path = usePathname()
-	const [categories, setCategories] = React.useState<string[]>([])
-	const [name, setName] = React.useState("")
+	const [name, setName] = React.useState(params.get("name")||"")
 	const mode = useResponsive()
 	async function onSubmit(e: FormEvent) {
 		e.preventDefault()
-		const query = new URL("/shop", "http://localhost:3000")
+		const query = new URL("/shop", window.location.toString())
 		if (name) query.searchParams.set("name", name)
 		for (const category of categories)
 			query.searchParams.append(
@@ -52,9 +60,9 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 				onSubmit={onSubmit}
 				className={`
 				${className} group relative right-auto w-full
-				sm:border-2 mt-8 sm:mt-0 rounded-lg flex flex-col 
+				md:border-2 mt-8 md:mt-0 rounded-lg flex flex-col 
 			`}>
-			<div className="flex items-start p-4 pt-8 sm:p-0 sm:items-center sm:h-full">
+			<div className="flex items-start p-4 pt-8 md:p-0 md:items-center md:h-full">
 				<Input
 					autoComplete="off"
 					className="
@@ -82,46 +90,63 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 				</Button>
 				</div>
 				<div className="
-					sm:absolute left-0 right-0 bottom-full sm:bottom-auto sm:top-full
-					z-[100] bg-secondary border-2 rounded-lg sm:hidden sm:group-focus-within:block
+					md:absolute left-0 right-0 bottom-full md:bottom-auto md:top-full
+					z-[100] bg-secondary border-2 rounded-lg flex md:hidden group-focus-within:flex
+					gap-4 p-2
 					
 				">
 					<ToggleGroup
+						className="flex flex-col justify-start w-1/2 gap-2"
 						type="multiple"
 						value={categories}
 						onValueChange={(str: string[]) => setCategories(str)}
 					>
+						<span>Category</span>
+						<ScrollArea className="h-[30dvh] overflow-x-hidden">
 							{
 								allCategories.map(category =>
-									<ToggleGroupItem className="w-12" name="category" value={category.name} key={category.name}>
+									<ToggleGroupItem className="w-full flex justify-between" name="category" value={category.name} key={category.name}>
+										{category.name}
+									<div className="size-8 relative object-contain">
 										<Image
 											alt={category.name}
 											src={`/categories/${category.image}`}
-											height={60}
-											width={60}
+											fill
+											sizes="40px"
 										/>
+									</div>
 										<input name="category" hidden readOnly value={category.name} checked={categories.includes(category.name)} />
 									</ToggleGroupItem>
 								)
 							}
+							<ScrollBar orientation="vertical"/>
+							</ScrollArea>
 					</ToggleGroup>
 					<ToggleGroup
+						className="flex flex-col justify-start w-1/2 gap-2"
 						type="multiple"
 						value={brands}
 						onValueChange={(str: string[]) => setBrands(str)}
 					>
+						<span>Brand</span>
+						<ScrollArea className="h-[30dvh] overflow-x-hidden">
 							{
 								allBrands.map(brand =>
-									<ToggleGroupItem className="w-12" name="brand" value={brand.name} key={brand.name}>
+									<ToggleGroupItem className="w-full flex justify-between" name="brand" value={brand.name} key={brand.name}>
+										{brand.name}
+									<div className="size-8 relative object-contain">
 										<Image
 											alt={brand.name}
 											src={`/brands/${brand.image}`}
-											height={60}
-											width={60}
+											fill
+											sizes="40px"
 										/>
+										</div>
 										<input name="brand" hidden readOnly value={brand.name} checked={brands.includes(brand.name)} />
 									</ToggleGroupItem>
 								)}
+							<ScrollBar orientation="vertical"/>
+						</ScrollArea>
 					</ToggleGroup>
 					</div>
 			</form>

@@ -21,30 +21,25 @@ const validation = {
 }
 
 type Props = {
-	discount?: {
+	discount?: Partial<{
 		id: number
 		discount: number
-		brands: string[]
-		categories: string[]
+		brands: number[]
+		categories: number[]
 		products: number[]
 		expires: Date
-	}
+	}>
 }
 
 export default function DiscountForm({ discount }: Props) {
 
-	const action = discount?.id
-		? (form: FormData) => changeDiscountAction(discount.id, form)
+	const action = discount?.id !== undefined
+		? (form: FormData) => changeDiscountAction(discount!.id, form)
 		: createDiscountAction
 
 	const [value, setValue] = React.useState(discount?.discount || 50)
-	const [brands, setBrands] = React.useState(discount?.brands || [])
-	const [categories, setCategories] = React.useState(discount?.categories || [])
 	const [expires, setExpires] = React.useState(discount?.expires || new Date(Date.now() + 1000 * 60 * 60 * 24))
-	const [products, setProducts] = React.useState(discount?.products || [])
 
-	const { value: allBrands } = useAction(getAllBrandNamesAction, [])
-	const { value: allCategories } = useAction(getAllCategoryNamesAction, [])
 
 	return (
 		<Form
@@ -52,6 +47,12 @@ export default function DiscountForm({ discount }: Props) {
 			className=""
 			action={action}
 		>
+			<span>
+			{`Discount will affect:\n`}
+			{(discount?.products?.length || "" )&& `${discount?.products?.length} products`}
+			{(discount?.brands?.length || "" )&& `${discount?.brands?.length} brands`}
+			{(discount?.categories?.length || "" )&& `${discount?.categories?.length} categories`}
+			</span>
 			{value}
 			<Slider
 				value={[value]}
@@ -62,55 +63,6 @@ export default function DiscountForm({ discount }: Props) {
 				id="discount"
 				name="discount"
 			/>
-			<Accordion type="multiple" title="Brands">
-				<AccordionItem value="brands">
-					<AccordionTrigger>
-						Brands
-					</AccordionTrigger>
-					<AccordionContent>
-						<CheckBoxBlock
-							className="flex flex-col gap-2 text-secondary-foreground"
-							id="brands"
-							view="text"
-							value={brands}
-							setValue={(val) => setBrands(val)}
-							options={allBrands}
-						/>
-					</AccordionContent>
-				</AccordionItem>
-				<AccordionItem value="categories">
-					<AccordionTrigger>
-						Brands
-					</AccordionTrigger>
-					<AccordionContent>
-						<CheckBoxBlock
-							className="flex flex-col gap-2 text-secondary-foreground"
-							id="categories"
-							view="text"
-							value={categories}
-							setValue={(val) => setCategories(val)}
-							options={allCategories}
-						/>
-					</AccordionContent>
-				</AccordionItem>
-				<AccordionItem title="Products" value="products">
-					<AccordionTrigger>
-						Products
-					</AccordionTrigger>
-					<AccordionContent>
-						<ProductList
-							name="products"
-							value={products}
-							onChange={(id: number) => {
-								if (products.includes(id))
-									setProducts(products => products.filter(prod => prod !== id))
-								else
-									setProducts(products => [...products, id])
-							}}
-						/>
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
 			<input
 				id="expires"
 				name="expires"
@@ -122,6 +74,15 @@ export default function DiscountForm({ discount }: Props) {
 				}
 				}
 			/>
+			{(discount?.products || []).map(product=>
+				<input type="checkbox" checked name="products" value={product} hidden readOnly />
+			)}
+			{(discount?.brands || []).map(brand=>
+				<input type="checkbox" checked name="brands" value={brand} hidden readOnly />
+			)}
+			{(discount?.categories || []).map(category=>
+				<input type="checkbox" checked name="categories" value={category} hidden readOnly />
+			)}
 		</Form>
 	)
 }

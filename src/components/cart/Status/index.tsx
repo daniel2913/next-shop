@@ -98,7 +98,7 @@ export default function CartStatus({className}: Props) {
 					<div className="
 						absolute overflow-hidden 
 						-top-4 left-1/2 text-lg
-						sm:top-1/2 sm:-translate-y-1/2 sm:-left-6
+						md:top-2/3 md:left-6
 						w-6 aspect-square rounded-full bg-accent border-tan border-1
 					">
 					<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -113,7 +113,7 @@ export default function CartStatus({className}: Props) {
 	return ( mode==="desktop"
 		?<Button
 			type="button"
-				className={`${className} relative bg-transparent hover:bg-transparent justify-center relative flex gap-2 flex-row`}
+				className={`${className} bg-transparent hover:bg-transparent justify-center relative flex gap-2 flex-row`}
 			onClick={cartClickHandler}
 		>
 			{content}

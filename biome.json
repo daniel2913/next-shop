@@ -18,7 +18,8 @@
 			},
 			"style": {
 				"noNegationElse": "warn",
-				"useNamingConvention": "warn",
+				"nonNullAssertions":"off",
+				"useNamingConvention": "off",
 				"noUnusedTemplateLiteral":"off"
 			},
 			"complexity": {
