@@ -1,11 +1,11 @@
 import { getOrdersAction } from "@/actions/order";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import OrdersAdmin from "@comps/order/OrdersAdmin";
+import OrdersAdmin from "@/components/order/OrdersAdmin";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default async function AdminMain(){
+export default async function AdminOrdersPage(){
 
 	const ordersPromise = getOrdersAction()
 	const session = await getServerSession(authOptions)

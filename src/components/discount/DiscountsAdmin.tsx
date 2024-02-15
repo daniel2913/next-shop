@@ -4,12 +4,12 @@ import useToast from "@/hooks/modals/useToast"
 import { Discount } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "../ui/Button"
+import { Button } from "@/components/ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
 import { deleteDiscountsAction } from "@/actions/discount"
-import DiscountForm from "../forms/DiscountForm"
-import GenericSelectTable from "../ui/GenericSelectTable"
+import DiscountForm from "@/components/forms/DiscountForm"
+import GenericSelectTable from "@/components/ui/GenericSelectTable"
 
 type Props = {
 	discounts: Discount[]

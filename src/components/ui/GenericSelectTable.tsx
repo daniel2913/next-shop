@@ -1,5 +1,5 @@
 "use client"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@comps/ui/Table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table"
 
 type GenericProps<T extends (Record<string, any>&{id:number})[]> = {
 	value: number[]

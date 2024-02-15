@@ -1,6 +1,6 @@
 import React from "react"
 import ImagesPreview from "./ImagesPreview"
-import {Input} from "@comps/ui/Input"
+import {Input} from "@/components/ui/Input"
 import { Label } from "./Label"
 import { Button } from "./Button"
 

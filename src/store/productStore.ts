@@ -63,7 +63,6 @@ const useProductStore = createWithEqualityFn<ProductsSlice>()((set,get) => ({
 			]) 
 		if ("error" in votes) return votes
 		if ("error" in favs) return favs
-		console.log(votes[76])
 		const newProducts = products.map(prod=>(
 			{
 				...prod,
@@ -71,7 +70,6 @@ const useProductStore = createWithEqualityFn<ProductsSlice>()((set,get) => ({
 				favourite: favs.includes(prod.id)
 			}
 		))
-		console.log(newProducts)
 		set({products:newProducts})
 		return false
 	},

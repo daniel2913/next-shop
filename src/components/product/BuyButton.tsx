@@ -3,8 +3,8 @@ import useCartStore from "@/store/cartStore"
 import { useSession } from "next-auth/react"
 import React from "react"
 import {cn} from "@/lib/utils"
-import AmmountSelector from "@comps/ui/AmmountSelector"
-import { Button } from "@comps/ui/Button"
+import AmmountSelector from "@/components/ui/AmmountSelector"
+import { Button } from "@/components/ui/Button"
 
 interface Props {
 	className: string

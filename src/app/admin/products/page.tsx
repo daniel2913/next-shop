@@ -1,11 +1,11 @@
 import { getAllProductsAction } from "@/actions/product";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import ProductsAdmin from "@comps/product/ProductsAdmin";
+import ProductsAdmin from "@/components/product/ProductsAdmin";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default async function AdminMain(){
+export default async function AdminProductsPage(){
 
 	const productsPromise = getAllProductsAction()
 	const session = await getServerSession(authOptions)

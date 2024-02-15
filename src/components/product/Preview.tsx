@@ -1,6 +1,6 @@
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious} from "../ui/Carousel"
 import Price from "./Price"
-import {Card, CardContent} from "@comps/ui/Card"
+import {Card, CardContent} from "@/components/ui/Card"
 import React from "react"
 import { PopulatedProduct } from "@/lib/Models/Product"
 

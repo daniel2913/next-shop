@@ -1,7 +1,7 @@
 import React from "react"
-import Navbar from "@comps/navbar/Navbar"
-import NavBarContainer from "@comps/navbar/NavbarContainer"
-import { CartControl } from "@comps/cart/Status"
+import Navbar from "@/components/navbar/Navbar"
+import NavBarContainer from "@/components/navbar/NavbarContainer"
+import { CartControl } from "@/components/cart/Status"
 import { ProductControl } from "@/components/navbar/auth/Auth"
 
 type Props = {

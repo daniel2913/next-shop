@@ -4,9 +4,10 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { Order, OrderModel, ProductModel} from "@/lib/Models"
 import { eq, inArray, sql } from "drizzle-orm"
 import { getServerSession } from "next-auth"
-import { ServerError, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
+import { ServerError, auth, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
 import { getProductsByIds} from "./product"
 import { PopulatedProduct } from "@/lib/Models/Product"
+import { toArray } from "@/helpers/misc"
 
 
 export type PopulatedOrder = {
@@ -16,14 +17,13 @@ export type PopulatedOrder = {
 
 export async function getOrdersAction() {
 	try {
-		const session = await getServerSession(authOptions)
-		if (!(session?.user?.id)) throw ServerError.notAuthed()
+		const user = await auth()
 		let query = OrderModel.model
 			.select()
 			.from(OrderModel.table)
 			.$dynamic()
-		if (session?.user?.role !== "admin")
-			query = query.where(eq(OrderModel.table.user, session.user.id))
+		if (user.role !== "admin")
+			query = query.where(eq(OrderModel.table.user, user.id))
 		const orders = await query
 		const productSet = new Set(
 			orders.flatMap((order) => Object.keys(order.order).map(Number))
@@ -53,11 +53,10 @@ export async function getOrdersAction() {
 }
 
 export async function createOrderAction(order: Record<number, { price: number, amount: number }>) {
-	const session = await getServerSession(authOptions)
-	if (session?.user?.role !== "user") return ServerError.notAuthed().emmit()
+	const user = await auth("user")
 	const props = {
 		order,
-		user: session.user.id,
+		user: user.id,
 	}
 	return modelGeneralActionNoAuth(OrderModel, props)
 }
@@ -68,13 +67,12 @@ export async function changeOrderAction(id: number, form: FormData) {
 
 export async function completeOrderAction(id: number) {
 	try {
-		const [session, order] = await Promise.all([
-			getServerSession(authOptions),
-			OrderModel.findOne({ id })
+		const [order] = await Promise.all([
+			OrderModel.findOne({ id }),
+			auth("admin")
 		])
 
 		if (!order) throw ServerError.notFound()
-		if (session?.user?.role !== "admin") throw ServerError.notAllowed()
 		const newProds = Object.keys(order.order)
 			.map(Number)
 		const [res] = await Promise.all([
@@ -91,7 +89,7 @@ export async function completeOrderAction(id: number) {
 
 async function openRating(prodIds: number[], userId: number) {
 	if (prodIds.length === 0) return
-	const res = await ProductModel.model.execute(sql`
+	await ProductModel.model.execute(sql`
 				UPDATE shop.products
 					SET 
 						votes=array_append(votes,null),
@@ -107,10 +105,9 @@ async function openRating(prodIds: number[], userId: number) {
 
 export async function deleteOrdersAction(inp: number | number[]) {
 	try {
-		const ids = [inp].flat()
+		const ids = toArray(inp) 
 		if (!ids.length) throw ServerError.invalid()
-		const session = await getServerSession(authOptions)
-		if (session?.user?.role !== "admin") throw ServerError.notAllowed()
+		await auth("admin")
 		const res = await OrderModel.model
 			.delete(OrderModel.table)
 			.where(inArray(OrderModel.table.id, ids))

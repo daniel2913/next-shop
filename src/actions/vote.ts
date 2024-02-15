@@ -3,12 +3,11 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { ProductModel} from "@/lib/Models"
 import {inArray, sql} from "drizzle-orm"
-import { ServerError } from "./common"
+import { ServerError, auth } from "./common"
 
 export async function getRatingAction(ids:number[]){
 	try{
-	const session = await getServerSession(authOptions)
-	if (session?.user?.role!=="user") return {} as Record<number,number>
+		const user = await auth("user")
 	const res = await ProductModel.model
 		.select({
 			id:ProductModel.table.id,
@@ -18,8 +17,8 @@ export async function getRatingAction(ids:number[]){
 		.from(ProductModel.table)
 		.where(inArray(ProductModel.table.id,ids))
 	const ownVotes = res
-		.filter(row=>row.voters.includes(session.user!.id!))
-		.map(row=>[row.id,row.votes[row.voters.indexOf(session.user!.id!)!]||0])
+		.filter(row=>row.voters.includes(user.id!))
+		.map(row=>[row.id,row.votes[row.voters.indexOf(user.id!)!]||0])
 	return Object.fromEntries(ownVotes) as Record<number,number>
 	}
 	catch(error){
@@ -45,9 +44,8 @@ async function setRating(id:number,user:number,vote:number){
 
 export async function updateVoteAction(id:number, vote: number){
 	try{
-	const session = await getServerSession(authOptions)
-	if (!session?.user?.id) throw ServerError.notAuthed()
-	const res1 = await setRating(id,session.user.id,vote)
+		const user = await auth("user")
+	const res1 = await setRating(id,user.id,vote)
 	if (!res1)  throw new ServerError("You can only rate existing products that you bought","Not Authorized")
 	return res1
 	}

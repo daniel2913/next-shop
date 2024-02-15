@@ -1,6 +1,4 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.3.3/schema.json",
-
 	"files": {
 		"ignore": ["./node_modules", "./.next", "./.git"]
 	},
@@ -37,7 +35,8 @@
 	},
 	"javascript": {
 		"formatter": {
-			"semicolons": "asNeeded"
+			"semicolons": "asNeeded",
+			"bracketSpacing": true
 		}
 	}
 }

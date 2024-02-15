@@ -1,9 +1,9 @@
-import TopDiscountProducts from "@comps/product/TopDiscounts"
-import BrandList from "@comps/brand/BrandList"
-import CategoryList from "@comps/category/CategoryList"
-import TopRatingProducts from "@comps/product/TopRatingProducts"
-import SavedProducts from "@comps/product/SavedProducts"
-import { ReloadOnUserChange } from "@comps/navbar/auth/Auth"
+import TopDiscountProducts from "@/components/product/TopDiscounts"
+import BrandList from "@/components/brand/BrandList"
+import CategoryList from "@/components/category/CategoryList"
+import TopRatingProducts from "@/components/product/TopRatingProducts"
+import SavedProducts from "@/components/product/SavedProducts"
+import { ReloadOnUserChange } from "@/components/navbar/auth/Auth"
 
 export default async function HomePage() {
 	return (

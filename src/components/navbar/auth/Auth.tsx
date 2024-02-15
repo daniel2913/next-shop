@@ -4,7 +4,7 @@ import useCartStore from "@/store/cartStore"
 import useProductStore from "@/store/productStore"
 import { signOut, useSession } from "next-auth/react"
 import React from "react"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import { useRouter} from "next/navigation"
 import Link from "next/link"
 import Admin from "@public/admin.svg"
@@ -28,9 +28,7 @@ export function ProductControl() {
 	const reload = useProductStore(state => state.reload)
 	const skip = React.useRef(session.data?.user?.id)
 	React.useEffect(() => {
-		console.log(session.data?.user?.id)
 		if (session.data?.user?.id!==skip.current){
-			console.log(skip.current, "reload for ",session.data?.user?.id)
 			skip.current=session.data?.user?.id
 			reload()
 			if (!session.data?.user)

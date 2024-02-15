@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { UserCache } from "@/helpers/cachedGeters"
 import { ProductModel, UserModel } from "@/lib/Models"
 import { getServerSession } from "next-auth"
-import { ServerError } from "./common"
+import { ServerError, auth } from "./common"
 
 async function validateCart(cart: Record<number, number>) {
 	if (Object.keys(cart).length === 0) return cart
@@ -20,10 +20,7 @@ async function validateCart(cart: Record<number, number>) {
 
 export async function getCartAction() {
 	try {
-		const session = await getServerSession(authOptions)
-		if (!session?.user?.name || session.user.role !== "user") throw ServerError.notAuthed()
-		const user = await UserCache.get(session.user.name)
-		if (!user) throw "Bad Cache"
+		const user = auth("user")
 		const cart = await validateCart(user.cart)
 		if (Object.keys(user.cart).length !== Object.keys(cart).length) {
 			const res = await UserModel.patch(user.id, { cart })
@@ -41,11 +38,10 @@ export async function getCartAction() {
 
 export async function setCartAction(cart: Record<string, number>) {
 	try {
-		const session = await getServerSession(authOptions)
-		if (!session?.user?.name || session.user.role !== "user") throw ServerError.notAuthed()
-		const res = await UserModel.patch(session.user.id, { cart })
+		const user = await auth("user")
+		const res = await UserModel.patch(user.id, { cart })
 		if (res)
-			UserCache.patch(session.user!.name, { cart })
+			UserCache.patch(user.name, { cart })
 		else
 			throw ServerError.notFound()
 		return false

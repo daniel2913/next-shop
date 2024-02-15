@@ -1,18 +1,13 @@
 import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
 import ProductCard from "./ProductCard"
 import { getProductsByIds } from "@/actions/product"
-import { UserCache } from "@/helpers/cachedGeters"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/actions/common"
 
 export default async function SavedProducts(){
-	const session = await getServerSession(authOptions)
-	const userFav = session?.user?.name
-		? (await UserCache.get(session.user.name))?.saved || []
-		: []
-	if (userFav.length===0) return null
-	const topProducts = await getProductsByIds(userFav)
-	
+	try{
+		const user = await auth("user")
+	if (user.saved.length===0) return null
+	const topProducts = await getProductsByIds(user.saved)
 	return(
 				<>
 				<h2>Saved Products</h2>
@@ -26,5 +21,9 @@ export default async function SavedProducts(){
 				</ScrollArea>
 				</>
 	)
+	}
+	catch{
+		return null
+	}
 }
 

@@ -3,13 +3,13 @@
 import { PopulatedProduct } from "@/lib/Models/Product"
 import ProductList from "./ProductAdminTable"
 import React from "react"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import { deleteProductsAction } from "@/actions/product"
 import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
-import ProductForm from "@comps/forms/ProductForm"
+import ProductForm from "@/components/forms/ProductForm"
 import useModal from "@/hooks/modals/useModal"
-import DiscountForm from "@comps/forms/DiscountForm"
+import DiscountForm from "@/components/forms/DiscountForm"
 
 type Props = {
 	products: PopulatedProduct[]

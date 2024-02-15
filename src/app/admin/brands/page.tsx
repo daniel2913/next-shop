@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 import { BrandModel } from "@/lib/Models";
-import BrandsAdmin from "@comps/brand/BrandsAdmin";
+import BrandsAdmin from "@/components/brand/BrandsAdmin";
 
-export default async function AdminBrands(){
+export default async function AdminBrandsPage(){
 
 	const brandsPromise = BrandModel.model.select().from(BrandModel.table)
 	const session = await getServerSession(authOptions)

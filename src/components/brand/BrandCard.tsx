@@ -1,5 +1,5 @@
 import {Brand} from "@/lib/Models/index"
-import {Card, CardContent} from "@comps/ui/Card"
+import {Card, CardContent} from "@/components/ui/Card"
 import Image from "next/image"
 import Link from "next/link"
 type Props = {

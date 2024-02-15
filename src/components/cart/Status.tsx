@@ -6,15 +6,15 @@ import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import CartIcon from "@public/cart.svg" 
 import { getCartAction } from "@/actions/cart"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import useToast from "@/hooks/modals/useToast"
 import useResponsive from "@/hooks/useResponsive"
-import { Drawer, DrawerContent, DrawerTrigger } from "@comps/ui/Drawer"
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 import useConfirm from "@/hooks/modals/useConfirm"
-import Loading from "../ui/Loading"
+import Loading from "@/components/ui/Loading"
 
-const Cart = dynamic(() => import("@comps/cart/Cart"))
-const Login = dynamic(() => import("@comps/modals/Login"))
+const Cart = dynamic(() => import("@/components/cart/Cart"))
+const Login = dynamic(() => import("@/components/modals/Login"))
 
 type Props = {
 	className:string

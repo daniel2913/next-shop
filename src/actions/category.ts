@@ -1,10 +1,11 @@
 "use server"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import { CategoryModel } from "@/lib/Models"
-import { ServerError, modelGeneralAction } from "./common"
+import { ServerError, auth, modelGeneralAction } from "./common"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { inArray } from "drizzle-orm"
+import { toArray } from "@/helpers/misc"
 
 
 export async function getAllCategoryNamesAction(){
@@ -20,10 +21,9 @@ export async function getAllCategoryNamesAction(){
 
 export async function deleteCategoriesAction(inp:number|number[]){
 	try{
-	const ids = [inp].flat()
+	const ids = toArray(inp)
 	if (!ids.length) throw ServerError.invalid()
-	const session = await getServerSession(authOptions)
-	if (session?.user?.role !== "admin") throw ServerError.notAllowed()
+	await auth("admin")
 	const res = await CategoryModel.model
 		.delete(CategoryModel.table)
 		.where(inArray(CategoryModel.table.id,ids))

@@ -2,14 +2,14 @@
 import useResponsive from "@/hooks/useResponsive"
 import { useSession } from "next-auth/react"
 import React from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "@comps/ui/Popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover"
 import Account from "@public/account.svg"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
-import { Drawer, DrawerContent, DrawerTrigger } from "@comps/ui/Drawer"
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 
-const Login = dynamic(() => import("@comps/modals/Login"))
+const Login = dynamic(() => import("@/components/modals/Login"))
 
 type Props = {
 	children: React.ReactNode

@@ -3,6 +3,7 @@ import useToast from "@/hooks/modals/useToast"
 import React from "react"
 import { Button } from "../ui/Button"
 import { ServerErrorType } from '@/hooks/useAction'
+import { toArray } from "@/helpers/misc"
 export const clientValidations = {
 	name: (value: FormFieldValue) => {
 		if (typeof value !== "string")
@@ -14,7 +15,7 @@ export const clientValidations = {
 	},
 	images: (valueIn: File[]|File|null) => {
 		if (!valueIn) return false
-		const value = [valueIn].flat()
+		const value = toArray(valueIn)
 		if (value.length===0) return false
 		for (const file of value) {
 			if (file.size===0) continue

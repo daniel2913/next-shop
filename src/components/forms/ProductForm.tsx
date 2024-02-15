@@ -2,7 +2,7 @@
 import { FormFieldValue, clientValidations } from './common.tsx'
 import Form from './common.tsx'
 import React from "react"
-import PreviewProductCard from "@comps/product/Preview.tsx"
+import PreviewProductCard from "@/components/product/Preview.tsx"
 import { changeProductAction, createProductAction } from "@/actions/product"
 import Input from "../ui/Input.tsx"
 import FileUpload from "../ui/ImageUpload.tsx"

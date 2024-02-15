@@ -5,9 +5,9 @@ import React  from "react"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import { PopulatedProduct } from "@/lib/Models/Product"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 
-const ProductForm = dynamic(() => import("@comps/forms/ProductForm"))
+const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
 
 export function ToggleFav({ value,onClick }: { value: boolean, onClick: ()=>void }) {
 	return (

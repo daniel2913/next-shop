@@ -1,19 +1,19 @@
 "use server"
 import { ProductModel} from "@/lib/Models"
 import { populateProducts } from "@/helpers/getProducts"
-import { inArray } from "drizzle-orm"
+import { inArray, sql,and,or, ilike } from "drizzle-orm"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
-import { ServerError, modelGeneralAction } from "./common"
+import { ServerError, auth, modelGeneralAction } from "./common"
 import { z } from "zod"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { toArray } from "@/helpers/misc"
 
 
 
 export async function getAllProductsAction() {
 	try {
-		const session = await getServerSession(authOptions)
-		if (session?.user?.role !== "admin") throw ServerError.notAllowed()
+		await auth("admin")
 		const products = await ProductModel.model
 			.select()
 			.from(ProductModel.table)
@@ -57,6 +57,7 @@ const querySchema = z.object({
 })
 
 
+
 export async function getProductsPageAction(params: Params) {
 	try {
 		const { brand, category, name, skip, page, } = querySchema.parse(params)
@@ -74,8 +75,9 @@ export async function getProductsPageAction(params: Params) {
 				.filter(category => categories.find(_category => _category.name === category))
 				.map(category => categories.find(_category => _category.name === category)!.id)
 		}
+
 	const products = await ProductModel.find({
-			name:(name&&new RegExp(name))||undefined,
+			name:(name&&`%${name}%`)||undefined,
 			brand:brandIds,
 			category:categoryIds
 	}, page,skip)
@@ -89,10 +91,9 @@ export async function getProductsPageAction(params: Params) {
 
 export async function deleteProductsAction(inp:number|number[]){
 try{
-	const ids = [inp].flat()
+	const ids = toArray(inp)
 	if (!ids.length) throw ServerError.invalid()
-	const session = await getServerSession(authOptions)
-	if (session?.user?.role !== "admin") throw ServerError.notAllowed()
+	await auth("admin")
 	const res = await ProductModel.model
 		.delete(ProductModel.table)
 		.where(inArray(ProductModel.table.id,ids))

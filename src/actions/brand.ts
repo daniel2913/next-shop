@@ -1,10 +1,11 @@
 "use server"
 import { BrandCache } from "@/helpers/cachedGeters"
 import { BrandModel } from "@/lib/Models"
-import { ServerError, modelGeneralAction } from "./common"
+import { ServerError, auth, modelGeneralAction } from "./common"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { inArray } from "drizzle-orm"
+import { toArray } from "@/helpers/misc"
 
 export async function getAllBrandNamesAction() {
 	try{
@@ -18,10 +19,9 @@ export async function getAllBrandNamesAction() {
 
 export async function deleteBrandsAction(inp:number|number[]){
 	try{
-	const ids = [inp].flat()
+	const ids = toArray(inp)
 	if (!ids.length) throw ServerError.invalid()
-	const session = await getServerSession(authOptions)
-	if (session?.user?.role !== "admin") throw ServerError.notAllowed()
+	await auth("admin")
 	const res = await BrandModel.model
 		.delete(BrandModel.table)
 		.where(inArray(BrandModel.table.id,ids))

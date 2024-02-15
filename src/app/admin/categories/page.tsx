@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 import { CategoryModel } from "@/lib/Models";
-import CategoriesAdmin from "@comps/category/CategoriesAdmin";
+import CategoriesAdmin from "@/components/category/CategoriesAdmin";
 
-export default async function AdminCategories(){
+export default async function AdminCategoriesPage(){
 
 	const catPromise = CategoryModel.model.select().from(CategoryModel.table)
 	const session = await getServerSession(authOptions)

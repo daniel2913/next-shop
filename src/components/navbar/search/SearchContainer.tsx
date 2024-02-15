@@ -2,7 +2,7 @@
 
 import useResponsive from "@/hooks/useResponsive"
 import React from "react"
-import { Drawer, DrawerContent, DrawerTrigger } from "../../ui/Drawer"
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 import Glass from "@public/search.svg"
 
 type Props = {

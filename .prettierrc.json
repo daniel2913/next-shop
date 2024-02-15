@@ -7,6 +7,5 @@
   "singleQuote": false,
 	"useTabs": true,
 	"bracketSameLine": false,
-	"singleAttributePerLine": true,
-
+	"singleAttributePerLine": true
 }

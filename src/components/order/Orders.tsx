@@ -2,13 +2,13 @@
 import { completeOrderAction, getOrdersAction } from "@/actions/order"
 import React  from "react"
 import useAction, { ServerErrorType } from "@/hooks/useAction"
-import {Button} from "@comps/ui/Button"
-import { Switch } from "@comps/ui/Switch"
+import {Button} from "@/components/ui/Button"
+import { Switch } from "@/components/ui/Switch"
 import { useSession } from "next-auth/react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
-import { CartTable} from "@comps/cart/Cart"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
+import { CartTable} from "@/components/cart/Cart"
 import useToast from "@/hooks/modals/useToast"
-import { ScrollArea, ScrollBar } from "@comps/ui/ScrollArea"
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea"
 import Reload from "@public/reload.svg" 
 
 type Props = {

@@ -1,17 +1,17 @@
 "use client"
 
 import useResponsive from "@/hooks/useResponsive"
-import { Button } from "../ui/Button"
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/Drawer"
+import { Button } from "@/components/ui/Button"
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 import React from "react"
 import useModal from "@/hooks/modals/useModal"
 import OrderIcon from "@public/note.svg"
 import { useSession } from "next-auth/react"
 import dynamic from "next/dynamic"
-import Loading from "../ui/Loading"
+import Loading from "@/components/ui/Loading"
 
-const Orders = dynamic(() => import("@comps/order/Orders"))
-const Login = dynamic(() => import("@comps/modals/Login"))
+const Orders = dynamic(() => import("@/components/order/Orders"))
+const Login = dynamic(() => import("@/components/modals/Login"))
 
 type Props = {
 	className: string

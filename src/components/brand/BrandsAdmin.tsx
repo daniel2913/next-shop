@@ -4,14 +4,14 @@ import useToast from "@/hooks/modals/useToast"
 import { Brand } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
-import BrandForm from "@comps/forms/BrandForm"
+import BrandForm from "@/components/forms/BrandForm"
 import { deleteBrandsAction } from "@/actions/brand"
-import DiscountForm from "@comps/forms/DiscountForm"
+import DiscountForm from "@/components/forms/DiscountForm"
 import useConfirm from "@/hooks/modals/useConfirm"
-import GenericSelectTable from "@comps/ui/GenericSelectTable"
+import GenericSelectTable from "@/components/ui/GenericSelectTable"
 
 type Props = {
 	brands: Brand[]

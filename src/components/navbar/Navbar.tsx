@@ -1,5 +1,5 @@
 import React from "react"
-import CartStatus from "../cart/Status"
+import CartStatus from "@/components/cart/Status"
 import Link from "next/link"
 import Home from "@public/home.svg"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"

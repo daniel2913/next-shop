@@ -2,13 +2,13 @@
 
 import { PopulatedProduct } from "@/lib/Models/Product"
 import React from "react"
-import GenericSelectTable from "@comps/ui/GenericSelectTable"
+import GenericSelectTable from "@/components/ui/GenericSelectTable"
 import { EditProduct } from "./ContextMenu"
 import { useRouter } from "next/navigation"
-import { Label } from "@comps/ui/Label"
-import { Input } from "@comps/ui/Input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@comps/ui/Tabs"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
+import { Label } from "@/components/ui/Label"
+import { Input } from "@/components/ui/Input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
 
 type Props =
 	{

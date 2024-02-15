@@ -5,13 +5,13 @@ import useToast from "@/hooks/modals/useToast"
 import { Category } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { Button } from "../ui/Button"
+import { Button } from "@/components//ui/Button"
 import Edit from "@public/edit.svg"
 import useModal from "@/hooks/modals/useModal"
-import DiscountForm from "../forms/DiscountForm"
-import CategoryForm from "../forms/CategoryForm"
+import DiscountForm from "@/components/forms/DiscountForm"
+import CategoryForm from "@/components/forms/CategoryForm"
 import { deleteCategoriesAction } from "@/actions/category"
-import GenericSelectTable from "../ui/GenericSelectTable"
+import GenericSelectTable from "@/components/ui/GenericSelectTable"
 
 type Props = {
 	categories: Category[]

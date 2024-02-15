@@ -12,6 +12,7 @@ import { shop } from "./common.ts"
 import { z } from "zod"
 import { BrandCache, CategoryCache } from "@/helpers/cachedGeters.ts"
 import { handleImages } from "@/helpers/images.ts"
+import { toArray } from "@/helpers/misc.ts"
 
 
 const brandSchema = z
@@ -46,7 +47,7 @@ const ProductInsertValidation = z.object({
 	price: z.coerce.number().positive().transform(n=>+n.toFixed(2)),
 	images: z.array(fileSchema).or(fileSchema).optional()
 		.transform(files=>files
-			? handleImages([files].flat(),"products")
+			? handleImages(toArray(files),"products")
 			: undefined
 		)
 		.pipe(z.array(validations.imageName)

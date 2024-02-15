@@ -6,13 +6,13 @@ import { PopulatedProduct } from "@/lib/Models/Product"
 import { createOrderAction } from "@/actions/order"
 import useToast from "@/hooks/modals/useToast"
 import calcPrice from "@/helpers/discount"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@comps/ui/Table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table"
 import Image from "next/image"
-import { Button } from "@comps/ui/Button"
+import { Button } from "@/components/ui/Button"
 import useAction from "@/hooks/useAction"
-import { ScrollArea, ScrollBar } from "@comps/ui/ScrollArea"
-import AmmountSelector from "@comps/ui/AmmountSelector"
-import Loading from "@comps/ui/Loading"
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea"
+import AmmountSelector from "@/components/ui/AmmountSelector"
+import Loading from "@/components/ui/Loading"
 
 type Props = {
 	products?: PopulatedProduct[]

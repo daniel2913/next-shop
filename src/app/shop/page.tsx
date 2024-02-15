@@ -1,4 +1,4 @@
-import ProductList from "@comps/product/ProductList"
+import ProductList from "@/components/product/ProductList"
 import { getProductsPageAction } from "@/actions/product"
 import React from "react"
 
@@ -8,7 +8,6 @@ export default async function Shop({
 }: {
 	searchParams: Record<string,string>
 }) {
-	console.log("SHOP SERVER RERENDER")
 	const params = new URLSearchParams(searchParams)
 	const brand = params.get("brand")?.split(",")
 	const category = params.get("category")?.split(",")

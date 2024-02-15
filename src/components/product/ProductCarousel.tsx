@@ -1,6 +1,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/Carousel";
 import React from "react";
 import Discount from "./Discount";
+import { toArray } from "@/helpers/misc";
 
 type Props = {
 	children: React.ReactNode
@@ -13,7 +14,7 @@ export default function ProductCarousel({children,discount,brand,className}:Prop
 	return (
 		<Carousel className={`${className} relative rounded-lg overflow-hidden h-full col-span-2`}>
 			<CarouselContent className="h-full">
-				{[children].flat().map((child, idx) => (
+				{toArray(children).map((child, idx) => (
 					<CarouselItem className="h-full" key={idx}>
 						{child}
 					</CarouselItem>

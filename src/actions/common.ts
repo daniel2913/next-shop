@@ -3,8 +3,17 @@ import { PgreModel } from "@/lib/Models/base"
 import { getServerSession } from "next-auth"
 import { PostgresError } from "postgres"
 import { ZodError } from "zod"
+import { UserCache } from "@/helpers/cachedGeters"
 
 
+export async function auth(role?:string){
+	const res = await getServerSession(authOptions)
+	if (!res?.user) throw ServerError.notAuthed()
+	if (role && res.user.role!==role) throw ServerError.notAllowed()
+	const user = await UserCache.get(res.user.name)
+	if (!user) throw ServerError.hidden("Error in UserCache")
+	return user
+}
 
 export async function modelGeneralAction(model: PgreModel<any, any>, formOrProps: FormData | Record<string,unknown>, id?: number) {
 

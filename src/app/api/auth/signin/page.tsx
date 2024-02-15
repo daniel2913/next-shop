@@ -1,4 +1,4 @@
-import AuthModule from "@comps/modals/Login"
+import AuthModule from "@/components/modals/Login"
 
 type Props = {
 	searchParams: Record<string,string>

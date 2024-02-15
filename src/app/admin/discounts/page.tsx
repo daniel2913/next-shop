@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 import { DiscountModel } from "@/lib/Models";
-import DiscountsAdmin from "@comps/discount/DiscountsAdmin";
+import DiscountsAdmin from "@/components/discount/DiscountsAdmin";
 
-export default async function Admindiscounts(){
+export default async function AdminDiscountsPage(){
 
 	const discountsPromise = DiscountModel.model.select().from(DiscountModel.table)
 	const session = await getServerSession(authOptions)

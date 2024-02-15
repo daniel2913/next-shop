@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Accordion, AccordionContent } from "@comps/ui/Accordion"
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@comps/ui/Tabs"
-import { AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
+import { Accordion, AccordionContent } from "@/components/ui/Accordion"
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/Tabs"
+import { AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/Button"
 import { PopulatedOrder, completeOrderAction } from "@/actions/order"
@@ -67,7 +67,6 @@ function OrderTable(props:Omit<Props,"orders">&{orders:PopulatedOrder[]}) {
 
 
 const OrderList = React.memo(function OrderList(props: Props) {
-	console.log(props.orders)
 	const grouped = React.useMemo(() => {
 		const completed: Record<number, PopulatedOrder[]> = {}
 		const processing: Record<number, PopulatedOrder[]> = {}
@@ -85,7 +84,6 @@ const OrderList = React.memo(function OrderList(props: Props) {
 		}
 		return { processing, completed }
 	}, [props.orders])
-	console.log(grouped)
 	return (
 		<>
 			<Tabs defaultValue="processing">
