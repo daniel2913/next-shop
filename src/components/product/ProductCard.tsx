@@ -79,8 +79,9 @@ const ProductCard = React.memo(function ProductCard({ product:initProduct }: Pro
 					voters={product.voters}
 					className="col-span-2 justify-self-center"
 				/>
-				<h3 className="text-2xl leading-6 text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
-				<button onClick={showDetails} type="button" className="appearance-none">
+				<h3 className="text-2xl leading-6 w-full text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
+				<button onClick={showDetails} type="button" 
+					className="appearance-none text-ellipsis w-full text-nowrap overflow-hidden">
 					{product.name}
 				</button>
 				</h3>
