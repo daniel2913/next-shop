@@ -1,9 +1,7 @@
 "use server"
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { UserCache } from "@/helpers/cachedGeters"
 import { ProductModel, UserModel } from "@/lib/Models"
-import { getServerSession } from "next-auth"
 import { ServerError, auth } from "./common"
 
 async function validateCart(cart: Record<number, number>) {
@@ -20,7 +18,7 @@ async function validateCart(cart: Record<number, number>) {
 
 export async function getCartAction() {
 	try {
-		const user = auth("user")
+		const user = await auth("user")
 		const cart = await validateCart(user.cart)
 		if (Object.keys(user.cart).length !== Object.keys(cart).length) {
 			const res = await UserModel.patch(user.id, { cart })

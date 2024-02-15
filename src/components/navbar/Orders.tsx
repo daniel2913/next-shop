@@ -53,7 +53,7 @@ export default function OrderMenu(props: Props) {
 				<DrawerContent
 					onSubmit={() => setDrawerOpen(false)}
 					className="
-							grid justify-center content-start w-full pb-14
+							grid px-4 content-start w-full pb-14
 							border-x-0 h-dvh bg-secondary
 					">
 					{

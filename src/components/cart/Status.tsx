@@ -128,8 +128,8 @@ export default function CartStatus({className}: Props) {
 					<DrawerContent 
 						onSubmit={()=>setDrawerOpen(false)}
 						className="
-							grid justify-center content-start w-full pb-14
-							border-x-0 h-dvh bg-secondary
+							flex  items-center content-start w-full px-4 pb-14
+							border-x-0 h-dvh bg-secondary 
 					">
 					<Loading>
 						{session.data?.user ? <Cart/> : <Login/>}
