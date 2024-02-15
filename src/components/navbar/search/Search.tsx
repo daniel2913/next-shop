@@ -102,11 +102,10 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 						onValueChange={(str: string[]) => setCategories(str)}
 					>
 						<span>Category</span>
-						<ScrollArea className="h-[30dvh] overflow-x-hidden">
+						<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 							{
 								allCategories.map(category =>
-									<ToggleGroupItem className="w-full flex justify-between" name="category" value={category.name} key={category.name}>
-										{category.name}
+									<ToggleGroupItem className="w-full justify-start flex gap-4" name="category" value={category.name} key={category.name}>
 									<div className="size-8 relative object-contain">
 										<Image
 											alt={category.name}
@@ -115,6 +114,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 											sizes="40px"
 										/>
 									</div>
+										{category.name}
 										<input name="category" hidden readOnly value={category.name} checked={categories.includes(category.name)} />
 									</ToggleGroupItem>
 								)
@@ -129,11 +129,10 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 						onValueChange={(str: string[]) => setBrands(str)}
 					>
 						<span>Brand</span>
-						<ScrollArea className="h-[30dvh] overflow-x-hidden">
+						<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 							{
 								allBrands.map(brand =>
-									<ToggleGroupItem className="w-full flex justify-between" name="brand" value={brand.name} key={brand.name}>
-										{brand.name}
+									<ToggleGroupItem className="w-full flex gap-4 justify-start" name="brand" value={brand.name} key={brand.name}>
 									<div className="size-8 relative object-contain">
 										<Image
 											alt={brand.name}
@@ -142,6 +141,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 											sizes="40px"
 										/>
 										</div>
+										{brand.name}
 										<input name="brand" hidden readOnly value={brand.name} checked={brands.includes(brand.name)} />
 									</ToggleGroupItem>
 								)}

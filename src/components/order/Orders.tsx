@@ -1,106 +1,108 @@
 "use client"
-import { completeOrderAction, getOrdersAction } from "@/actions/order"
-import React  from "react"
+import { PopulatedOrder, completeOrderAction, getOrdersAction } from "@/actions/order"
+import React from "react"
 import useAction, { ServerErrorType } from "@/hooks/useAction"
-import {Button} from "@/components/ui/Button"
-import { Switch } from "@/components/ui/Switch"
+import { Button } from "@/components/ui/Button"
 import { useSession } from "next-auth/react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
-import { CartTable} from "@/components/cart/Cart"
+import { CartTable } from "@/components/cart/Cart"
 import useToast from "@/hooks/modals/useToast"
 import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea"
-import Reload from "@public/reload.svg" 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs"
+import Loading from "../ui/Loading"
 
 type Props = {
-	completed?:boolean
-	orders: Exclude<Awaited<ReturnType<typeof getOrdersAction>>,ServerErrorType>
-	setOrders:(val:Props["orders"])=>void
+	completed?: boolean
+	orders: Exclude<Awaited<ReturnType<typeof getOrdersAction>>, ServerErrorType>
+	reload: () => void
 }
-const OrderList = React.memo(function OrderList({completed,orders,setOrders}:Props){
+
+type PageProps = {
+	orders: PopulatedOrder[]
+	onComplete?: (order: PopulatedOrder) => void
+}
+
+function OrderPage({ orders, onComplete }: PageProps) {
 	const session = useSession()
-	const {handleResponse} = useToast()
-	return(<>
-		<Accordion 
+	return (
+		<Accordion
 			type="single"
 			collapsible
 		>
-		{(completed ? orders?.completed||[] : orders?.processing||[])
-				.map((order,orderIdx) => {
-			const data = {
-				user: +order.order.user,
-				id: +order.order.id,
-				prodIds: Object.keys(order.order.order).map(Number),
-			}
-			return (
+			{orders.map((order, orderIdx) =>
 				<AccordionItem
 					value={`${orderIdx}`}
 					key={order.order.id}
 				>
-				<AccordionTrigger>
-					{`Order-${order.order.id} - ${order.order.user}`}
-				</AccordionTrigger>
-				<AccordionContent
-					className="flex justify-center"
+					<AccordionTrigger>
+						{`Order-${order.order.id} - ${order.order.user}`}
+					</AccordionTrigger>
+					<AccordionContent
+						className="flex justify-center"
 					>
-					<CartTable products={order.products} order={order.order.order}/>
-					{session?.data?.user?.role === "admin" && order.order.status === "PROCESSING"
+						<CartTable interactive={false} products={order.products} order={order.order.order} />
+						{session?.data?.user?.role === "admin" && order.order.status === "PROCESSING"
 							?
-								<Button
-									color="cyan"
-									className="block ml-auto"
-									onClick={async ()=>{
-											const res = await completeOrderAction(data.id)
-											if (handleResponse(res))
-												setOrders({
-												completed:[...orders!.completed,orders!.processing.find(o=>o?.order.id===order.order.id)!],
-												processing:orders?.processing.filter(o=>o.order?.id!==order.order.id)!
-												})
-										return res
-									}}
-								>
-									Complete
-								</Button>
+							<Button
+								color="cyan"
+								className="block ml-auto"
+								onClick={() => onComplete?.(order)}
+							>
+								Complete
+							</Button>
 							: null
-					}
-				</AccordionContent>
+						}
+					</AccordionContent>
 				</AccordionItem>
 			)
-		}
-		)}
+			}
 		</Accordion>
-	</>)
+	)
+}
+
+
+const OrderList = React.memo(function OrderList({ orders, reload }: Props) {
+
+	const { handleResponse } = useToast()
+	async function handleComplete(order: PopulatedOrder) {
+		if (order.order.status !== "PROCESSING") return
+		const res = await completeOrderAction(order.order.id)
+		if (handleResponse(res))
+			reload()
+
+	}
+	return (
+		<Tabs className="text-black w-full" defaultValue="proc">
+			<TabsList className="w-full flex justify-center">
+				<TabsTrigger value="proc">
+					Processing
+				</TabsTrigger>
+				<TabsTrigger value="comp">
+					Completed
+				</TabsTrigger>
+			</TabsList>
+			<TabsContent value="proc">
+				<OrderPage onComplete={handleComplete} orders={orders.processing} />
+			</TabsContent>
+			<TabsContent value="comp">
+				<OrderPage orders={orders.completed} />
+			</TabsContent>
+		</Tabs>
+	)
 })
 
 export default function Orders() {
-	const [completed, setCompleted] = React.useState(false)
-	const {value:orders,loading,setValue:setOrders,reload} = useAction(getOrdersAction,{completed:[],processing:[]})
-	const completedDef = React.useDeferredValue(completed)
+	const { value: orders, loading, reload } = useAction(getOrdersAction, { completed: [], processing: [] })
 	return (
-		<div className=" flex flex-col h-dvh w-dvw md:h-[70vh] md:w-fit md:min-w-[60vw]">
-			<div className="ml-auto w-fit flex-grow-0 items-center flex gap-4">
-			<Button className={`
-					bg-transparent hover:bg-transparent
-					${loading ? "animate-spin" : ""}
-				`} 
-				onClick={()=>reload()}><Reload width="30px" height="30px"/></Button>
-				<label
-					htmlFor="completed"
-					className={`flex flex-col items-center font-semibold transition-colors ${completed ? "text-brown-800" :"text-blue-gray-500"}`}
-				>
-					COMPLETED
-				<Switch
-					id="completed"
-					checked={completed}
-					onCheckedChange={setCompleted}
-				/>
-				</label>
-			</div>
-			<ScrollArea className="h-full w-full" type="always">
-			<React.Suspense fallback="Loading...">
-				<OrderList completed={completedDef} orders={orders} setOrders={setOrders}/>
-			</React.Suspense>
-				<ScrollBar/>
-			</ScrollArea>
+		<div className="md:w-[60vw] w-full h-full md:h-[70vh] flex  md:overflow-y-auto overflow-y-scroll items-center flex-col">
+			<Loading loading={loading}>
+				<div className="flex flex-col w-full h-full items-center p-4 bg-border rounded-md">
+					<ScrollArea className="h-full w-full" type="hover">
+						<OrderList orders={orders} reload={reload} />
+						<ScrollBar />
+					</ScrollArea>
+				</div>
+			</Loading>
 		</div>
 	)
 }

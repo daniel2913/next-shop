@@ -1,9 +1,7 @@
 "use server"
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { Order, OrderModel, ProductModel} from "@/lib/Models"
-import { eq, inArray, sql } from "drizzle-orm"
-import { getServerSession } from "next-auth"
+import { eq, inArray, sql, and,not } from "drizzle-orm"
 import { ServerError, auth, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
 import { getProductsByIds} from "./product"
 import { PopulatedProduct } from "@/lib/Models/Product"
@@ -89,18 +87,17 @@ export async function completeOrderAction(id: number) {
 
 async function openRating(prodIds: number[], userId: number) {
 	if (prodIds.length === 0) return
-	await ProductModel.model.execute(sql`
-				UPDATE shop.products
-					SET 
-						votes=array_append(votes,null),
-						voters=array_append(voters,${userId})
-					WHERE
-								id in ${prodIds}
-							AND
-								NOT ${userId} = ANY(voters)
-					RETURNING
-						id;
-	`)
+	await ProductModel.model
+		.update(ProductModel.table)
+		.set({
+			votes:sql`array_append(votes,null)`,
+			voters:sql`array_append(voters,${userId})`
+		})
+		.where(and(
+			inArray(ProductModel.table.id,prodIds),
+			sql`NOT ${userId} = ANY(${ProductModel.table.voters})`
+		))
+		.returning({id:ProductModel.table.id})
 }
 
 export async function deleteOrdersAction(inp: number | number[]) {
