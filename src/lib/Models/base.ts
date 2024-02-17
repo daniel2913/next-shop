@@ -11,6 +11,7 @@ import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ZodObject, z } from "zod"
 import { ServerError } from "@/actions/common"
+import { deleteImages } from "@/helpers/images"
 
 
 type Query<T extends Record<string, any> & { id: number }> = {
@@ -86,10 +87,22 @@ export class PgreModel<
 		}
 		return and(...sqlQueryWrappers)
 	}
+	private async deleteExtra(_files: string | string[], _oldFiles?: string | string[]) {
+		const files = [_files].flat()
+		const toDelete: string[] = []
+		if (_oldFiles) {
+			const oldFiles = [_oldFiles].flat()
+			toDelete.concat(oldFiles.filter(file => !files.includes(file)))
+		} else toDelete.concat(files)
+		deleteImages(toDelete, this.filePath)
+	}
 
 	async create(obj: unknown | U["$inferSelect"]) {
 		const props = await this.validations.parseAsync(obj) as U["$inferInsert"]
 		const res = await this.model.insert(this.table).values(props).returning()
+		if (!res[0] && ("images" in props || "image" in props))
+			this.deleteExtra((props as any).images as string[] || (props as any).image as string)
+		else res[0]
 		return res[0] ? res[0] as U["$inferSelect"] : null
 	}
 
@@ -105,6 +118,10 @@ export class PgreModel<
 			.set(props)
 			.where(eq(this.table.id, targId))
 			.returning()
+		if (!res[0] && (props.images || props.image))
+			this.deleteExtra(props.images || props.images)
+		if (res[0] && (props.images || props.image))
+			this.deleteExtra((props as any).images || (props as any).image, (original as any).image as string || (original as any).images as string[])
 		return res[0] ? res[0] as U["$inferSelect"] : null
 	}
 

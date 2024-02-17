@@ -1,14 +1,16 @@
 "use client"
-
+import Edit from "@/../public/edit.svg"
 import { PopulatedProduct } from "@/lib/Models/Product"
 import React from "react"
 import GenericSelectTable from "@/components/ui/GenericSelectTable"
-import { EditProduct } from "./ContextMenu"
 import { useRouter } from "next/navigation"
 import { Label } from "@/components/ui/Label"
 import { Input } from "@/components/ui/Input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
+import ProductForm from "../forms/ProductForm"
+import { Button } from "../ui/Button"
+import useModal from "@/hooks/modals/useModal"
 
 type Props =
 	{
@@ -19,39 +21,71 @@ type Props =
 		config?: boolean
 	}
 
-function BrandTable(props:Props){
+function BrandTable(props: Props) {
 	const router = useRouter()
+	const modal = useModal()
 	return (
 		<GenericSelectTable
-		name={props.name}
-		columns={{
-			Id:(prod)=>prod.id,
-			Name:(prod)=>prod.name,
-			Category:(prod)=>prod.category.name,
-			Price:(prod)=>prod.price,
-			Edit:(prod)=><EditProduct product={prod} onClose={()=>router.refresh()}/>
-		}}
-		items={props.products}
-		value={props.value}
-		onChange={props.onChange}
+			name={props.name}
+			columns={{
+				Id: (prod) => prod.id,
+				Name: (prod) => prod.name,
+				Category: (prod) => prod.category.name,
+				Price: (prod) => prod.price,
+				Edit: (prod) => 
+					<Button
+						className={`p-0 bg-transparent hover:bg-transparent appearance-none w-full flex justify-between`}
+						onClick={() => {
+							modal.show(
+								<ProductForm product={prod} />
+							).then(() => router.refresh())
+						}}
+					>
+						< Edit
+							className="hover:stroke-accent"
+							width={"30px"}
+							height={"30px"}
+						/>
+					</Button>
+
+			}}
+			items={props.products}
+			value={props.value}
+			onChange={props.onChange}
 		/>
 	)
 }
-function CategoryTable(props:Props){
+function CategoryTable(props: Props) {
 	const router = useRouter()
+	const modal = useModal()
 	return (
 		<GenericSelectTable
-		name={props.name}
-		columns={{
-			Id:(prod)=>prod.id,
-			Name:(prod)=>prod.name,
-			Brand:(prod)=>prod.brand.name,
-			Price:(prod)=>prod.price,
-			Edit:(prod)=><EditProduct product={prod} onClose={()=>router.refresh()}/>
-		}}
-		items={props.products}
-		value={props.value}
-		onChange={props.onChange}
+			name={props.name}
+			columns={{
+				Id: (prod) => prod.id,
+				Name: (prod) => prod.name,
+				Brand: (prod) => prod.brand.name,
+				Price: (prod) => prod.price,
+				Edit: (prod) =>
+					<Button
+						className={`p-0 bg-transparent hover:bg-transparent appearance-none w-full flex justify-between`}
+						onClick={() => {
+							modal.show(
+								<ProductForm product={prod} />
+							).then(() => router.refresh())
+						}}
+					>
+						< Edit
+							className="hover:stroke-accent"
+							width={"30px"}
+							height={"30px"}
+						/>
+					</Button>
+
+			}}
+			items={props.products}
+			value={props.value}
+			onChange={props.onChange}
 		/>
 	)
 }
@@ -123,7 +157,7 @@ const ProductList = React.memo(function ProductList(props: Props) {
 									{group[0]}
 								</AccordionTrigger>
 								<AccordionContent>
-									<CategoryTable {...props} products={group[1]}/>
+									<CategoryTable {...props} products={group[1]} />
 								</AccordionContent>
 							</AccordionItem>)
 						}

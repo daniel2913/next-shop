@@ -12,11 +12,11 @@ export default function CategoryCard({category,products,className}:Props){
 	return (
 		<Card
 			title={category.name}
-			className={`${className} w-40 h-30 text-center`}
+			className={`${className} w-40 h-30 text-center bg-secondary`}
 		>
 			<Link href={`/shop?category=${category.name}`}>
 			<CardContent
-				className="h-full p-2 rounded-lg w-full bg-secondary flex flex-col items-center"
+				className="h-full p-2 rounded-lg w-full  flex flex-col items-center"
 			>
 				<div
 					className="relative h-28 w-28"
@@ -29,7 +29,7 @@ export default function CategoryCard({category,products,className}:Props){
 					src={`/categories/${category.image}`}
 				/>
 				</div>
-				<h3 className="text-2xl w-full font-semibold overflow-hidden overflow-ellipsis">{category.name}</h3>
+				<h2 className="text-2xl w-full font-semibold overflow-hidden overflow-ellipsis">{category.name}</h2>
 				<span className="text-xl font-medium">
 					{`${products} item${products%10===1 ? "" : "s"}`}
 				</span>

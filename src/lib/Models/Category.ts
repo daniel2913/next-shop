@@ -6,7 +6,7 @@ const CategoryInsertValidation = z.object({
 	name: validations.name,
 	image: fileSchema.optional()
 		.transform(file=>file 
-			?handleImages([file],"brands")
+			?handleImages([file],"categories")
 			:undefined
 		)
 		.transform(names=>names ? names[0] : "template.jpg")

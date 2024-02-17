@@ -2,10 +2,14 @@
 import { ProductModel } from "@/lib/Models"
 import { inArray, sql } from "drizzle-orm"
 import { ServerError, auth } from "./common"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export async function getRatingAction(ids: number[]) {
 	try {
-		const user = await auth("user")
+		const session = await getServerSession(authOptions)
+		const user = session?.user
+		if (!user || user.role!=="user") return {}
 		const res = await ProductModel.model
 			.select({
 				id: ProductModel.table.id,
@@ -20,7 +24,8 @@ export async function getRatingAction(ids: number[]) {
 		return Object.fromEntries(ownVotes) as Record<number, number>
 	}
 	catch (error) {
-		return ServerError.fromError(error).emmit()
+		const serverError = ServerError.fromError(error)
+		return serverError.emmit()
 	}
 }
 

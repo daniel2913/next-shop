@@ -73,18 +73,11 @@ export default function PreviewProductCard({ product, className }: Props) {
 					<CarouselNext
 						className="absolute disabled:opacity-30 opacity-50 right-4 bottom-1/2 -translate-y-1/2"
 					/>
-					<img
-						className="absolute left-2 top-2 z-50 opacity-60"
-						height={30}
-						width={30}
-						alt={product.brand}
-						src={`/brands/template.jpg`}
-					/>
 			</Carousel>
 				<div
 					className="col-span-2 justify-self-center"
 				/>
-				<h3 className="text-2xl leading-6 text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
+				<h3 className="text-2xl text-nowrap leading-6 w-full text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400">
 					{product.name}
 				</h3>
 

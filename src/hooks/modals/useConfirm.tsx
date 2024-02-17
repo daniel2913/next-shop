@@ -16,6 +16,7 @@ export default function useConfirm(defaultMessage = "Are you sure?") {
 				/>,
 				open:true,
 				title:"Confirmation",
+				forceWindow:true,
 				header:"Are you sure?",
 				onClose:()=>res(false),
 				}

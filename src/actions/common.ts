@@ -27,7 +27,7 @@ export async function modelGeneralActionNoAuth(model: PgreModel<any, any>, formO
 	const props = formOrProps instanceof FormData
 		? parseFormData(formOrProps)
 		: formOrProps
-
+		console.log(props)
 		const res = id !== undefined
 			? await model.patch(id, props)
 			: await model.create(props)
@@ -56,20 +56,20 @@ export class ServerError{
 		this.publicError = error
 		this.title = title
 	}
-	static notAuthed(){
-		return new ServerError("Not authenticated","Not Authenticated")
+	static notAuthed(desc?:string,title?:string){
+		return new ServerError(desc ?? "You need to authenticate to perform this action", title ?? "Not Authenticated")
 	}
-	static notAllowed(){
-		return new ServerError("Action not allowed","Not Authorized")
+	static notAllowed(desc?:string,title?:string){
+		return new ServerError(desc ?? "Your role does not allow this action", title ?? "Not Authorized")
 	}
-	static notFound(){
-		return new ServerError("Action not allowed","Not Found")
+	static notFound(desc?:string,title?:string){
+		return new ServerError(desc ?? "Requested item is not found", title ?? "Not Found")
 	}
-	static unknown(){
-		return new ServerError("Unknown error","Unknown Error")
+	static unknown(desc?:string,title?:string){
+		return new ServerError(desc ?? "Unknown error", title ?? "Unknown Error")
 	}
-	static invalid(){
-		return new ServerError("Invalid input","Validation Error")
+	static invalid(desc?:string,title?:string){
+		return new ServerError(desc ?? "Provided input is not valid", title ?? "Validation Error")
 	}
 	static hidden(message:string){
 		const res = new ServerError("Internal error","Server Error")

@@ -3,7 +3,7 @@
 import React from "react"
 import { Accordion, AccordionContent } from "@/components/ui/Accordion"
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/Tabs"
-import { AccordionItem, AccordionTrigger } from "@/components/ui/Accordion"
+import { AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/Button"
 import { PopulatedOrder, completeOrderAction } from "@/actions/order"
@@ -39,7 +39,12 @@ function OrderTable(props:Omit<Props,"orders">&{orders:PopulatedOrder[]}) {
 				Id: order => order.id,
 				Value: order => Object.values(order.order).reduce((sum, order) => sum + order.price * order.amount, 0),
 				Details: order=>
-					<Button onClick={()=>show(<CartTable products={order.products} order={order.order}/>)}>
+					<Button onClick={()=>show(
+						<CartTable
+							products={order.products}
+							order={order.order}
+							className="bg-border"
+						/>)}>
 						Details
 					</Button>,
 				Complete: order =>

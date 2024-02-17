@@ -10,11 +10,22 @@ import { useRouter } from "next/navigation"
 import ProductForm from "@/components/forms/ProductForm"
 import useModal from "@/hooks/modals/useModal"
 import DiscountForm from "@/components/forms/DiscountForm"
+import { generateProductAction } from "@/actions/generate"
 
 type Props = {
 	products: PopulatedProduct[]
 	className?: string
 }
+				/* <Button
+					onClick={async ()=>{
+						const product = await generateProductAction()
+						if (!product) return
+						await show(<ProductForm product={product}/>)
+						router.refresh()
+					}}
+				>
+					Random
+				</Button> */
 
 export default function ProductsAdmin({ products, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])

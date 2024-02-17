@@ -3,6 +3,8 @@
 import { UserModel } from "@/lib/Models"
 import { UserCache } from "@/helpers/cachedGeters"
 import { ServerError, auth } from "./common"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export async function toggleSavedAction(id: number) {
 	try {
@@ -24,10 +26,15 @@ export async function toggleSavedAction(id: number) {
 
 export async function getSavedAction() {
 	try {
-		const user = await auth("user")
-		return user.saved
+		const session = await getServerSession(authOptions)
+		if (!session?.user || session.user.role!=="user") return []
+		const user = await UserCache.get(session.user.name)
+		if (!user) throw ServerError.hidden("UserCache Error in getSavedAction")
+		return user!.saved
 	}
 	catch (error) {
-		return ServerError.fromError(error).emmit()
+		const serverError = ServerError.fromError(error)
+		if( serverError.title==="Not Authenticated") return []
+		return serverError.emmit()
 	}
 }

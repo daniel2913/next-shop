@@ -4,6 +4,7 @@ import React from "react"
 import { changeDiscountAction, createDiscountAction } from "@/actions/discount"
 import { Slider } from '../ui/Slider.tsx'
 import { Label } from '../ui/Label.tsx'
+import Input from '../ui/Input.tsx'
 
 const validation = {
 	discount: (discount: number) => {
@@ -47,9 +48,10 @@ export default function DiscountForm({ discount }: Props) {
 			{(discount?.brands?.length || "" )&& `${discount?.brands?.length} brands`}
 			{(discount?.categories?.length || "" )&& `${discount?.categories?.length} categories`}
 			</span>
-			<Label>
+			<Label className='w-full'>
 			Discount
 			<Slider
+				className='w-full py-1'
 				value={[value]}
 				onValueChange={(e) => setValue(Math.floor(e[0]))}
 				max={99}
@@ -63,7 +65,7 @@ export default function DiscountForm({ discount }: Props) {
 			</Label>
 			<Label>
 			Expires
-			<input
+			<Input
 				name="expires"
 				type="datetime-local"
 				value={expires.toJSON().slice(0, 16)}
@@ -74,13 +76,13 @@ export default function DiscountForm({ discount }: Props) {
 			/>
 			</Label>
 			{(discount?.products || []).map(product=>
-				<input type="checkbox" checked name="products" value={product} hidden readOnly />
+				<input key={product} type="checkbox" checked name="products" value={product} hidden readOnly />
 			)}
 			{(discount?.brands || []).map(brand=>
-				<input type="checkbox" checked name="brands" value={brand} hidden readOnly />
+				<input key={brand} type="checkbox" checked name="brands" value={brand} hidden readOnly />
 			)}
 			{(discount?.categories || []).map(category=>
-				<input type="checkbox" checked name="categories" value={category} hidden readOnly />
+				<input key={category} type="checkbox" checked name="categories" value={category} hidden readOnly />
 			)}
 		</Form>
 	)

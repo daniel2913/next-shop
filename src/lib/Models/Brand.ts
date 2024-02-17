@@ -4,7 +4,6 @@ import { z } from "zod"
 
 const BrandInsertValidation = z.object({
 	name: validations.name,
-	description: validations.description,
 	image: fileSchema.optional()
 		.transform(file=>file 
 			?handleImages([file],"brands")
@@ -17,7 +16,6 @@ const BrandInsertValidation = z.object({
 const config = {
 	id: pgreDefaults.id,
 	name: pgreDefaults.name.unique(),
-	description: pgreDefaults.description,
 	image: pgreDefaults.image,
 }
 

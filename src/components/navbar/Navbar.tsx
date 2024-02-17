@@ -8,22 +8,30 @@ import SearchContainer from "./search/SearchContainer"
 import OrderMenu from "./Orders"
 import AuthContainer from "./auth/AuthContainer"
 import Auth from "./auth/Auth"
+import NavButton from "./Navbutton"
 
 export default async function Navbar() {
 	const [brands, categories] = await Promise.all([BrandCache.get(), CategoryCache.get()])
 	return (
 		<>
-
-			<Link href="/shop/home" className="basis-0 justify-center md:text-2xl flex-auto flex items-center flex-col md:flex-row font-semibold md:gap-2">
+				<NavButton
+				path="/shop/home"
+				className="basis-0 flex-auto font-semibold md:text-2xl justify-center basis-0"
+				>
+				<Link href="/shop/home" 
+				className="absolute size-full inset-0 basis-0" 
+				/>
 				<Home width={"30px"} height={"30px"} />
 				Home
-			</Link>
+				</NavButton>
 
 			<CartStatus
-				className="flex-auto font-semibold md:text-2xl justify-center basis-0"
+				className="basis-0 flex-auto font-semibold md:text-2xl justify-center basis-0"
 			/>
 
-			<SearchContainer className="flex-auto font-semibold justify-center basis:0 md:px-4 md:basis-80">
+			<SearchContainer 
+				className="basis-0 md:basis-1/4 flex-auto font-semibold md:text-2xl justify-center basis-0"
+			>
 				<Search
 					className="h-full font-semibold"
 					allBrands={brands}
@@ -31,8 +39,12 @@ export default async function Navbar() {
 				/>
 			</SearchContainer>
 
-			<OrderMenu className="flex-auto font-semibold md:text-2xl justify-center basis-0"/>
-			<AuthContainer className="flex-auto md:text-2xl font-semibold justify-center basis-0">
+			<OrderMenu 
+				className="basis-0 flex-auto font-semibold md:text-2xl justify-center basis-0"
+			/>
+			<AuthContainer 
+				className="basis-0 flex-auto font-semibold md:text-2xl justify-center basis-0"
+			>
 				<Auth className="" />
 			</AuthContainer>
 		</>

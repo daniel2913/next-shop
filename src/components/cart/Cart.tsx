@@ -60,7 +60,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 							&& order[product.id].amount > 0
 						)
 						.map((product) => (
-							<TableRow key={product.id} className="w-full *:p-1 overflow-hidden text-ellipsis text-xl md:text-2xl text-center">
+							<TableRow 
+								key={product.id} 
+								className="w-full *:p-1 overflow-hidden text-ellipsis text-xl md:text-2xl text-center"
+							>
 								<TableCell className="relative w-20 h-16">
 									<Image alt={product.name} src={`/products/${product.images[0]}`} fill />
 								</TableCell>
@@ -113,7 +116,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 					&& order[product.id].amount > 0
 				)
 				.map((product) => (
-					<div className="flex gap-4 text-2xl first:mt-0 mt-1 pb-1 border-b-black border-2">
+					<div
+						key={product.id}
+						className="flex gap-4 text-2xl first:mt-0 mt-1 pb-1 border-b-black border-2"
+					>
 						<div className="basis-1/5 relative p-4">
 							<Image className="size-full" alt={product.name} src={`/products/${product.images[0]}`} fill />
 						</div>

@@ -3,7 +3,7 @@ import { registerUserAction } from "@/actions/user"
 import Input from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { Label } from "@/components/ui/Label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@comps/ui/Tabs"
 import useToast from "@/hooks/modals/useToast"
 import useProductStore from "@/store/productStore"
 import { signIn } from "next-auth/react"
@@ -25,7 +25,7 @@ function Register({ close, redirect }: Props) {
 		setLoading(true)
 		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
-		if (handleResponse(res) === null) return
+		if (!handleResponse(res)) return
 		const signRes = await signIn("credentials", { ...creds, redirect: false },)
 		if (!signRes?.ok) {
 			error("Unknown Error", "Internal Error")
@@ -41,6 +41,7 @@ function Register({ close, redirect }: Props) {
 		<form
 			className="flex items-center flex-col gap-2 mb-4"
 			onSubmit={async (e) => {
+				e.stopPropagation()
 				e.preventDefault()
 				await handleRegistration({ name, password })
 			}}
@@ -63,7 +64,7 @@ function Register({ close, redirect }: Props) {
 					name="password"
 					value={password}
 					onChange={(e) => setPassword(e.currentTarget.value)}
-					pattern={`....*`}
+					pattern={`.{5,20}`}
 				/>
 			</Label>
 			<Button

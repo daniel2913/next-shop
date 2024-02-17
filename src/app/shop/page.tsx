@@ -16,8 +16,8 @@ export default async function Shop({
 	if ("error" in initProducts) return <div>Error!</div>
 
 	return (
-		<div className="">
+		<main className="">
 			<ProductList products={initProducts}/>
-		</div>
+		</main>
 	)
 }

@@ -1,24 +1,37 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/Carousel";
 import React from "react";
 import Discount from "./Discount";
-import { toArray } from "@/helpers/misc";
+import Image from "next/image"
 
 type Props = {
-	children: React.ReactNode
-	brand?:React.ReactNode
-	discount?: number
-	className?:string
+	images: string[],
+	brand?: string
+	brandName?: string
+	discount: number
+	className?: string
+	imageClassName?: string
+	width?: number
+	height?: number
+	fill?: boolean
 }
 
-export default function ProductCarousel({children,discount,brand,className}:Props) {
+const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 	return (
-		<Carousel className={`${className} relative rounded-lg overflow-hidden h-full col-span-2`}>
+		<Carousel className={`relative ${props.className} overflow-hidden`}>
 			<CarouselContent className="h-full">
-				{toArray(children).map((child, idx) => (
-					<CarouselItem className="h-full" key={idx}>
-						{child}
+				{props.images.map((img, idx) =>
+					<CarouselItem className="h-full relative" key={`${img}-${idx}`}>
+						<Image
+							key={`${img}-${idx}`}
+							className={`rounded-lg h-full ${props.imageClassName}`}
+							width={!props.fill && props.width || undefined}
+							height={!props.fill && props.height || undefined}
+							fill={props.fill}
+							src={`/products/${img}`}
+							alt={img}
+						/>
 					</CarouselItem>
-				))}
+				)}
 			</CarouselContent>
 			<CarouselPrevious
 				className="absolute disabled:opacity-30 opacity-50 left-4 bottom-1/2 -translate-y-1/2"
@@ -28,9 +41,20 @@ export default function ProductCarousel({children,discount,brand,className}:Prop
 			/>
 			<Discount
 				className="absolute right-12 bottom-12 w-12 -rotate-[20deg] text-lg font-bold"
-				discount={discount||0}
+				discount={props.discount || 0}
 			/>
-			{brand}
+			{props.brand
+				?<Image
+					className="absolute top-1 left-1 aspect-square rounded-full opacity-60 hover:opacity-100"
+					width={30}
+					height={30}
+					src={`/brands/${props.brand}`}
+					alt={props.brandName||""}
+				/>
+				: null
+			}
 		</Carousel>
 	)
-}
+})
+
+export default ProductCarousel
