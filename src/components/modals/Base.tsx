@@ -23,7 +23,7 @@ export default function ModalBase() {
 						onSubmit={() => {
 							clear()
 						}}
-						className="flex justify-center items-center w-fit h-fit max-h-[80vh] max-w-[95vw]"
+						className="flex justify-center items-center p-2 w-fit h-fit max-h-[80vh] max-w-[95vw]"
 					>
 						{children}
 					</DialogContent>

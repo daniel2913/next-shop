@@ -22,7 +22,7 @@ export default function OrderMenu(props: Props) {
 					onClick={() => modal.show(<Loading>{session?.data?.user ? <Orders/> : <Login close={modal.close}/>}</Loading>)}
 					className={props.className}
 				>
-					<OrderIcon className="p-1" height="30px" width="30px" /> 
+					<OrderIcon className="*:stroke-foreground *:fill-foreground *:stroke-2:w" height="30px" width="30px" /> 
 					Orders
 				</NavButton>
 	)

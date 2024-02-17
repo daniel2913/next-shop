@@ -20,31 +20,30 @@ const BuyButton = React.memo(function BuyButton({ className,confirm, id }: Props
 		return null
 	}
 		return (
-			<div className={cn(
-			`border-2 rounded-lg`
-			,className)}>
-			{
 				amount>0 
 				? 
 			<AmmountSelector
 				value={amount}
 				onChange={(val:number)=>useCartStore.getState().setAmmount(id,val,!session.data?.user)}
 				confirm={confirm}
-				className="w-full h-full"
+				className={cn(
+					className, 
+					`border-2 border-card-foreground rounded-lg`
+				)}
 			/>
 				:
 			<Button
 				type="button"
-				className={`
-					w-full h-full 
+				className={cn(
+					className,
+					`border-2 border-card-foreground rounded-lg 
 					border-none py-2
-					text-xl font-bold uppercase`}
+					text-xl font-bold uppercase`
+				)}
 				onClick={() => addItem(id)}
 			>
 				Buy
 			</Button>
-			}
-			</div>
 		)
 	})
 export default BuyButton

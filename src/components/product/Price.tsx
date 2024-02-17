@@ -16,16 +16,16 @@ const Price = React.memo(function Price({
 			?
 			<div className={`${className} text-inherit flex gap-4`}>
 				<p
-					className="text-secondary font-semibold"
+					className="text-gray-700 font-extrabold"
 				>
-				<s className="text-[.75em] text-gray-600 decoration-accent1-700">
+				<s className="text-[.75em] text-gray-600 decoration-accent">
 					{price.toFixed(2)}
 				</s>
-					{calcPrice(price, discount)}
+					{calcPrice(price, discount)}$
 				</p>
 			</div>
 			:
-			<p className={`${className} text-secondary font-semibold`}>{calcPrice(price, discount)}</p>
+			<p className={`${className} text-gray-600 font-bold`}>{calcPrice(price, discount)}$</p>
 	)
 })
 

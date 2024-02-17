@@ -12,7 +12,7 @@ export default function CategoryCard({category,products,className}:Props){
 	return (
 		<Card
 			title={category.name}
-			className={`${className} w-40 h-30 text-center bg-secondary`}
+			className={`${className} w-40 h-30 text-center bg-background`}
 		>
 			<Link href={`/shop?category=${category.name}`}>
 			<CardContent

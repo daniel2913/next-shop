@@ -37,6 +37,14 @@ function Register({ close, redirect }: Props) {
 			close()
 
 	}
+	const [status,setStatus] = React.useState("")
+
+	function validate(val:string){
+		if (val.length<5 || val.length>20) return "Username must be between 5 and 20 characters long"
+		if (!val.match(/^[a-zA-Z]/)) return "Username must start with a letter"
+		if (!val.match(/^[a-zA-Z0-9]/)) return ("Username must only contain letters and numbers")
+			
+	}
 	return (
 		<form
 			className="flex items-center flex-col gap-2 mb-4"
@@ -49,6 +57,7 @@ function Register({ close, redirect }: Props) {
 			<Label>
 				Username
 				<Input
+					onBlur={()=>validate(name)}
 					type="text"
 					autoFocus={true}
 					name="username"
@@ -56,6 +65,9 @@ function Register({ close, redirect }: Props) {
 					onChange={(e) => setName(e.currentTarget.value)}
 					pattern="^[a-zA-Z][a-zA-Z0-9]{4,20}$"
 				/>
+			{status 
+					? <span className="text-destructive font-thin text-md">{status}</span>
+					: null}
 			</Label>
 			<Label>
 				Password

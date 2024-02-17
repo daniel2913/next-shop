@@ -4,8 +4,13 @@ import CategoryCard from "./CategoryCard"
 import { CategoryCache } from "@/helpers/cachedGeters"
 import {count} from "drizzle-orm"
 import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
+import HorizontalScroll from "../ui/HorizontalScroll"
 
-export default async function CategoryList() {
+type Props = {
+	className?: string
+}
+
+export default async function CategoryList(props:Props) {
 	const categories = await CategoryCache.get()
 	const stats = await ProductModel.model
 			.select({
@@ -20,8 +25,7 @@ export default async function CategoryList() {
 	return (
 		<>
 				<h2>Categories</h2>
-				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
-				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
+				<HorizontalScroll className={props.className}>
 				{categories.map((category) => (
 					<CategoryCard
 						className="h-30 w-40 p-2 rounded-md bg-cyan-200"
@@ -30,9 +34,7 @@ export default async function CategoryList() {
 						products={products[category.id.toString()]||0}
 					/>
 				))}
-					</div>
-			<ScrollBar orientation="horizontal"/>
-		</ScrollArea>
+				</HorizontalScroll>
 		</>
 	)
 }

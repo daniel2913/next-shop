@@ -19,23 +19,21 @@ export default async function HomePage() {
 	return (
 		<div className="p-4 text-3xl font-bold capitalize text-secondary">
 			<Loading fallback={<Fallback/>}>
-				<SavedProducts />
+				<SavedProducts className="p-6 bg-secondary rounded-lg mb-8" />
 			</Loading>
 			<Loading fallback={<Fallback/>}>
-				<TopRatingProducts />
+				<TopRatingProducts className="p-6 bg-secondary rounded-lg mb-8"/>
 			</Loading>
 			<Loading fallback={<Fallback/>}>
-				<TopDiscountProducts />
+				<TopDiscountProducts className="p-6 bg-secondary rounded-lg mb-8"/>
 			</Loading>
 			<Loading fallback={<Fallback/>}>
-				<BrandList />
+				<BrandList className="p-6 bg-secondary rounded-lg mb-8"/>
 			</Loading>
 			<Loading fallback={<Fallback/>}>
-				<CategoryList />
+				<CategoryList className="p-6 bg-secondary rounded-lg mb-8"/>
 			</Loading>
-			<Loading fallback={<Fallback/>}>
 				<ReloadOnUserChange />
-			</Loading>
 		</div>
 	)
 }

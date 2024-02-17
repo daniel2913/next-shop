@@ -32,15 +32,15 @@ export default function AmmountSelector({ className,value, onChange, confirm: co
 				className="text-inherit flex justify-center items-center mr-auto flex-grow leading-4"
 				onClick={() => clickHandler(value - 1)}
 			>
-				<Minus className="stroke-2 stroke-secondary" width="15px" height="15px"/>
+				<Minus className="*:stroke-2 *:stroke-foreground" width="15px" height="15px"/>
 			</button>
-			<span className="text-inherit grow-0 text-center w-[3ch] overflow-clip text-3xl basis-8">{value}</span>
+			<span className="text-foreground grow-0 font-bold text-center w-[3ch] overflow-clip text-3xl basis-8">{value}</span>
 			<button
 				type="button"
 				className="text-inherit flex justify-center items-center ml-auto flex-grow leading-4 "
 				onClick={() => clickHandler(value + 1)}
 			>
-				<Plus className="stroke-2 stroke-secondary" width="15px" height="15px"/>
+				<Plus className="*:stroke-2 *:stroke-foreground" width="15px" height="15px"/>
 			</button>
 		</div>
 	)

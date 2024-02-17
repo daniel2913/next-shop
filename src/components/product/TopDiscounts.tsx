@@ -4,9 +4,13 @@ import { ProductModel } from "@/lib/Models"
 import { PopulatedProduct } from "@/lib/Models/Product"
 import {or,inArray, desc, eq} from "drizzle-orm"
 import ProductCard from "./ProductCard"
-import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
+import HorizontalScroll from "../ui/HorizontalScroll"
 
-export default async function TopDiscountProducts(){
+type Props = {
+	className?:string
+}
+
+export default async function TopDiscountProducts(props:Props){
 	const topDiscounts = (await DiscountCache.get())
 		.filter(discount=>+discount.expires>Date.now())
 		.sort((a,b)=>a.discount-b.discount)
@@ -29,16 +33,14 @@ export default async function TopDiscountProducts(){
 	}
 	if (topDiscounted.length===0) return null
 	return(
-				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
-				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
+		
+			<HorizontalScroll className={props.className}>
 			{topDiscounted.slice(0,10).map(product=>
 				<ProductCard
-					key = {product.id}
+			key = {product.id}
 					product={product}
 				/>
 			)}
-			</div>
-			<ScrollBar/>
-		</ScrollArea>
+			</HorizontalScroll>
 	)
 }

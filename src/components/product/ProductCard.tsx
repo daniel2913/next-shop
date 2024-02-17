@@ -81,7 +81,7 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 					className="text-2xl leading-6 w-full text-ellipsis overflow-hidden col-span-2 font-bold uppercase text-accent1-400"
 					>
 					<button onClick={showDetails} type="button"
-						className="appearance-none text-ellipsis w-full text-nowrap overflow-hidden">
+						className="appearance-none capitalize text-ellipsis w-full text-nowrap overflow-hidden">
 						{product.name}
 					</button>
 				</CardTitle>
@@ -114,7 +114,7 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 									}}
 								>
 									< Edit
-										className="hover:stroke-accent"
+										className="hover:stroke-primary"
 										width={"30px"}
 										height={"30px"}
 									/>
@@ -126,15 +126,13 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 							onClick={toggleFav}
 						>
 							<Heart
-								className={`${product.favourite
+								className={`*:stroke-card-foreground *:stroke-1 ${product.favourite
 									? "fill-accent"
-									: "group-hover:fill-accent fill-transparent"
+									: "group-hover:fill-accent/70 fill-transparent"
 									}
 				`}
 								width={"30px"}
 								height={"30px"}
-								color="black"
-								stroke="black"
 							/>
 						</Button>
 						}

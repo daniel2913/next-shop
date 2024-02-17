@@ -95,7 +95,7 @@ export default function CartStatus({ className }: Props) {
 			onClick={cartClickHandler}
 		>
 			<div className="w-fit h-fit relative">
-				<CartIcon width="30px" height="30px" />
+				<CartIcon className="*:stroke-foreground *:stroke-2" width="30px" height="30px" />
 				{
 					itemsCount
 						?

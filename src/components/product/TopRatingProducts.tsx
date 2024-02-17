@@ -1,31 +1,30 @@
 import { populateProducts } from "@/helpers/getProducts"
 import { ProductModel } from "@/lib/Models"
 import { sql } from "drizzle-orm"
-import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
 import ProductCard from "./ProductCard"
+import HorizontalScroll from "../ui/HorizontalScroll"
+
 type Props = {
 	size?:number
+	className?:string
 }
 
-export default async function TopRatingProducts({size=10}:Props){
+export default async function TopRatingProducts(props:Props){
 	const topProducts = await populateProducts(
 		await ProductModel.model
 			.select()
 			.from(ProductModel.table)
 			.orderBy(sql`rating desc nulls last`)
-			.limit(size))
+			.limit(props.size||10))
 	if (topProducts.length===0) return null
 	return(
 				<>
 					<h2>Top Products</h2>
-				<ScrollArea className="px-2 w-full overflow-y-hidden h-fit">
-				<div className="flex pb-2 overflow-y-hidden h-fit w-fit gap-4 flex-shrink-0">
+				<HorizontalScroll className={props.className}>
 				{topProducts.map(product=>
 				<ProductCard key={product.id} product={product}/>
 				)}
-					</div>
-					<ScrollBar orientation="horizontal"/>
-				</ScrollArea>
+				</HorizontalScroll>
 				</>
 	)
 }

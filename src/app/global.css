@@ -3,42 +3,44 @@
 @tailwind utilities;
  
 
+
+
 @layer base {
-  :root {
-		--teal: 164.21 36.19% 58.82%;
-		--tan:	84 9.43% 89.61%;
-		--rose: 345.56 80.6% 73.73%;
-		--purple: 236.8 31.91% 46.08%;
-		--gold: 49.15, 83.1%, 58.24%;
-		--lgreen: 78.89 38.03% 72.16%;
+:root {
 
-    --background: var(--teal);
-    --foreground: var(--tan);
+		--dark-gray: 0 3% 30%;
+		--light-gray: 360 0% 85%;
+		--dark-red: 360 100% 32%;
 
-    --card-foreground: var(--tan);
-    --card: var(--rose);
- 
-    --popover: var(--tan);
-    --popover-foreground: var(--teal);
- 
-    --primary: var(--rose);
-    --primary-foreground: var(--tan);
- 
-    --secondary: var(--purple);
-    --secondary-foreground: var(--tan);
- 
-    --muted: var(--lgreen);
-    --muted-foreground: var(--rose);
- 
-    --accent: var(--gold);
-    --accent-foreground: var(--tan);
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
 
-    --border: var(--tan);
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+ 
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+ 
+    --primary: 5.2 0.4% 26.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: var(--light-gray);
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --accent: var(--dark-red);
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --ring: 215 20.2% 65.1%;
  
     --radius: 0.5rem;
   }
@@ -62,7 +64,7 @@
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
  
-    --accent: 0 0% 14.9%;
+    --accent: 2 100% 47%;
     --accent-foreground: 0 0% 98%;
  
     --destructive: 0 62.8% 30.6%;
@@ -72,6 +74,10 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
   }
+}
+
+p,h1,h2,h3,h4,h5,h6,span{
+	@apply text-foreground
 }
  
 @layer base {

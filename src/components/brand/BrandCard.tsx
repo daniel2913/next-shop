@@ -11,7 +11,7 @@ export default function BrandCard({brand,products,className}:Props){
 	return (
 		<Card
 			title={brand.name}
-			className={`${className} bg-secondary w-40 h-30 text-center`}
+			className={`${className} bg-background w-40 h-30 text-center`}
 		>
 			<Link href={`/shop?brand=${brand.name}`}>
 			<CardContent

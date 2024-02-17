@@ -68,7 +68,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 					className="
 						rounded-none
           	rounded-l-md border-none h-8
-          	bg-cyan-100 rounded-r-none
+          	bg-background rounded-r-none
 						text-black p-1 
 						font-medium text-2xl
           "
@@ -81,8 +81,9 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 					className="
             rounded-r-md rounded-l-none h-8
 						text-center p-0 w-12 flex-grow-0
-						bg-primary text-teal-400 text-md
+						bg-background text-teal-400 text-md
 						px-1 flex justify-center items-center
+						hover:bg-secondary/5
           "
 					type="submit"
 				>

@@ -25,7 +25,7 @@ export default function AuthContainer({ children, className }: Props) {
 						onClick={()=>modal.show(<Login close={modal.close}/>)}
 						className={className}
 					>
-					<Account width={"30px"} height={"30px"} />
+					<Account className="*:stroke-foreground *:stroke-2" width={"30px"} height={"30px"} />
 					Log In
 					</NavButton>
 		)
@@ -35,7 +35,7 @@ export default function AuthContainer({ children, className }: Props) {
 					<NavButton
 						className={className}
 					> 
-					<Account width={"30px"} height={"30px"} />
+					<Account className="*:stroke-foreground *:stroke-2" width={"30px"} height={"30px"} />
 					Account
 					</NavButton>
 					</PopoverTrigger>

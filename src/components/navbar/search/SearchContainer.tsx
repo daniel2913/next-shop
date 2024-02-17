@@ -23,7 +23,7 @@ export default function SearchContainer({children,className}:Props){
 						className={className}
 						onClick={()=>modal.show(children)} 
 					>
-						<Glass width="30px" height="30px" className="bg-tan opacity-80 rounded-full"/>
+						<Glass width="30px" height="30px" className="*:stroke-foreground *:fill-foreground opacity-80 rounded-full"/>
 						Search
 					</NavButton>
 	)
