@@ -17,7 +17,7 @@ export async function toggleSavedAction(id: number) {
 		const res = await UserModel.patch(user.id, { saved: user.saved })
 		if (!res) throw ServerError.unknown()
 		UserCache.patch(user.name, user)
-		return true
+		return !ans
 	}
 	catch (error) {
 		return ServerError.fromError(error).emmit()

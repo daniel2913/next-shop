@@ -46,7 +46,7 @@ export default function ModalBase() {
 					}}
 					className="
 						flex  items-center content-start w-full px-4 pb-10
-						border-x-0 h-dvh bg-secondary 
+						border-x-0 h-dvh bg-background 
 					">
 					{children}
 				</DrawerContent>

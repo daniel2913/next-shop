@@ -32,7 +32,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 		return (
 			<Table className={`text-foreground text-semibold ${className} table-auto w-fit`}>
 				<TableHeader className="">
-					<TableRow className=" *:p-1 *:text-center text-center text-xl md:text-2xl">
+					<TableRow className=" *:p-1 *:text-center *:text-foreground *:text-xl md:*:text-2xl">
 						<TableHead className="w-1/12">
 							Image
 						</TableHead>
@@ -62,7 +62,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						.map((product) => (
 							<TableRow 
 								key={product.id} 
-								className="w-full *:p-1 text-foreground overflow-hidden text-ellipsis text-xl md:text-2xl text-center"
+								className="w-full *:p-1 *:text-foreground overflow-hidden *:text-ellipsis *:text-xl *:md:text-2xl *:text-center"
 							>
 								<TableCell className="relative w-2 h-16">
 									<Image 
@@ -97,7 +97,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						))}
 				</TableBody>
 				<TableFooter>
-					<TableRow className="text-3xl font-bold capitalize text-center">
+					<TableRow className="*:text-3xl *:font-bold  *:text-foreground  *:capitalize *:text-center">
 						<TableCell>
 							Total:
 						</TableCell>

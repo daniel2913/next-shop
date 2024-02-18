@@ -27,8 +27,8 @@ export default function DetailedProduct({product}:Props){
 	if (mode ==="desktop")
 		return(
 		<article className="
-				flex bg-primary items-center
-				content-center rounded-md
+				flex items-center
+				content-center bg-background rounded-md
 				p-4 gap-4 min-w-[45rem]
 				w-[80vw] h-[70vh]
 			"
@@ -65,7 +65,7 @@ export default function DetailedProduct({product}:Props){
 	return(
 		<ScrollArea className="h-svh w-full rounded-md text-wrap overflow-scroll">
 		<article className="
-				flex h-full bg-primary relative flex-col items-center
+				flex h-full bg-background relative flex-col items-center
 				content-center rounded-md w-full
 			"
 			>
