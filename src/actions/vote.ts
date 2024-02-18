@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export async function getRatingAction(ids: number[]) {
 	try {
+		if (ids.length===0) return {}
 		const session = await getServerSession(authOptions)
 		const user = session?.user
 		if (!user || user.role!=="user") return {}

@@ -47,6 +47,7 @@ const Rating = React.memo(function Rating({
 			{ratings.map((i) =>
 				<button
 					disabled={value===-1}
+					
 					type="button"
 					key={`${i}-${Math.random()}`}
 					onClick={() => handleRate(i)}
@@ -63,8 +64,8 @@ const Rating = React.memo(function Rating({
 								${i <= value
 								? "fill-accent"
 								: i <= (rating || 0)
-									? "fill-secondary"
-									: "fill-foreground"
+									? "fill-foreground"
+									: "fill-secondary"
 							}
 								${value === 0 && "stroke-accent"}
 							`}

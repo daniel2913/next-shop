@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button"
 import { useRouter} from "next/navigation"
 import Link from "next/link"
 import Admin from "@public/admin.svg"
+import  Heart  from "@public/heart.svg"
+import OrderMenu from "../Orders"
 
 type Props = {
 	className?: string
@@ -42,30 +44,46 @@ export function ProductControl() {
 export default function Auth({ className }: Props) {
 	const session = useSession()
 	return (
-		<div className={`${className}`}>
+		<div className={`${className} flex flex-col items-center md:flex-row gap-2`}>
+			{session.data?.user?.role==="admin"
+			?
+				<Link className="appearence-none" href={"/admin/products"}>
+				<Button 
+					className="p-1 flex flex-col h-full"
+					type="button"
+					variant="link"
+					>
+					<Admin width="30px" height="30px"/>
+					Admin Panel
+				</Button>
+				</Link>
+			: 
+			<>
+			<OrderMenu className="p-1 flex flex-col gap-0 hover:underline underline-offset-4 h-full"/>
+			<Link className="appearence-none w-fit h-fit" href={"/shop/saved"}>
+				<Button 
+					className="p-1 flex flex-col h-full"
+					type="button"
+					variant="link"
+					>
+					<Heart width="30px" height="30px"
+						className={`*:stroke-card-foreground *:stroke-1 fill-accent`}
+						/>
+					Saved
+				</Button>
+			</Link>
+			</>
+			}
 			<Button
-				className="p-1"
-				variant="destructive"
+				className="basis-0 hover:bg-transparent text-foreground hover:underline underline-offset-4 bg-transparent p-1 flex flex-col h-full"
 				type="submit"
 				onClick={async () => {
 					await signOut({ redirect: false })
 				}}
 			>
-				<Exit className="stroke-2" height="30px" width="30px" />
+				<Exit className=" *:stroke-accent *:fill-accent" height="30px" width="30px" />
+				Sign Out
 			</Button>
-			{session.data?.user?.role==="admin"
-			?
-				<Link className="" href={"/admin/products"}>
-				<Button 
-					className="p-1"
-					type="button"
-					variant="link"
-					>
-					<Admin width="30px" height="30px"/>
-				</Button>
-				</Link>
-			: null
-			}
 		</div>
 	)
 }

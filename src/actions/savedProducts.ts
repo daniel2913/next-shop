@@ -17,11 +17,25 @@ export async function toggleSavedAction(id: number) {
 		const res = await UserModel.patch(user.id, { saved: user.saved })
 		if (!res) throw ServerError.unknown()
 		UserCache.patch(user.name, user)
-		return !ans
+		return true
 	}
 	catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
+}
+
+export async function clearSavedAction(){
+	try {
+		const user = await auth("user")
+		const res = await UserModel.patch(user.id, { saved: [] })
+		if (!res) throw ServerError.unknown("clearSaved after patch")
+		UserCache.patch(user.name, {saved:[]})
+		return
+	}
+	catch (error) {
+		return ServerError.fromError(error).emmit()
+	}
+	
 }
 
 export async function getSavedAction() {

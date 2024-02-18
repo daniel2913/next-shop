@@ -1,5 +1,5 @@
 "use client"
-import { PopulatedOrder, completeOrderAction, getOrdersAction } from "@/actions/order"
+import { PopulatedOrder, completeOrderAction, getOrdersAction, markOrderSeenAction } from "@/actions/order"
 import React from "react"
 import useAction, { ServerErrorType } from "@/hooks/useAction"
 import { Button } from "@/components/ui/Button"
@@ -10,6 +10,7 @@ import useToast from "@/hooks/modals/useToast"
 import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs"
 import Loading from "../ui/Loading"
+import Exclamation from "@public/exclaim.svg"
 
 type Props = {
 	completed?: boolean
@@ -23,6 +24,7 @@ type PageProps = {
 }
 
 function OrderPage({ orders, onComplete }: PageProps) {
+	const [seen,setSeen] = React.useState<number[]>([])
 	const session = useSession()
 	return (
 		<Accordion
@@ -34,8 +36,21 @@ function OrderPage({ orders, onComplete }: PageProps) {
 					value={`${orderIdx}`}
 					key={order.order.id}
 				>
-					<AccordionTrigger>
+					<AccordionTrigger 
+						onClick={()=>{
+							if (order.order.seen && order.order.status==="COMPLETED" && !seen.includes(order.order.id) || session.data?.user?.role!== "user") return
+							markOrderSeenAction(order.order.id)
+							setSeen(seen=>[...seen,order.order.id])
+						}}
+						className="flex">
 						{`Order-${order.order.id} - ${order.order.user}`}
+						{order.order.seen===false && order.order.status==="COMPLETED" && !seen.includes(order.order.id) && session?.data?.user?.role==="user"
+							?	
+							<div
+								className="ml-auto bg-accent w-4 aspect-square rounded-full"
+							/>
+							: null
+						}
 					</AccordionTrigger>
 					<AccordionContent
 						className="flex justify-center"

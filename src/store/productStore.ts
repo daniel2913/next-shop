@@ -57,6 +57,7 @@ const useProductStore = createWithEqualityFn<ProductsSlice>()((set,get) => ({
 	},
 	reload: async () =>{
 		const products = get().products
+		if (products.length===0) return false
 		const [votes,favs] = await Promise.all([
 				getRatingAction(products.map(p=>p.id)),
 				getSavedAction()

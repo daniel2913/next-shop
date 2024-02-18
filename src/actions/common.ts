@@ -27,7 +27,6 @@ export async function modelGeneralActionNoAuth(model: PgreModel<any, any>, formO
 	const props = formOrProps instanceof FormData
 		? parseFormData(formOrProps)
 		: formOrProps
-		console.log(props)
 		const res = id !== undefined
 			? await model.patch(id, props)
 			: await model.create(props)
@@ -66,6 +65,7 @@ export class ServerError{
 		return new ServerError(desc ?? "Requested item is not found", title ?? "Not Found")
 	}
 	static unknown(desc?:string,title?:string){
+		console.trace(desc)
 		return new ServerError(desc ?? "Unknown error", title ?? "Unknown Error")
 	}
 	static invalid(desc?:string,title?:string){

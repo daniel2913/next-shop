@@ -105,7 +105,7 @@ export default function CartStatus({ className }: Props) {
 						md:top-2/3 md:-left-1/2
 						w-6 aspect-square rounded-full bg-accent border-tan border-1
 					">
-							<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+							<span className="absolute text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 								{itemsCount}
 							</span>
 						</div>

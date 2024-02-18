@@ -43,11 +43,11 @@ function Register({ close, redirect }: Props) {
 		if (val.length<5 || val.length>20) return "Username must be between 5 and 20 characters long"
 		if (!val.match(/^[a-zA-Z]/)) return "Username must start with a letter"
 		if (!val.match(/^[a-zA-Z0-9]/)) return ("Username must only contain letters and numbers")
-			
+		return ""
 	}
 	return (
 		<form
-			className="flex items-center flex-col gap-2 mb-4"
+			className="flex items-center flex-col px-20 gap-2 mb-4"
 			onSubmit={async (e) => {
 				e.stopPropagation()
 				e.preventDefault()
@@ -57,17 +57,15 @@ function Register({ close, redirect }: Props) {
 			<Label>
 				Username
 				<Input
-					onBlur={()=>validate(name)}
+					onBlur={()=>setStatus(validate(name))}
 					type="text"
 					autoFocus={true}
 					name="username"
 					value={name}
 					onChange={(e) => setName(e.currentTarget.value)}
-					pattern="^[a-zA-Z][a-zA-Z0-9]{4,20}$"
+					title="Username must be between 5 and 20 characters long, starts with a letter and only contain letters and numbers"
+					pattern="^[a-zA-Z][a-zA-Z0-9]{5,20}"
 				/>
-			{status 
-					? <span className="text-destructive font-thin text-md">{status}</span>
-					: null}
 			</Label>
 			<Label>
 				Password
@@ -77,6 +75,7 @@ function Register({ close, redirect }: Props) {
 					value={password}
 					onChange={(e) => setPassword(e.currentTarget.value)}
 					pattern={`.{5,20}`}
+					title="Password must be beetween 5 and 20 characters long"
 				/>
 			</Label>
 			<Button

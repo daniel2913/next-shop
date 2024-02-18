@@ -30,10 +30,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 	const mode = useResponsive()
 	if (mode === "desktop")
 		return (
-			<Table className={`${className} table-auto w-fit`}>
+			<Table className={`text-foreground text-semibold ${className} table-auto w-fit`}>
 				<TableHeader className="">
-					<TableRow className=" *:p-1 *:text-center text-center text-xl md:text-2xl text-accent">
-						<TableHead className="w-1/6">
+					<TableRow className=" *:p-1 *:text-center text-center text-xl md:text-2xl">
+						<TableHead className="w-1/12">
 							Image
 						</TableHead>
 						<TableHead className="w-1/5">
@@ -62,12 +62,18 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						.map((product) => (
 							<TableRow 
 								key={product.id} 
-								className="w-full *:p-1 overflow-hidden text-ellipsis text-xl md:text-2xl text-center"
+								className="w-full *:p-1 text-foreground overflow-hidden text-ellipsis text-xl md:text-2xl text-center"
 							>
-								<TableCell className="relative w-20 h-16">
-									<Image alt={product.name} src={`/products/${product.images[0]}`} fill />
+								<TableCell className="relative w-2 h-16">
+									<Image 
+										alt={product.name} 
+										sizes="15vw"
+										src={`/products/${product.images[0]}`}
+										fill
+										className=""
+								/>
 								</TableCell>
-								<TableCell className="text-md md:text-lg">
+								<TableCell className="text-md capitalize md:text-lg">
 									<h3>{product.name}</h3>
 								</TableCell>
 								<TableCell className="hidden lg:table-cell">
@@ -91,7 +97,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						))}
 				</TableBody>
 				<TableFooter>
-					<TableRow className="text-3xl font-bold capitalize text-center text-accent">
+					<TableRow className="text-3xl font-bold capitalize text-center">
 						<TableCell>
 							Total:
 						</TableCell>
@@ -123,9 +129,9 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						<div className="basis-1/5 relative p-4">
 							<Image className="size-full" alt={product.name} src={`/products/${product.images[0]}`} fill />
 						</div>
-						<div className="basis-4/5 text-black">
+						<div className="basis-4/5 text-foreground">
 							<h3 className="font-semibold">{product.name}</h3>
-							<div className="flex justify-start font-semibold text-xl text-black/80">
+							<div className="flex justify-start font-semibold text-xl text-foreground">
 								{order[product.id].price}
 							</div>
 							<div className="flex justify-between">
@@ -142,7 +148,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						</div>
 					</div>
 				))}
-				<div className="flex text-black text-3xl font-bold text-center">
+				<div className="flex text-foreground text-3xl font-bold text-center">
 					<span className="block basis-1/4 w-full">
 						Total:
 					</span>

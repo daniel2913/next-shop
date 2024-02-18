@@ -3,8 +3,6 @@
 import React from "react"
 import { SessionProvider } from "next-auth/react"
 import { Session } from "next-auth"
-import { ThemeProvider } from "next-themes"
-
 
 type ResponsiveProps = {
 	children: React.ReactNode
@@ -30,7 +28,6 @@ export function ResponsiveProvider({children}:ResponsiveProps){
 	)
 }
 
-
 type SessionProps = {
 	children: React.ReactNode
 	session: Session | null
@@ -43,10 +40,9 @@ export default function RootProviders({ children, session }: SessionProps) {
 			refetchOnWindowFocus={false}
 			session={session}
 		>
-			<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 			{children}
-			</ThemeProvider>
 		</SessionProvider>
 		</ResponsiveProvider>
 	)
 }
+

@@ -77,14 +77,15 @@ export class PgreModel<
 		const sqlQueryWrappers: SQLWrapper[] = []
 		for (const [key, value] of Object.entries(query)) {
 
-			if (!(key in this.table && value)) continue
+			if (!(key in this.table && value!==undefined)) continue
 
 			const column = this.table[key as keyof U] as Column
 			if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value))
 			else if (typeof value === "string" && value.at(0) === "%" && value.at(-1) === "%")
 				sqlQueryWrappers.push(ilike(column, value))
-			else sqlQueryWrappers.push(eq(column, value))
-		}
+			else {
+				sqlQueryWrappers.push(eq(column, value))
+			} }
 		return and(...sqlQueryWrappers)
 	}
 	private async deleteExtra(_files: string | string[], _oldFiles?: string | string[]) {

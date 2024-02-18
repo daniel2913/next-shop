@@ -28,14 +28,7 @@ export default function ProductList({ products: initProducts }: Props) {
 	}
 	const products = (inited && scrollProducts) || initProducts
 	return (
-		<div
-			className="
-					h-full p-5 bg-background
-					grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]
-					gap-y-4
-					items-center justify-items-center
-				"
-		>
+		<>
 			{products.map((product) => (
 				<ProductCard
 					key={`${product.id}`}
@@ -48,6 +41,6 @@ export default function ProductList({ products: initProducts }: Props) {
 			>
 				...
 			</div>
-		</div>
+		</>
 	)
 }

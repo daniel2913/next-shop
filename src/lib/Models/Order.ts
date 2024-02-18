@@ -1,5 +1,5 @@
 import { UserPgreTable } from "./User.ts"
-import { jsonb, smallint, varchar } from "drizzle-orm/pg-core"
+import { boolean, jsonb, smallint, varchar } from "drizzle-orm/pg-core"
 import { pgreDefaults, validations } from "./common.ts"
 import { shop } from "./common.ts"
 import { z } from "zod"
@@ -20,7 +20,8 @@ const OrderInsertValidation = z.object({
 				.map((product) => calcPrice(product.price,product.discount)=== order[product.id].price)
 				.reduce((prev,cur)=>prev&&cur,true)
 		},"Some order details are out of date"),
-	status:z.enum(["PROCESSING","COMPLETED"]).default("PROCESSING")
+	status:z.enum(["PROCESSING","COMPLETED"]).default("PROCESSING"),
+	seen:z.boolean().default(false)
 })
 
 const config = {
@@ -33,6 +34,7 @@ const config = {
 	order: jsonb("order")
 		.notNull()
 		.$type<Record<number, { amount: number; price: number }>>(),
+	seen: boolean("seen").default(false)
 }
 
 export type Order = typeof OrderPgreTable.$inferSelect

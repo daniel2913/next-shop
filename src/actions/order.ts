@@ -112,6 +112,35 @@ export async function deleteOrdersAction(inp: number | number[]) {
 		return res.length
 	}
 	catch (error) {
-		ServerError.fromError(error).emmit()
+		return ServerError.fromError(error).emmit()
 	}
+}
+
+export async function markOrderSeenAction(id:number){
+	try{
+		const [user,order] = await Promise.all([
+			auth("user"),
+			OrderModel.findOne({id})
+		])
+		if (!order) throw ServerError.notFound("Order not found")
+		if (order.user !== user.id) throw ServerError.notAllowed("You are not supposed to see that order :(")
+		const res = await OrderModel.patch(id,{seen:true})
+		if (!res) throw ServerError.unknown("markOrderSeenAction after patch")
+	}
+	catch (error) {
+		return ServerError.fromError(error).emmit()
+	}
+}
+
+export async function getOrderNotificationsAction(){
+	try{
+		const user = await auth("user")
+		const res = await OrderModel.find({seen:false,status:"COMPLETED",user:user.id})
+		return res.length
+	}
+	catch (error) {
+		ServerError.fromError(error).log()
+		return 0
+	}
+
 }

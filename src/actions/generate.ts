@@ -41,11 +41,9 @@ export async function generateProductAction(){
 		? categories.find(cat=>cat.name==="Headrests")!
 		: categories[Math.floor((Math.random()*1000)%categories.length)]
 	const base = `/users/user/desktop/mock/${category.name}`
-	console.log(base)
 	const allimages = (await fs.readdir(base)).map(fileName => {
   return path.join(base, fileName)
 	})
-	console.log(allimages)
 	const images:File[] = []
 	const imgNum = (Math.random()*1000)%4+1
 	for (let i=0;i<imgNum;i++){
@@ -75,7 +73,6 @@ export async function generateProductAction(){
 		price,
 		images
 	}
-	console.log(props)
 	const res = await ProductModel.create(props)
 	if (!res) throw "not res"
 	return (await populateProducts([res]))[0]

@@ -1,4 +1,3 @@
-import { ScrollArea, ScrollBar } from "../ui/ScrollArea"
 import ProductCard from "./ProductCard"
 import { getProductsByIds } from "@/actions/product"
 import { auth } from "@/actions/common"
@@ -6,6 +5,29 @@ import HorizontalScroll from "../ui/HorizontalScroll"
 
 type Props = {
 	className?: string
+}
+
+
+export async function SavedProductsNaked({num}:{num?:number}){
+	try{
+		const user = await auth("user")
+	if (user.saved.length===0) return null
+	const saved = num 
+		? user.saved.slice(0,num)
+		: user.saved
+	const topProducts = await getProductsByIds(saved)
+	if (topProducts.length===0) return null
+	return(
+			<>
+				{topProducts.map(product=>
+				<ProductCard key={product.id} product={product}/>
+				)}
+			</>
+	)
+	}
+	catch{
+		return null
+	}
 }
 
 export default async function SavedProducts(props:Props){
@@ -18,9 +40,7 @@ export default async function SavedProducts(props:Props){
 				<>
 				<h2>Saved Products</h2>
 				<HorizontalScroll className={`${props.className}`}>
-				{topProducts.map(product=>
-				<ProductCard key={product.id} product={product}/>
-				)}
+					<SavedProductsNaked num={10}/>
 				</HorizontalScroll>
 				</>
 	)
