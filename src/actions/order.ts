@@ -1,6 +1,6 @@
 "use server"
 
-import { Order, OrderModel, ProductModel} from "@/lib/Models"
+import { Order, OrderModel, ProductModel, UserModel} from "@/lib/Models"
 import { eq, inArray, sql, and,not } from "drizzle-orm"
 import { ServerError, auth, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
 import { getProductsByIds} from "./product"
@@ -69,13 +69,23 @@ export async function completeOrderAction(id: number) {
 			OrderModel.findOne({ id }),
 			auth("admin")
 		])
-
 		if (!order) throw ServerError.notFound()
-		const newProds = Object.keys(order.order)
-			.map(Number)
+		const user = await UserModel.findOne({id:order.user})
+		if (!user) throw ServerError.notFound()
+		const oldProds = Object.keys(user.votes)
+		const newVotes = Object.fromEntries(
+			Object.keys(order.order)
+			.filter(newProd=>!oldProds.includes(newProd))
+			.map(prod=>[prod,0])
+		)
+		const votes = {...user.votes,...newVotes}
 		const [res] = await Promise.all([
 			OrderModel.patch(id, { status: "COMPLETED" }),
-			openRating(newProds, order.user),
+			UserModel.model.execute(sql`
+				UPDATE shop.users
+				SET votes=${votes}
+				WHERE id=${order.user}
+			`)
 		])
 		if (!res) throw ServerError.notFound()
 		return false
@@ -85,20 +95,6 @@ export async function completeOrderAction(id: number) {
 	}
 }
 
-async function openRating(prodIds: number[], userId: number) {
-	if (prodIds.length === 0) return
-	await ProductModel.model
-		.update(ProductModel.table)
-		.set({
-			votes:sql`array_append(votes,null)`,
-			voters:sql`array_append(voters,${userId})`
-		})
-		.where(and(
-			inArray(ProductModel.table.id,prodIds),
-			sql`NOT ${userId} = ANY(${ProductModel.table.voters})`
-		))
-		.returning({id:ProductModel.table.id})
-}
 
 export async function deleteOrdersAction(inp: number | number[]) {
 	try {

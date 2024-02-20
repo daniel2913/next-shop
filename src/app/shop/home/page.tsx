@@ -19,7 +19,7 @@ export default async function HomePage() {
 	return (
 		<div className="p-4 text-3xl font-bold capitalize text-secondary">
 			<Loading fallback={<Fallback/>}>
-				<SavedProducts className="p-6 bg-secondary rounded-lg mb-8" />
+				<SavedProducts num={10} className="p-6 bg-secondary rounded-lg mb-8" />
 			</Loading>
 			<Loading fallback={<Fallback/>}>
 				<TopRatingProducts className="p-6 bg-secondary rounded-lg mb-8"/>

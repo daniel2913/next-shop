@@ -25,9 +25,15 @@ const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
 
 const ProductCard = React.memo(function ProductCard(product: Props) {
 	const { show } = useModal()
-	const vote = useCartStore(state=>state.votes[product.id]) || -1
+	const {handleResponse} = useToast()
+	const vote = useCartStore(state=>state.votes[product.id]) ?? -1
 	const setVote = useCartStore(state=>state.setVote)
-	const onVoteChange = React.useCallback((val:number)=>setVote(product.id,val),[product.id,setVote])
+	const onVoteChange = React.useCallback(async (val:number)=>{
+		const res = await setVote(product.id,val)
+		if (!handleResponse(res)) return
+		product.update(product.id,res)
+		
+	},[product.id,setVote])
 	const showDetails = () => show(<DetailedProduct {...product}/>, "Product Details", product.name)
 
 	return (

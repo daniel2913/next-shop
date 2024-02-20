@@ -1,4 +1,4 @@
-import ProductList from "@/components/product/ProductList"
+import InfProductList from "@/components/product/ProductList"
 import { getProductsPageAction } from "@/actions/product"
 import React from "react"
 
@@ -12,7 +12,7 @@ export default async function Shop({
 	const brand = params.get("brand")?.split(",")
 	const category = params.get("category")?.split(",")
 	const name = params.get("name") || undefined
-	const initProducts = await getProductsPageAction({brand,category,name, page:10})
+	const initProducts = await getProductsPageAction({brand,category,name, page:20})
 	if ("error" in initProducts) return <div>Error!</div>
 
 	return (
@@ -24,7 +24,7 @@ export default async function Shop({
 					items-center justify-items-center
 				"
 		>
-			<ProductList products={initProducts}/>
+			<InfProductList products={initProducts}/>
 		</main>
 	)
 }

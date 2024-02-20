@@ -3,6 +3,7 @@ import { ProductModel } from "@/lib/Models"
 import { sql } from "drizzle-orm"
 import ProductCard from "./ProductCard"
 import HorizontalScroll from "../ui/HorizontalScroll"
+import {ProductList} from "./ProductList"
 
 type Props = {
 	size?:number
@@ -21,9 +22,7 @@ export default async function TopRatingProducts(props:Props){
 				<>
 					<h2>Top Products</h2>
 				<HorizontalScroll className={props.className}>
-				{topProducts.map(product=>
-				<ProductCard key={product.id} product={product}/>
-				)}
+					<ProductList products={topProducts}/>
 				</HorizontalScroll>
 				</>
 	)

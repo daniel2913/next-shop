@@ -47,7 +47,7 @@ const useCartStore = create<CartState>()(
 			setVote: async (id:number,value:number)=>{
 				const votes = get().votes
 				if (!(id in votes)) return {error:"You can only rate products you bought",title:"Not Allowed"}
-				set({votes:{id:value}})
+				set({votes:{...votes,[id]:value}})
 				const res = await updateVoteAction(id,value)
 				if (!res) return {error:"Something Wrong", title:"Unknown Error"}
 				if ("error" in res) set({votes})

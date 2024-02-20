@@ -101,6 +101,7 @@ export default function useInfScroll<T>(
 	items: T[],
 	loadItems: (query: URLSearchParams, skip: number, page: number) => Promise<false | number>,
 	endRef: React.RefObject<HTMLDivElement>,
+	loading?:boolean,
 	page = 20,
 ) {
 	const searchParams = useSearchParams()
@@ -111,13 +112,16 @@ export default function useInfScroll<T>(
 		nextObserver.current?.disconnect()
 		nextObserver.current = new IntersectionObserver(async (entries) => {
 			if (!hasMore.current) return false
+			if (loading) return false
+			console.log(entries[0].isIntersecting)
 			if (!entries[0].isIntersecting) return false
 			const newItemsAmount = await loadItems(searchParams, items.length, page)
 			if (!newItemsAmount || newItemsAmount < page) hasMore.current = false
 		})
-		return nextObserver.current.disconnect()
+		return ()=>nextObserver?.current?.disconnect()
 	}, [searchParams, page, loadItems, items.length])
 	React.useEffect(() => {
+		console.log("observe")
 		if (endRef.current && nextObserver.current) {
 			nextObserver.current.observe(endRef.current)
 		}

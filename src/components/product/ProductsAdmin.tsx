@@ -16,16 +16,6 @@ type Props = {
 	products: PopulatedProduct[]
 	className?: string
 }
-				/* <Button
-					onClick={async ()=>{
-						const product = await generateProductAction()
-						if (!product) return
-						await show(<ProductForm product={product}/>)
-						router.refresh()
-					}}
-				>
-					Random
-				</Button> */
 
 export default function ProductsAdmin({ products, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
@@ -44,6 +34,15 @@ export default function ProductsAdmin({ products, className }: Props) {
 					}}
 				>
 					Create
+				</Button>
+				<Button
+					onClick={async ()=>{
+						const product = await generateProductAction()
+						if (!product) return
+						router.refresh()
+					}}
+				>
+					Random
 				</Button>
 				<Button
 					disabled={loading}

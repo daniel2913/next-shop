@@ -8,6 +8,7 @@ import Link from "next/link"
 import Admin from "@public/admin.svg"
 import  Heart  from "@public/heart.svg"
 import OrderMenu from "../Orders"
+import useCartStore from "@/store/cartStore"
 
 type Props = {
 	className?: string
@@ -61,6 +62,7 @@ export default function Auth({ className }: Props) {
 				type="submit"
 				onClick={async () => {
 					await signOut({ redirect: false })
+					useCartStore.setState(useCartStore.getInitialState())
 				}}
 			>
 				<Exit className=" *:stroke-accent *:fill-accent" height="30px" width="30px" />

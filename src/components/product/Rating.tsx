@@ -61,12 +61,8 @@ const Rating = React.memo(function Rating({
 						className={`
 							max-w-[${size}] w-full
 							aspect-square h-full
-								${i <= value
-								? "fill-accent"
-								: i <= (rating || 0)
-									? "fill-foreground"
-									: "fill-secondary"
-							}
+								${i<=rating||0 && value!==0 ? "stroke-foreground" : "stroke-secondary"}
+								${i<=value && "fill-accent" || i<=rating && "fill-foreground" || "fill-secondary"}
 								${value === 0 && "stroke-accent"}
 							`}
 					/>

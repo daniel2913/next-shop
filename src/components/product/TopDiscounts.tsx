@@ -4,6 +4,7 @@ import { ProductModel, Product } from "@/lib/Models"
 import {or,inArray, desc, eq} from "drizzle-orm"
 import ProductCard from "./ProductCard"
 import HorizontalScroll from "../ui/HorizontalScroll"
+import { ProductList } from "./ProductList"
 
 type Props = {
 	className?:string
@@ -38,12 +39,7 @@ export default async function TopDiscountProducts(props:Props){
 	return(
 		
 			<HorizontalScroll className={props.className}>
-			{products.map(product=>
-				<ProductCard
-			key = {product.id}
-					product={product}
-				/>
-			)}
+				<ProductList products={products}/>
 			</HorizontalScroll>
 	)
 }

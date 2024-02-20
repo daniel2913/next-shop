@@ -51,15 +51,18 @@ export function CartControl() {
 			if (synced.current === session.data.user.id) return
 
 			const state = await getUserState()
+			console.log(state)
 	
 			if (!handleResponse(state)) return
 			const {cart,saved,votes} = state
-			console.log(cart,saved,votes)
 			synced.current = session.data.user.id
 			const localCart = useCartStore.getState().items
 			const haveLocal = Object.keys(localCart).length > 0
 			const haveRemote = Object.keys(cart).length > 0
-			if (!haveRemote) return
+			if (!haveRemote) { 
+				useCartStore.setState({saved,votes})
+				return
+			}
 			if (haveLocal && JSON.stringify(localCart) !== JSON.stringify(cart))
 				if ((await confirm("Do you want to keep items from your local cart?"))){
 					const merged = mergeCarts(cart, localCart)

@@ -15,9 +15,8 @@ type Props = {
 
 export default function SavedList({ products: initProducts,saved}: Props) {
 	const endRef = React.useRef<HTMLDivElement>(null)
-	const {items:products,updateOne,reloadOne,loading,setItems:setProducts} = useItems({initItems:initProducts,page:10,getItems:getProductsByIdsAction})
+	const {items:products,updateOne,reloadOne,loading,setItems:setProducts} = useItems({initItems:initProducts,getItems:getProductsByIdsAction})
 	const {handleResponse} = useToast()
-
 	const loadMore = React.useCallback(async (query:URLSearchParams,skip:number,page=10)=>{
 		const newProducts = await getProductsByIdsAction(saved.slice(skip,skip+page))
 		if (!handleResponse(newProducts)) return 0

@@ -8,7 +8,7 @@ import { auth } from "@/actions/common";
 export default async function SavedPage(){
 	try{
 		const user = await auth("user")
-	const saved = await getProductsByIds(user.saved.slice(0,10))
+	const saved = await getProductsByIds(user.saved.slice(0,20))
 	return(
 		<main
 			className="
