@@ -2,6 +2,7 @@ import ProductCard from "./ProductCard"
 import { getProductsByIds } from "@/actions/product"
 import { auth } from "@/actions/common"
 import HorizontalScroll from "../ui/HorizontalScroll"
+import { useItems } from "@/hooks/useInfScroll"
 
 type Props = {
 	className?: string
@@ -15,12 +16,13 @@ export async function SavedProductsNaked({num}:{num?:number}){
 	const saved = num 
 		? user.saved.slice(0,num)
 		: user.saved
-	const topProducts = await getProductsByIds(saved)
-	if (topProducts.length===0) return null
+	const savedProducts = await getProductsByIds(saved)
+	const products = useItems({initItems:savedProducts,getItems:getProducts})
+	if (savedProducts.length===0) return null
 	return(
 			<>
-				{topProducts.map(product=>
-				<ProductCard key={product.id} product={product}/>
+				{savedProducts.map(product=>
+				<ProductCard key={product.id} {...product}/>
 				)}
 			</>
 	)
@@ -49,4 +51,8 @@ export default async function SavedProducts(props:Props){
 		return null
 	}
 }
+
+
+
+
 

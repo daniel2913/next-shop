@@ -13,6 +13,7 @@ import Loading from "../ui/Loading"
 import Exclamation from "@public/exclaim.svg"
 
 type Props = {
+	className?:string
 	completed?: boolean
 	orders: Exclude<Awaited<ReturnType<typeof getOrdersAction>>, ServerErrorType>
 	reload: () => void
@@ -76,7 +77,7 @@ function OrderPage({ orders, onComplete }: PageProps) {
 }
 
 
-const OrderList = React.memo(function OrderList({ orders, reload }: Props) {
+const OrderList = React.memo(function OrderList({ orders,className, reload }: Props) {
 
 	const { handleResponse } = useToast()
 	async function handleComplete(order: PopulatedOrder) {
@@ -87,7 +88,7 @@ const OrderList = React.memo(function OrderList({ orders, reload }: Props) {
 
 	}
 	return (
-		<Tabs className="text-black w-full" defaultValue="proc">
+		<Tabs className={`${className} text-black w-full`} defaultValue="proc">
 			<TabsList className="w-full flex justify-center">
 				<TabsTrigger value="proc">
 					Processing
@@ -111,10 +112,10 @@ export default function Orders() {
 	return (
 		<div className="md:w-[60vw] w-full h-full md:h-[70vh] flex  md:overflow-y-auto overflow-y-scroll items-center flex-col">
 			<Loading loading={loading}>
-				<div className="flex flex-col w-full h-full items-center p-4 bg-border rounded-md">
+				<div className="flex flex-col w-full h-full items-center p-4 pr-1 bg-border rounded-md">
 					<ScrollArea className="h-full w-full" type="hover">
-						<OrderList orders={orders} reload={reload} />
-						<ScrollBar />
+						<OrderList className="pr-3" orders={orders} reload={reload} />
+						<ScrollBar/>
 					</ScrollArea>
 				</div>
 			</Loading>

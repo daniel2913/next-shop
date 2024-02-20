@@ -10,41 +10,26 @@ import ProductCarousel from "./ProductCarousel"
 import { useSession } from "next-auth/react"
 import useModal from "@/hooks/modals/useModal"
 import DetailedProduct from "@/components/modals/ProductDetailed"
-import useProductStore from "@/store/productStore"
 import useToast from "@/hooks/modals/useToast"
 import BuyButton from "./BuyButton"
 import { Button } from "../ui/Button"
 import dynamic from "next/dynamic"
+import useCartStore from "@/store/cartStore"
 
-type Props = {
-	product: PopulatedProduct
+type Props = PopulatedProduct & {
+	reload:(id:number)=>void
+	update:(id:number,part:Partial<PopulatedProduct>)=>void
 }
 
 const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
 
-const ProductCard = React.memo(function ProductCard({ product: initProduct }: Props) {
-	const session = useSession()
-	const { handleResponse } = useToast()
+const ProductCard = React.memo(function ProductCard(product: Props) {
 	const { show } = useModal()
-	const [product, setProduct] = React.useState(initProduct)
-	const showDetails = () => show(<DetailedProduct product={product} />, "Product Details", product.name)
-	const reload = useProductStore(state => state.reloadSingle)
-	const modal = useModal()
+	const vote = useCartStore(state=>state.votes[product.id]) || -1
+	const setVote = useCartStore(state=>state.setVote)
+	const onVoteChange = React.useCallback((val:number)=>setVote(product.id,val),[product.id,setVote])
+	const showDetails = () => show(<DetailedProduct {...product}/>, "Product Details", product.name)
 
-	const updateVote = React.useCallback(async (val: number) => {
-		const res = await useProductStore.getState().updateVote(product.id, val)
-		if (handleResponse(res))
-			setProduct({ ...product, rating: res.rating, voters: res.voters, ownVote: val })
-	}, [])
-
-	const toggleFav = async () => {
-		const res = await useProductStore.getState().toggleFav(product.id)
-		if (handleResponse(res)) setProduct({ ...product, favourite: res })
-	}
-
-	React.useEffect(() => {
-		setProduct(state => ({ ...state, ownVote: initProduct.ownVote, favourite: initProduct.favourite }))
-	}, [initProduct.ownVote, initProduct.favourite])
 	return (
 		<Card
 			className={`
@@ -71,8 +56,8 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 				</CardHeader>
 				<Rating
 					id={product.id}
-					onChange={updateVote}
-					value={product.ownVote}
+					onChange={onVoteChange}
+					value={vote}
 					rating={product.rating || 0}
 					voters={product.voters}
 					className="col-span-2 justify-self-center"
@@ -97,6 +82,21 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 					discount={product.discount}
 					price={product.price}
 				/>
+				<Controls {...product}/>
+			</CardContent>
+		</Card>
+	)
+})
+
+function Controls(product:Props){
+	const { handleResponse } = useToast()
+	const session = useSession()
+	const modal = useModal()
+
+	const saved = useCartStore(state=>state.saved.includes(product.id))
+	const toggleSaved = useCartStore(state=>state.toggleSaved)
+
+	return(
 				<div className="flex gap-2 items-center justify-end">
 					<BuyButton
 						className="justify-self-center self-center w-4/5 h-3/4"
@@ -110,11 +110,11 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 									onClick={() => {
 										modal.show(
 											<ProductForm product={product} />
-										).then(() => reload(product.id))
+										).then(() => product.reload(product.id))
 									}}
 								>
 									< Edit
-										className="hover:stroke-primary"
+										className="*:stroke-foreground *:fill-foreground"
 										width={"30px"}
 										height={"30px"}
 									/>
@@ -122,11 +122,11 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 							:
 						<Button
 							className="group p-0 justify-self-end bg-transparent hover:bg-transparent"
-							title={product.favourite ? "Del from Favourite" : "Add to Favoutite"}
-							onClick={toggleFav}
+							title={saved ? "Del from Favourite" : "Add to Favoutite"}
+							onClick={()=>toggleSaved(product.id)}
 						>
 							<Heart
-								className={`*:stroke-card-foreground *:stroke-1 ${product.favourite
+								className={`*:stroke-card-foreground *:stroke-1 ${saved
 									? "fill-accent"
 									: "group-hover:fill-accent/70 fill-transparent"
 									}
@@ -137,9 +137,8 @@ const ProductCard = React.memo(function ProductCard({ product: initProduct }: Pr
 						</Button>
 						}
 				</div>
-			</CardContent>
-		</Card>
+
 	)
-})
+}
 
 export default ProductCard

@@ -10,26 +10,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup"
 import useResponsive from "@/hooks/useResponsive"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ScrollArea, ScrollBar } from "../../ui/ScrollArea"
+import { deffer } from "@/helpers/misc"
 
 type Props = {
 	className?: string
 	allBrands: Brand[]
 	allCategories: Category[]
 }
-
-
-function deffer<T extends (args: any) => any>(func: T, delay = 5000) {
-	let timeout:NodeJS.Timeout
-	return function deffered(inst:boolean,...args: Parameters<T>) {
-			if (timeout)
-				clearTimeout(timeout)
-			if (inst)
-				func.apply(null,args)		
-			else
-				timeout = setTimeout(()=>func.apply(null,args),delay)
-		}
-}
-
 
 export default function Search({ className, allBrands, allCategories }: Props) {
 	const params = useSearchParams()

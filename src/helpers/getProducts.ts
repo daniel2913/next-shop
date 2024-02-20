@@ -13,7 +13,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 const unknownBrand: Brand = {
 	name: "unknown",
 	image: "template.jpg",
-	description: "not found",
 	id: -1,
 }
 
@@ -28,20 +27,17 @@ const unknownUser: Omit<User, "passwordHash" | "cart"> = {
 	role: "guest",
 	id: -1,
 	saved: [],
+	votes:{}
 }
 
 export async function populateProducts(
 	products: Product[]
 ): Promise<PopulatedProduct[]> {
-	const [brands, categories, discounts, session] = await Promise.all([
+	const [brands, categories, discounts] = await Promise.all([
 		BrandCache.get(),
 		CategoryCache.get(),
 		DiscountCache.get(),
-		getServerSession(authOptions),
 	])
-	const user = session?.user?.name
-		? (await UserCache.get(session?.user?.name)) || unknownUser
-		: unknownUser
 	const now = Date.now()
 	const applicableDiscounts = discounts.filter(
 		(discount) => Number(discount.expires) > now)
@@ -59,22 +55,11 @@ export async function populateProducts(
 			return prev
 		}, 0)
 
-		const voterIdx = product.voters.indexOf(user.id)
-		const ownVote = voterIdx === -1
-			? -1
-			: product.votes[voterIdx] || 0
-		const voters = product.votes
-			.filter(Boolean)
-			.reduce(prev => ++prev, 0)
-		const favourite = user.saved.includes(product.id)
 		return {
 			...product,
-			favourite,
-			voters,
 			brand: brand || unknownBrand,
 			category: category || unknownCategory,
 			discount,
-			ownVote,
 		}
 	})
 	return populatedProducts

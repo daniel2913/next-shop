@@ -1,7 +1,5 @@
 "use client"
 import Exit from "@public/exit.svg"
-import useCartStore from "@/store/cartStore"
-import useProductStore from "@/store/productStore"
 import { signOut, useSession } from "next-auth/react"
 import React from "react"
 import { Button } from "@/components/ui/Button"
@@ -22,22 +20,6 @@ export function ReloadOnUserChange(){
 		router.refresh()
 	}
 	,[session])
-	return null
-}
-
-export function ProductControl() {
-	const session = useSession()
-	const reload = useProductStore(state => state.reload)
-	const skip = React.useRef(session.data?.user?.id)
-	React.useEffect(() => {
-		if (session.data?.user?.id!==skip.current){
-			skip.current=session.data?.user?.id
-			reload()
-			if (!session.data?.user)
-				useCartStore.setState({ items: {} })
-		}
-
-	}, [session.data?.user, reload])
 	return null
 }
 

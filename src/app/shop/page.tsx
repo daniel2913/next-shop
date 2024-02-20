@@ -12,7 +12,7 @@ export default async function Shop({
 	const brand = params.get("brand")?.split(",")
 	const category = params.get("category")?.split(",")
 	const name = params.get("name") || undefined
-	const initProducts = await getProductsPageAction({brand,category,name})
+	const initProducts = await getProductsPageAction({brand,category,name, page:10})
 	if ("error" in initProducts) return <div>Error!</div>
 
 	return (

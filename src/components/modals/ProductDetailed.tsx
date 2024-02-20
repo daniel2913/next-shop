@@ -1,29 +1,15 @@
 "use client"
-import Image from "next/image"
 import { PopulatedProduct } from "@/lib/Models/Product"
 import ProductCarousel from "../product/ProductCarousel"
 import { ScrollArea } from "../ui/ScrollArea"
-import Rating from "../product/Rating"
-import useProductStore from "@/store/productStore"
-import useToast from "@/hooks/modals/useToast"
 import React from "react"
 import BuyButton from "../product/BuyButton"
 import useResponsive from "@/hooks/useResponsive"
 
-type Props = {
-	product:PopulatedProduct
-}
+type Props = PopulatedProduct
 
-export default function DetailedProduct({product}:Props){
-	const {handleResponse} = useToast()
+export default function DetailedProduct(product:Props){
 	const mode = useResponsive()
-	const [rating,setRating] = React.useState({rating:product.rating,ownVote:product.ownVote,voters:product.voters})
-	const ratingSetter = useProductStore(state=>state.updateVote)
-	const onRatingChange = async (val:number)=>{
-		const res = await ratingSetter(product.id,val)
-		if (handleResponse(res))
-			setRating({rating:res.rating,voters:res.voters,ownVote:val})
-	}
 	if (mode ==="desktop")
 		return(
 		<article className="
@@ -44,9 +30,6 @@ export default function DetailedProduct({product}:Props){
 			</ProductCarousel>
 			<section className="flex-auto h-full basis-2/5 flex flex-col">
 				<h3 className="text-5xl font-bold mb-2">{product.name}</h3>
-				<Rating size={50} value={rating.ownVote} onChange={onRatingChange} id={product.id} voters={rating.voters} rating={rating.rating}
-					className="justify-start w-full h-12"
-				/>
 				<div className="mb-2 flex justify-between text-3xl font-semibold text-slate-800">
 				<h4 className="">{product.brand.name}</h4>
 				<h4 className="">{product.category.name}</h4>
@@ -83,9 +66,6 @@ export default function DetailedProduct({product}:Props){
 			<h3 className="text-5xl px-2 bg-primary w-full font-bold pb-2">{product.name}</h3>
 			</header>
 			<section className="flex-auto px-2 pb-4 basis-2/5 flex flex-col">
-				<Rating size={50} value={rating.ownVote} onChange={onRatingChange} id={product.id} voters={rating.voters} rating={rating.rating}
-					className="justify-start w-full h-12"
-				/>
 				<div className="mb-8 flex justify-between text-3xl font-semibold text-slate-800">
 				<h4 className="">{product.brand.name}</h4>
 				<h4 className="">{product.category.name}</h4>

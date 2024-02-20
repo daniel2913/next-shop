@@ -67,8 +67,8 @@ const config = {
 	description: pgreDefaults.description,
 	images: varchar("images", { length: MAX_SIZES.image }).array().notNull(),
 	price: real("price").notNull(),
-	votes: integer("votes").array().default([]).notNull(),
-	voters: smallint("voters").array().default([]).notNull(),
+	votes: integer("votes").default(0).notNull(),
+	voters: integer("voters").default(0).notNull(),
 	rating: real("rating").default(0).notNull(),
 }
 
@@ -84,14 +84,11 @@ const ProductPgreTable = shop.table("products",config,
 export type Product = typeof ProductPgreTable.$inferSelect
 export type PopulatedProduct = Omit<
 	Product,
-	"brand" | "category" | "votes" | "voters"
+	"brand" | "category" | "votes"
 > & {
-	voters: number
 	brand: Brand
 	category: Category
 	discount: number
-	ownVote:number
-	favourite:boolean
 }
 
 export { ProductPgreTable, ProductInsertValidation}

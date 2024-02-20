@@ -16,7 +16,7 @@ async function validateCart(cart: Record<number, number>) {
 	return validCart
 }
 
-export async function getCartAction() {
+export async function getUserState() {
 	try {
 		const user = await auth("user")
 		const cart = await validateCart(user.cart)
@@ -27,11 +27,17 @@ export async function getCartAction() {
 			else
 				throw ServerError.notFound()
 		}
-		return cart
+		return {cart:cart,saved:user.saved,votes:user.votes}
 	}
 	catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
+}
+
+type State = {
+	items:Record<string,number>
+	saved:number[]
+	votes:Record<string,number>
 }
 
 export async function setCartAction(cart: Record<string, number>) {

@@ -38,9 +38,6 @@ export function simpleCache<T extends () => Promise<any>>(
 	}
 	return { get, revalidate }
 }
-export const BrandCache = simpleCache(() => BrandModel.find())
-export const CategoryCache = simpleCache(() => CategoryModel.find())
-export const DiscountCache = simpleCache(() => DiscountModel.find())
 
 type Args = string
 
@@ -142,9 +139,19 @@ export function cacheParam<T extends (arg: Args) => Promise<any>>(
 	return { get, revalidate, patch, present }
 }
 
-export const UserCache = cacheParam(
+
+globalThis.BrandCache ||= simpleCache(()=>BrandModel.find())
+globalThis.CategoryCache ||= simpleCache(()=>CategoryModel.find())
+globalThis.DiscountCache ||= simpleCache(()=>DiscountModel.find())
+globalThis.UserCache ||= cacheParam(
 	(name: string) => UserModel.findOne({ name }),
 	1000 * 10,
 	10,
 	false
 )
+
+export const BrandCache = globalThis.BrandCache as ReturnType<typeof simpleCache<typeof BrandModel["find"]>>
+export const CategoryCache = globalThis.CategoryCache as ReturnType<typeof simpleCache<typeof CategoryModel["find"]>>
+export const DiscountCache = globalThis.DiscountCache as ReturnType<typeof simpleCache<typeof DiscountModel["find"]>>
+export const UserCache = globalThis.UserCache as ReturnType<typeof cacheParam<(name:string)=> ReturnType<typeof UserModel["findOne"]>>>
+

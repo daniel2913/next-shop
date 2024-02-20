@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import CartIcon from "@public/cart.svg"
-import { getCartAction } from "@/actions/cart"
+import { getUserState } from "@/actions/cart"
 import useToast from "@/hooks/modals/useToast"
 import useConfirm from "@/hooks/modals/useConfirm"
 import Loading from "@/components/ui/Loading"
@@ -33,12 +33,13 @@ function mergeCarts(cart1: Items, cart2: Items) {
 }
 
 export function CartControl() {
-	const { error } = useToast()
+	const { handleResponse } = useToast()
 	const session = useSession()
 	const confirm = useConfirm()
 	const persist = useCartStore.persist
 	const synced = React.useRef(-1)
 	const updateCart = useCartStore(state => state.setItemsAndUpdate)
+
 	React.useEffect(() => {
 		async function getCache() {
 			if (!persist.hasHydrated()) persist.rehydrate()
@@ -49,24 +50,27 @@ export function CartControl() {
 			if (!persist.hasHydrated) throw "Critical error"
 			if (synced.current === session.data.user.id) return
 
-			const cart = await getCartAction()
-			if ("error" in cart) {
-				error("Could not sync with database", "Connection Error")
-				return
-			}
+			const state = await getUserState()
+	
+			if (!handleResponse(state)) return
+			const {cart,saved,votes} = state
+			console.log(cart,saved,votes)
 			synced.current = session.data.user.id
 			const localCart = useCartStore.getState().items
 			const haveLocal = Object.keys(localCart).length > 0
 			const haveRemote = Object.keys(cart).length > 0
 			if (!haveRemote) return
 			if (haveLocal && JSON.stringify(localCart) !== JSON.stringify(cart))
-				if ((await confirm("Do you want to keep items from your local cart?")))
-					updateCart(mergeCarts(cart, localCart))
+				if ((await confirm("Do you want to keep items from your local cart?"))){
+					const merged = mergeCarts(cart, localCart)
+					updateCart(merged)
+					useCartStore.setState({saved,votes,items:merged})
+				}
 				else {
 					persist.clearStorage()
-					useCartStore.setState({ items: cart })
+					useCartStore.setState({saved,votes, items: cart })
 				}
-			else useCartStore.setState({ items: cart })
+			else useCartStore.setState({saved,votes, items: cart })
 		}
 		getCache()
 	}, [session.data?.user?.id])

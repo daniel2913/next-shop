@@ -1,36 +1,21 @@
 "use server"
-import { ProductModel } from "@/lib/Models"
-import { inArray, sql } from "drizzle-orm"
+import { ProductModel, User, UserModel } from "@/lib/Models"
+import { eq, sql } from "drizzle-orm"
 import { ServerError, auth } from "./common"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
-export async function getRatingAction(ids: number[]) {
+export async function getUserVotes() {
 	try {
-		if (ids.length===0) return {}
-		const session = await getServerSession(authOptions)
-		const user = session?.user
-		if (!user || user.role!=="user") return {}
-		const res = await ProductModel.model
-			.select({
-				id: ProductModel.table.id,
-				votes: ProductModel.table.votes,
-				voters: ProductModel.table.voters
-			})
-			.from(ProductModel.table)
-			.where(inArray(ProductModel.table.id, ids))
-		const ownVotes = res
-			.filter(row => row.voters.includes(user.id!))
-			.map(row => [row.id, row.votes[row.voters.indexOf(user.id!)!] || 0])
-		return Object.fromEntries(ownVotes) as Record<number, number>
+		const user = await auth("user")
+		return user.votes
 	}
 	catch (error) {
 		const serverError = ServerError.fromError(error)
-		return serverError.emmit()
+		return {}
 	}
 }
 
-async function setRating(id: number, user: number, vote: number) {
+async function setVote(id: number, user: number, vote: number) {
+
 	const res = await ProductModel.model.execute(sql`
 	UPDATE shop.products 
 		SET 
@@ -46,12 +31,42 @@ async function setRating(id: number, user: number, vote: number) {
 	return res[0] as { rating: number, voters: number }
 }
 
-export async function updateVoteAction(id: number, vote: number) {
+export async function updateVoteAction(id: number, vote: number,controlledUser?:User) {
 	try {
-		const user = await auth("user")
-		const res1 = await setRating(id, user.id, vote)
-		if (!res1) throw new ServerError("You can only rate existing products that you bought", "Not Authorized")
-		return res1
+		if (vote<0 || vote>5) throw ServerError.invalid("Vote must be beetween 0 and 5")
+		const user = controlledUser || await auth("user")
+		let value = user.saved[id] || 0
+		value = vote - value
+		return UserModel.model.transaction(async (tx)=>{
+			const res1 = await tx
+				.update(UserModel.table)
+				.set({
+					votes:sql`${UserModel.table.votes} || ${{[id]:vote}}`
+				})
+				.where(eq(UserModel.table.id,user.id))
+				.returning({id:UserModel.table.id})
+			if (res1.length!==1) {
+				tx.rollback()
+				throw ServerError.unknown("In transaction")
+			}
+			if (vote===0) return
+			const res2 = await tx
+				.update(ProductModel.table)
+				.set({
+					votes:sql`${ProductModel.table.votes}+${value}`,
+					voters: vote === value
+						? sql`${ProductModel.table.voters}+1)`
+						: undefined
+				})
+				.where(eq(ProductModel.table.id,id))
+				.returning({rating:ProductModel.table.rating,voters:ProductModel.table.voters})
+			if (res2.length!==1){
+				tx.rollback()
+				throw ServerError.unknown("In transaction")
+			}
+			return res2[0]
+		}
+		)
 	}
 	catch (error) {
 		return ServerError.fromError(error).emmit()

@@ -1,5 +1,5 @@
 import {createWithEqualityFn} from "zustand/traditional"
-import { getRatingAction, updateVoteAction } from "@/actions/vote"
+import { getUserVotes, updateVoteAction } from "@/actions/vote"
 import { getProductsByIdsAction, getProductsPageAction } from "@/actions/product"
 import { getSavedAction, toggleSavedAction } from "@/actions/savedProducts"
 import { PopulatedProduct } from "@/lib/Models/Product"
@@ -59,7 +59,7 @@ const useProductStore = createWithEqualityFn<ProductsSlice>()((set,get) => ({
 		const products = get().products
 		if (products.length===0) return false
 		const [votes,favs] = await Promise.all([
-				getRatingAction(products.map(p=>p.id)),
+				getUserVotes(products.map(p=>p.id)),
 				getSavedAction()
 			]) 
 		if ("error" in votes) return votes

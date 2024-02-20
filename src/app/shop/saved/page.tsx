@@ -1,11 +1,14 @@
-import { clearSavedAction } from "@/actions/savedProducts";
-import { SavedProductsNaked } from "@/components/product/SavedProducts";
-import { Button } from "@/components/ui/Button";
 import ClearSaved from "./clear";
-import Loading from "@/components/ui/Loading";
+import { redirect } from "next/navigation";
+import { getProductsByIds } from "@/actions/product";
+import SavedList from "@/components/product/SavedList";
+import { auth } from "@/actions/common";
 
 
-export default function SavedPage(){
+export default async function SavedPage(){
+	try{
+		const user = await auth("user")
+	const saved = await getProductsByIds(user.saved.slice(0,10))
 	return(
 		<main
 			className="
@@ -16,9 +19,11 @@ export default function SavedPage(){
 				"
 		>
 			<ClearSaved/>
-			<Loading>
-			<SavedProductsNaked/>
-			</Loading>
+			<SavedList products={saved} saved={user.saved}/>
 		</main>
 	)
+	}
+	catch{
+		redirect("/shop/home")
+	}
 }

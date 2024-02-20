@@ -8,6 +8,7 @@ const UserInsertValidation = z.object({
 	role:z.enum(["user","admin"]).default("user"),
 	cart:z.record(z.coerce.number(),z.coerce.number()).default({}),
 	saved:z.array(validations.id).default([]),
+	votes:z.record(z.coerce.number(),z.coerce.number()).default({})
 	})
 
 const config = {
@@ -15,8 +16,9 @@ const config = {
 	name: varchar("name",{length:20}).notNull(),
 	passwordHash: char("passwordHash", { length: 64 }).notNull(),
 	role: varchar("role", { length: 10 }).notNull(),
-	cart: jsonb("cart").notNull().default({}).$type<Record<number, number>>(),
+	cart: jsonb("cart").notNull().default({}).$type<Record<string, number>>(),
 	saved: smallint("saved").array().notNull().default([]),
+	votes: jsonb("votes").notNull().default({}).$type<Record<string,number>>()
 }
 
 const UserPgreTable = shop.table("users",config)
