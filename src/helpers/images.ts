@@ -1,5 +1,6 @@
 import { FileStorage } from "@/lib/FileStorage"
 import { randomUUID } from "crypto"
+import _path from "path"
 
 export type Image = { file: File | null; name: string }
 
@@ -33,7 +34,8 @@ export async function handleImages(
 }
 
 export async function handleImage(image: File, path: string): Promise<Image> {
-	if (await FileStorage.exists(image.name, path)) {
+	const fullPath = _path.join(path, image.name)
+	if (await FileStorage.exists(fullPath)) {
 		return { name: image.name, file: null }
 	}
 	const imageName = `${randomUUID().replace("-", "").slice(0, 8)}.jpg`
@@ -43,8 +45,9 @@ export async function handleImage(image: File, path: string): Promise<Image> {
 export async function saveImages(images: Image[], path: string) {
 	const resultsPromises: Promise<boolean>[] = []
 	for (const image of images) {
+		const fullPath = _path.join(path, image.name)
 		if (image.file === null) resultsPromises.push(Promise.resolve(true))
-		else resultsPromises.push(FileStorage.write(image.name, path, image.file))
+		else resultsPromises.push(FileStorage.write(fullPath, image.file))
 	}
 	const results = await Promise.all(resultsPromises)
 	const names = images.filter((i, idx) => results[idx]).map((i) => i.name)
@@ -60,5 +63,6 @@ export function deleteImages(names: string[], path: string): void {
 
 export function deleteImage(name: string, path: string): void {
 	if (name === "template.jpg") return
-	FileStorage.delete(name, path)
+	const fullPath = _path.join(path, name)
+	FileStorage.delete(fullPath)
 }

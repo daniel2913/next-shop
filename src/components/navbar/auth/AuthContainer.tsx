@@ -12,7 +12,7 @@ import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import NavButton from "../../ui/Navbutton"
 
-const Login = dynamic(() => import("@/components/modals/auth/index"))
+const Login = dynamic(() => import("@/components/modals/auth"))
 
 type Props = {
 	children: React.ReactNode

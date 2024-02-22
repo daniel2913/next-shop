@@ -17,15 +17,19 @@ import { Order, OrderPgreTable, OrderInsertValidation } from "./Order"
 export type { Brand, Category, Product, User, Discount, Order }
 
 globalThis.BrandModel ||= new PgreModel(BrandPgreTable, BrandInsertValidation)
+
 globalThis.CategoryModel ||= new PgreModel(
 	CategoryPgreTable,
 	CategoryInsertValidation
 )
+
 globalThis.ProductModel ||= new PgreModel(
 	ProductPgreTable,
 	ProductInsertValidation
 )
+
 globalThis.UserModel ||= new PgreModel(UserPgreTable, UserInsertValidation)
+
 globalThis.DiscountModel ||= new PgreModel(
 	DiscountPgreTable,
 	DiscountInsertValidation

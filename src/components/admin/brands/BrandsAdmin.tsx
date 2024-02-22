@@ -46,7 +46,10 @@ export default function BrandsAdmin({ brands, className }: Props) {
 						if (!ans) return
 						setLoading(true)
 						const res = await deleteBrandsAction(selected)
-						if (handleResponse(res)) router.refresh()
+						if (handleResponse(res)) {
+							setSelected([])
+							router.refresh()
+						}
 						setLoading(false)
 					}}
 				>

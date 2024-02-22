@@ -36,7 +36,10 @@ export default function OrdersAdmin({ orders, className }: Props) {
 						if (!ans) return
 						setLoading(true)
 						const res = await deleteOrdersAction(selected)
-						if (handleResponse(res)) router.refresh()
+						if (handleResponse(res)) {
+							setSelected([])
+							router.refresh()
+						}
 						setLoading(false)
 					}}
 				>

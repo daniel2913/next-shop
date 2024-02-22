@@ -40,7 +40,10 @@ export default function CategoriesAdmin({ categories, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteCategoriesAction(selected)
-						if (handleResponse(res)) router.refresh()
+						if (handleResponse(res)) {
+							setSelected([])
+							router.refresh()
+						}
 						setLoading(false)
 					}}
 				>

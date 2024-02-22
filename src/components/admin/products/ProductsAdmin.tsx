@@ -49,7 +49,10 @@ export default function ProductsAdmin({ products, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteProductsAction(selected)
-						if (handleResponse(res)) router.refresh()
+						if (handleResponse(res)) {
+							setSelected([])
+							router.refresh()
+						}
 						setLoading(false)
 					}}
 				>

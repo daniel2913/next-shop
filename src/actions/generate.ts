@@ -1,7 +1,7 @@
 "use server"
 import { BrandCache, CategoryCache } from "@/helpers/cache"
 import fs from "fs/promises"
-import path from "path"
+import _path from "path"
 import { ProductModel } from "@/lib/Models"
 import { populateProducts } from "@/helpers/populateProducts"
 import { env } from "process"
@@ -49,9 +49,13 @@ export async function generateProductAction() {
 		if (category.name === "Headrests" && brand.name !== "Subcapitalia")
 			category = categories.find((cat) => cat.name === "Smartphones")!
 
-		const base = path.join(path.join(process.cwd(),"/public/"),"/samples/",category.name)
+		const base = _path.join(
+			_path.join(process.cwd(), "public"),
+			"samples",
+			category.name
+		)
 		const allimages = (await fs.readdir(base)).map((fileName) => {
-			return path.join(base, fileName)
+			return _path.join(base, fileName)
 		})
 		const images: File[] = []
 		const imgNum = ((Math.random() * 1000) % 4) + 1
@@ -59,9 +63,7 @@ export async function generateProductAction() {
 			const path =
 				allimages[Math.floor((Math.random() * 1000) % allimages.length)]
 			const buf = await fs.readFile(path)
-			images.push(
-				new File([buf], path.split("/").pop()!, { type: "image/jpg" })
-			)
+			images.push(new File([buf], _path.basename(path), { type: "image/jpg" }))
 		}
 
 		const price = +(Math.random() * 10000).toFixed(2)

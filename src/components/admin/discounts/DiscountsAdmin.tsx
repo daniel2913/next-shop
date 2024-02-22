@@ -31,7 +31,10 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteDiscountsAction(selected)
-						if (handleResponse(res)) router.refresh()
+						if (handleResponse(res)) {
+							setSelected([])
+							router.refresh()
+						}
 						setLoading(false)
 					}}
 				>
