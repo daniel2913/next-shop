@@ -1,9 +1,8 @@
 import React from "react"
 import ImagesPreview from "./ImagesPreview"
-import {Input} from "@/components/ui/Input"
+import { Input } from "@/components/ui/Input"
 import { Label } from "./Label"
 import { Button } from "./Button"
-
 
 function fileListAdapter(inp: File | FileList | null): File[] {
 	if (!inp) return [] as File[]
@@ -15,52 +14,42 @@ type Props = {
 	accept?: string
 	size?: number
 	id?: string
-	name?:string
+	name?: string
 	className?: string
-	preview?: boolean
 	value: File[]
 	multiple?: boolean
 	onChange: (file: File[]) => void
 }
 
-export default function FileUpload({
-	multiple = false,
-	...props
-}: Props) {
+export default function ImageUpload({ multiple = false, ...props }: Props) {
+	const id = React.useId()
 	return (
-		<div className={`${props.className} flex flex-col`}>
+		<label className="h-fit w-fit cursor-pointer">
 			<Input
 				name={props.name}
 				multiple={multiple}
 				accept={props.accept}
-				id={props.id}
+				id={props.id || id}
 				className="hidden"
 				type="file"
 				onChange={(e) => {
 					if (multiple)
-						props.onChange([...props.value, ...fileListAdapter(e.currentTarget.files)])
+						props.onChange([
+							...props.value,
+							...fileListAdapter(e.currentTarget.files),
+						])
 					else
 						props.onChange(fileListAdapter(e.currentTarget.files).slice(0, 1))
 				}}
 			/>
-			<Label
-				className="w-fit cursor-pointer"
-				htmlFor={props.id}
+			<br />
+			<Button
+				className="pointer-events-none cursor-pointer font-bold"
+				type="button"
 			>
-			<Button className="pointer-events-none" type="button">	UPLOAD </Button>
-			</Label>
-			{
-				props.preview
-					?
-					<ImagesPreview
-						className="w-full"
-						images={props.value}
-						delImage={(idx: number) => {
-							props.onChange(props.value.filter((_, idxOld) => idx !== idxOld))
-						}}
-					/>
-					: null
-			}
-		</div>
+				{" "}
+				UPLOAD{" "}
+			</Button>
+		</label>
 	)
 }

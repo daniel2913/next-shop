@@ -9,13 +9,12 @@
 		"browser":true,
 		"node":true,
 		"es2020":true
-	}
+	},
 	"rules": {
 		"react/react-in-jsx-scope": "off",
 		"no-unused-vars": "off",
 		"complexity":"warn",
 		"eqeqeq":"warn",
-		"prefer-template":"warn",
-		"sort-imports":"warn"
+		"prefer-template":"warn"
 	}
 }

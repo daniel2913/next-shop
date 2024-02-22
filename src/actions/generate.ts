@@ -1,9 +1,10 @@
 "use server"
-import { BrandCache, CategoryCache } from "@/helpers/cachedGeters";
+import { BrandCache, CategoryCache } from "@/helpers/cache"
 import fs from "fs/promises"
 import path from "path"
-import { ProductModel } from "@/lib/Models";
-import { populateProducts } from "@/helpers/getProducts";
+import { ProductModel } from "@/lib/Models"
+import { populateProducts } from "@/helpers/populateProducts"
+import { env } from "process"
 
 const lorem = `Nulla facilisi. Aliquam erat volutpat. Phasellus dapibus est in turpis congue, nec suscipit nulla luctus. Nunc euismod metus turpis, vitae accumsan erat scelerisque sit amet. Aliquam justo lacus, sagittis non euismod sit amet, consequat id nibh. Maecenas ut nulla neque. Donec at facilisis erat. Donec a massa sem. Integer nec purus a mi rhoncus aliquet.
 Nam pretium, lorem ac iaculis gravida, purus odio accumsan odio, sed feugiat ligula ante et lacus. In quis leo nisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam vel mattis ipsum, ac tincidunt velit. Nunc gravida lacus in orci sollicitudin viverra. Vestibulum dolor mi, cursus nec ornare eget, cursus ac purus. Vestibulum non odio ligula. Ut dapibus ultrices odio, vel pellentesque nisl euismod non.
@@ -28,56 +29,75 @@ Suspendisse et lectus neque. Nunc ut arcu efficitur libero dapibus fermentum id 
 `
 
 const loremsPars = lorem.split("\n")
-const loremWords = lorem.split(" ").filter(word=>!(word.includes(",")&&!(word.includes(".")&&word.length>=5)))
+const loremWords = lorem
+	.split(" ")
+	.filter(
+		(word) => !(word.includes(",") && !(word.includes(".") && word.length >= 5))
+	)
 
-export async function generateProductAction(){
-	try{
-	const [brands,categories] = await Promise.all([
-		BrandCache.get(),
-		CategoryCache.get()
-	])
-	const brand = brands[Math.floor((Math.random()*1000)%brands.length)]
-	const category = brand.name === "Subcapitalia"
-		? categories.find(cat=>cat.name==="Headrests")!
-		: categories[Math.floor((Math.random()*1000)%categories.length)]
-	const base = `/users/user/desktop/mock/${category.name}`
-	const allimages = (await fs.readdir(base)).map(fileName => {
-  return path.join(base, fileName)
-	})
-	const images:File[] = []
-	const imgNum = (Math.random()*1000)%4+1
-	for (let i=0;i<imgNum;i++){
-		const path = allimages[Math.floor((Math.random()*1000)%allimages.length)]
-		const buf = await fs.readFile(path)
-		images.push(new File([buf],path.split("/").pop()!,{type:"image/jpg"}))
+export async function generateProductAction() {
+	try {
+		const [brands, categories] = await Promise.all([
+			BrandCache.get(),
+			CategoryCache.get(),
+		])
+		const brand = brands[Math.floor((Math.random() * 1000) % brands.length)]
+		let category =
+			brand.name === "Subcapitalia"
+				? categories.find((cat) => cat.name === "Headrests")!
+				: categories[Math.floor((Math.random() * 1000) % categories.length)]
+		if (category.name === "Headrests" && brand.name !== "Subcapitalia")
+			category = categories.find((cat) => cat.name === "Smartphones")!
+
+		const base = path.join(path.join(process.cwd(),"/public/"),"/samples/",category.name)
+		const allimages = (await fs.readdir(base)).map((fileName) => {
+			return path.join(base, fileName)
+		})
+		const images: File[] = []
+		const imgNum = ((Math.random() * 1000) % 4) + 1
+		for (let i = 0; i < imgNum; i++) {
+			const path =
+				allimages[Math.floor((Math.random() * 1000) % allimages.length)]
+			const buf = await fs.readFile(path)
+			images.push(
+				new File([buf], path.split("/").pop()!, { type: "image/jpg" })
+			)
+		}
+
+		const price = +(Math.random() * 10000).toFixed(2)
+		let description = ""
+		const desclength = Math.floor((Math.random() * 1000) % 5) + 1
+		for (let i = 0; i < desclength; i++) {
+			if (description) description += "\n\n"
+			description +=
+				loremsPars[Math.floor((Math.random() * 1000) % loremsPars.length)]
+		}
+		let name = ""
+		while (name.length < 14) {
+			if (name) name += " "
+			name += loremWords[Math.floor((Math.random() * 1000) % loremWords.length)]
+		}
+		return {
+			name,
+			description,
+			brand: brand.id,
+			category: category.id,
+			price,
+			images,
+		}
+	} catch (error) {
+		console.error(error)
 	}
-	
-	const prices = [220,69,420,2200,11.99,228]
-	const price = prices[Math.floor((Math.random()*1000)%prices.length)]
-	let description = ""
-	const desclength = Math.floor((Math.random()*1000)%10)+1
-	for (let i=0;i<desclength;i++){
-		if (description) description += "\n\n"
-		description += loremsPars[Math.floor((Math.random()*1000)%loremsPars.length)]
-	}
-	let name = ""
-	while (name.length < 14){
-		if (name) name += " "
-		name += loremWords[Math.floor((Math.random()*1000)%loremWords.length)]
-	}
-	const props = {
-		name,
-		description,
-		brand:brand.id,
-		category:category.id,
-		price,
-		images
-	}
-	const res = await ProductModel.create(props)
-	if (!res) throw "not res"
-	return (await populateProducts([res]))[0]
-	}
-	catch(error){
+}
+
+export async function createRandomProductAction() {
+	try {
+		const props = await generateProductAction()
+		if (!props) throw ":("
+		const res = await ProductModel.create(props)
+		if (!res) throw "not res"
+		return (await populateProducts([res]))[0]
+	} catch (error) {
 		console.error(error)
 	}
 }

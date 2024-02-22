@@ -4,13 +4,11 @@ import { z } from "zod"
 
 const BrandInsertValidation = z.object({
 	name: validations.name,
-	image: fileSchema.optional()
-		.transform(file=>file 
-			?handleImages([file],"brands")
-			:undefined
-		)
-		.transform(names=>names ? names[0] : "template.jpg")
-		.pipe(validations.imageName)
+	image: fileSchema
+		.optional()
+		.transform((file) => (file ? handleImages([file], "brands") : undefined))
+		.transform((names) => (names ? names[0] : "template.jpg"))
+		.pipe(validations.imageName),
 })
 
 const config = {
@@ -19,7 +17,7 @@ const config = {
 	image: pgreDefaults.image,
 }
 
-const BrandPgreTable = shop.table("brands",config)
+const BrandPgreTable = shop.table("brands", config)
 
 export type Brand = typeof BrandPgreTable.$inferSelect
 

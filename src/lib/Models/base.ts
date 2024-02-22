@@ -1,23 +1,17 @@
+import { Column, SQLWrapper, and, eq, inArray, ilike } from "drizzle-orm"
 import {
-	Column,
-	SQLWrapper,
-	and,
-	eq,
-	inArray,
-	ilike,
-} from "drizzle-orm"
-import { PgColumn, PgTableWithColumns, getTableConfig } from "drizzle-orm/pg-core"
+	PgColumn,
+	PgTableWithColumns,
+	getTableConfig,
+} from "drizzle-orm/pg-core"
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ZodObject, z } from "zod"
 import { ServerError } from "@/actions/common"
-import { deleteImages } from "@/helpers/images"
-
+import { betterInArray } from "@/helpers/misc"
 
 type Query<T extends Record<string, any> & { id: number }> = {
-	[Key in keyof T]?:
-	| T[Key]
-	| T[Key][]
+	[Key in keyof T]?: T[Key] | T[Key][]
 }
 
 export interface DataModel<T extends Record<string, any> & { id: number }> {
@@ -29,28 +23,32 @@ export interface DataModel<T extends Record<string, any> & { id: number }> {
 }
 
 type BasePgTable = PgTableWithColumns<{
-	name: string;
-	schema: string;
+	name: string
+	schema: string
 	columns: {
-		id: PgColumn<{
-			name: "id";
-			tableName: string;
-			dataType: "number";
-			columnType: "PgSmallInt";
-			data: number;
-			driverParam: string | number;
-			notNull: true;
-			hasDefault: true;
-			enumValues: undefined;
-			baseColumn: never;
-		}, {}, {}>;
-	};
-	dialect: "pg";
+		id: PgColumn<
+			{
+				name: "id"
+				tableName: string
+				dataType: "number"
+				columnType: "PgSmallInt"
+				data: number
+				driverParam: string | number
+				notNull: true
+				hasDefault: true
+				enumValues: undefined
+				baseColumn: never
+			},
+			{},
+			{}
+		>
+	}
+	dialect: "pg"
 }>
 
 export class PgreModel<
 	U extends BasePgTable,
-	Z extends ZodObject<any, any, any, U["$inferInsert"]>
+	Z extends ZodObject<any, any, any, U["$inferInsert"]>,
 > implements DataModel<U["$inferSelect"]>
 {
 	public table: U
@@ -60,58 +58,46 @@ export class PgreModel<
 
 	constructor(
 		table: U,
-		validations: ZodObject<any, any, any, U["$inferInsert"]>,
+		validations: ZodObject<any, any, any, U["$inferInsert"]>
 	) {
-
 		this.table = table
 		const config = getTableConfig(table)
 		this.validations = validations
 		this.filePath = config.name
-		this.model = drizzle(
-			postgres(),
-			{ logger: false }
-		)
+		this.model = drizzle(postgres(), { logger: false })
 	}
 
 	private makePgreQuery(query: Query<U["$inferSelect"]>) {
 		const sqlQueryWrappers: SQLWrapper[] = []
 		for (const [key, value] of Object.entries(query)) {
-
-			if (!(key in this.table && value!==undefined)) continue
+			if (!(key in this.table && value !== undefined)) continue
 
 			const column = this.table[key as keyof U] as Column
-			if (Array.isArray(value)) sqlQueryWrappers.push(inArray(column, value))
-			else if (typeof value === "string" && value.at(0) === "%" && value.at(-1) === "%")
+			if (Array.isArray(value))
+				sqlQueryWrappers.push(betterInArray(column, value))
+			else if (
+				typeof value === "string" &&
+				(value.at(0) === "%" || value.at(-1) === "%")
+			)
 				sqlQueryWrappers.push(ilike(column, value))
 			else {
 				sqlQueryWrappers.push(eq(column, value))
-			} }
+			}
+		}
 		return and(...sqlQueryWrappers)
-	}
-	private async deleteExtra(_files: string | string[], _oldFiles?: string | string[]) {
-		const files = [_files].flat()
-		const toDelete: string[] = []
-		if (_oldFiles) {
-			const oldFiles = [_oldFiles].flat()
-			toDelete.concat(oldFiles.filter(file => !files.includes(file)))
-		} else toDelete.concat(files)
-		deleteImages(toDelete, this.filePath)
 	}
 
 	async create(obj: unknown | U["$inferSelect"]) {
-		const props = await this.validations.parseAsync(obj) as U["$inferInsert"]
+		const props = (await this.validations.parseAsync(obj)) as U["$inferInsert"]
 		const res = await this.model.insert(this.table).values(props).returning()
-		if (!res[0] && ("images" in props || "image" in props))
-			this.deleteExtra((props as any).images as string[] || (props as any).image as string)
-		else res[0]
-		return res[0] ? res[0] as U["$inferSelect"] : null
+		return res[0] ? (res[0] as U["$inferSelect"]) : null
 	}
 
 	async patch(targId: number, patch: Partial<z.infer<Z>> | unknown) {
 		if (!targId) throw ServerError.invalid()
 		const [original, props] = await Promise.all([
 			this.findOne({ id: targId }),
-			this.validations.partial().parseAsync(patch)
+			this.validations.partial().parseAsync(patch),
 		])
 		if (!original) throw ServerError.notFound()
 		const res = await this.model
@@ -119,11 +105,7 @@ export class PgreModel<
 			.set(props)
 			.where(eq(this.table.id, targId))
 			.returning()
-		if (!res[0] && (props.images || props.image))
-			this.deleteExtra(props.images || props.images)
-		if (res[0] && (props.images || props.image))
-			this.deleteExtra((props as any).images || (props as any).image, (original as any).image as string || (original as any).images as string[])
-		return res[0] ? res[0] as U["$inferSelect"] : null
+		return res[0] ? (res[0] as U["$inferSelect"]) : null
 	}
 
 	async findOne(query: Query<U["$inferSelect"]>) {
@@ -149,6 +131,6 @@ export class PgreModel<
 			.delete(this.table)
 			.where(eq(this.table.id, id))
 			.returning()
-		return res[0] ? res[0] as U["$inferSelect"] : null
+		return res[0] ? (res[0] as U["$inferSelect"]) : null
 	}
 }

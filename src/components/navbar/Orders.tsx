@@ -6,12 +6,12 @@ import OrderIcon from "@public/note.svg"
 import { useSession } from "next-auth/react"
 import dynamic from "next/dynamic"
 import Loading from "@/components/ui/Loading"
-import NavButton from "./Navbutton"
+import NavButton from "../ui/Navbutton"
 import useAction from "@/hooks/useAction"
 import { getOrderNotificationsAction } from "@/actions/order"
 
-const Orders = dynamic(() => import("@/components/order/Orders"))
-const Login = dynamic(() => import("@/components/modals/Login"))
+const Orders = dynamic(() => import("@/components/modals/orders"))
+const Login = dynamic(() => import("@/components/modals/auth"))
 
 type Props = {
 	className: string
@@ -19,34 +19,38 @@ type Props = {
 export default function OrderMenu(props: Props) {
 	const session = useSession()
 	const modal = useModal()
-	const {value:notifs,reload} = useAction(getOrderNotificationsAction,0)
-	React.useEffect(()=>{
-	reload()
-	},[session])
+	const { value: notifs, reload } = useAction(getOrderNotificationsAction, 0)
+	React.useEffect(() => {
+		reload()
+	}, [session])
 	return (
-				<NavButton 
-					onClick={() => modal.show(<Loading>{session?.data?.user ? <Orders/> : <Login close={modal.close}/>}</Loading>).then(_=>reload())}
-					className={props.className}
-				>
-					<div className="w-fit h-fit relative">
-					<OrderIcon className="*:stroke-foreground *:fill-foreground *:stroke-2:w" height="30px" width="30px" /> 
-				{
-					notifs
-						?
-						<div className="
-						absolute overflow-hidden 
-						-top-4 left-1/2 text-lg
-						md:-top-1/3 md:-right-1/2
-						w-6 aspect-square rounded-full bg-accent border-tan border-1
-					">
-							<span className="absolute text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-								{notifs}
-							</span>
-						</div>
-						: null
-				}
+		<NavButton
+			onClick={() =>
+				modal
+					.show(
+						<Loading>
+							{session?.data?.user ? <Orders /> : <Login close={modal.close} />}
+						</Loading>
+					)
+					.then((_) => reload())
+			}
+			className={props.className}
+		>
+			<div className="relative h-fit w-fit">
+				<OrderIcon
+					className="*:stroke-2:w *:fill-foreground *:stroke-foreground"
+					height="30px"
+					width="30px"
+				/>
+				{notifs ? (
+					<div className="border-tan border-1 absolute -top-4 left-1/2 aspect-square w-6 overflow-hidden rounded-full bg-accent text-lg md:-right-1/2 md:-top-1/3">
+						<span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white">
+							{notifs}
+						</span>
 					</div>
-					Orders
-				</NavButton>
+				) : null}
+			</div>
+			Orders
+		</NavButton>
 	)
 }

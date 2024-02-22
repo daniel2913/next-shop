@@ -1,5 +1,6 @@
 import fs from "fs/promises"
 import _path from "path"
+import { env } from "process"
 
 interface IFileStorage {
 	exists: (name: string, path: string) => Promise<boolean>
@@ -7,7 +8,7 @@ interface IFileStorage {
 	write: (name: string, path: string, file: File) => Promise<boolean>
 }
 
-const GLOBAL_PATH = "./public/"
+const GLOBAL_PATH = env.PUBLIC || "./public"
 
 type FileStorages = LocalPublicFileStorage
 
@@ -16,21 +17,20 @@ class LocalPublicFileStorage implements IFileStorage {
 		return (await fs.lstat(path))?.isDirectory() ? true : false
 	}
 	private resolve(name: string, path: string) {
-		return _path.resolve(_path.join(GLOBAL_PATH+path, name))
+		return _path.resolve(_path.join(GLOBAL_PATH + path, name))
 	}
 
 	public async exists(name: string, path: string) {
-		const fullName = _path.join(GLOBAL_PATH+path, name)
-		try{
+		const fullName = _path.join(GLOBAL_PATH + path, name)
+		try {
 			if (!(await fs.lstat(fullName))) return false
-		return true
-		}
-		catch{
+			return true
+		} catch {
 			return false
 		}
 	}
 	public async write(name: string, path: string, file: File) {
-		if (!(await this.validatePath(GLOBAL_PATH+path))) return false
+		if (!(await this.validatePath(GLOBAL_PATH + path))) return false
 		const fullName = this.resolve(name, path)
 		if (!fs.lstat(fullName)) return false
 		try {
@@ -41,7 +41,7 @@ class LocalPublicFileStorage implements IFileStorage {
 		}
 	}
 	public async delete(name: string, path: string) {
-		if (!(await this.validatePath(GLOBAL_PATH+path))) return true
+		if (!(await this.validatePath(GLOBAL_PATH + path))) return true
 		const fullName = this.resolve(name, path)
 		if (!fs.lstat(fullName)) return true
 		try {

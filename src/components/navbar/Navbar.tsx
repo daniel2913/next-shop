@@ -3,50 +3,53 @@ import CartStatus from "@/components/cart/Status"
 import Link from "next/link"
 import Home from "@public/home.svg"
 import Catalogue from "@public/catalogue.svg"
-import { BrandCache, CategoryCache } from "@/helpers/cachedGeters"
+import { BrandCache, CategoryCache } from "@/helpers/cache"
 import Search from "./search/Search"
 import SearchContainer from "./search/SearchContainer"
 import AuthContainer from "./auth/AuthContainer"
 import Auth from "./auth/Auth"
-import NavButton from "./Navbutton"
+import NavButton from "../ui/Navbutton"
 
 export default async function Navbar() {
-	const [brands, categories] = await Promise.all([BrandCache.get(), CategoryCache.get()])
+	const [brands, categories] = await Promise.all([
+		BrandCache.get(),
+		CategoryCache.get(),
+	])
 	return (
 		<>
-				<NavButton
-				className="basis-1 flex-auto font-semibold md:text-2xl justify-center"
-				>
-				<Link href="/shop/home" 
-				className=" absolute size-full inset-0 basis-0" 
+			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+				<Link
+					href="/shop/home"
+					className=" absolute inset-0 size-full basis-0"
 				/>
-				<Home className="*:stroke-foreground *:fill-foreground" width={"30px"} height={"30px"} />
+				<Home
+					className="*:fill-foreground *:stroke-transparent"
+					width={"30px"}
+					height={"30px"}
+				/>
 				Home
-				</NavButton>
-				<NavButton
-				className="basis-1 flex-auto font-semibold md:text-2xl justify-center"
-				>
-				<Link href="/shop" 
-				className=" absolute size-full inset-0 basis-0" 
+			</NavButton>
+			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+				<Link
+					href="/shop"
+					className=" absolute inset-0 size-full basis-0"
 				/>
-				<Catalogue className="*:stroke-foreground *:fill-foreground" width={"30px"} height={"30px"} />
+				<Catalogue
+					className="*:fill-foreground *:stroke-foreground"
+					width={"30px"}
+					height={"30px"}
+				/>
 				Catalogue
-				</NavButton>
-			<SearchContainer 
-				className="basis-1/4 md:basis-1/3 flex-auto font-semibold md:text-2xl justify-center"
-			>
+			</NavButton>
+			<SearchContainer className="flex-auto basis-0 justify-center font-semibold md:basis-1/4 md:text-2xl">
 				<Search
 					className="h-full font-semibold"
 					allBrands={brands}
 					allCategories={categories}
 				/>
 			</SearchContainer>
-			<CartStatus
-				className="basis-0 flex-auto font-semibold md:text-2xl justify-center"
-			/>
-			<AuthContainer 
-				className="basis-0 flex-auto font-semibold md:text-2xl justify-center "
-			>
+			<CartStatus className=" flex-auto basis-0 justify-center font-semibold md:text-2xl" />
+			<AuthContainer className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 				<Auth className="" />
 			</AuthContainer>
 		</>

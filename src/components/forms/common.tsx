@@ -2,37 +2,29 @@
 import useToast from "@/hooks/modals/useToast"
 import React from "react"
 import { Button } from "../ui/Button"
-import { ServerErrorType } from '@/hooks/useAction'
+import { ServerErrorType } from "@/hooks/useAction"
 import { toArray } from "@/helpers/misc"
 export const clientValidations = {
 	name: (value: FormFieldValue) => {
-		if (typeof value !== "string")
-			return "Name can only be string!"
+		if (typeof value !== "string") return "Name can only be string!"
 
-		return value.length === 0
-			? "Name Required!"
-			: false
+		return value.length === 0 ? "Name Required!" : false
 	},
-	images: (valueIn: File[]|File|null) => {
+	images: (valueIn: File[] | File | null) => {
 		if (!valueIn) return false
 		const value = toArray(valueIn)
-		if (value.length===0) return false
+		if (value.length === 0) return false
 		for (const file of value) {
-			if (file.size===0) continue
+			if (file.size === 0) continue
 			const ext = file.type
-			if (ext !== "image/jpeg" && ext !== "image/jpg")
-				return `Only jpegs!`
-			if (file.size > 1024 * 512)
-				return "Only under 0.5MB!"
+			if (ext !== "image/jpeg" && ext !== "image/jpg") return `Only jpegs!`
+			if (file.size > 1024 * 512) return "Only under 0.5MB!"
 		}
 		return false
 	},
 	description: (value: FormFieldValue) => {
-		if (typeof value !== "string")
-			return "Description can only be string!"
-		return value.length === 0
-			? "Description required"
-			: false
+		if (typeof value !== "string") return "Description can only be string!"
+		return value.length === 0 ? "Description required" : false
 	},
 }
 
@@ -48,9 +40,12 @@ export interface FormFieldValidator {
 	(v: FormFieldValue): string | false
 }
 
-
 export default function Form({
-	preview, validations, className, children, action,
+	preview,
+	validations,
+	className,
+	children,
+	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false)
 	const { handleResponse, error: showError, info: showStatus } = useToast()
@@ -69,13 +64,12 @@ export default function Form({
 		}
 		setLoading(true)
 		const res = await action(payload)
-		if (handleResponse(res))
-			showStatus("Successful")
+		if (handleResponse(res)) showStatus("Successful")
 		setLoading(false)
 	}
 
 	return (
-		<div className={`${className} flex gap-4 items-center justify-center`}>
+		<div className={`${className} flex items-center justify-center gap-4`}>
 			<form
 				action={submitHandler}
 				className="flex flex-col gap-3 "
@@ -92,4 +86,3 @@ export default function Form({
 		</div>
 	)
 }
-

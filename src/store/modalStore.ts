@@ -7,10 +7,12 @@ type ModalState = {
 	open: boolean
 	title: string
 	header: string
+	forceWindow: boolean
 	clear: (val?: any) => void
 }
 export const useModalStore = create<ModalState>()((set, get) => ({
 	onClose: () => undefined,
+	forceWindow: false,
 	children: null,
 	open: false,
 	title: "",
@@ -18,20 +20,5 @@ export const useModalStore = create<ModalState>()((set, get) => ({
 	clear: (val) => {
 		get().onClose(val)
 		set(useModalStore.getInitialState())
-	}
+	},
 }))
-
-type ToastState = {
-	type: "error" | "info"
-	title: string
-	description: string
-	isVisible: boolean
-}
-
-export const useToastStore = create<ToastState>()(() => ({
-	isVisible: false,
-	description: "",
-	title: "",
-	type: "error",
-}))
-

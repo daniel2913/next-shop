@@ -1,4 +1,3 @@
-
 export function validateLogin(login: string) {
 	if (login.length < 4) return "Username must be longer than 4 characters"
 	if (login.length > 20) return "Username must be shorter than 20 characters"
@@ -13,5 +12,5 @@ export function validatePassword(password: string) {
 	// if (!password.match(/[A-Z]/)) return "Password must contain uppercase letters"
 	// if (!password.match(/[a-z]/)) return "Password must contain lowercase letters"
 	// if (password.match(/^[a-z A-Z 0-9]*$/)) return "Password must contain special characters"
-		return false
+	return false
 }

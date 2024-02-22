@@ -3,9 +3,18 @@ import { randomUUID } from "crypto"
 
 export type Image = { file: File | null; name: string }
 
-export async function handleImages(images:File[],path:string):Promise<string[]|null>
-export async function handleImages(images:File,path:string):Promise<string|null>
-export async function handleImages(images: File|File[], path: string): Promise<string|string[]|null> {
+export async function handleImages(
+	images: File[],
+	path: string
+): Promise<string[] | null>
+export async function handleImages(
+	images: File,
+	path: string
+): Promise<string | null>
+export async function handleImages(
+	images: File | File[],
+	path: string
+): Promise<string | string[] | null> {
 	const _images = Array.isArray(images) ? images : [images]
 	const prepImages: Promise<Image>[] = []
 	for (const i of _images) {
@@ -15,16 +24,15 @@ export async function handleImages(images: File|File[], path: string): Promise<s
 		if (image !== null) prepImages.push(image)
 	}
 	const Images = await Promise.all(prepImages)
-	if (Images.length===0) Images[0] = {name:"template.jpg",file:null as any as File}
-	const res = await saveImages(Images,path)
- 	if (!res) return res
-	if (Array.isArray(images))
-		return res
+	if (Images.length === 0)
+		Images[0] = { name: "template.jpg", file: null as any as File }
+	const res = await saveImages(Images, path)
+	if (!res) return res
+	if (Array.isArray(images)) return res
 	return res[0]
 }
 
 export async function handleImage(image: File, path: string): Promise<Image> {
-	
 	if (await FileStorage.exists(image.name, path)) {
 		return { name: image.name, file: null }
 	}
@@ -39,10 +47,8 @@ export async function saveImages(images: Image[], path: string) {
 		else resultsPromises.push(FileStorage.write(image.name, path, image.file))
 	}
 	const results = await Promise.all(resultsPromises)
-	const names = images
-		.filter((i,idx)=>results[idx])
-		.map(i=>i.name)
-	if (names.length>0) return names
+	const names = images.filter((i, idx) => results[idx]).map((i) => i.name)
+	if (names.length > 0) return names
 	return null
 }
 

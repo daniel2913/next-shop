@@ -1,18 +1,20 @@
 "use client"
 
-import { clearSavedAction } from "@/actions/savedProducts"
+import { clearSavedAction } from "@/actions/saved"
 import { Button } from "@/components/ui/Button"
 import { useRouter } from "next/navigation"
 
 type Props = {
-	className?:string
+	className?: string
 }
-export default function ClearSaved(props:Props){
+export default function ClearSaved(props: Props) {
 	const router = useRouter()
-	return(
+	return (
 		<Button
-			className={`${props.className} fixed z-10 top-14 left-4`}
-			onClick={async()=>clearSavedAction().then(_=>router.refresh())}
+			className={`${props.className} fixed left-4 top-14 z-10`}
+			onClick={async () =>
+				clearSavedAction().then((_) => router.push("/shop/home"))
+			}
 		>
 			Clear Saved
 		</Button>

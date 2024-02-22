@@ -1,5 +1,5 @@
-import { UserCache } from "@/helpers/cachedGeters"
-import {env} from "process"
+import { UserCache } from "@/helpers/cache"
+import { env } from "process"
 import { UserModel } from "@/lib/Models"
 import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
@@ -9,6 +9,7 @@ interface Props {
 	name: string
 	password: string
 }
+
 async function authUser(props: Props | undefined) {
 	const password = props?.password
 	const name = props?.name
@@ -17,7 +18,7 @@ async function authUser(props: Props | undefined) {
 	hash.update(password)
 	hash.update(name)
 	const passwordHash = hash.digest("hex")
-	const user = await UserModel.findOne({name:props.name})
+	const user = await UserModel.findOne({ name: props.name })
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
 		return {
@@ -28,7 +29,6 @@ async function authUser(props: Props | undefined) {
 	}
 	return null
 }
-
 
 export const authOptions: AuthOptions = {
 	providers: [
@@ -54,12 +54,12 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session }) {
 			if (!session.user?.name) return session
-			const fullUser = await UserCache.get(session.user.name) 
+			const fullUser = await UserCache.get(session.user.name)
 			if (!fullUser) return session
 			session.user = {
-				id:fullUser.id,
-				role:fullUser.role,
-				name:fullUser.name
+				id: fullUser.id,
+				role: fullUser.role,
+				name: fullUser.name,
 			}
 			return session
 		},
@@ -68,9 +68,9 @@ export const authOptions: AuthOptions = {
 		maxAge: 30 * 24 * 60 * 60,
 		updateAge: 24 * 60 * 60,
 	},
-	secret:env.NEXTAUTH_SECRET, 
+	secret: env.NEXTAUTH_SECRET,
 	pages: {
-		newUser: "/shop",
+		newUser: "/shop/home",
 	},
 }
 

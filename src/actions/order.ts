@@ -1,12 +1,16 @@
 "use server"
 
-import { Order, OrderModel, ProductModel, UserModel} from "@/lib/Models"
-import { eq, inArray, sql, and,not } from "drizzle-orm"
-import { ServerError, auth, modelGeneralAction, modelGeneralActionNoAuth } from "./common"
-import { getProductsByIds} from "./product"
+import { Order, OrderModel, ProductModel, UserModel } from "@/lib/Models"
+import { eq, inArray, sql, and, not } from "drizzle-orm"
+import {
+	ServerError,
+	auth,
+	modelGeneralAction,
+	modelGeneralActionNoAuth,
+} from "./common"
+import { getProductsByIds } from "./product"
 import { PopulatedProduct } from "@/lib/Models/Product"
 import { toArray } from "@/helpers/misc"
-
 
 export type PopulatedOrder = {
 	order: Order
@@ -16,10 +20,7 @@ export type PopulatedOrder = {
 export async function getOrdersAction() {
 	try {
 		const user = await auth()
-		let query = OrderModel.model
-			.select()
-			.from(OrderModel.table)
-			.$dynamic()
+		let query = OrderModel.model.select().from(OrderModel.table).$dynamic()
 		if (user.role !== "admin")
 			query = query.where(eq(OrderModel.table.user, user.id))
 		const orders = await query
@@ -44,13 +45,14 @@ export async function getOrdersAction() {
 				populatedOrders.completed.push({ products: populatedProducts, order })
 		}
 		return populatedOrders
-	}
-	catch (error) {
+	} catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
 }
 
-export async function createOrderAction(order: Record<number, { price: number, amount: number }>) {
+export async function createOrderAction(
+	order: Record<number, { price: number; amount: number }>
+) {
 	const user = await auth("user")
 	const props = {
 		order,
@@ -67,38 +69,36 @@ export async function completeOrderAction(id: number) {
 	try {
 		const [order] = await Promise.all([
 			OrderModel.findOne({ id }),
-			auth("admin")
+			auth("admin"),
 		])
 		if (!order) throw ServerError.notFound()
-		const user = await UserModel.findOne({id:order.user})
+		const user = await UserModel.findOne({ id: order.user })
 		if (!user) throw ServerError.notFound()
 		const oldProds = Object.keys(user.votes)
 		const newVotes = Object.fromEntries(
 			Object.keys(order.order)
-			.filter(newProd=>!oldProds.includes(newProd))
-			.map(prod=>[prod,0])
+				.filter((newProd) => !oldProds.includes(newProd))
+				.map((prod) => [prod, 0])
 		)
-		const votes = {...user.votes,...newVotes}
+		const votes = { ...user.votes, ...newVotes }
 		const [res] = await Promise.all([
 			OrderModel.patch(id, { status: "COMPLETED" }),
 			UserModel.model.execute(sql`
 				UPDATE shop.users
 				SET votes=${votes}
 				WHERE id=${order.user}
-			`)
+			`),
 		])
 		if (!res) throw ServerError.notFound()
 		return false
-	}
-	catch (error) {
+	} catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
 }
 
-
 export async function deleteOrdersAction(inp: number | number[]) {
 	try {
-		const ids = toArray(inp) 
+		const ids = toArray(inp)
 		if (!ids.length) throw ServerError.invalid()
 		await auth("admin")
 		const res = await OrderModel.model
@@ -106,37 +106,38 @@ export async function deleteOrdersAction(inp: number | number[]) {
 			.where(inArray(OrderModel.table.id, ids))
 			.returning({ id: OrderModel.table.id })
 		return res.length
-	}
-	catch (error) {
+	} catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
 }
 
-export async function markOrderSeenAction(id:number){
-	try{
-		const [user,order] = await Promise.all([
+export async function markOrderSeenAction(id: number) {
+	try {
+		const [user, order] = await Promise.all([
 			auth("user"),
-			OrderModel.findOne({id})
+			OrderModel.findOne({ id }),
 		])
 		if (!order) throw ServerError.notFound("Order not found")
-		if (order.user !== user.id) throw ServerError.notAllowed("You are not supposed to see that order :(")
-		const res = await OrderModel.patch(id,{seen:true})
+		if (order.user !== user.id)
+			throw ServerError.notAllowed("You are not supposed to see that order :(")
+		const res = await OrderModel.patch(id, { seen: true })
 		if (!res) throw ServerError.unknown("markOrderSeenAction after patch")
-	}
-	catch (error) {
+	} catch (error) {
 		return ServerError.fromError(error).emmit()
 	}
 }
 
-export async function getOrderNotificationsAction(){
-	try{
+export async function getOrderNotificationsAction() {
+	try {
 		const user = await auth("user")
-		const res = await OrderModel.find({seen:false,status:"COMPLETED",user:user.id})
+		const res = await OrderModel.find({
+			seen: false,
+			status: "COMPLETED",
+			user: user.id,
+		})
 		return res.length
-	}
-	catch (error) {
+	} catch (error) {
 		ServerError.fromError(error).log()
 		return 0
 	}
-
 }

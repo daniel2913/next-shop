@@ -2,10 +2,16 @@ import { useModalStore } from "../../store/modalStore"
 import React from "react"
 
 export default function useModal() {
-	const clear = useModalStore(state=>state.clear)
+	const clear = useModalStore((state) => state.clear)
 	function show(children: React.ReactNode, title = "", header = "") {
 		return new Promise((res) => {
-			useModalStore.setState({ children, title, header, open: true, onClose:res })
+			useModalStore.setState({
+				children,
+				title,
+				header,
+				open: true,
+				onClose: res,
+			})
 		})
 	}
 

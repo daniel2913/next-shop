@@ -36,10 +36,14 @@ export default function ImagesPreview({ images, delImage, className }: Props) {
 					>
 						<button
 							type="button"
-							className="absolute appearance-none right-0 top-0 text-accent1-500"
+							className="text-accent1-500 absolute right-0 top-0 appearance-none"
 							onClick={() => delImage(idx)}
 						>
-							<Cross className="stroke-destructive" width="15px" height="15px"/>
+							<Cross
+								className="stroke-destructive"
+								width="15px"
+								height="15px"
+							/>
 						</button>
 						<img
 							alt=""
@@ -48,9 +52,7 @@ export default function ImagesPreview({ images, delImage, className }: Props) {
 							src={image}
 						/>
 					</div>
-				) : (
-					<></>
-				)
+				) : null
 			})}
 		</div>
 	)

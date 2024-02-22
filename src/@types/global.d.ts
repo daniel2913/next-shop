@@ -1,3 +1,3 @@
-interface Global{
-	BrandModel:any
+interface Global {
+	BrandModel: any
 }

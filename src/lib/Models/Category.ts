@@ -4,13 +4,13 @@ import { handleImages } from "@/helpers/images"
 
 const CategoryInsertValidation = z.object({
 	name: validations.name,
-	image: fileSchema.optional()
-		.transform(file=>file 
-			?handleImages([file],"categories")
-			:undefined
+	image: fileSchema
+		.optional()
+		.transform((file) =>
+			file ? handleImages([file], "categories") : undefined
 		)
-		.transform(names=>names ? names[0] : "template.jpg")
-		.pipe(validations.imageName)
+		.transform((names) => (names ? names[0] : "template.jpg"))
+		.pipe(validations.imageName),
 })
 
 const config = {
@@ -19,8 +19,8 @@ const config = {
 	image: pgreDefaults.image,
 }
 
-const CategoryPgreTable = shop.table("categories",config)
+const CategoryPgreTable = shop.table("categories", config)
 
 export type Category = typeof CategoryPgreTable.$inferSelect
 
-export { CategoryPgreTable, CategoryInsertValidation}
+export { CategoryPgreTable, CategoryInsertValidation }

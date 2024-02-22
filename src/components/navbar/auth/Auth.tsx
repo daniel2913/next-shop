@@ -3,10 +3,10 @@ import Exit from "@public/exit.svg"
 import { signOut, useSession } from "next-auth/react"
 import React from "react"
 import { Button } from "@/components/ui/Button"
-import { useRouter} from "next/navigation"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Admin from "@public/admin.svg"
-import  Heart  from "@public/heart.svg"
+import Heart from "@public/heart.svg"
 import OrderMenu from "../Orders"
 import useCartStore from "@/store/cartStore"
 
@@ -14,58 +14,74 @@ type Props = {
 	className?: string
 }
 
-export function ReloadOnUserChange(){
+export function ReloadOnUserChange() {
 	const router = useRouter()
 	const session = useSession()
-	React.useEffect(()=>{
+	React.useEffect(() => {
 		router.refresh()
-	}
-	,[session])
+	}, [session])
 	return null
 }
 
 export default function Auth({ className }: Props) {
 	const session = useSession()
 	return (
-		<div className={`${className} flex flex-col items-center md:flex-row gap-2`}>
-			{session.data?.user?.role==="admin"
-			?
-				<Link className="appearence-none" href={"/admin/products"}>
-				<Button 
-					className="p-1 flex flex-col h-full"
-					type="button"
-					variant="link"
+		<div
+			className={`${className} flex flex-col items-center gap-2 md:flex-row`}
+		>
+			{session.data?.user?.role === "admin" ? (
+				<Link
+					className="appearence-none"
+					href={"/admin/orders"}
+				>
+					<Button
+						className="flex h-full flex-col p-1"
+						type="button"
+						variant="link"
 					>
-					<Admin width="30px" height="30px"/>
-					Admin Panel
-				</Button>
-				</Link>
-			: 
-			<>
-			<OrderMenu className="p-1 flex flex-col gap-0 hover:underline underline-offset-4 h-full"/>
-			<Link className="appearence-none w-fit h-fit" href={"/shop/saved"}>
-				<Button 
-					className="p-1 flex flex-col h-full"
-					type="button"
-					variant="link"
-					>
-					<Heart width="30px" height="30px"
-						className={`*:stroke-card-foreground *:stroke-1 fill-accent`}
+						<Admin
+							className="*:fill-accent *:stroke-foreground"
+							width="30px"
+							height="30px"
 						/>
-					Saved
-				</Button>
-			</Link>
-			</>
-			}
+						Admin Panel
+					</Button>
+				</Link>
+			) : (
+				<>
+					<OrderMenu className="flex h-full flex-col gap-0 p-1 underline-offset-4 hover:underline" />
+					<Link
+						className="appearence-none h-fit w-fit"
+						href={"/shop/saved"}
+					>
+						<Button
+							className="flex h-full flex-col p-1"
+							type="button"
+							variant="link"
+						>
+							<Heart
+								width="30px"
+								height="30px"
+								className={`fill-accent *:stroke-card-foreground *:stroke-1`}
+							/>
+							Saved
+						</Button>
+					</Link>
+				</>
+			)}
 			<Button
-				className="basis-0 hover:bg-transparent text-foreground hover:underline underline-offset-4 bg-transparent p-1 flex flex-col h-full"
+				className="flex h-full basis-0 flex-col bg-transparent p-1 text-foreground underline-offset-4 hover:bg-transparent hover:underline"
 				type="submit"
 				onClick={async () => {
 					await signOut({ redirect: false })
 					useCartStore.setState(useCartStore.getInitialState())
 				}}
 			>
-				<Exit className=" *:stroke-accent *:fill-accent" height="30px" width="30px" />
+				<Exit
+					className=" *:fill-accent *:stroke-accent"
+					height="30px"
+					width="30px"
+				/>
 				Sign Out
 			</Button>
 		</div>

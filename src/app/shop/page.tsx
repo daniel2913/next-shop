@@ -1,30 +1,28 @@
-import InfProductList from "@/components/product/ProductList"
+import InfProductList from "@/lists/InfProductList"
 import { getProductsPageAction } from "@/actions/product"
 import React from "react"
-
+import { redirect } from "next/navigation"
 
 export default async function Shop({
 	searchParams,
 }: {
-	searchParams: Record<string,string>
+	searchParams: Record<string, string>
 }) {
 	const params = new URLSearchParams(searchParams)
 	const brand = params.get("brand")?.split(",")
 	const category = params.get("category")?.split(",")
 	const name = params.get("name") || undefined
-	const initProducts = await getProductsPageAction({brand,category,name, page:20})
-	if ("error" in initProducts) return <div>Error!</div>
+	const initProducts = await getProductsPageAction({
+		brand,
+		category,
+		name,
+		page: 20,
+	})
+	if ("error" in initProducts) redirect("./shop")
 
 	return (
-		<main
-			className="
-					h-full p-5 bg-background
-					grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]
-					gap-y-4
-					items-center justify-items-center
-				"
-		>
-			<InfProductList products={initProducts}/>
+		<main className="grid min-h-full w-full grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] items-center justify-items-center gap-y-4 bg-background p-5">
+			<InfProductList products={initProducts} />
 		</main>
 	)
 }
