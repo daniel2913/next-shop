@@ -33,12 +33,6 @@ export async function getUserState() {
 	}
 }
 
-type State = {
-	items: Record<string, number>
-	saved: number[]
-	votes: Record<string, number>
-}
-
 export async function setCartAction(cart: Record<string, number>) {
 	try {
 		const user = await auth("user")

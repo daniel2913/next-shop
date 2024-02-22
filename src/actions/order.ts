@@ -11,6 +11,7 @@ import {
 import { getProductsByIds } from "./product"
 import { PopulatedProduct } from "@/lib/Models/Product"
 import { toArray } from "@/helpers/misc"
+import { UserCache } from "@/helpers/cache"
 
 export type PopulatedOrder = {
 	order: Order
@@ -81,15 +82,17 @@ export async function completeOrderAction(id: number) {
 				.map((prod) => [prod, 0])
 		)
 		const votes = { ...user.votes, ...newVotes }
-		const [res] = await Promise.all([
+		const [res,addedVotes] = await Promise.all([
 			OrderModel.patch(id, { status: "COMPLETED" }),
-			UserModel.model.execute(sql`
+			UserModel.model.execute<Record<string,number>>(sql`
 				UPDATE shop.users
 				SET votes=${votes}
 				WHERE id=${order.user}
+				RETURNING votes
 			`),
 		])
 		if (!res) throw ServerError.notFound()
+		UserCache.patch(user.name,{votes:addedVotes[0]})
 		return false
 	} catch (error) {
 		return ServerError.fromError(error).emmit()

@@ -7,6 +7,8 @@ import useToast from "@/hooks/modals/useToast"
 import useConfirm from "@/hooks/modals/useConfirm"
 import { mergeCarts } from "./Status"
 
+
+
 export function CartControler() {
 	const { handleResponse } = useToast()
 	const session = useSession()

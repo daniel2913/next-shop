@@ -55,12 +55,14 @@ const Rating = React.memo(function Rating({
 						width={size}
 						height={size}
 						key={`${i}-${Math.random()}`}
-						className={`
-							max-w-[${size}] aspect-square
-							h-full w-full
-								${i <= rating || (0 && value !== 0) ? "stroke-foreground" : "stroke-secondary"}
+						className={`max-w-[${size}] aspect-square	h-full w-full
+								${
+									value === 0
+									? "stroke-accent"
+									: i <= rating
+										? "stroke-foreground" 
+										: "stroke-secondary"}
 								${(i <= value && "fill-accent") || (i <= rating && "fill-foreground") || "fill-secondary"}
-								${value === 0 && "stroke-accent"}
 							`}
 					/>
 				</button>

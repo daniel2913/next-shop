@@ -1,6 +1,5 @@
 "use client"
 import React, { FormEvent } from "react"
-import useProductStore from "@/store/productStore"
 import { Brand, Category } from "@/lib/Models"
 import useResponsive from "@/hooks/useResponsive"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -24,15 +23,12 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 	const router = useRouter()
 	const path = usePathname()
 	const [name, setName] = React.useState(params.get("name") || "")
-	const mode = useResponsive()
 
 	const navigate = React.useCallback(
 		(query: URL) => {
 			if (path === "/shop") {
 				history.pushState({ query: query.toString() }, "", query.toString())
-				useProductStore.getState().navigate(query.searchParams)
 			} else {
-				useProductStore.setState({ products: [], inited: false })
 				router.push(query.toString())
 			}
 		},

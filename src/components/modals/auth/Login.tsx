@@ -3,7 +3,6 @@ import Input from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { Label } from "@/components/ui/Label"
 import useToast from "@/hooks/modals/useToast"
-import useProductStore from "@/store/productStore"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import React from "react"
@@ -14,16 +13,14 @@ export type Props = {
 }
 
 export function Login({ close, redirect }: Props) {
-	const reloadProducts = useProductStore((state) => state.reload)
 	const [name, setName] = React.useState("")
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
 	const router = useRouter()
-	const { error, handleResponse } = useToast()
+	const { error,} = useToast()
 	async function handleLogin(creds: { name: string; password: string }) {
 		const res = await signIn("credentials", { ...creds, redirect: false })
 		if (res?.ok) {
-			handleResponse(await reloadProducts())
 			if (redirect) router.push(redirect)
 			else if (close) close()
 			return
