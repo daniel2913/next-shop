@@ -2,6 +2,7 @@
 
 import { clearSavedAction } from "@/actions/saved"
 import { Button } from "@/components/ui/Button"
+import useCartStore from "@/store/cartStore"
 import { useRouter } from "next/navigation"
 
 type Props = {
@@ -12,8 +13,10 @@ export default function ClearSaved(props: Props) {
 	return (
 		<Button
 			className={`${props.className} fixed left-4 top-14 z-10`}
-			onClick={async () =>
+			onClick={async () =>{
 				clearSavedAction().then((_) => router.push("/shop/home"))
+				useCartStore.setState({saved:[]})
+				}
 			}
 		>
 			Clear Saved

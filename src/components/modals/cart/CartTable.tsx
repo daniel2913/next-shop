@@ -76,7 +76,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								<TableCell className="hidden lg:table-cell">
 									{product.brand.name}
 								</TableCell>
-								<TableCell>{order[product.id].price}</TableCell>
+								<TableCell>{order[product.id].price}$</TableCell>
 								<TableCell>
 									{interactive ? (
 										<AmmountSelector
@@ -89,7 +89,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									)}
 								</TableCell>
 								<TableCell>
-									{order[product.id].price * order[product.id].amount}
+									{(order[product.id].price * order[product.id].amount).toFixed(2)}$
 								</TableCell>
 							</TableRow>
 						))}
@@ -101,7 +101,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						<TableCell className="hidden lg:table-cell" />
 						<TableCell />
 						<TableCell>{totalAmount}</TableCell>
-						<TableCell>{totalPrice}</TableCell>
+						<TableCell>{totalPrice.toFixed(2)}$</TableCell>
 					</TableRow>
 				</TableFooter>
 			</Table>
@@ -130,7 +130,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						<div className="basis-4/5 text-foreground">
 							<h3 className="font-semibold">{product.name}</h3>
 							<div className="flex justify-start text-xl font-semibold text-foreground">
-								{order[product.id].price}
+								{order[product.id].price}$
 							</div>
 							<div className="flex justify-between">
 								{interactive ? (
@@ -145,7 +145,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									</span>
 								)}
 								<span className="text-2xl font-bold">
-									{order[product.id].price * order[product.id].amount}
+									{(order[product.id].price * order[product.id].amount).toFixed(2)}$
 								</span>
 							</div>
 						</div>
@@ -155,7 +155,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 				<span className="block w-full basis-1/4">Total:</span>
 				<div className="flex w-full basis-4/5 justify-between">
 					<span className="block w-[5ch]">{totalAmount}</span>
-					<span>{totalPrice}</span>
+					<span>{totalPrice.toFixed(2)}$</span>
 				</div>
 			</div>
 		</div>

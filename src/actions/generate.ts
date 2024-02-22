@@ -50,7 +50,7 @@ export async function generateProductAction() {
 			category = categories.find((cat) => cat.name === "Smartphones")!
 
 		const base = _path.join(
-			_path.join(process.cwd(), "public"),
+			env.PUBLIC_DIR || _path.join(process.cwd(),"public"),
 			"samples",
 			category.name
 		)
@@ -66,7 +66,7 @@ export async function generateProductAction() {
 			images.push(new File([buf], _path.basename(path), { type: "image/jpg" }))
 		}
 
-		const price = +(Math.random() * 10000).toFixed(2)
+		const price = +(Math.random() * 2000).toFixed(2)
 		let description = ""
 		const desclength = Math.floor((Math.random() * 1000) % 5) + 1
 		for (let i = 0; i < desclength; i++) {

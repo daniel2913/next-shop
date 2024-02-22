@@ -21,8 +21,6 @@ export default async function Shop({
 	if ("error" in initProducts) redirect("./shop")
 
 	return (
-		<main className="grid min-h-full w-full grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] items-center justify-items-center gap-y-4 bg-background p-5">
 			<InfProductList products={initProducts} />
-		</main>
 	)
 }

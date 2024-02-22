@@ -17,9 +17,9 @@ export default function DetailedProduct(product: PopulatedProduct) {
 					imageClassName="object-contain"
 					images={product.images}
 					discount={product.discount}
-					width={1250}
-					height={1000}
-				></ProductCarousel>
+					width={800}
+					height={600}
+				/>
 				<section className="flex h-full flex-auto basis-2/5 flex-col">
 					<div className="mb-2 flex justify-between">
 						<Price
@@ -52,9 +52,9 @@ export default function DetailedProduct(product: PopulatedProduct) {
 						brand={product.brand.image}
 						brandName={product.brand.name}
 						discount={product.discount}
-						width={700}
-						height={560}
-					></ProductCarousel>
+						width={600}
+						height={460}
+					/>
 					<h3 className="w-full bg-secondary px-2 pb-2 text-4xl font-bold capitalize">
 						{product.name}
 					</h3>

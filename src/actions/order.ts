@@ -84,7 +84,7 @@ export async function completeOrderAction(id: number) {
 		const votes = { ...user.votes, ...newVotes }
 		const [res,addedVotes] = await Promise.all([
 			OrderModel.patch(id, { status: "COMPLETED" }),
-			UserModel.model.execute<Record<string,number>>(sql`
+			UserModel.model.execute<{votes:Record<string,number>}>(sql`
 				UPDATE shop.users
 				SET votes=${votes}
 				WHERE id=${order.user}
@@ -92,7 +92,7 @@ export async function completeOrderAction(id: number) {
 			`),
 		])
 		if (!res) throw ServerError.notFound()
-		UserCache.patch(user.name,{votes:addedVotes[0]})
+		UserCache.patch(user.name,{votes:addedVotes[0].votes})
 		return false
 	} catch (error) {
 		return ServerError.fromError(error).emmit()
