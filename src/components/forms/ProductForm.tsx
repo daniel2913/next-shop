@@ -115,7 +115,7 @@ export default function ProductForm({ product }: Props) {
 			<Label>
 				Category
 				<Select
-					defaultValue={product?.category.name || category}
+					defaultValue={product?.category?.name || category}
 					name="category"
 					value={category}
 					onValueChange={(str: string) => setCategory(str)}

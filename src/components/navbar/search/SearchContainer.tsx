@@ -1,11 +1,10 @@
 "use client"
 
-import useResponsive from "@/hooks/useResponsive"
 import React from "react"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 import Glass from "@public/search.svg"
 import useModal from "@/hooks/modals/useModal"
 import NavButton from "../../ui/Navbutton"
+import {cn} from "@/helpers/utils"
 
 type Props = {
 	children: React.ReactNode
@@ -13,13 +12,11 @@ type Props = {
 }
 
 export default function SearchContainer({ children, className }: Props) {
-	const mode = useResponsive()
 	const modal = useModal()
-	return mode === "desktop" ? (
-		<div className={className}>{children}</div>
-	) : (
+	return	<>
+		<div className={cn(className,"hidden md:block")}>{children}</div>
 		<NavButton
-			className={className}
+			className={cn(className,"md:hidden")}
 			onClick={() => modal.show(children)}
 		>
 			<Glass
@@ -29,5 +26,5 @@ export default function SearchContainer({ children, className }: Props) {
 			/>
 			Search
 		</NavButton>
-	)
+	</>
 }

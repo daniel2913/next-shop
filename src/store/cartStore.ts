@@ -24,7 +24,7 @@ interface CartState {
 	) => Promise<{ rating: number; voters: number } | ServerErrorType>
 }
 
-const updateAccount = deffer(setCartAction, 2000)
+const updateAccount = deffer(setCartAction, 500)
 
 const useCartStore = create<CartState>()(
 	persist(

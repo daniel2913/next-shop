@@ -2,9 +2,12 @@
 import { useModalStore } from "@/store/modalStore"
 import React, { useEffect } from "react"
 import useResponsive from "@/hooks/useResponsive"
-import { Drawer, DrawerContent, DrawerPortal, DrawerTitle } from "../ui/Drawer"
 import Cross from "@public/cross.svg"
 import { RemoveScroll } from "react-remove-scroll"
+import Loading from "../ui/Loading"
+import dynamic from "next/dynamic"
+
+const MobileModal = dynamic(()=>import("./MobileBase"))
 
 export default function ModalBase() {
 	const { open, title, children, onClose, forceWindow, clear } = useModalStore()
@@ -20,7 +23,7 @@ export default function ModalBase() {
 	if (forceWindow || mode === "desktop")
 		return (
 			<dialog
-				className="relative rounded-md p-4"
+				className="fixed rounded-md p-4"
 				onClose={() => {
 					onClose()
 					clear()
@@ -28,6 +31,12 @@ export default function ModalBase() {
 				ref={ref}
 				aria-modal
 			>
+				<div 
+					className="fixed z-[-50] bg-black opacity-60 w-full h-full scale-[10]"
+					onClick={clear}
+					onKeyDown={(e)=>{if(e.key==="Esc") clear()}}
+				/>
+				<div className="h-full w-full z-50">			
 				<button
 					type="button"
 					className="absolute right-1 top-1 rounded-sm bg-accent"
@@ -39,7 +48,7 @@ export default function ModalBase() {
 					<Cross
 						width={17}
 						height={17}
-						className="*:fill-foreground *:stroke-foreground"
+						className="*:fill-white *:stroke-white"
 					/>
 				</button>
 				<h2 className="text-center text-3xl font-bold capitalize">{title}</h2>
@@ -49,31 +58,16 @@ export default function ModalBase() {
 					}}
 					className="flex h-fit max-h-[80vh] w-fit max-w-[95vw] items-center justify-center rounded-md p-2"
 				>
-					<RemoveScroll enabled={open}>{children}</RemoveScroll>
+					<RemoveScroll removeScrollBar={open}>
+						<Loading>
+						{children}
+						</Loading>
+					</RemoveScroll>
+				</div>
 				</div>
 			</dialog>
 		)
 	return (
-		<Drawer
-			open={open}
-			onOpenChange={(open) => {
-				useModalStore.setState({ open })
-				if (!open) clear()
-			}}
-		>
-			<DrawerPortal>
-				<DrawerTitle className="text-center text-2xl font-bold capitalize">
-					{title}
-				</DrawerTitle>
-				<DrawerContent
-					onSubmit={() => {
-						clear()
-					}}
-					className="flex h-dvh w-full content-start items-center border-x-0 bg-background px-4 pb-10 "
-				>
-					{children}
-				</DrawerContent>
-			</DrawerPortal>
-		</Drawer>
+		<MobileModal/>
 	)
 }

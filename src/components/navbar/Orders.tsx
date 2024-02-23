@@ -5,36 +5,28 @@ import useModal from "@/hooks/modals/useModal"
 import OrderIcon from "@public/note.svg"
 import { useSession } from "next-auth/react"
 import dynamic from "next/dynamic"
-import Loading from "@/components/ui/Loading"
 import NavButton from "../ui/Navbutton"
 import useAction from "@/hooks/useAction"
 import { getOrderNotificationsAction } from "@/actions/order"
+import { useRouter } from "next/navigation"
 
-const Orders = dynamic(() => import("@/components/modals/orders"))
 const Login = dynamic(() => import("@/components/modals/auth"))
 
 type Props = {
 	className: string
 }
 export default function OrderMenu(props: Props) {
+	const { value: notifs} = useAction(getOrderNotificationsAction, 0)
 	const session = useSession()
 	const modal = useModal()
-	const { value: notifs, reload } = useAction(getOrderNotificationsAction, 0)
-	React.useEffect(() => {
-		reload()
-	}, [session])
+	const router = useRouter()
 	return (
 		<NavButton
-			onClick={() =>
-				modal
-					.show(
-						<Loading>
-							{session?.data?.user ? <Orders /> : <Login close={modal.close} />}
-						</Loading>
-					)
-					.then((_) => reload())
+			className={`${props.className} !flex-col !gap-0 relative`}
+			onClick={()=>session.data?.user?.role==="user"
+				? router.push("/shop/orders")
+				: modal.show(<Login close={modal.close}/>)
 			}
-			className={props.className}
 		>
 			<div className="relative h-fit w-fit">
 				<OrderIcon

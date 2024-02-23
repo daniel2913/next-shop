@@ -1,11 +1,16 @@
 import Link from "next/link"
 import { ReactElement } from "react"
 import NavButton from "@/components/ui/Navbutton"
+import { auth } from "@/actions/common"
+import { redirect } from "next/navigation"
+import NavBarContainer from "@/components/navbar/NavbarContainer"
 
-export default function AdminLayout({ children }: { children: ReactElement }) {
+export default async function AdminLayout({ children }: { children: ReactElement }) {
+	try{
+	await auth("admin")
 	return (
 		<>
-			<header className="pointer-events-auto fixed left-0 right-0 top-0 z-[100] mb-2 flex h-12 animate-slide-down items-center bg-secondary px-5 py-1 pr-[var(--removed-body-scroll-bar-size)]">
+			<NavBarContainer>
 				<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 					<Link
 						href="/shop/home"
@@ -48,10 +53,14 @@ export default function AdminLayout({ children }: { children: ReactElement }) {
 					/>
 					Discounts
 				</NavButton>
-			</header>
+			</NavBarContainer>
 			<main className="flex h-full w-full justify-center p-4 pt-16">
 				{children}
 			</main>
 		</>
 	)
+	}
+	catch{
+		redirect("/shop/home")
+	}
 }

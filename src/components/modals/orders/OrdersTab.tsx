@@ -1,7 +1,6 @@
 "use client"
 import { PopulatedOrder, markOrderSeenAction } from "@/actions/order"
 import React from "react"
-import { Button } from "@/components/ui/Button"
 import { useSession } from "next-auth/react"
 import {
 	Accordion,
@@ -13,10 +12,9 @@ import { CartTable } from "../cart/CartTable"
 
 export type OrdersTabProps = {
 	orders: PopulatedOrder[]
-	onComplete?: (order: PopulatedOrder) => void
 }
 
-export function OrdersTab({ orders, onComplete }: OrdersTabProps) {
+export function OrdersTab({ orders }: OrdersTabProps) {
 	const [seen, setSeen] = React.useState<number[]>([])
 	const session = useSession()
 	return (
@@ -57,16 +55,6 @@ export function OrdersTab({ orders, onComplete }: OrdersTabProps) {
 							products={order.products}
 							order={order.order.order}
 						/>
-						{session?.data?.user?.role === "admin" &&
-						order.order.status === "PROCESSING" ? (
-							<Button
-								color="cyan"
-								className="ml-auto block"
-								onClick={() => onComplete?.(order)}
-							>
-								Complete
-							</Button>
-						) : null}
 					</AccordionContent>
 				</AccordionItem>
 			))}

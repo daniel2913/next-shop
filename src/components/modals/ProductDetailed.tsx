@@ -14,7 +14,6 @@ export default function DetailedProduct(product: PopulatedProduct) {
 			<article className="flex h-[70vh] w-[80vw] min-w-[45rem] content-center items-center gap-4 rounded-md bg-background p-4">
 				<ProductCarousel
 					className="h-full basis-3/5"
-					imageClassName="object-contain"
 					images={product.images}
 					discount={product.discount}
 					width={800}

@@ -42,8 +42,8 @@ export function CategoryFilter({
 							<Image
 								alt={category.name}
 								src={`/categories/${category.image}`}
-								fill
-								sizes="40px"
+								width={40}
+								height={40}
 							/>
 						</div>
 						{category.name}
@@ -99,8 +99,8 @@ export function BrandFilter({
 							<Image
 								alt={brand.name}
 								src={`/brands/${brand.image}`}
-								fill
-								sizes="40px"
+								width={40}
+								height={40}
 							/>
 						</div>
 						{brand.name}

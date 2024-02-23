@@ -15,7 +15,13 @@ import Image from "next/image"
 import useAction from "@/hooks/useAction"
 import AmmountSelector from "@/components/ui/AmmountSelector"
 import useResponsive from "@/hooks/useResponsive"
-import { Props } from "."
+import { PopulatedProduct } from "@/lib/Models/Product"
+
+type Props={
+	className?:string
+	products:PopulatedProduct[]
+	interactive?:boolean
+	order:Record<string,{price:number,amount:number}>}
 
 export function CartTable({ className, products, order, interactive }: Props) {
 	if (products === undefined)
@@ -42,7 +48,6 @@ export function CartTable({ className, products, order, interactive }: Props) {
 					<TableRow className=" *:p-1 *:text-center *:text-xl *:text-foreground md:*:text-2xl">
 						<TableHead className="w-1/12">Image</TableHead>
 						<TableHead className="w-1/5">Product</TableHead>
-						<TableHead className="hidden w-1/6 lg:table-cell">Brand</TableHead>
 						<TableHead className="w-1/12">Price</TableHead>
 						<TableHead className="w-1/6">Amount</TableHead>
 						<TableHead className="w-1/6">Total</TableHead>
@@ -60,21 +65,16 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								key={product.id}
 								className="w-full overflow-hidden *:text-ellipsis *:p-1 *:text-center *:text-xl *:text-foreground *:md:text-2xl"
 							>
-								<TableCell className="relative h-16 w-2">
+								<TableCell className="flex items-center justify-center">
 									<Image
 										alt={product.name}
-										sizes="15vw"
 										src={`/products/${product.images[0]}`}
 										width={75}
 										height={60}
-										className=""
 									/>
 								</TableCell>
 								<TableCell className="text-md capitalize md:text-lg">
 									<h3>{product.name}</h3>
-								</TableCell>
-								<TableCell className="hidden lg:table-cell">
-									{product.brand.name}
 								</TableCell>
 								<TableCell>{order[product.id].price}$</TableCell>
 								<TableCell>
@@ -98,7 +98,6 @@ export function CartTable({ className, products, order, interactive }: Props) {
 					<TableRow className="*:text-center *:text-3xl  *:font-bold  *:capitalize *:text-foreground">
 						<TableCell>Total:</TableCell>
 						<TableCell />
-						<TableCell className="hidden lg:table-cell" />
 						<TableCell />
 						<TableCell>{totalAmount}</TableCell>
 						<TableCell>{totalPrice.toFixed(2)}$</TableCell>
@@ -119,12 +118,12 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						key={product.id}
 						className="mt-1 flex gap-4 border-2 border-b-black pb-1 text-2xl first:mt-0"
 					>
-						<div className="relative basis-1/5 p-4">
+						<div className="relative flex items-center justify-center">
 							<Image
-								className="size-full"
 								alt={product.name}
 								src={`/products/${product.images[0]}`}
-								fill
+								width={75}
+								height={60}
 							/>
 						</div>
 						<div className="basis-4/5 text-foreground">

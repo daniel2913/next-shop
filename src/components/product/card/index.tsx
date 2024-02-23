@@ -64,17 +64,16 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 					voters={product.voters}
 					className="col-span-2 justify-self-center"
 				/>
-				<CardTitle className="text-accent1-400 col-span-2 w-full overflow-hidden text-ellipsis text-2xl font-bold uppercase leading-6">
 					<button
 						onClick={showDetails}
 						type="button"
-						className="w-full appearance-none overflow-hidden text-ellipsis text-nowrap capitalize"
+						className="w-full col-span-2 appearance-none overflow-hidden text-ellipsis text-nowrap capitalize"
 					>
+				<CardTitle className="text-foreground col-span-2 w-full overflow-hidden text-ellipsis text-nowrap text-2xl font-bold uppercase leading-6">
 						{product.name}
-					</button>
 				</CardTitle>
-
-				<h4 className="overflow-hiddenfont-semibold self-start text-ellipsis text-xl">
+					</button>
+				<h4 className="overflow-hidden w-full font-semibold self-start text-ellipsis text-xl">
 					{product.brand.name}
 				</h4>
 				<h4 className="justify-self-end overflow-hidden text-ellipsis text-lg capitalize text-gray-600">

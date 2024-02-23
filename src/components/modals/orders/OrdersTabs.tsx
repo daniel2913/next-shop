@@ -1,33 +1,26 @@
 "use client"
 import {
-	PopulatedOrder,
-	completeOrderAction,
 	getOrdersAction,
 } from "@/actions/order"
 import React from "react"
-import useToast from "@/hooks/modals/useToast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs"
 import { OrdersTab } from "./OrdersTab"
 import { ServerErrorType } from "@/hooks/useAction"
+import { useAuthController } from "@/hooks/useAuthController"
+import { useRouter } from "next/navigation"
 
 export type Props = {
 	className?: string
 	completed?: boolean
 	orders: Exclude<Awaited<ReturnType<typeof getOrdersAction>>, ServerErrorType>
-	reload: () => void
 }
 
 export const OrdersTabs = React.memo(function OrderList({
 	orders,
 	className,
-	reload,
 }: Props) {
-	const { handleResponse } = useToast()
-	async function handleComplete(order: PopulatedOrder) {
-		if (order.order.status !== "PROCESSING") return
-		const res = await completeOrderAction(order.order.id)
-		if (handleResponse(res)) reload()
-	}
+	const router = useRouter()
+	useAuthController(()=>router.refresh(),{onUnAuth:()=>router.push("/shop/home")})
 	return (
 		<Tabs
 			className={`${className} w-full text-black`}
@@ -39,7 +32,6 @@ export const OrdersTabs = React.memo(function OrderList({
 			</TabsList>
 			<TabsContent value="proc">
 				<OrdersTab
-					onComplete={handleComplete}
 					orders={orders.processing}
 				/>
 			</TabsContent>

@@ -45,7 +45,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 					<title>Document</title>
 				</head>
 				<body
-					className={`h-full w-full pr-[var(--removed-body-scroll-bar-size)] `}
+					className={`md:h-full w-full pr-[var(--removed-body-scroll-bar-size)] `}
 				>
 					<RootProviders session={session}>
 						{children}

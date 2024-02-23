@@ -36,6 +36,8 @@ export function CartControler() {
 			const haveLocal = Object.keys(localCart).length > 0
 			const haveRemote = Object.keys(cart).length > 0
 			if (!haveRemote) {
+				if (haveLocal)
+					updateCart(localCart)
 				useCartStore.setState({ saved, votes })
 				return
 			}

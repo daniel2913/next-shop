@@ -1,39 +1,32 @@
 "use client"
-import { getProductsByIdsAction } from "@/actions/product"
-import useCartStore from "@/store/cartStore"
-import React from "react"
-import { PopulatedProduct } from "@/lib/Models/Product"
 import { createOrderAction } from "@/actions/order"
-import useToast from "@/hooks/modals/useToast"
-import calcPrice from "@/helpers/misc"
+import { CartTable } from "@/components/modals/cart/CartTable"
 import { Button } from "@/components/ui/Button"
-import useAction from "@/hooks/useAction"
-import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea"
-import Loading from "@/components/ui/Loading"
-import { CartTable } from "./CartTable"
+import calcPrice from "@/helpers/misc"
+import useToast from "@/hooks/modals/useToast"
+import { useAuthController} from "@/hooks/useAuthController"
+import { PopulatedProduct } from "@/lib/Models/Product"
+import useCartStore from "@/store/cartStore"
+import { useRouter } from "next/navigation"
+import React from "react"
 
-export type Props = {
-	products?: PopulatedProduct[]
-	order: Record<string, { amount: number; price: number }>
-	interactive?: boolean
-	className?: string
+type Props = {
+	products:PopulatedProduct[]
+	initCart:Record<string,number>
 }
-export default function Cart() {
-	const items = useCartStore((state) => state.items)
+
+export default function Cart(props:Props) {
+	const items = useCartStore(state => state.items) 
 	const [loadingOrder, setLoadingOrder] = React.useState(false)
 	const { handleResponse, error } = useToast()
 	const _setter = useCartStore((state) => state.setItemsAndUpdate)
 	const resetCart = () => _setter({})
-	const { value: products, loading } = useAction(
-		() => getProductsByIdsAction(Object.keys(items).map(Number)),
-		[]
-	)
 	async function handleClick() {
 		if (Object.keys(items).length === 0) return false
 		setLoadingOrder(true)
 		const order: Record<number, { price: number; amount: number }> = {}
 		for (const id in items) {
-			const product = products.find((product) => product.id === +id)
+			const product = props.products.find((product) => product.id === +id)
 			if (!product) {
 				error("Some of the products are no longer available", "Catalog changed")
 				setLoadingOrder(false)
@@ -41,6 +34,7 @@ export default function Cart() {
 			}
 			const price = calcPrice(product.price, product.discount)
 			const amount = items[+id]
+			if (!amount) continue
 			order[+id] = { price, amount }
 		}
 		if (Object.keys(order).length !== Object.keys(items).length) {
@@ -52,39 +46,48 @@ export default function Cart() {
 		setLoadingOrder(false)
 		if (handleResponse(res)) resetCart()
 	}
-	const order: React.ComponentProps<typeof CartTable>["order"] = {}
-	for (const product of products) {
+	const order: Record<string,{price:number,amount:number}> = {}
+	for (const product of props.products) {
+		if (!items[product.id]) continue
 		order[product.id] = {
 			price: calcPrice(product.price, product.discount),
 			amount: items[product.id],
 		}
 	}
+	const router = useRouter()
+	useAuthController(router.refresh,{onUnAuth:()=>router.push("/shop/home")})
+
+	if (Object.keys(items).length===0){
+		return(
+			<div className="h-full w-full flex justify-center items-center">
+				<h1 className="text-4xl font-bold">It's empty now :(</h1>
+			</div>
+		)
+	}
 	return (
-		<div className="flex h-full w-full flex-col items-center justify-center overflow-y-scroll md:h-[70vh] md:w-[60vw] md:overflow-y-hidden">
-			<Loading loading={loading}>
-				<div className="flex h-full w-full flex-col items-center rounded-md bg-border p-4">
-					<ScrollArea className="h-full w-full">
-						<CartTable
-							interactive
-							products={products}
-							order={order}
-						/>
-						<div className="flex justify-end pr-4">
-							<Button
-								className="px-4  text-3xl font-bold"
-								disabled={
-									loadingOrder || loading || Object.keys(order).length === 0
-								}
-								onClick={handleClick}
-								type="submit"
-							>
-								Order
-							</Button>
-						</div>
-					</ScrollArea>
-					<div className="flex w-full justify-center"></div>
-				</div>
-			</Loading>
-		</div>
+		<main className="p-4">
+			<div className="bg-secondary rounded-md p-2">
+			<CartTable interactive className="rounded-md" products={props.products} order={order} />
+			<div className="flex gap-4 justify-end px-8">
+			<Button
+				className="px-4  text-3xl font-bold"
+				onClick={()=>useCartStore.setState({items:{}})}
+				type="submit"
+			>
+				Clear
+			</Button>
+			<Button
+				className="px-4  text-3xl font-bold"
+				disabled={
+					loadingOrder || Object.keys(order).length === 0
+				}
+				onClick={handleClick}
+				type="submit"
+			>
+				Order
+			</Button>
+			</div>
+			</div>
+		</main>
 	)
 }
