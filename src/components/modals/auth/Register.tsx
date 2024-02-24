@@ -32,16 +32,7 @@ export function Register({ close, redirect }: Props) {
 		if (redirect) router.push(redirect)
 		if (close) close()
 	}
-	const [status, setStatus] = React.useState("")
 
-	function validate(val: string) {
-		if (val.length < 5 || val.length > 20)
-			return "Username must be between 5 and 20 characters long"
-		if (!val.match(/^[a-zA-Z]/)) return "Username must start with a letter"
-		if (!val.match(/^[a-zA-Z0-9]/))
-			return "Username must only contain letters and numbers"
-		return ""
-	}
 	return (
 		<form
 			className="mb-4 flex flex-col items-center gap-2 px-20"
@@ -54,7 +45,6 @@ export function Register({ close, redirect }: Props) {
 			<Label>
 				Username
 				<Input
-					onBlur={() => setStatus(validate(name))}
 					type="text"
 					autoFocus={true}
 					name="username"
@@ -69,6 +59,7 @@ export function Register({ close, redirect }: Props) {
 				<Input
 					type="password"
 					name="password"
+					autoComplete="current-password"
 					value={password}
 					onChange={(e) => setPassword(e.currentTarget.value)}
 					pattern={`.{5,20}`}

@@ -1,5 +1,5 @@
 import { getOrdersAction } from "@/actions/order";
-import { OrdersTabs } from "@/components/modals/orders/OrdersTabs";
+import { OrdersTabs } from "@/components/orders/OrdersTabs";
 import { redirect } from "next/navigation";
 
 export default async function OrdersPage(){

@@ -38,7 +38,7 @@ export default function GenericSelectTable<
 	return (
 		<Table>
 			<TableHeader>
-				<TableRow className="*:text-center">
+				<TableRow className="*:text-center *:text-foreground">
 					<TableHead>
 						<input
 							type="checkbox"
@@ -58,7 +58,7 @@ export default function GenericSelectTable<
 					<TableRow
 						key={`${item.id}`}
 						onClick={() => onClick(item.id)}
-						className={`*>text-center cursor-pointer text-center bg-blend-lighten hover:bg-accent/10`}
+						className={`*:text-center *:text-foreground *:hover:bg-white/40 cursor-pointer text-center bg-blend-lighten`}
 					>
 						<TableCell>
 							<input

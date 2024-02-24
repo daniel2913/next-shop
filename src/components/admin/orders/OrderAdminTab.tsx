@@ -7,7 +7,7 @@ import { PopulatedOrder, completeOrderAction } from "@/actions/order"
 import useModal from "@/hooks/modals/useModal"
 import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
-import { CartTable } from "../../modals/cart/CartTable"
+import { CartTable } from "@/components/cart/CartTable"
 import { Button } from "../../ui/Button"
 import GenericSelectTable from "../../ui/GenericSelectTable"
 

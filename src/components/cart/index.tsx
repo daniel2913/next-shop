@@ -1,6 +1,6 @@
 "use client"
 import { createOrderAction } from "@/actions/order"
-import { CartTable } from "@/components/modals/cart/CartTable"
+import { CartTable } from "./CartTable"
 import { Button } from "@/components/ui/Button"
 import calcPrice from "@/helpers/misc"
 import useToast from "@/hooks/modals/useToast"

@@ -1,6 +1,6 @@
 import { auth } from "@/actions/common";
 import { getProductsByIdsAction } from "@/actions/product";
-import Cart from "@/components/modals/cart";
+import Cart from "@/components/cart";
 import { redirect } from "next/navigation";
 
 

@@ -4,6 +4,7 @@ import { UserModel } from "@/lib/Models"
 import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { revalidatePath } from "next/cache"
 
 interface Props {
 	name: string
@@ -21,6 +22,8 @@ async function authUser(props: Props | undefined) {
 	const user = await UserModel.findOne({ name: props.name })
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
+		revalidatePath("/shop/cart")
+		revalidatePath("/shop/orders")
 		return {
 			id: user.id,
 			name: user.name,

@@ -3,7 +3,7 @@ import {
 	getOrdersAction,
 } from "@/actions/order"
 import React from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { OrdersTab } from "./OrdersTab"
 import { ServerErrorType } from "@/hooks/useAction"
 import { useAuthController } from "@/hooks/useAuthController"
