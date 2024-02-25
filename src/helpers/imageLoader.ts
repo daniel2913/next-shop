@@ -8,11 +8,9 @@ type Props = {
 	quality: number
 }
 
-
 export default function imageLoader({ src, width, quality }: Props) {
 	const address = new URL(
-		env.NEXTAUTH_URL ||
-		`${window.location.protocol}//${window.location.host}`
+		env.NEXTAUTH_URL || `${window.location.protocol}//${window.location.host}`
 	)
 	if (!quality) quality = 75
 	address.pathname = env.PUBLIC_API_PATH || "/api/public"

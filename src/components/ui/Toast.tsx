@@ -16,7 +16,7 @@ export default function Toast() {
 				${type === "error" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"}
 				${isVisible ? "block" : "hidden"}
 				md:max-h-1/3 md:max-w-1/4
-				fixed bottom-12 left-0 right-0 z-[90] h-1/4
+				fixed bottom-12 left-0 right-0 z-[100] h-1/4
 				animate-slide-up transition-transform duration-300 md:bottom-2 md:left-auto md:right-2
 				md:h-48 md:w-96
 				md:translate-x-0

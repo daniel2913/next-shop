@@ -5,7 +5,6 @@ import React from "react"
 import ProductCard from "../components/product/card"
 import Loading from "../components/ui/Loading"
 import { getProductsByIds } from "@/actions/product"
-import { getProductsPageAction } from "@/actions/product"
 
 export type Props = {
 	products: PopulatedProduct[]
@@ -23,12 +22,14 @@ export function GenericProductList({ products: initProducts }: Props) {
 	})
 	return (
 		<Loading loading={loading}>
-			{products.map((product) => (
+			{products.map((product, idx) => (
 				<ProductCard
 					key={product.id}
 					{...product}
 					reload={reloadOne}
 					update={updateOne}
+					idx={idx}
+					fold={10}
 				/>
 			))}
 		</Loading>

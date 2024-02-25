@@ -6,19 +6,39 @@ type ModalState = {
 	onClose: (val?: any) => any
 	open: boolean
 	title: string
-	header: string
 	forceWindow: boolean
 	clear: (val?: any) => void
+	show: (
+		children: React.ReactNode,
+		title?: string,
+		forceWindow?: boolean
+	) => Promise<any>
 }
 export const useModalStore = create<ModalState>()((set, get) => ({
+	show: (children, title, forceWindow) => {
+		return new Promise((resolve) =>
+			set({
+				children,
+				open: true,
+				title,
+				forceWindow,
+				onClose: () => resolve(false),
+			})
+		)
+	},
 	onClose: () => undefined,
 	forceWindow: false,
 	children: null,
 	open: false,
 	title: "",
-	header: "",
 	clear: (val) => {
 		get().onClose(val)
-		set(useModalStore.getInitialState())
+		set((s) => ({
+			...s,
+			open: false,
+			title: "",
+			children: null,
+			forceWindow: false,
+		}))
 	},
 }))

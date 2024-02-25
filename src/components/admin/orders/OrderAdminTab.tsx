@@ -4,12 +4,12 @@ import { Accordion, AccordionContent } from "@/components/ui/Accordion"
 import { AccordionItem, AccordionTrigger } from "@comps/ui/Accordion"
 import { Props } from "./OrderAdminTabs"
 import { PopulatedOrder, completeOrderAction } from "@/actions/order"
-import useModal from "@/hooks/modals/useModal"
-import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
 import { CartTable } from "@/components/cart/CartTable"
 import { Button } from "../../ui/Button"
 import GenericSelectTable from "../../ui/GenericSelectTable"
+import { useModalStore } from "@/store/modalStore"
+import { useToastStore } from "@/store/ToastStore"
 
 export function OrderTab({ group, props }: OrderTabProps) {
 	return (
@@ -41,9 +41,9 @@ function OrderTable(
 	props: Omit<Props, "orders"> & { orders: PopulatedOrder[] }
 ) {
 	const router = useRouter()
-	const { handleResponse } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const [loading, setLoading] = React.useState(false)
-	const { show } = useModal()
+	const show = useModalStore((s) => s.show)
 	return (
 		<GenericSelectTable
 			name={props.name}
@@ -76,7 +76,7 @@ function OrderTable(
 						onClick={async () => {
 							setLoading(true)
 							const res = await completeOrderAction(order.id)
-							if (handleResponse(res)) router.refresh()
+							if (isValidResponse(res)) router.refresh()
 							setLoading(false)
 						}}
 					>

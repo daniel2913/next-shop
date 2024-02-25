@@ -58,7 +58,7 @@ export default function GenericSelectTable<
 					<TableRow
 						key={`${item.id}`}
 						onClick={() => onClick(item.id)}
-						className={`*:text-center *:text-foreground *:hover:bg-white/40 cursor-pointer text-center bg-blend-lighten`}
+						className={`cursor-pointer text-center bg-blend-lighten *:text-center *:text-foreground *:hover:bg-white/40`}
 					>
 						<TableCell>
 							<input

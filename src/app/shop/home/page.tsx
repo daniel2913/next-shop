@@ -21,7 +21,7 @@ function Fallback() {
 
 export default async function HomePage() {
 	return (
-		<div className="p-4 text-3xl font-bold capitalize text-secondary">
+		<main className="p-4 text-3xl font-bold capitalize text-secondary">
 			<Loading fallback={<Fallback />}>
 				<SavedProducts
 					num={10}
@@ -41,6 +41,6 @@ export default async function HomePage() {
 				<CategoryList className="mb-8 rounded-lg bg-secondary p-6" />
 			</Loading>
 			<ReloadOnUserChange />
-		</div>
+		</main>
 	)
 }

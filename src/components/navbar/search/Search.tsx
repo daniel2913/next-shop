@@ -3,7 +3,6 @@ import React, { FormEvent } from "react"
 import { Brand, Category } from "@/lib/Models"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { deffer } from "@/helpers/misc"
-import { cn } from "@/helpers/utils"
 import { SearchInput } from "./SearchInput"
 import { CategoryFilter, BrandFilter } from "./Filters"
 
@@ -66,10 +65,7 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className={cn(
-				className,
-				"group relative right-auto mt-8 flex w-full flex-col rounded-lg md:mt-0 md:border-2"
-			)}
+			className={`group relative right-auto mt-8 flex w-full flex-col rounded-lg md:mt-0 md:border-2 ${className}`}
 		>
 			<SearchInput
 				name={name}

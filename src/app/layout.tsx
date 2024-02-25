@@ -3,13 +3,13 @@ import { ReactElement } from "react"
 import RootProviders from "../providers/RootProviders"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./api/auth/[...nextauth]/route"
-import dynamic from "next/dynamic"
 import ToastBase from "@/components/ui/Toast"
 import { Metadata, Viewport } from "next"
+import ModalBase from "@/components/modals/Base"
 
 export const metadata: Metadata = {
-	title: "Next shop",
-	description: "This is shop and it is in next",
+	title: "Next Shop",
+	description: "This is shop and it is written with Next.js",
 }
 
 export const viewport: Viewport = {
@@ -19,10 +19,6 @@ export const viewport: Viewport = {
 	],
 	colorScheme: "dark light",
 }
-
-const ModalBase = dynamic(() => import("@/components/modals/Base"), {
-	ssr: false,
-})
 
 type LayoutProps = {
 	children: ReactElement
@@ -40,12 +36,15 @@ export default async function MainLayout({ children }: LayoutProps) {
 					<meta charSet="UTF-8" />
 					<meta
 						name="viewport"
-						content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+						content="width=device-width, initial-scale=1.0, maximum-scale=5.0,"
 					/>
-					<title>Document</title>
+					<title>Next Shop</title>
 				</head>
 				<body
-					className={`md:h-full w-full pr-[var(--removed-body-scroll-bar-size)] `}
+					style={{
+						overflowAnchor: "none",
+					}}
+					className={`w-full pr-[var(--removed-body-scroll-bar-size)] md:h-full `}
 				>
 					<RootProviders session={session}>
 						{children}

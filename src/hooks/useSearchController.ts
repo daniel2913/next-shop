@@ -1,20 +1,20 @@
 import React from "react"
 import { useSearchParams } from "next/navigation"
-import useToast from "./modals/useToast"
 import { ServerErrorType } from "./useAction"
+import { useToastStore } from "@/store/ToastStore"
 
 export function useSearchController<T extends { id: number }>(
 	props: SearchProps<T>
 ) {
 	const searchParams = useSearchParams()
 	const oldParams = React.useRef(searchParams)
-	const { handleResponse } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 
 	React.useEffect(() => {
 		async function reloadProducts() {
 			props.setLoading?.(true)
 			const newItems = await props.query(searchParams, 0, props.page || 20)
-			if (!handleResponse(newItems)) return
+			if (!isValidResponse(newItems)) return
 			props.setItems(newItems || [])
 			props.setLoading?.(false)
 		}

@@ -1,13 +1,12 @@
 "use client"
 
 import React from "react"
-import useToast from "@/hooks/modals/useToast"
-import useModal from "@/hooks/modals/useModal"
 import { useRouter } from "next/navigation"
 import { Button } from "../../ui/Button"
 import { PopulatedOrder, deleteOrdersAction } from "@/actions/order"
 import OrdersAdminTabs from "./OrderAdminTabs"
 import useConfirm from "@/hooks/modals/useConfirm"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	orders: {
@@ -20,7 +19,7 @@ type Props = {
 export default function OrdersAdmin({ orders, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
 	const [loading, setLoading] = React.useState(false)
-	const { handleResponse } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const confirm = useConfirm()
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)
@@ -36,7 +35,7 @@ export default function OrdersAdmin({ orders, className }: Props) {
 						if (!ans) return
 						setLoading(true)
 						const res = await deleteOrdersAction(selected)
-						if (handleResponse(res)) {
+						if (isValidResponse(res)) {
 							setSelected([])
 							router.refresh()
 						}

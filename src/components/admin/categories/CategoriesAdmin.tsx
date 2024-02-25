@@ -1,16 +1,16 @@
 "use client"
 
-import useToast from "@/hooks/modals/useToast"
 import { Category } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
 import { Button } from "@/components//ui/Button"
 import Edit from "@public/edit.svg"
-import useModal from "@/hooks/modals/useModal"
 import DiscountForm from "@/components/forms/DiscountForm"
 import CategoryForm from "@/components/forms/CategoryForm"
 import { deleteCategoriesAction } from "@/actions/category"
 import GenericSelectTable from "@/components/ui/GenericSelectTable"
+import { useModalStore } from "@/store/modalStore"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	categories: Category[]
@@ -20,8 +20,8 @@ type Props = {
 export default function CategoriesAdmin({ categories, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
 	const [loading, setLoading] = React.useState(false)
-	const { show } = useModal()
-	const { handleResponse } = useToast()
+	const show = useModalStore((s) => s.show)
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)
 	return (
@@ -40,7 +40,7 @@ export default function CategoriesAdmin({ categories, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteCategoriesAction(selected)
-						if (handleResponse(res)) {
+						if (isValidResponse(res)) {
 							setSelected([])
 							router.refresh()
 						}

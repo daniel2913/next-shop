@@ -20,6 +20,7 @@ export default async function Navbar() {
 			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 				<Link
 					href="/shop/home"
+					aria-label="go to home page"
 					className=" absolute inset-0 size-full basis-0"
 				/>
 				<Home
@@ -32,6 +33,7 @@ export default async function Navbar() {
 			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 				<Link
 					href="/shop"
+					aria-label="go to catalogue page"
 					className=" absolute inset-0 size-full basis-0"
 				/>
 				<Catalogue

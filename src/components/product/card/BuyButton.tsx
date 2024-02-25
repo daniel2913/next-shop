@@ -2,7 +2,6 @@
 import useCartStore from "@/store/cartStore"
 import { useSession } from "next-auth/react"
 import React from "react"
-import { cn } from "@/helpers/utils"
 import AmmountSelector from "@/components/ui/AmmountSelector"
 import { Button } from "@/components/ui/Button"
 
@@ -30,17 +29,12 @@ const BuyButton = React.memo(function BuyButton({
 				useCartStore.getState().setAmmount(id, val, !session.data?.user)
 			}
 			confirm={confirm}
-			className={cn(className, `rounded-lg border-2 border-card-foreground`)}
+			className={`rounded-lg border-2 border-card-foreground ${className}`}
 		/>
 	) : (
 		<Button
 			type="button"
-			className={cn(
-				className,
-				`rounded-lg border-2 border-none 
-					border-card-foreground py-2
-					text-xl font-bold uppercase`
-			)}
+			className={`rounded-lg border-2 border-none  border-card-foreground py-2 text-xl font-bold uppercase ${className}`}
 			onClick={() => addItem(id)}
 		>
 			Buy

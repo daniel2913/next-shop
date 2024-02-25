@@ -28,9 +28,7 @@ export default function AmmountSelector({
 		} else onChange(newAmount)
 	}
 	return (
-		<div
-			className={`${className} text-secondary-600 flex justify-between font-semibold`}
-		>
+		<div className={`flex justify-between font-semibold ${className}`}>
 			<button
 				type="button"
 				className="mr-auto flex flex-grow items-center justify-center leading-4 text-inherit"

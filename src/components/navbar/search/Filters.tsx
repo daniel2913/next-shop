@@ -3,7 +3,7 @@ import React from "react"
 import Image from "next/image"
 import { Brand, Category } from "@/lib/Models"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup"
-import { ScrollArea, ScrollBar } from "../../ui/ScrollArea"
+import { ScrollArea } from "../../ui/ScrollArea"
 
 type CategoryFilterProps = {
 	allCategories: Category[]

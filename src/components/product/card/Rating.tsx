@@ -1,11 +1,10 @@
 "use client"
-import useToast from "@/hooks/modals/useToast"
 import Star from "@public/star.svg"
 import { useSession } from "next-auth/react"
 import React from "react"
-import { cn } from "@/helpers/utils"
+import { useToastStore } from "@/store/ToastStore"
 
-interface Props {
+type Props = {
 	id: number
 	voters: number
 	rating: number
@@ -25,16 +24,16 @@ const Rating = React.memo(function Rating({
 	className,
 }: Props) {
 	const session = useSession()
-	const { show: showToast } = useToast()
+	const error = useToastStore((s) => s.error)
 	async function handleRate(i: number) {
 		if (session?.data?.user?.id) onChange(i)
 		else {
-			showToast("Only authorized users can rate products!")
+			error("Only authorized users can rate products!")
 		}
 	}
 	return (
 		<div
-			className={cn(`flex flex-nowrap justify-center gap-1`, className)}
+			className={`flex flex-nowrap justify-center gap-1 ${className}`}
 			title={
 				(rating > 0 &&
 					`
@@ -46,22 +45,21 @@ const Rating = React.memo(function Rating({
 				<button
 					disabled={value === -1}
 					type="button"
-					key={`${i}-${Math.random()}`}
+					aria-label={`rate this product ${i}`}
+					key={`${i}`}
 					onClick={() => handleRate(i)}
-					className="w-1/5"
-					id={`${i}`}
 				>
 					<Star
 						width={size}
 						height={size}
-						key={`${i}-${Math.random()}`}
-						className={`max-w-[${size}] aspect-square	h-full w-full
+						className={` aspect-square
 								${
 									value === 0
-									? "stroke-accent"
-									: i <= rating
-										? "stroke-foreground" 
-										: "stroke-secondary"}
+										? "stroke-accent"
+										: i <= rating
+											? "stroke-foreground"
+											: "stroke-secondary"
+								}
 								${(i <= value && "fill-accent") || (i <= rating && "fill-foreground") || "fill-secondary"}
 							`}
 					/>

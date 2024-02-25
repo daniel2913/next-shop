@@ -1,9 +1,9 @@
 "use client"
-import useToast from "@/hooks/modals/useToast"
 import React from "react"
 import { Button } from "../ui/Button"
 import { ServerErrorType } from "@/hooks/useAction"
 import { toArray } from "@/helpers/misc"
+import { useToastStore } from "@/store/ToastStore"
 export const clientValidations = {
 	name: (value: FormFieldValue) => {
 		if (typeof value !== "string") return "Name can only be string!"
@@ -48,7 +48,9 @@ export default function Form({
 	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false)
-	const { handleResponse, error: showError, info: showStatus } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
+	const showError = useToastStore((s) => s.error)
+	const showStatus = useToastStore((s) => s.info)
 
 	async function submitHandler(e: FormData) {
 		const payload = new FormData()
@@ -64,7 +66,7 @@ export default function Form({
 		}
 		setLoading(true)
 		const res = await action(payload)
-		if (handleResponse(res)) showStatus("Successful")
+		if (isValidResponse(res)) showStatus("Successful")
 		setLoading(false)
 	}
 

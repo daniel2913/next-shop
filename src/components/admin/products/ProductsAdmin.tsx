@@ -5,12 +5,12 @@ import ProductsAdminTabs from "./ProductsAdminTabs"
 import React from "react"
 import { Button } from "@/components/ui/Button"
 import { deleteProductsAction } from "@/actions/product"
-import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
 import ProductForm from "@/components/forms/ProductForm"
-import useModal from "@/hooks/modals/useModal"
 import DiscountForm from "@/components/forms/DiscountForm"
 import { createRandomProductAction } from "@/actions/generate"
+import { useModalStore } from "@/store/modalStore"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	products: PopulatedProduct[]
@@ -20,8 +20,9 @@ type Props = {
 export default function ProductsAdmin({ products, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
 	const [loading, setLoading] = React.useState(false)
-	const { handleResponse, error } = useToast()
-	const { show } = useModal()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
+	const error = useToastStore((s) => s.error)
+	const show = useModalStore((s) => s.show)
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)
 	return (
@@ -49,7 +50,7 @@ export default function ProductsAdmin({ products, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteProductsAction(selected)
-						if (handleResponse(res)) {
+						if (isValidResponse(res)) {
 							setSelected([])
 							router.refresh()
 						}

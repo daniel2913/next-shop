@@ -1,7 +1,5 @@
 "use client"
-import {
-	getOrdersAction,
-} from "@/actions/order"
+import { getOrdersAction } from "@/actions/order"
 import React from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { OrdersTab } from "./OrdersTab"
@@ -20,7 +18,9 @@ export const OrdersTabs = React.memo(function OrderList({
 	className,
 }: Props) {
 	const router = useRouter()
-	useAuthController(()=>router.refresh(),{onUnAuth:()=>router.push("/shop/home")})
+	useAuthController(() => router.refresh(), {
+		onUnAuth: () => router.push("/shop/home"),
+	})
 	return (
 		<Tabs
 			className={`${className} w-full text-black`}
@@ -31,9 +31,7 @@ export const OrdersTabs = React.memo(function OrderList({
 				<TabsTrigger value="comp">Completed</TabsTrigger>
 			</TabsList>
 			<TabsContent value="proc">
-				<OrdersTab
-					orders={orders.processing}
-				/>
+				<OrdersTab orders={orders.processing} />
 			</TabsContent>
 			<TabsContent value="comp">
 				<OrdersTab orders={orders.completed} />

@@ -1,12 +1,12 @@
 "use client"
 import useCartStore from "@/store/cartStore"
 import { useSession } from "next-auth/react"
-import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import CartIcon from "@public/cart.svg"
 import NavButton from "../ui/Navbutton"
 import useResponsive from "@/hooks/useResponsive"
 import { useRouter } from "next/navigation"
+import { useModalStore } from "@/store/modalStore"
 
 const Login = dynamic(() => import("@/components/modals/auth"))
 
@@ -29,20 +29,21 @@ export function mergeCarts(cart1: Items, cart2: Items) {
 export default function CartStatus({ className }: Props) {
 	const session = useSession()
 	const router = useRouter()
-	const modal = useModal()
+	const show = useModalStore((s) => s.show)
+	const close = useModalStore((s) => s.clear)
 	const cart = useCartStore((state) => state.items)
 	const itemsCount = Object.values(cart).reduce((sum, next) => sum + next, 0)
 
 	async function cartClickHandler() {
 		if (session.data?.user?.role !== "user")
-			modal.show(<Login close={modal.close}/>)
-		else if (itemsCount > 0)
-			router.push("/shop/cart")
+			show(<Login close={() => close()} />)
+		else if (itemsCount > 0) router.push("/shop/cart")
 	}
 
 	return (
 		<NavButton
 			className={className}
+			aria-label="go to cart contents list"
 			onClick={cartClickHandler}
 		>
 			<div className="relative h-fit w-fit">

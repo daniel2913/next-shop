@@ -8,9 +8,9 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/Popover"
 import Account from "@public/account.svg"
-import useModal from "@/hooks/modals/useModal"
 import dynamic from "next/dynamic"
 import NavButton from "../../ui/Navbutton"
+import { useModalStore } from "@/store/modalStore"
 
 const Login = dynamic(() => import("@/components/modals/auth"))
 
@@ -21,12 +21,14 @@ type Props = {
 
 export default function AuthContainer({ children, className }: Props) {
 	const mode = useResponsive()
-	const modal = useModal()
+	const show = useModalStore((s) => s.show)
+	const close = useModalStore((s) => s.clear)
 	const session = useSession()
 	if (!session.data?.user?.name)
 		return (
 			<NavButton
-				onClick={() => modal.show(<Login close={modal.close} />)}
+				onClick={() => show(<Login close={() => close()} />)}
+				aria-label="open authentication form"
 				className={className}
 			>
 				<Account
@@ -40,7 +42,10 @@ export default function AuthContainer({ children, className }: Props) {
 	return (
 		<Popover>
 			<PopoverTrigger asChild={true}>
-				<NavButton className={className}>
+				<NavButton
+					className={className}
+					aria-label="open account specific actions"
+				>
 					<Account
 						className="*:stroke-foreground *:stroke-2"
 						width={"30px"}

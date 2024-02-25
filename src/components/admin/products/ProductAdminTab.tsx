@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/Accordion"
 import ProductForm from "../../forms/ProductForm"
 import { Button } from "../../ui/Button"
-import useModal from "@/hooks/modals/useModal"
+import { useModalStore } from "@/store/modalStore"
 
 export type Props = {
 	name?: string
@@ -59,7 +59,7 @@ type GenericProductTableProps = {
 
 function GenericProductTable(props: GenericProductTableProps) {
 	const router = useRouter()
-	const modal = useModal()
+	const show = useModalStore((s) => s.show)
 	return (
 		<GenericSelectTable
 			name={props.name}
@@ -72,44 +72,7 @@ function GenericProductTable(props: GenericProductTableProps) {
 					<Button
 						className={`flex w-full appearance-none justify-between bg-transparent p-0 hover:bg-transparent`}
 						onClick={() => {
-							modal
-								.show(<ProductForm product={prod} />)
-								.then(() => router.refresh())
-						}}
-					>
-						<Edit
-							className="hover:stroke-accent"
-							width={"30px"}
-							height={"30px"}
-						/>
-					</Button>
-				),
-			}}
-			items={props.products}
-			value={props.value}
-			onChange={props.onChange}
-		/>
-	)
-}
-
-function CategoryTable(props: Props) {
-	const router = useRouter()
-	const modal = useModal()
-	return (
-		<GenericSelectTable
-			name={props.name}
-			columns={{
-				Id: (prod) => prod.id,
-				Name: (prod) => prod.name,
-				Brand: (prod) => prod.brand.name,
-				Price: (prod) => prod.price,
-				Edit: (prod) => (
-					<Button
-						className={`flex w-full appearance-none justify-between bg-transparent p-0 hover:bg-transparent`}
-						onClick={() => {
-							modal
-								.show(<ProductForm product={prod} />)
-								.then(() => router.refresh())
+							show(<ProductForm product={prod} />).then(() => router.refresh())
 						}}
 					>
 						<Edit

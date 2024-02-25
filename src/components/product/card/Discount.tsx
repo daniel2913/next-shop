@@ -6,27 +6,12 @@ interface Props {
 }
 
 const Discount = React.memo(function Discount({ discount, className }: Props) {
-	const lvls = ["none", "small", "medium", "high"]
-	const style = React.useMemo(() => lvls[(discount / 25) ^ 0], [discount])
+	if (discount === 0) return null
 	return (
 		<div
-			data-lvl={style}
-			className={`${className} 
-				relative aspect-square rounded-full
-				bg-secondary text-center
-        text-accent
-				data-[lvl=none]:hidden data-[lvl=high]:bg-accent
-				data-[lvl=medium]:bg-primary data-[lvl=high]:text-accent-foreground
-        data-[lvl=medium]:text-primary-foreground
-			`}
+			className={`absolute aspect-square rounded-full bg-foreground text-center text-accent ${className}`}
 		>
-			<span
-				className="
-        	absolute bottom-1/2 right-1/2 
-          translate-x-1/2 translate-y-1/2
-          text-center text-inherit
-    		"
-			>
+			<span className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2 text-center text-inherit">
 				{discount}%
 			</span>
 		</div>

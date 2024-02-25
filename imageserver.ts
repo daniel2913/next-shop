@@ -11,7 +11,6 @@ app.get("/api/public", async (c) => {
   let format = "jpg";
 	if (!accept) format = "jpg"
 	else if (accept.includes("webp")) format = "webp";
-  else if (accept.includes("avif")) format = "avif";
   if (typeof src !== "string" || Number.isNaN(+w) || Number.isNaN(q)) {
     return new Response("test");
   }

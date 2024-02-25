@@ -1,53 +1,87 @@
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselNext,
-	CarouselPrevious,
-} from "../../ui/Carousel"
 import React from "react"
-import Discount from "./Discount"
 import Image from "next/image"
+import Arrow from "@public/arrowStraight.svg"
 
 type Props = {
 	images: string[]
 	brand?: string
 	brandName?: string
-	discount: number
 	className?: string
 	imageClassName?: string
-	width?: number
-	height?: number
-	fill?: boolean
+	imageWrapperClassName?: string
+	width: number
+	height: number
+	priority?: boolean
 }
 
 const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
+	const ref = React.useRef<HTMLDivElement>(null)
+	const position = React.useRef(0)
 	return (
-		<Carousel className={`relative ${props.className} overflow-hidden`}>
-			<CarouselContent className="h-full w-full">
+		<div
+			className={`relative size-full overflow-hidden rounded-lg ${props.className}`}
+		>
+			<button
+				type="button"
+				aria-label="previous image"
+				className="group absolute bottom-1/2 left-0 z-10 translate-y-1/2"
+				onClick={() => {
+					position.current = Math.max(--position.current, 0)
+					ref.current?.children[position.current].scrollIntoView({
+						behavior: "smooth",
+						block: "nearest",
+						inline: "nearest",
+					})
+				}}
+			>
+				<Arrow
+					className="-rotate-90 fill-background stroke-foreground opacity-40 group-hover:opacity-70"
+					width={30}
+					height={30}
+				/>
+			</button>
+			<div
+				ref={ref}
+				className="relative flex h-full w-fit snap-x snap-start snap-always gap-4 overflow-x-hidden"
+			>
 				{props.images.map((img, idx) => (
-					<CarouselItem
-						className="relative h-full"
+					<div
 						key={`${img}-${idx}`}
+						className={`object-fit flex-shrink-0 ${props.imageWrapperClassName}`}
 					>
 						<Image
-							key={`${img}-${idx}`}
+							priority={idx === 0 && props.priority}
 							className={`h-full rounded-lg ${props.imageClassName}`}
-							width={(!props.fill && props.width) || undefined}
-							height={(!props.fill && props.height) || undefined}
-							fill={props.fill}
-							src={`/products/${img}`}
-							alt={img}
+							width={props.width}
+							height={props.height}
+							src={img.includes(":") ? img : `/products/${img}`}
+							alt={"Product image"}
 						/>
-					</CarouselItem>
+					</div>
 				))}
-			</CarouselContent>
-			<CarouselPrevious className="absolute bottom-1/2 left-4 -translate-y-1/2 opacity-50 disabled:opacity-30" />
-			<CarouselNext className="absolute bottom-1/2 right-4 -translate-y-1/2 opacity-50 disabled:opacity-30" />
-			<Discount
-				className="absolute bottom-12 right-12 w-12 -rotate-[20deg] text-lg font-bold"
-				discount={props.discount || 0}
-			/>
+			</div>
+			<button
+				type="button"
+				aria-label="next image"
+				className="group absolute bottom-1/2 right-0 z-10 translate-y-1/2"
+				onClick={() => {
+					position.current = Math.min(
+						++position.current,
+						props.images.length - 1
+					)
+					ref.current?.children[position.current].scrollIntoView({
+						behavior: "smooth",
+						block: "nearest",
+						inline: "nearest",
+					})
+				}}
+			>
+				<Arrow
+					className="rotate-90 fill-background stroke-foreground opacity-40 group-hover:opacity-70"
+					width={30}
+					height={30}
+				/>
+			</button>
 			{props.brand ? (
 				<Image
 					className="absolute left-2 top-2 aspect-square rounded-full opacity-60 hover:opacity-100"
@@ -57,7 +91,7 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 					alt={props.brandName || ""}
 				/>
 			) : null}
-		</Carousel>
+		</div>
 	)
 })
 

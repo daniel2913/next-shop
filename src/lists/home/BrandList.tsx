@@ -28,7 +28,6 @@ export default async function BrandList(props: Props) {
 			<HorizontalScrollList className={props.className}>
 				{brands.map((brand) => (
 					<BrandCard
-						className="h-30 w-40 rounded-md bg-cyan-200 p-2"
 						key={`${brand.id}`}
 						brand={brand}
 						products={products[brand.id.toString()] || 0}

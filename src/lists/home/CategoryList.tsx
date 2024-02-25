@@ -3,7 +3,6 @@ import React from "react"
 import CategoryCard from "../../components/categories/CategoryCard"
 import { CategoryCache } from "@/helpers/cache"
 import { count } from "drizzle-orm"
-import { ScrollArea, ScrollBar } from "../../components/ui/ScrollArea"
 import HorizontalScrollList from "../../components/ui/HorizontalScrollList"
 
 type Props = {
@@ -28,7 +27,6 @@ export default async function CategoryList(props: Props) {
 			<HorizontalScrollList className={props.className}>
 				{categories.map((category) => (
 					<CategoryCard
-						className="h-30 w-40 rounded-md bg-cyan-200 p-2"
 						key={`${category.id}`}
 						category={category}
 						products={products[category.id.toString()] || 0}

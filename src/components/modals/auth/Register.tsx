@@ -3,10 +3,10 @@ import { registerUserAction } from "@/actions/user"
 import Input from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { Label } from "@/components/ui/Label"
-import useToast from "@/hooks/modals/useToast"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import React from "react"
+import { useToastStore } from "@/store/ToastStore"
 
 export type Props = {
 	close?: () => void
@@ -18,12 +18,13 @@ export function Register({ close, redirect }: Props) {
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
 	const router = useRouter()
-	const { error, handleResponse } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
+	const error = useToastStore((s) => s.error)
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true)
 		const res = await registerUserAction(creds.name, creds.password)
 		setLoading(false)
-		if (!handleResponse(res)) return
+		if (!isValidResponse(res)) return
 		const signRes = await signIn("credentials", { ...creds, redirect: false })
 		if (!signRes?.ok) {
 			error("Unknown Error", "Internal Error")

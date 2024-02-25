@@ -1,6 +1,5 @@
 import { UserCache } from "@/helpers/cache"
 import { env } from "process"
-import { UserModel } from "@/lib/Models"
 import { createHash } from "crypto"
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -19,7 +18,7 @@ async function authUser(props: Props | undefined) {
 	hash.update(password)
 	hash.update(name)
 	const passwordHash = hash.digest("hex")
-	const user = await UserModel.findOne({ name: props.name })
+	const user = await UserCache.get(props.name)
 	if (!user) return null
 	if (user.passwordHash === passwordHash) {
 		revalidatePath("/shop/cart")
@@ -57,12 +56,12 @@ export const authOptions: AuthOptions = {
 	callbacks: {
 		async session({ session }) {
 			if (!session.user?.name) return session
-			const fullUser = await UserCache.get(session.user.name)
-			if (!fullUser) return session
+			const user = await UserCache.get(session.user.name)
+			if (!user) return session
 			session.user = {
-				id: fullUser.id,
-				role: fullUser.role,
-				name: fullUser.name,
+				id: user.id,
+				role: user.role,
+				name: user.name,
 			}
 			return session
 		},

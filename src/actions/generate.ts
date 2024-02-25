@@ -50,7 +50,7 @@ export async function generateProductAction() {
 			category = categories.find((cat) => cat.name === "Smartphones")!
 
 		const base = _path.join(
-			env.PUBLIC_DIR || _path.join(process.cwd(),"public"),
+			env.PUBLIC_DIR || _path.join(process.cwd(), "public"),
 			"samples",
 			category.name
 		)

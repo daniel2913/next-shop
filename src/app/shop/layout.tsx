@@ -7,10 +7,9 @@ type Props = {
 	children: React.ReactNode
 }
 
-
 export default async function ShopLayout({ children }: Props) {
 	return (
-		<div className="flex flex-col-reverse md:flex-col h-full">
+		<div className="flex min-h-screen flex-col-reverse md:flex-col">
 			<NavBarContainer>
 				<Navbar />
 			</NavBarContainer>

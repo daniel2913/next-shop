@@ -17,11 +17,12 @@ import AmmountSelector from "@/components/ui/AmmountSelector"
 import useResponsive from "@/hooks/useResponsive"
 import { PopulatedProduct } from "@/lib/Models/Product"
 
-type Props={
-	className?:string
-	products:PopulatedProduct[]
-	interactive?:boolean
-	order:Record<string,{price:number,amount:number}>}
+type Props = {
+	className?: string
+	products: PopulatedProduct[]
+	interactive?: boolean
+	order: Record<string, { price: number; amount: number }>
+}
 
 export function CartTable({ className, products, order, interactive }: Props) {
 	if (products === undefined)
@@ -89,7 +90,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									)}
 								</TableCell>
 								<TableCell>
-									{(order[product.id].price * order[product.id].amount).toFixed(2)}$
+									{(order[product.id].price * order[product.id].amount).toFixed(
+										2
+									)}
+									$
 								</TableCell>
 							</TableRow>
 						))}
@@ -144,7 +148,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									</span>
 								)}
 								<span className="text-2xl font-bold">
-									{(order[product.id].price * order[product.id].amount).toFixed(2)}$
+									{(order[product.id].price * order[product.id].amount).toFixed(
+										2
+									)}
+									$
 								</span>
 							</div>
 						</div>

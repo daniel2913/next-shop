@@ -8,19 +8,15 @@ interface Props {
 
 const Price = React.memo(function Price({ price, discount, className }: Props) {
 	return discount ? (
-		<div className={`${className} flex text-inherit`}>
-			<p className="font-extrabold leading-5  text-foreground">
-				<s className="text-[.75em] text-secondary decoration-accent">
-					{price.toFixed(2)}$
-				</s>
-				<br />
-				{calcPrice(price, discount)}$
-			</p>
-		</div>
-	) : (
-		<p className={`${className} font-bold text-foreground`}>
+		<p className={`${className} font-bold leading-5`}>
+			<s className="text-[.75em] text-foreground/60 decoration-accent">
+				{price.toFixed(2)}$
+			</s>
+			<br />
 			{calcPrice(price, discount)}$
 		</p>
+	) : (
+		<p className={`${className} font-bold`}>{calcPrice(price, discount)}$</p>
 	)
 })
 

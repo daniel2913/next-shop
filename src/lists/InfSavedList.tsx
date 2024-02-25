@@ -7,8 +7,8 @@ import React from "react"
 import ProductCard from "../components/product/card"
 import Loading from "../components/ui/Loading"
 import { getProductsByIdsAction } from "@/actions/product"
-import useToast from "@/hooks/modals/useToast"
 import { useRouter } from "next/navigation"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	products: PopulatedProduct[]
@@ -27,14 +27,14 @@ export default function InfSavedList({ products: initProducts, saved }: Props) {
 		initItems: initProducts,
 		getItems: getProductsByIdsAction,
 	})
-	const { handleResponse } = useToast()
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 
 	const loadMore = React.useCallback(
 		async (query: URLSearchParams, skip: number, page = 20) => {
 			const newProducts = await getProductsByIdsAction(
 				saved.slice(skip, skip + page)
 			)
-			if (!handleResponse(newProducts)) return 0
+			if (!isValidResponse(newProducts)) return 0
 			if (newProducts.length) setProducts((old) => [...old, ...newProducts])
 			return newProducts ? newProducts.length : 0
 		},

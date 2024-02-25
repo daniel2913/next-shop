@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { cn } from "@/helpers/utils"
 
 const ScrollArea = React.forwardRef(function ScrollArea(
 	{ children, className }: { children: React.ReactNode; className: string },
@@ -14,15 +13,11 @@ const ScrollArea = React.forwardRef(function ScrollArea(
 				scrollbarWidth: "thin",
 				scrollbarGutter: "none",
 			}}
-			className={cn(className, "h-full w-full overflow-y-scroll")}
+			className={`h-full w-full overflow-y-scroll ${className}`}
 		>
 			{children}
 		</div>
 	)
 })
 
-function ScrollBar() {
-	return null
-}
-
-export { ScrollArea, ScrollBar }
+export { ScrollArea }

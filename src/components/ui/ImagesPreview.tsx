@@ -1,5 +1,6 @@
 import React from "react"
 import Cross from "@public/cross.svg"
+import Image from "next/image"
 interface Props {
 	className: string
 	images: File[]
@@ -31,24 +32,24 @@ export default function ImagesPreview({ images, delImage, className }: Props) {
 			{imageUrls.map((image, idx) => {
 				return image ? (
 					<div
-						className="relative"
+						className="relative h-7 w-8 object-fill"
 						key={image}
 					>
 						<button
 							type="button"
-							className="text-accent1-500 absolute right-0 top-0 appearance-none"
+							className="absolute right-0 top-0 z-10 appearance-none"
 							onClick={() => delImage(idx)}
 						>
 							<Cross
 								className="stroke-destructive"
-								width="15px"
-								height="15px"
+								width={15}
+								height={15}
 							/>
 						</button>
-						<img
+						<Image
 							alt=""
-							width={30}
-							height={50}
+							className=""
+							fill
 							src={image}
 						/>
 					</div>

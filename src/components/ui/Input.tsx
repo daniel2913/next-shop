@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 					disabled:cursor-not-allowed disabled:opacity-50
 					aria-[invalid]:border-destructive aria-[invalid]:text-destructive
 					`,
-					className
+					className || ""
 				)}
 				ref={ref}
 			/>

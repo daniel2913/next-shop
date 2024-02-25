@@ -2,9 +2,8 @@
 
 import React from "react"
 import Glass from "@public/search.svg"
-import useModal from "@/hooks/modals/useModal"
 import NavButton from "../../ui/Navbutton"
-import {cn} from "@/helpers/utils"
+import { useModalStore } from "@/store/modalStore"
 
 type Props = {
 	children: React.ReactNode
@@ -12,19 +11,21 @@ type Props = {
 }
 
 export default function SearchContainer({ children, className }: Props) {
-	const modal = useModal()
-	return	<>
-		<div className={cn(className,"hidden md:block")}>{children}</div>
-		<NavButton
-			className={cn(className,"md:hidden")}
-			onClick={() => modal.show(children)}
-		>
-			<Glass
-				width="30px"
-				height="30px"
-				className="rounded-full opacity-80 *:fill-foreground *:stroke-foreground"
-			/>
-			Search
-		</NavButton>
-	</>
+	const show = useModalStore((s) => s.show)
+	return (
+		<>
+			<div className={`${className} hidden md:block`}>{children}</div>
+			<NavButton
+				className={`${className} md:hidden`}
+				onClick={() => show(children)}
+			>
+				<Glass
+					width="30px"
+					height="30px"
+					className="rounded-full opacity-80 *:fill-foreground *:stroke-foreground"
+				/>
+				Search
+			</NavButton>
+		</>
+	)
 }

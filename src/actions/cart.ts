@@ -29,7 +29,7 @@ export async function getUserStateAction() {
 		}
 		return { cart: cart, saved: user.saved, votes: user.votes }
 	} catch {
-		return {cart:{},saved:[],votes:{}}
+		return { cart: {}, saved: [], votes: {} }
 	}
 }
 

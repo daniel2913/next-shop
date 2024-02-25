@@ -1,4 +1,4 @@
-import { Column, SQLWrapper, and, eq, inArray, ilike } from "drizzle-orm"
+import { Column, SQLWrapper, and, eq, ilike } from "drizzle-orm"
 import {
 	PgColumn,
 	PgTableWithColumns,
@@ -94,7 +94,8 @@ export class PgreModel<
 	}
 
 	async patch(targId: number, patch: Partial<z.infer<Z>> | unknown) {
-		if (!targId) throw ServerError.invalid()
+		if (!targId || typeof patch !== "object" || !patch)
+			throw ServerError.invalid()
 		const [original, props] = await Promise.all([
 			this.findOne({ id: targId }),
 			this.validations.partial().parseAsync(patch),

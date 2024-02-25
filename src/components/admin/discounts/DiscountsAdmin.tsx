@@ -1,15 +1,15 @@
 "use client"
 
-import useToast from "@/hooks/modals/useToast"
 import { Discount } from "@/lib/Models"
 import { useRouter } from "next/navigation"
-import React from "react"
+import React, { isValidElement } from "react"
 import { Button } from "@/components/ui/Button"
 import Edit from "@public/edit.svg"
-import useModal from "@/hooks/modals/useModal"
 import { deleteDiscountsAction } from "@/actions/discount"
 import DiscountForm from "@/components/forms/DiscountForm"
 import GenericSelectTable from "@/components/ui/GenericSelectTable"
+import { useModalStore } from "@/store/modalStore"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	discounts: Discount[]
@@ -19,8 +19,8 @@ type Props = {
 export default function DiscountsAdmin({ discounts, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
 	const [loading, setLoading] = React.useState(false)
-	const { show } = useModal()
-	const { handleResponse } = useToast()
+	const show = useModalStore((s) => s.show)
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)
 	return (
@@ -31,7 +31,7 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 					onClick={async () => {
 						setLoading(true)
 						const res = await deleteDiscountsAction(selected)
-						if (handleResponse(res)) {
+						if (isValidResponse(res)) {
 							setSelected([])
 							router.refresh()
 						}

@@ -1,13 +1,6 @@
 "use client"
 import React from "react"
-import { cn } from "@/helpers/utils"
-import {
-	ArrowBigLeft,
-	ArrowDownLeft,
-	LucideArrowBigLeft,
-	RefreshCw,
-} from "lucide-react"
-
+import Arrow from "@public/arrowStraight.svg"
 type Props = {
 	children: React.ReactNode
 	className?: string
@@ -25,13 +18,14 @@ export default function HorizontalScrollList({ children, className }: Props) {
 		<div className="relative">
 			<button
 				type="button"
+				aria-label="scroll left"
 				onClick={() => scroll(-300)}
-				className="absolute bottom-1/2 left-2 z-10 translate-y-1/2  appearance-none"
+				className="absolute bottom-1/2 left-2 z-10 aspect-square translate-y-1/2 appearance-none rounded-full bg-background p-1 opacity-30 hover:opacity-50"
 			>
-				<ArrowDownLeft
-					className="rotate-45 stroke-foreground"
-					width={40}
-					height={40}
+				<Arrow
+					className="-rotate-90 fill-foreground stroke-foreground"
+					width={35}
+					height={35}
 				/>
 			</button>
 			<div
@@ -39,22 +33,20 @@ export default function HorizontalScrollList({ children, className }: Props) {
 				style={{
 					scrollbarWidth: "none",
 				}}
-				className={cn(
-					"flex h-fit w-full snap-proximity snap-start snap-always gap-4 overflow-y-hidden overflow-x-scroll px-2 *:flex-shrink-0",
-					className
-				)}
+				className={`flex h-fit w-full snap-x snap-center snap-always gap-4 overflow-y-hidden overflow-x-scroll px-2 *:flex-shrink-0 ${className}`}
 			>
 				{children}
 			</div>
 			<button
 				type="button"
+				aria-label="scroll right"
 				onClick={() => scroll(300)}
-				className="absolute bottom-1/2 right-2 z-10 translate-y-1/2  appearance-none"
+				className="absolute bottom-1/2 right-2 z-10 aspect-square translate-y-1/2 appearance-none rounded-full bg-background p-1 opacity-30 hover:opacity-50"
 			>
-				<ArrowDownLeft
-					className="-rotate-[135deg] stroke-foreground"
-					width={40}
-					height={40}
+				<Arrow
+					className="rotate-90 fill-foreground stroke-foreground opacity-40 group-hover:opacity-70"
+					width={35}
+					height={35}
 				/>
 			</button>
 		</div>

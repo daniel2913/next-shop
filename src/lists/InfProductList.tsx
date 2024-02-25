@@ -64,16 +64,15 @@ export default function InfProductList({ products: initProducts }: Props) {
 	return (
 		<>
 			<Loading loading={loading}>
-		<main className="grid w-full grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] items-center justify-items-center gap-y-4 bg-background p-5">
-				{initedProducts.map((product) => (
+				{initedProducts.map((product, idx) => (
 					<ProductCard
 						key={product.id}
 						{...product}
 						reload={reloadOne}
 						update={updateOne}
+						idx={idx}
 					/>
 				))}
-		</main>
 			</Loading>
 			<div
 				className="invisible relative bottom-96"

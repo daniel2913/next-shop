@@ -1,17 +1,17 @@
 "use client"
 
-import useToast from "@/hooks/modals/useToast"
 import { Brand } from "@/lib/Models"
 import { useRouter } from "next/navigation"
 import React from "react"
 import { Button } from "@/components/ui/Button"
 import Edit from "@public/edit.svg"
-import useModal from "@/hooks/modals/useModal"
 import BrandForm from "@/components/forms/BrandForm"
 import { deleteBrandsAction } from "@/actions/brand"
 import DiscountForm from "@/components/forms/DiscountForm"
 import useConfirm from "@/hooks/modals/useConfirm"
 import GenericSelectTable from "@/components/ui/GenericSelectTable"
+import { useModalStore } from "@/store/modalStore"
+import { useToastStore } from "@/store/ToastStore"
 
 type Props = {
 	brands: Brand[]
@@ -22,8 +22,8 @@ export default function BrandsAdmin({ brands, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([])
 	const confirm = useConfirm()
 	const [loading, setLoading] = React.useState(false)
-	const { show } = useModal()
-	const { handleResponse } = useToast()
+	const show = useModalStore((s) => s.show)
+	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const router = useRouter()
 	const onChange = (ids: number[]) => setSelected(ids)
 	return (
@@ -46,7 +46,7 @@ export default function BrandsAdmin({ brands, className }: Props) {
 						if (!ans) return
 						setLoading(true)
 						const res = await deleteBrandsAction(selected)
-						if (handleResponse(res)) {
+						if (isValidResponse(res)) {
 							setSelected([])
 							router.refresh()
 						}
@@ -57,8 +57,9 @@ export default function BrandsAdmin({ brands, className }: Props) {
 				</Button>
 				<Button
 					disabled={selected.length === 0}
-					onClick={() => {
-						show(<DiscountForm discount={{ brands: selected }} />)
+					onClick={async () => {
+						await show(<DiscountForm discount={{ brands: selected }} />)
+						setSelected([])
 					}}
 				>
 					Discount

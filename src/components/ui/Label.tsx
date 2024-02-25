@@ -2,7 +2,6 @@
 
 import * as React from "react"
 
-import { cn } from "@/helpers/utils"
 import { LabelHTMLAttributes } from "react"
 
 const Label = React.forwardRef(function Label(
@@ -12,7 +11,7 @@ const Label = React.forwardRef(function Label(
 	return (
 		<label
 			ref={ref}
-			className={cn("space-y-2 font-semibold", className)}
+			className={`space-y-2 font-semibold ${className}`}
 			{...props}
 		/>
 	)

@@ -4,10 +4,9 @@ import React from "react"
 import { Drawer, DrawerContent, DrawerPortal, DrawerTitle } from "../ui/Drawer"
 import { useModalStore } from "@/store/modalStore"
 
-
-export default function MobileModal(){
+export default function MobileModal() {
 	const { open, title, children, onClose, clear } = useModalStore()
-	return(
+	return (
 		<Drawer
 			open={open}
 			onOpenChange={(open) => {
