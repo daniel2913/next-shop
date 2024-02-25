@@ -21,7 +21,7 @@ export default function BrandCard({ brand, products, className }: Props) {
 						alt={brand.name}
 						src={`/brands/${brand.image}`}
 					/>
-					<h2 className="w-full overflow-hidden overflow-ellipsis text-center text-2xl font-semibold">
+					<h2 className="w-full overflow-hidden overflow-ellipsis text-nowrap whitespace-nowrap text-center text-2xl font-semibold">
 						{brand.name}
 					</h2>
 					<span className="text-xl font-medium">

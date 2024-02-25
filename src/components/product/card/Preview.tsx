@@ -1,17 +1,7 @@
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselNext,
-	CarouselPrevious,
-} from "../../ui/Carousel"
 import Price from "./Price"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import React from "react"
 import { PopulatedProduct } from "@/lib/Models/Product"
-import Image from "next/image"
 import ProductCarousel from "./ProductCarousel"
-import { argv0 } from "process"
 import Rating from "./Rating"
 
 type Props = {
@@ -20,9 +10,8 @@ type Props = {
 		category: string
 		images: File[] | string[]
 	}
-	className?: string
 }
-export default function PreviewProductCard({ product, className }: Props) {
+export default function PreviewProductCard({ product}: Props) {
 	const currentImageUrls = React.useRef<string[]>([])
 	currentImageUrls.current = React.useMemo(() => {
 		for (const image of currentImageUrls.current) {
@@ -39,11 +28,10 @@ export default function PreviewProductCard({ product, className }: Props) {
 		return res
 	}, [product.images])
 	return (
-		<Card className="h-lgCardY w-lgCardX border-2">
-			<CardContent className="grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr] px-4 pt-2">
-				<CardHeader className="col-span-2 h-full p-0">
+		<article className="h-lgCardY  w-lgCardX rounded-lg border-2 bg-card text-card-foreground shadow-lg">
+			<main className="grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr] px-4 pt-2">
 					<ProductCarousel
-						className="h-full"
+					className="col-span-2 h-full p-0"
 						images={
 							currentImageUrls.current.length > 0
 								? currentImageUrls.current
@@ -52,7 +40,6 @@ export default function PreviewProductCard({ product, className }: Props) {
 						width={250}
 						height={190}
 					/>
-				</CardHeader>
 				<Rating
 					id={-1}
 					onChange={() => undefined}
@@ -61,14 +48,14 @@ export default function PreviewProductCard({ product, className }: Props) {
 					voters={0}
 					className="col-span-2 justify-self-center"
 				/>
-				<CardTitle className="col-span-2 w-full overflow-hidden text-ellipsis text-nowrap text-2xl font-bold uppercase leading-6 text-foreground">
-					{product.name}
-				</CardTitle>
+					<h3 className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-nowrap text-2xl font-bold uppercase leading-6 tracking-tight">
+						{product.name}
+					</h3>
 
-				<span className="w-full self-start overflow-hidden text-ellipsis text-xl font-semibold">
+				<span className="overflow-hidden whitespace-nowrap text-ellipsis text-nowrap text-xl font-semibold">
 					{product.brand}
 				</span>
-				<span className="justify-self-end overflow-hidden text-ellipsis text-lg capitalize text-gray-600">
+				<span className="justify-self-end overflow-hidden text-ellipsis whitespace-nowrap text-nowrap text-xl font-semibold text-muted-foreground">
 					{product.category}
 				</span>
 				<Price
@@ -76,7 +63,7 @@ export default function PreviewProductCard({ product, className }: Props) {
 					price={product.price}
 					discount={0}
 				/>
-			</CardContent>
-		</Card>
+			</main>
+		</article>
 	)
 }

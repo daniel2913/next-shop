@@ -65,14 +65,14 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 					type="button"
 					className="col-span-2 appearance-none"
 				>
-					<h3 className="w-full overflow-hidden text-ellipsis text-nowrap text-2xl font-bold uppercase leading-6 tracking-tight">
+					<h3 className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-nowrap text-2xl font-bold uppercase leading-6 tracking-tight">
 						{product.name}
 					</h3>
 				</button>
-				<span className="overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
+				<span className="overflow-hidden whitespace-nowrap text-ellipsis text-nowrap text-xl font-semibold">
 					{product.brand.name}
 				</span>
-				<span className="justify-self-end overflow-hidden text-ellipsis text-nowrap text-xl font-semibold text-muted-foreground">
+				<span className="justify-self-end overflow-hidden text-ellipsis whitespace-nowrap text-nowrap text-xl font-semibold text-muted-foreground">
 					{product.category.name}
 				</span>
 				<Price
