@@ -12,17 +12,21 @@ app.get("/api/public", async (c) => {
 	if (!accept) format = "jpg"
 	else if (accept.includes("webp")) format = "webp";
   if (typeof src !== "string" || Number.isNaN(+w) || Number.isNaN(q)) {
-    return new Response("test");
+    return c.notFound();
   }
   const path = decodeURIComponent(src);
   if (path.includes("..")) return c.notFound();
   const optimized = `./public/optimized${
     src.split(".").shift()
   }w${w}q${q}.${format.toLowerCase()}`;
+	const headers = {
+		"Content-Type":`image/${format.toLowerCase()}`,
+		"Cache-Control": `max-age=${60*5}, stale-while-revalidate=${60*60*24}`
+	}
   try {
     const file = await Deno.readFile(optimized);
     return new Response(file, {
-      headers: { "Content-Type": `image/${format.toLowerCase()}` },
+      headers 
     });
   } catch {
     try {
@@ -32,7 +36,7 @@ app.get("/api/public", async (c) => {
       Deno.writeFile(optimized, res);
       return new Response(res, {
         status: 200,
-        headers: { "Content-Type": "image" },
+        headers
       });
     } catch {
       return c.notFound();

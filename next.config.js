@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
+
+const { env } = require('process');
+
+const URL = env.ROOT_DIR || ""
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' localhost:8000* blob: data:;
+    img-src 'self' ${URL} blob: data:;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
@@ -14,7 +18,7 @@ const cspHeader = `
 `
 const nextConfig = {
 	experimental: {},
-/* async headers() {
+async headers() {
     return [
       {
         source: '/(.*)',
@@ -26,7 +30,7 @@ const nextConfig = {
         ],
       },
     ]
-  }, */
+  },
 	typescript: {
 		ignoreBuildErrors: true
 	},
