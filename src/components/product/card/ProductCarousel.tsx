@@ -50,7 +50,7 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 						className={`object-fit flex-shrink-0 ${props.imageWrapperClassName}`}
 					>
 						<Image
-							priority={idx === 0 && props.priority}
+							priority={idx === 0 && props.priority || (position.current>0 && Math.abs(position.current-idx)<=3)}
 							className={`h-full rounded-lg ${props.imageClassName}`}
 							width={props.width}
 							height={props.height}
