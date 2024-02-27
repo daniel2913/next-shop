@@ -10,7 +10,7 @@ export async function auth(role?: string) {
 	if (!res?.user) throw ServerError.notAuthed()
 	if (role && res.user.role !== role) throw ServerError.notAllowed()
 	const user = await UserCache.get(res.user.name)
-	if (!user) throw ServerError.hidden("Error in UserCache")
+	if (!user) throw ServerError.unknown("Error in UserCache")
 
 	return user
 }
@@ -132,13 +132,13 @@ export class ServerError {
 }
 
 export function parseFormData(formData: FormData) {
-	const pojo: any = {}
+	const object: Record<string,unknown> = {}
 	for (const [key, value] of formData.entries()) {
 		if (value instanceof File && value.size === 0) continue
-		if (key in pojo) {
-			if (Array.isArray(pojo[key])) pojo[key].push(value)
-			else pojo[key] = [pojo[key], value]
-		} else pojo[key] = value
+		if (key in object) {
+			if (Array.isArray(object[key])) (object[key] as unknown[]).push(value)
+			else object[key] = [object[key], value]
+		} else object[key] = value
 	}
-	return pojo as { [key: string]: unknown }
+	return object
 }

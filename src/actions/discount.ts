@@ -4,8 +4,6 @@ import { DiscountModel } from "@/lib/Models"
 import { DiscountCache } from "@/helpers/cache"
 import { ServerError, auth, modelGeneralAction } from "./common"
 import { inArray } from "drizzle-orm"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { toArray } from "@/helpers/misc"
 
 export async function getAllDiscountsAction() {

@@ -26,7 +26,7 @@ export async function handleImages(
 	}
 	const Images = await Promise.all(prepImages)
 	if (Images.length === 0)
-		Images[0] = { name: "template.jpg", file: null as any as File }
+		Images[0] = { name: "template.jpg", file: null}
 	const res = await saveImages(Images, path)
 	if (!res) return res
 	if (Array.isArray(images)) return res

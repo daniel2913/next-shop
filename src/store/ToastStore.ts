@@ -1,6 +1,16 @@
 import { ServerErrorType } from "@/hooks/useAction"
 import { create } from "zustand"
 
+type ToastState = {
+	type: "error" | "info"
+	title: string
+	description: string
+	isVisible: boolean
+	info: (description: string, title?: string) => void
+	error: (description: string, title?: string) => void
+	isValidResponse: <T>(resp: T | ServerErrorType) => resp is T
+}
+
 export const useToastStore = create<ToastState>()((set, get) => ({
 	isVisible: false,
 	description: "",
@@ -28,12 +38,3 @@ export const useToastStore = create<ToastState>()((set, get) => ({
 		return true
 	},
 }))
-type ToastState = {
-	type: "error" | "info"
-	title: string
-	description: string
-	isVisible: boolean
-	info: (description: string, title?: string) => void
-	error: (description: string, title?: string) => void
-	isValidResponse: <T>(resp: T | ServerErrorType) => resp is T
-}

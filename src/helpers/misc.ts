@@ -5,7 +5,7 @@ export function toArray<T>(inp: T | T[]) {
 	return [inp]
 }
 
-export function deffer<T extends (args: any) => any>(func: T, delay = 5000) {
+export function deffer<T extends (...args: any) => any>(func: T, delay = 5000) {
 	let timeout: NodeJS.Timeout
 	return function deffered(inst: boolean, ...args: Parameters<T>) {
 		if (timeout) clearTimeout(timeout)

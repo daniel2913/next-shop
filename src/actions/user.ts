@@ -3,8 +3,7 @@
 import { createHash } from "node:crypto"
 import { UserModel } from "@/lib/Models"
 import { validateLogin, validatePassword } from "@/helpers/validation"
-import { ServerError, auth } from "./common"
-import { UserCache } from "@/helpers/cache"
+import { ServerError} from "./common"
 
 export async function registerUserAction(username: string, password: string) {
 	try {
@@ -21,16 +20,6 @@ export async function registerUserAction(username: string, password: string) {
 		if (!res) {
 			throw ServerError.unknown()
 		}
-	} catch (error) {
-		return ServerError.fromError(error).emmit()
-	}
-}
-
-export async function changeThemeAction(theme: string) {
-	try {
-		const user = await auth()
-		const res = await UserModel.patch(user.id, { theme })
-		if (res) UserCache.patch(user.name, res)
 	} catch (error) {
 		return ServerError.fromError(error).emmit()
 	}

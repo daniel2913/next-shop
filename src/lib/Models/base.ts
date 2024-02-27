@@ -10,11 +10,11 @@ import { ZodObject, z } from "zod"
 import { ServerError } from "@/actions/common"
 import { betterInArray } from "@/helpers/misc"
 
-type Query<T extends Record<string, any> & { id: number }> = {
+type Query<T extends BasePgTable["$inferSelect"]> = {
 	[Key in keyof T]?: T[Key] | T[Key][]
 }
 
-export interface DataModel<T extends Record<string, any> & { id: number }> {
+export interface DataModel<T extends BasePgTable["$inferSelect"]> {
 	create: (obj: unknown | T) => Promise<T | null>
 	findOne: (query: Query<T>) => Promise<T | null>
 	find: (query?: Query<T>, page?: number, skip?: number) => Promise<T[]>
@@ -38,9 +38,7 @@ type BasePgTable = PgTableWithColumns<{
 				hasDefault: true
 				enumValues: undefined
 				baseColumn: never
-			},
-			{},
-			{}
+			}
 		>
 	}
 	dialect: "pg"
@@ -54,11 +52,11 @@ export class PgreModel<
 	public table: U
 	public filePath: string
 	public model: PostgresJsDatabase
-	private validations: ZodObject<any, any, any>
+	private validations: Z
 
 	constructor(
 		table: U,
-		validations: ZodObject<any, any, any, U["$inferInsert"]>
+		validations: Z
 	) {
 		this.table = table
 		const config = getTableConfig(table)
@@ -87,13 +85,13 @@ export class PgreModel<
 		return and(...sqlQueryWrappers)
 	}
 
-	async create(obj: unknown | U["$inferSelect"]) {
-		const props = (await this.validations.parseAsync(obj)) as U["$inferInsert"]
+	async create(obj: unknown | U["$inferSelect"]):Promise<U["$inferSelect"]|null> {
+		const props = (await this.validations.parseAsync(obj))
 		const res = await this.model.insert(this.table).values(props).returning()
-		return res[0] ? (res[0] as U["$inferSelect"]) : null
+		return res[0] ? res[0] : null
 	}
 
-	async patch(targId: number, patch: Partial<z.infer<Z>> | unknown) {
+	async patch(targId: number, patch: Partial<z.infer<Z>> | unknown):Promise<U["$inferSelect"]|null> {
 		if (!targId || typeof patch !== "object" || !patch)
 			throw ServerError.invalid()
 		const [original, props] = await Promise.all([
@@ -106,7 +104,7 @@ export class PgreModel<
 			.set(props)
 			.where(eq(this.table.id, targId))
 			.returning()
-		return res[0] ? (res[0] as U["$inferSelect"]) : null
+		return res[0] ? res[0] : null
 	}
 
 	async findOne(query: Query<U["$inferSelect"]>) {
@@ -126,12 +124,12 @@ export class PgreModel<
 		return await req
 	}
 
-	async delete(id: number) {
+	async delete(id: number):Promise<U["$inferSelect"]|null>  {
 		if (!id) return null
 		const res = await this.model
 			.delete(this.table)
 			.where(eq(this.table.id, id))
 			.returning()
-		return res[0] ? (res[0] as U["$inferSelect"]) : null
+		return res[0] ? res[0] : null
 	}
 }

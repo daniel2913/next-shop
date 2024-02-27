@@ -28,6 +28,7 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const vote = useCartStore((state) => state.votes[product.id])
 	const setVote = useCartStore((state) => state.setVote)
+
 	const onVoteChange = React.useCallback(
 		async (val: number) => {
 			const res = await setVote(product.id, val)

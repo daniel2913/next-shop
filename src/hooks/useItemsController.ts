@@ -15,6 +15,7 @@ export function useItemsController<T extends { id: number }>(
 	const [items, setItems] = React.useState(props.initItems || [])
 	const [loading, setLoading] = React.useState(false)
 
+
 	const reload = React.useCallback(async () => {
 		setLoading(true)
 		const oldIds = items.map((prod) => prod.id)

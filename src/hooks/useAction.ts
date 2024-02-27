@@ -16,7 +16,7 @@ export default function useAction<T>(
 			setLoading(true)
 			const res = await func()
 			setLoading(false)
-			if (isValidResponse(res)) setValue(res as T)
+			if (isValidResponse(res)) setValue(res)
 		}
 		execute()
 	}, [_])

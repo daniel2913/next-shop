@@ -21,5 +21,5 @@ export default function useImageFiles(imageUrls: string[]) {
 		}
 		fetchImages(imageUrls)
 	}, [])
-	return [images, setImages] as [typeof images, typeof setImages]
+	return [images, setImages] as const
 }

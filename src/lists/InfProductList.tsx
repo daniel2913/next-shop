@@ -44,15 +44,12 @@ export default function InfProductList({ products: initProducts }: Props) {
 		getItems: getProductsByIdsAction,
 	})
 
-	const loadMore = React.useCallback(
-		async (query: URLSearchParams, skip: number) => {
-			const newProducts = await queryProducts(query, skip)
-			if ("error" in newProducts) return 0
-			if (newProducts.length) setProducts((old) => [...old, ...newProducts])
-			return newProducts ? newProducts.length : 0
-		},
-		[setProducts]
-	)
+	async function loadMore(query: URLSearchParams, skip: number) {
+		const newProducts = await queryProducts(query, skip)
+		if ("error" in newProducts) return 0
+		if (newProducts.length) setProducts((old) => [...old, ...newProducts])
+		return newProducts ? newProducts.length : 0
+	}
 
 	useInfScroll(products, loadMore, endRef, loading)
 	useSearchController({
@@ -60,11 +57,10 @@ export default function InfProductList({ products: initProducts }: Props) {
 		setItems: setProducts,
 		setLoading,
 	})
-	const initedProducts = products || initProducts
 	return (
 		<>
 			<Loading loading={loading}>
-				{initedProducts.map((product, idx) => (
+				{products.map((product, idx) => (
 					<ProductCard
 						key={product.id}
 						{...product}
