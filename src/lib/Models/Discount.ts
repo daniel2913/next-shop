@@ -56,7 +56,7 @@ const DiscountInsertValidation = z.object({
 	products: z.array(z.coerce.number()).default([]),
 	brands: brandsSchema.default([]),
 	categories: categoriesSchema.default([]),
-	expires: z.coerce.date(),
+	expires: z.coerce.date().min(new Date()),
 })
 
 const config = {

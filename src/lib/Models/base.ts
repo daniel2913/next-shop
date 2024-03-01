@@ -7,7 +7,7 @@ import {
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ZodObject, z } from "zod"
-import { ServerError } from "@/actions/common"
+//import { ServerError } from "@/actions/common"
 import { betterInArray } from "@/helpers/misc"
 
 type Query<T extends BasePgTable["$inferSelect"]> = {

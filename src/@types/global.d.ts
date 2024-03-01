@@ -1,3 +1,0 @@
-interface Global {
-	BrandModel: any
-}

@@ -18,6 +18,7 @@ export function Register({ close, redirect }: Props) {
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
 	const router = useRouter()
+	router.forward
 	const isValidResponse = useToastStore((s) => s.isValidResponse)
 	const error = useToastStore((s) => s.error)
 	async function handleRegistration(creds: { name: string; password: string }) {

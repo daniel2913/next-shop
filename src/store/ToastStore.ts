@@ -1,7 +1,7 @@
 import { ServerErrorType } from "@/hooks/useAction"
 import { create } from "zustand"
 
-type ToastState = {
+export type ToastState = {
 	type: "error" | "info"
 	title: string
 	description: string

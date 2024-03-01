@@ -25,7 +25,8 @@
 				"noExcessiveCognitiveComplexity": "warn"
 			},
 			"correctness": {
-				"all": true
+				"all": true,
+				"noUndeclaredVariables":"off"
 			}
 		}
 	},

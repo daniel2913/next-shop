@@ -10,7 +10,7 @@ const OrderInsertValidation = z.object({
 	user: validations.id,
 	order: z
 		.record(
-			z.string(),
+			z.coerce.number(),
 			z.object({
 				amount: z.number().positive(),
 				price: z.number().positive(),

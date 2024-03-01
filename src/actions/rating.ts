@@ -74,6 +74,7 @@ export async function updateVoteAction(
 			return res2[0]
 		})
 	} catch (error) {
+		throw(error)
 		return ServerError.fromError(error).emmit()
 	}
 }

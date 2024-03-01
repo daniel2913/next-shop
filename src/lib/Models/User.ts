@@ -4,7 +4,7 @@ import { z } from "zod"
 
 const UserInsertValidation = z.object({
 	name: z.string().min(4).max(20),
-	passwordHash: z.string().max(MAX_SIZES.hash).min(MAX_SIZES.hash),
+	passwordHash: z.string().length(MAX_SIZES.hash),
 	role: z.enum(["user", "admin"]).default("user"),
 	cart: z.record(z.coerce.number(), z.coerce.number()).default({}),
 	saved: z.array(validations.id).default([]),
