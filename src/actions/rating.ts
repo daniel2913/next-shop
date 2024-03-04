@@ -8,26 +8,9 @@ export async function getUserVotes() {
 	try {
 		const user = await auth("user")
 		return user.votes
-	} catch (error) {
-		const serverError = ServerError.fromError(error)
+	} catch {
 		return {}
 	}
-}
-
-async function setVote(id: number, user: number, vote: number) {
-	const res = await ProductModel.model.execute(sql`
-	UPDATE shop.products 
-		SET 
-			votes[array_position(voters,${user})]=${vote}
-		WHERE
-				id = ${id}
-			AND
-				${user} = ANY(voters)
-		RETURNING
-			rating, cardinality(voters) as voters;
-		`)
-	if (!res.length) throw ServerError.notFound()
-	return res[0] as { rating: number; voters: number }
 }
 
 export async function updateVoteAction(
@@ -74,7 +57,6 @@ export async function updateVoteAction(
 			return res2[0]
 		})
 	} catch (error) {
-		throw(error)
 		return ServerError.fromError(error).emmit()
 	}
 }

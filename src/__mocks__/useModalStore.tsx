@@ -2,8 +2,8 @@ import ModalBase from "@/components/modals/Base"
 import { create } from "zustand"
 
 export const ModalState = {
-		open:true,
-		children:<>This is test</>
+	open: true,
+	children: <>This is test</>
 }
 
 type ModalState = {
@@ -20,46 +20,48 @@ type ModalState = {
 	) => Promise<any>
 }
 
-console.log("THIS IS LOADED")
 let _ModalState
-export const useModalStore = create<ModalState>()((set, get) => ({
-	show: (children, title, forceWindow) => {
-		return new Promise((resolve) =>
-			set({
-				children,
-				open: true,
-				..._ModalState,
-				title,
-				forceWindow,
-				onClose: () => resolve(false),
-			})
-		)
-	},
-	onClose: () => undefined,
-	forceWindow: false,
-	children: null,
-	open: false,
-	title: "",
-	clear: (val) => {
-		get().onClose(val)
-		set((s) => ({
-			...s,
-			open: false,
-			title: "",
-			children: null,
-			forceWindow: false,
-		}))
-	},
-}))
+export function useModalStore(selector?: (val: any) => any) {
+	const state = {
+		show: (children, title, forceWindow) => {
+			return new Promise((resolve) =>
+				set({
+					children,
+					open: true,
+					title,
+					forceWindow,
+					onClose: () => resolve(false),
+				})
+			)
+		},
+		onClose: () => undefined,
+		forceWindow: false,
+		children: null,
+		open: true,
+		title: "",
+		clear: (val) => {
+			get().onClose(val)
+			set((s) => ({
+				...s,
+				open: false,
+				title: "",
+				children: null,
+				forceWindow: false,
+			}))
+		},
+		..._ModalState
+	}
+	return selector ? selector(state) : state
+}
 
-
-export function ModalDecorator (Story,{parameters}){
+export function ModalDecorator(Story, { parameters }) {
 	if (parameters?.ModalState)
-		_ModalState = parameters.ModalState
+		useModalStore.setState(parameters.ModalState)
+	_ModalState = parameters.ModalState
 	return (
-	<>
-	<Story/>
-	<ModalBase/>
-	</>
+		<>
+			<Story />
+			<ModalBase />
+		</>
 	)
 }

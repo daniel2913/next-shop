@@ -20,7 +20,6 @@ export default function ModalBase() {
 			ref.current?.close()
 		}
 	}, [open])
-	console.log(Cross)
 	if (forceWindow || mode === "desktop")
 		return (
 			<dialog

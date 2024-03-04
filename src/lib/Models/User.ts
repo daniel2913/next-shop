@@ -6,7 +6,10 @@ const UserInsertValidation = z.object({
 	name: z.string().min(4).max(20),
 	passwordHash: z.string().length(MAX_SIZES.hash),
 	role: z.enum(["user", "admin"]).default("user"),
-	cart: z.record(z.coerce.number(), z.coerce.number()).default({}),
+	cart: z.record(
+		z.coerce.number().min(0),
+		z.coerce.number().min(1)
+		).default({}),
 	saved: z.array(validations.id).default([]),
 	votes: z.record(z.coerce.number(), z.coerce.number()).default({}),
 })

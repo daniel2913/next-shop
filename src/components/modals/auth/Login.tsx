@@ -17,7 +17,6 @@ export function Login({ close, redirect }: Props) {
 	const [password, setPassword] = React.useState("")
 	const [loading, setLoading] = React.useState(false)
 	const router = useRouter()
-	console.error(useToastStore.getState())
 	const error = useToastStore(s => s.error)
 	async function handleLogin(creds: { name: string; password: string }) {
 		const res = await signIn("credentials", { ...creds, redirect: false })

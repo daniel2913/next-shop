@@ -17,7 +17,7 @@ describe("All Models",()=>{
 		if (!patchTest) return
 		expect(await BrandModel.delete(findTest2.id)).toMatchObject(patchTest)
 		const deletedTest = await BrandModel.findOne({ name: "__!TEST!__" })
-		expect(deletedTest).toBeNull()
+		return expect(deletedTest).toBeNull()
 	})
 })
 
@@ -25,13 +25,13 @@ describe("Brand Model",()=>{
 	it("Validates Input Params", async () => {
 		expect(BrandModel.create({test:"test"})).rejects.toBeTruthy()
 		expect(BrandModel.create({name:null})).rejects.toBeTruthy()
-		expect(BrandModel.create({name:12})).rejects.toBeTruthy()
+		return expect(BrandModel.create({name:12})).rejects.toBeTruthy()
 	})
 	it("Validates Duplicates", async () => {
 		const test = await BrandModel.create({ name: "__TEST1__" })
 		if (!test) return
 		await expect(BrandModel.create({name:"__TEST1__"})).rejects.toBeTruthy()
-		expect(BrandModel.delete(test.id)).resolves.toMatchObject(test)
+		return expect(BrandModel.delete(test.id)).resolves.toMatchObject(test)
 
 	})
 })
@@ -40,13 +40,13 @@ describe("Category Model",()=>{
 	it("Validates Input Params", async () => {
 		expect(CategoryModel.create({test:"test"})).rejects.toBeTruthy()
 		expect(CategoryModel.create({name:null})).rejects.toBeTruthy()
-		expect(CategoryModel.create({name:12})).rejects.toBeTruthy()
+		return expect(CategoryModel.create({name:12})).rejects.toBeTruthy()
 	})
 	it("Validates Duplicates", async () => {
 		const test = await CategoryModel.create({ name: "__TEST1__" })
 		if (!test) return
 		await expect(CategoryModel.create({name:"__TEST1__"})).rejects.toBeTruthy()
-		expect(CategoryModel.delete(test.id)).resolves.toMatchObject(test)
+		return expect(CategoryModel.delete(test.id)).resolves.toMatchObject(test)
 
 	})
 })
@@ -57,13 +57,13 @@ describe("Product Model",()=>{
 		expect(ProductModel.create({...validTestProduct,name:undefined})).rejects.toBeTruthy()
 		expect(ProductModel.create({...validTestProduct,price:undefined})).rejects.toBeTruthy()
 		expect(ProductModel.create({...validTestProduct,brand:"test"})).rejects.toBeTruthy()
-		expect(ProductModel.create({...validTestProduct,category:"test"})).rejects.toBeTruthy()
+		return expect(ProductModel.create({...validTestProduct,category:"test"})).rejects.toBeTruthy()
 	})
 	it("Validates Duplicates", async () => {
 		const test = await ProductModel.create(validTestProduct)
 		if (!test) return
 		await expect(ProductModel.create(validTestProduct)).rejects.toBeTruthy()
-		expect(ProductModel.delete(test.id)).resolves.toMatchObject(test)
+		return expect(ProductModel.delete(test.id)).resolves.toMatchObject(test)
 	})
 })
 
@@ -72,13 +72,13 @@ describe("User Model",()=>{
 		expect(UserModel.create({test:"test"})).rejects.toBeTruthy()
 		expect(UserModel.create({...validTestUser,name:undefined})).rejects.toBeTruthy()
 		expect(UserModel.create({...validTestUser,passwordHash:"test"})).rejects.toBeTruthy()
-		expect(UserModel.create({...validTestUser,passwordHash:undefined})).rejects.toBeTruthy()
+		return expect(UserModel.create({...validTestUser,passwordHash:undefined})).rejects.toBeTruthy()
 	})
 	it("Validates Duplicates", async () => {
 		const test = await UserModel.create(validTestUser)
 		if (!test) return
 		await expect(UserModel.create(validTestUser)).rejects.toBeTruthy()
-		expect(UserModel.delete(test.id)).resolves.toMatchObject(test)
+		return expect(UserModel.delete(test.id)).resolves.toMatchObject(test)
 	})
 })
 
@@ -88,7 +88,7 @@ describe("Order Model",()=>{
 		expect(OrderModel.create({test:"test"})).rejects.toBeTruthy()
 		expect(OrderModel.create({...validTestOrder,user:undefined})).rejects.toBeTruthy()
 		expect(OrderModel.create({...validTestOrder,order:{t:{amount:2,price:10}}})).rejects.toBeTruthy()
-		expect(OrderModel.create({...validTestOrder,status:"test"})).rejects.toBeTruthy()
+		return expect(OrderModel.create({...validTestOrder,status:"test"})).rejects.toBeTruthy()
 	})
 })
 
@@ -100,6 +100,6 @@ describe("Discount Model",()=>{
 		expect(DiscountModel.create({...validTestDiscount,discount:-5})).rejects.toBeTruthy()
 		expect(DiscountModel.create({...validTestDiscount,brands:["test"]})).rejects.toBeTruthy()
 		expect(DiscountModel.create({...validTestDiscount,categories:["test"]})).rejects.toBeTruthy()
-		expect(DiscountModel.create({...validTestDiscount,expires:Date.now()-10000})).rejects.toBeTruthy()
+		return expect(DiscountModel.create({...validTestDiscount,expires:Date.now()-10000})).rejects.toBeTruthy()
 	})
 })

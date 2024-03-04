@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 
 const { env } = require('process');
 
@@ -16,8 +15,11 @@ const cspHeader = `
     block-all-mixed-content;
     upgrade-insecure-requests;
 `
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-	experimental: {},
+	experimental: {
+		forceSwcTransforms:true,
+	},
 async headers() {
     return [
       {
