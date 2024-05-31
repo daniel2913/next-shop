@@ -1,42 +1,42 @@
-"use client"
-import Input from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
-import { Label } from "@/components/ui/Label"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import React from "react"
-import { useToastStore } from "@/store/ToastStore"
+"use client";
+import Input from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Label } from "@/components/ui/Label";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { useToastStore } from "@/store/ToastStore";
 
 export type Props = {
-	close?: () => void
-	redirect?: string
-}
+	close?: () => void;
+	redirect?: string;
+};
 
 export function Login({ close, redirect }: Props) {
-	const [name, setName] = React.useState("")
-	const [password, setPassword] = React.useState("")
-	const [loading, setLoading] = React.useState(false)
-	const router = useRouter()
-	const error = useToastStore((s) => s.error)
+	const [name, setName] = React.useState("");
+	const [password, setPassword] = React.useState("");
+	const [loading, setLoading] = React.useState(false);
+	const router = useRouter();
+	const error = useToastStore((s) => s.error);
 	async function handleLogin(creds: { name: string; password: string }) {
-		const res = await signIn("credentials", { ...creds, redirect: false })
+		const res = await signIn("credentials", { ...creds, redirect: false });
 		if (res?.ok) {
-			if (redirect) router.push(redirect)
-			else if (close) close()
-			return
+			if (redirect) router.push(redirect);
+			else if (close) close();
+			return;
 		}
-		error("Invalid username or password", "Authentication Error")
+		error("Invalid username or password", "Authentication Error");
 	}
 	return (
 		<form
 			className="mb-4 flex flex-col items-center gap-2"
 			onSubmit={async (e) => {
-				setLoading(true)
-				e.preventDefault()
-				e.stopPropagation()
-				await handleLogin({ name, password })
-				setLoading(false)
-				dispatchEvent(new Event("submit"))
+				setLoading(true);
+				e.preventDefault();
+				e.stopPropagation();
+				await handleLogin({ name, password });
+				setLoading(false);
+				dispatchEvent(new Event("submit"));
 			}}
 		>
 			<Label>
@@ -60,10 +60,7 @@ export function Login({ close, redirect }: Props) {
 				/>
 			</Label>
 			<div className="mt-2 flex flex-col gap-2">
-				<Button
-					disabled={loading}
-					type="submit"
-				>
+				<Button disabled={loading} type="submit">
 					Sign In
 				</Button>
 				<Button
@@ -82,5 +79,5 @@ export function Login({ close, redirect }: Props) {
 				</Button>
 			</div>
 		</form>
-	)
+	);
 }

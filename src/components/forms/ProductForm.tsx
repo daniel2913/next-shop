@@ -1,59 +1,59 @@
-"use client"
-import { FormFieldValue, clientValidations } from "./common.tsx"
-import Form from "./common.tsx"
-import React from "react"
-import PreviewProductCard from "@/components/product/card/Preview.tsx"
-import { changeProductAction, createProductAction } from "@/actions/product"
-import Input from "../ui/Input.tsx"
-import ImageUpload from "../ui/ImageUpload.tsx"
+"use client";
+import { type FormFieldValue, clientValidations } from "./common.tsx";
+import Form from "./common.tsx";
+import React from "react";
+import PreviewProductCard from "@/components/product/card/Preview.tsx";
+import { changeProductAction, createProductAction } from "@/actions/product";
+import Input from "../ui/Input.tsx";
+import ImageUpload from "../ui/ImageUpload.tsx";
 import {
 	Select,
 	SelectItem,
 	SelectValue,
 	SelectTrigger,
 	SelectContent,
-} from "../ui/Select.tsx"
-import { getAllBrandNamesAction } from "@/actions/brand.ts"
-import { getAllCategoryNamesAction } from "@/actions/category.ts"
-import { PopulatedProduct } from "@/lib/Models/Product.ts"
-import useImageFiles from "@/hooks/useImageFiles.ts"
-import useAction from "@/hooks/useAction.ts"
-import { Textarea } from "../ui/Textarea.tsx"
-import { Label } from "../ui/Label.tsx"
-import ImagesPreview from "../ui/ImagesPreview.tsx"
+} from "../ui/Select.tsx";
+import { getAllBrandNamesAction } from "@/actions/brand.ts";
+import { getAllCategoryNamesAction } from "@/actions/category.ts";
+import type { PopulatedProduct } from "@/lib/Models/Product.ts";
+import useImageFiles from "@/hooks/useImageFiles.ts";
+import useAction from "@/hooks/useAction.ts";
+import { Textarea } from "../ui/Textarea.tsx";
+import { Label } from "../ui/Label.tsx";
+import ImagesPreview from "../ui/ImagesPreview.tsx";
 
 const validation = {
 	name: clientValidations.name,
 	description: clientValidations.description,
 	images: clientValidations.images,
 	price: (value: FormFieldValue) => {
-		if (Number.isNaN(Number(value))) return "Price can only be number!"
-		if (+value <= 0) return "No Communism Allowed!"
-		return false
+		if (Number.isNaN(Number(value))) return "Price can only be number!";
+		if (+value <= 0) return "No Communism Allowed!";
+		return false;
 	},
-}
+};
 
 type Props = {
-	product?: Partial<PopulatedProduct>
-}
+	product?: Partial<PopulatedProduct>;
+};
 
 export default function ProductForm({ product }: Props) {
 	const action = product?.id
 		? (form: FormData) => changeProductAction(product.id!, form)
-		: createProductAction
-	const [name, setName] = React.useState(product?.name || "")
+		: createProductAction;
+	const [name, setName] = React.useState(product?.name || "");
 	const [description, setDescription] = React.useState(
-		product?.description || ""
-	)
-	const [brand, setBrand] = React.useState(product?.brand?.name || "")
-	const [category, setCategory] = React.useState(product?.category?.name || "")
-	const [price, setPrice] = React.useState(product?.price || 0)
+		product?.description || "",
+	);
+	const [brand, setBrand] = React.useState(product?.brand?.name || "");
+	const [category, setCategory] = React.useState(product?.category?.name || "");
+	const [price, setPrice] = React.useState(product?.price || 0);
 	const [images, setImages] = useImageFiles(
-		product?.images?.map((image) => `/products/${image}`) || []
-	)
+		product?.images?.map((image) => `/products/${image}`) || [],
+	);
 
-	const { value: brands } = useAction(getAllBrandNamesAction, [])
-	const { value: categories } = useAction(getAllCategoryNamesAction, [])
+	const { value: brands } = useAction(getAllBrandNamesAction, []);
+	const { value: categories } = useAction(getAllCategoryNamesAction, []);
 
 	return (
 		<Form
@@ -102,10 +102,7 @@ export default function ProductForm({ product }: Props) {
 					</SelectTrigger>
 					<SelectContent className="z-[1000]">
 						{brands.map((brand, idx) => (
-							<SelectItem
-								value={brand}
-								key={brand + idx}
-							>
+							<SelectItem value={brand} key={brand + idx}>
 								{brand}
 							</SelectItem>
 						))}
@@ -125,10 +122,7 @@ export default function ProductForm({ product }: Props) {
 					</SelectTrigger>
 					<SelectContent>
 						{categories.map((category, idx) => (
-							<SelectItem
-								value={category}
-								key={category + idx}
-							>
+							<SelectItem value={category} key={category + idx}>
 								{category}
 							</SelectItem>
 						))}
@@ -159,9 +153,9 @@ export default function ProductForm({ product }: Props) {
 				className="w-full"
 				images={images}
 				delImage={(idx: number) => {
-					setImages(images.filter((_, idxOld) => idx !== idxOld))
+					setImages(images.filter((_, idxOld) => idx !== idxOld));
 				}}
 			/>
 		</Form>
-	)
+	);
 }

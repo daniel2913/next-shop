@@ -1,12 +1,12 @@
-import React from "react"
+import React from "react";
 
 interface Props {
-	className: string
-	discount: number
+	className: string;
+	discount: number;
 }
 
 const Discount = React.memo(function Discount({ discount, className }: Props) {
-	if (discount === 0) return null
+	if (discount === 0) return null;
 	return (
 		<div
 			className={`absolute aspect-square rounded-full bg-foreground text-center text-accent ${className}`}
@@ -15,6 +15,6 @@ const Discount = React.memo(function Discount({ discount, className }: Props) {
 				{discount}%
 			</span>
 		</div>
-	)
-})
-export default Discount
+	);
+});
+export default Discount;

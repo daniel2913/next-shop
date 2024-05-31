@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
 	Table,
 	TableBody,
@@ -6,35 +6,35 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/Table"
+} from "@/components/ui/Table";
 
-type GenericProps<T extends (Record<string, any> & { id: number })[]> = {
-	value: number[]
-	onChange: (val: number[]) => void
-	name?: string
-	items: T
-	columns: Record<string, (s: T[number]) => T[number][string]>
-}
+type GenericProps<T extends (Record<string, unknown> & { id: number })[]> = {
+	value: number[];
+	onChange: (val: number[]) => void;
+	name?: string;
+	items: T;
+	columns: Record<string, (s: T[number]) => T[number][string]>;
+};
 
 export default function GenericSelectTable<
-	T extends (Record<string, any> & { id: number })[],
+	T extends (Record<string, unknown> & { id: number })[],
 >(props: GenericProps<T>) {
 	function onClick(id: number) {
 		if (props.value.includes(id))
-			props.onChange(props.value.filter((old) => old !== id))
-		else props.onChange([...props.value, id])
+			props.onChange(props.value.filter((old) => old !== id));
+		else props.onChange([...props.value, id]);
 	}
 	function onGroupClick() {
 		const newState = props.value.filter((old) =>
-			props.items.every((prod) => prod.id !== old)
-		)
+			props.items.every((prod) => prod.id !== old),
+		);
 		if (
 			props.items.map((item) => item.id).every((id) => props.value.includes(id))
 		)
-			props.onChange(newState)
-		else props.onChange(newState.concat(props.items.map((item) => item.id)))
+			props.onChange(newState);
+		else props.onChange(newState.concat(props.items.map((item) => item.id)));
 	}
-	const columnNames = Object.keys(props.columns)
+	const columnNames = Object.keys(props.columns);
 	return (
 		<Table>
 			<TableHeader>
@@ -58,7 +58,7 @@ export default function GenericSelectTable<
 					<TableRow
 						key={`${item.id}`}
 						onClick={() => onClick(item.id)}
-						className={`cursor-pointer text-center bg-blend-lighten *:text-center *:text-foreground *:hover:bg-white/40`}
+						className="cursor-pointer text-center bg-blend-lighten *:text-center *:text-foreground *:hover:bg-white/40"
 					>
 						<TableCell>
 							<input
@@ -78,5 +78,5 @@ export default function GenericSelectTable<
 				))}
 			</TableBody>
 		</Table>
-	)
+	);
 }

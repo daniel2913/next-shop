@@ -1,8 +1,7 @@
-/** @type {import('next').NextConfig} */
 
-const { env } = require('process');
+import { env } from "node:process";
 
-const URL = env.ROOT_DIR || ""
+const URL = env.PUBLIC_API_URL || "";
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -15,31 +14,34 @@ const cspHeader = `
     frame-ancestors 'none';
     block-all-mixed-content;
     upgrade-insecure-requests;
-`
-const nextConfig = {
-	experimental: {},
-async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
-          },
-        ],
-      },
-    ]
-  },
+`;
+
+/** @type {import('next').NextConfig} */
+export default {
+	experimental: {
+	},
+	/* async headers() {
+		return [
+			{
+				source: "/(.*)",
+				headers: [
+					{
+						key: "Content-Security-Policy",
+						value: cspHeader.replace(/\n/g, ""),
+					},
+				],
+			},
+		];
+	}, */
 	typescript: {
-		ignoreBuildErrors: true
+		ignoreBuildErrors: true,
 	},
 	eslint: {
-		ignoreDuringBuilds: true
+		ignoreDuringBuilds: true,
 	},
 	images: {
-		loader: 'custom',
-		loaderFile: './src/helpers/imageLoader.ts'
+		loader: "custom",
+		loaderFile: "./src/helpers/imageLoader.ts",
 	},
 	webpack(config) {
 		const fileLoaderRule = config.module.rules.find((rule) =>
@@ -65,4 +67,3 @@ async headers() {
 		return config;
 	},
 };
-module.exports = nextConfig;

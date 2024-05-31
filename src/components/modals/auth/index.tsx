@@ -1,13 +1,13 @@
-"use client"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@comps/ui/Tabs"
-import React from "react"
-import { Register } from "./Register"
-import { Login } from "./Login"
+"use client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@comps/ui/Tabs";
+import React from "react";
+import { Register } from "./Register";
+import { Login } from "./Login";
 
 export type Props = {
-	close?: () => void
-	redirect?: string
-}
+	close?: () => void;
+	redirect?: string;
+};
 
 export default function AuthModule(props: Props) {
 	return (
@@ -30,5 +30,5 @@ export default function AuthModule(props: Props) {
 				<Register {...props} />
 			</TabsContent>
 		</Tabs>
-	)
+	);
 }

@@ -1,7 +1,6 @@
-"use client"
-import { getProductsByIds } from "@/actions/product"
-import useCartStore from "@/store/cartStore"
-import React from "react"
+"use client";
+import { getProductsByIds } from "@/actions/product";
+import React from "react";
 import {
 	Table,
 	TableBody,
@@ -10,40 +9,41 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/Table"
-import Image from "next/image"
-import useAction from "@/hooks/useAction"
-import AmmountSelector from "@/components/ui/AmmountSelector"
-import useResponsive from "@/hooks/useResponsive"
-import { PopulatedProduct } from "@/lib/Models/Product"
+} from "@/components/ui/Table";
+import Image from "next/image";
+import useAction from "@/hooks/useAction";
+import AmmountSelector from "@/components/ui/AmmountSelector";
+import useResponsive from "@/hooks/useResponsive";
+import type { PopulatedProduct } from "@/lib/Models/Product";
+import { actions, useAppDispatch } from "@/store/rtk";
 
 type Props = {
-	className?: string
-	products: PopulatedProduct[]
-	interactive?: boolean
-	order: Record<string, { price: number; amount: number }>
-}
+	className?: string;
+	products: PopulatedProduct[];
+	interactive?: boolean;
+	order: Record<string, { price: number; amount: number }>;
+};
 
 export function CartTable({ className, products, order, interactive }: Props) {
 	if (products === undefined)
 		products = useAction(
 			() => getProductsByIds(Object.keys(order).map(Number)),
-			[]
-		).value
+			[],
+		).value;
 	const totalAmount = Object.values(order).reduce(
 		(sum, next) => sum + (next.amount || 0),
-		0
-	)
+		0,
+	);
 	const totalPrice = Object.values(order).reduce(
 		(total, next) => total + (next.price * next.amount || 0),
-		0
-	)
-	const setter = useCartStore((state) => state.setAmmount)
-	const mode = useResponsive()
+		0,
+	);
+	const dispatch = useAppDispatch()
+	const mode = useResponsive();
 	if (mode === "desktop")
 		return (
 			<Table
-				className={`text-semibold text-foreground ${className} w-fit table-auto`}
+				className={`text-semibold rounded-lg text-foreground ${className} w-fit table-auto`}
 			>
 				<TableHeader className="">
 					<TableRow className=" *:p-1 *:text-center *:text-xl *:text-foreground md:*:text-2xl">
@@ -54,12 +54,12 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						<TableHead className="w-1/6">Total</TableHead>
 					</TableRow>
 				</TableHeader>
-				<TableBody>
+				<TableBody className="gap-6">
 					{products
 						.filter(
 							(product) =>
 								Object.keys(order).includes(product.id.toString()) &&
-								order[product.id].amount > 0
+								order[product.id].amount > 0,
 						)
 						.map((product) => (
 							<TableRow
@@ -82,7 +82,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									{interactive ? (
 										<AmmountSelector
 											value={order[product.id].amount}
-											onChange={(val: number) => setter(product.id, val)}
+											onChange={(amnt: number) => dispatch(actions.cart.setAmount({ id: product.id, amnt }))}
 											className=""
 										/>
 									) : (
@@ -91,7 +91,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								</TableCell>
 								<TableCell>
 									{(order[product.id].price * order[product.id].amount).toFixed(
-										2
+										2,
 									)}
 									$
 								</TableCell>
@@ -115,7 +115,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 				.filter(
 					(product) =>
 						Object.keys(order).includes(product.id.toString()) &&
-						order[product.id].amount > 0
+						order[product.id].amount > 0,
 				)
 				.map((product) => (
 					<div
@@ -139,7 +139,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								{interactive ? (
 									<AmmountSelector
 										value={order[product.id].amount}
-										onChange={(val: number) => setter(product.id, val)}
+										onChange={(amnt: number) => dispatch(actions.cart.setAmount({ id: product.id, amnt }))}
 										className=""
 									/>
 								) : (
@@ -149,7 +149,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								)}
 								<span className="text-2xl font-bold">
 									{(order[product.id].price * order[product.id].amount).toFixed(
-										2
+										2,
 									)}
 									$
 								</span>

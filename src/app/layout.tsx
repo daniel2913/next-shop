@@ -1,16 +1,16 @@
-import "./global.css"
-import { ReactElement } from "react"
-import RootProviders from "../providers/RootProviders"
-import { getServerSession } from "next-auth"
-import { authOptions } from "./api/auth/[...nextauth]/route"
-import ToastBase from "@/components/ui/Toast"
-import { Metadata, Viewport } from "next"
-import ModalBase from "@/components/modals/Base"
+import "./global.css";
+import type { ReactElement } from "react";
+import RootProviders from "../providers/RootProviders";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import ToastBase from "@/components/ui/Toast";
+import type { Metadata, Viewport } from "next";
+import { getInitState } from "@/actions/user";
 
 export const metadata: Metadata = {
 	title: "Next Shop",
 	description: "This is shop and it is written with Next.js",
-}
+};
 
 export const viewport: Viewport = {
 	themeColor: [
@@ -18,20 +18,23 @@ export const viewport: Viewport = {
 		{ media: "(prefers-color-scheme: dark)", color: "black" },
 	],
 	colorScheme: "dark light",
-}
+};
 
 type LayoutProps = {
-	children: ReactElement
-}
+	children: ReactElement;
+};
+
+
 
 export default async function MainLayout({ children }: LayoutProps) {
-	const session = await getServerSession(authOptions)
+	const [session, state] = await Promise.all([
+		getServerSession(authOptions),
+		getInitState()
+	])
+
 	return (
 		<>
-			<html
-				className="h-full w-full"
-				lang="en"
-			>
+			<html className="h-full w-full" lang="en">
 				<head>
 					<meta charSet="UTF-8" />
 					<meta
@@ -46,13 +49,12 @@ export default async function MainLayout({ children }: LayoutProps) {
 					}}
 					className={`w-full pr-[var(--removed-body-scroll-bar-size)] md:h-full `}
 				>
-					<RootProviders session={session}>
+					<RootProviders initProps={state} session={session}>
 						{children}
-						<ModalBase />
 						<ToastBase />
 					</RootProviders>
 				</body>
 			</html>
 		</>
-	)
+	);
 }

@@ -1,16 +1,16 @@
-"use client"
-import React from "react"
-import Image from "next/image"
-import { Brand, Category } from "@/lib/Models"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup"
-import { ScrollArea } from "../../ui/ScrollArea"
+"use client";
+import type React from "react";
+import Image from "next/image";
+import type { Brand, Category } from "@/lib/Models";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import { ScrollArea } from "../../ui/ScrollArea";
 
 type CategoryFilterProps = {
-	allCategories: Category[]
-	categories: string[]
-	setCategories: React.Dispatch<React.SetStateAction<string[]>>
-	afterChange: ({ categoryCur }: { categoryCur: string[] }) => void
-}
+	allCategories: Category[];
+	categories: string[];
+	setCategories: React.Dispatch<React.SetStateAction<string[]>>;
+	afterChange: ({ categoryCur }: { categoryCur: string[] }) => void;
+};
 export function CategoryFilter({
 	categories,
 	setCategories,
@@ -23,10 +23,10 @@ export function CategoryFilter({
 			type="multiple"
 			value={categories}
 			onValueChange={(str: string[]) => {
-				setCategories(str)
+				setCategories(str);
 				afterChange({
 					categoryCur: str,
-				})
+				});
 			}}
 		>
 			<span>Category</span>
@@ -58,15 +58,15 @@ export function CategoryFilter({
 				))}
 			</ScrollArea>
 		</ToggleGroup>
-	)
+	);
 }
 
 type BrandFilterProps = {
-	allBrands: Brand[]
-	brands: string[]
-	setBrands: React.Dispatch<React.SetStateAction<string[]>>
-	afterChange: ({ brandCur }: { brandCur: string[] }) => void
-}
+	allBrands: Brand[];
+	brands: string[];
+	setBrands: React.Dispatch<React.SetStateAction<string[]>>;
+	afterChange: ({ brandCur }: { brandCur: string[] }) => void;
+};
 
 export function BrandFilter({
 	brands,
@@ -80,10 +80,10 @@ export function BrandFilter({
 			type="multiple"
 			value={brands}
 			onValueChange={(str: string[]) => {
-				setBrands(str)
+				setBrands(str);
 				afterChange({
 					brandCur: str,
-				})
+				});
 			}}
 		>
 			<span>Brand</span>
@@ -115,5 +115,5 @@ export function BrandFilter({
 				))}
 			</ScrollArea>
 		</ToggleGroup>
-	)
+	);
 }

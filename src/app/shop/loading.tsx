@@ -1,4 +1,4 @@
-import Spinner from "@public/loading.svg"
+import Spinner from "@public/loading.svg";
 export default function Loading() {
 	return (
 		<main className="size-full pr-[var(--removed-body-scroll-bar-size)]">
@@ -10,5 +10,5 @@ export default function Loading() {
 				/>
 			</div>
 		</main>
-	)
+	);
 }

@@ -1,39 +1,35 @@
-"use client"
-import Form, { clientValidations } from "./common.tsx"
-import React from "react"
-import { Brand } from "@/lib/Models/Brand.ts"
-import { changeBrandAction, createBrandAction } from "@/actions/brand.ts"
-import ImageUpload from "../ui/ImageUpload.tsx"
-import useImageFiles from "@/hooks/useImageFiles.ts"
-import Input from "../ui/Input.tsx"
-import { Label } from "../ui/Label.tsx"
-import ImagesPreview from "../ui/ImagesPreview.tsx"
+"use client";
+import Form, { clientValidations } from "./common.tsx";
+import React from "react";
+import type { Brand } from "@/lib/Models/Brand.ts";
+import { changeBrandAction, createBrandAction } from "@/actions/brand.ts";
+import ImageUpload from "../ui/ImageUpload.tsx";
+import useImageFiles from "@/hooks/useImageFiles.ts";
+import Input from "../ui/Input.tsx";
+import { Label } from "../ui/Label.tsx";
+import ImagesPreview from "../ui/ImagesPreview.tsx";
 
 const validation = {
 	name: clientValidations.name,
 	image: clientValidations.images,
-}
+};
 
 type Props = {
-	brand?: Brand
-}
+	brand?: Brand;
+};
 
 export default function BrandForm({ brand }: Props) {
 	const action = brand?.id
 		? (form: FormData) => changeBrandAction(brand.id, form)
-		: createBrandAction
+		: createBrandAction;
 
-	const [name, setName] = React.useState(brand?.name || "")
+	const [name, setName] = React.useState(brand?.name || "");
 	const [image, setImage] = useImageFiles(
-		(brand && [`/brands/${brand.image}`]) || []
-	)
+		(brand && brand.images.map(v => `/brands/${v}`)) || [],
+	);
 
 	return (
-		<Form
-			className=""
-			validations={validation}
-			action={action}
-		>
+		<Form className="" validations={validation} action={action}>
 			<Label>
 				Brand Name
 				<Input
@@ -45,7 +41,7 @@ export default function BrandForm({ brand }: Props) {
 			<Label>
 				Logo
 				<ImageUpload
-					name="image"
+					name="images"
 					value={image}
 					onChange={(files: File[]) => setImage(files)}
 					accept="image/jpeg"
@@ -55,9 +51,9 @@ export default function BrandForm({ brand }: Props) {
 				className="w-full"
 				images={image}
 				delImage={(idx: number) => {
-					setImage(image.filter((_, idxOld) => idx !== idxOld))
+					setImage(image.filter((_, idxOld) => idx !== idxOld));
 				}}
 			/>
 		</Form>
-	)
+	);
 }

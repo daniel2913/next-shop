@@ -1,26 +1,22 @@
-import { fileSchema, pgreDefaults, shop, validations } from "./common"
-import { z } from "zod"
-import { handleImages } from "@/helpers/images"
+import { fileSchema, pgreDefaults, shop, validations } from "./common";
+import { z } from "zod";
+import { toArray } from "@/helpers/misc";
 
 const CategoryInsertValidation = z.object({
 	name: validations.name,
-	image: fileSchema
+	images: fileSchema.or(z.array(fileSchema).length(1))
 		.optional()
-		.transform((file) =>
-			file ? handleImages([file], "categories") : undefined
-		)
-		.transform((names) => (names ? names[0] : "template.jpg"))
-		.pipe(validations.imageName),
-})
+		.transform(file => (file ? toArray(file) : undefined) as unknown as string[])
+});
 
 const config = {
 	id: pgreDefaults.id,
 	name: pgreDefaults.name.unique(),
-	image: pgreDefaults.image,
-}
+	images: pgreDefaults.image,
+};
 
-const CategoryPgreTable = shop.table("categories", config)
+const CategoryPgreTable = shop.table("categories", config);
 
-export type Category = typeof CategoryPgreTable.$inferSelect
+export type Category = typeof CategoryPgreTable.$inferSelect;
 
-export { CategoryPgreTable, CategoryInsertValidation }
+export { CategoryPgreTable, CategoryInsertValidation };

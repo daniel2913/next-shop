@@ -1,20 +1,20 @@
-import React from "react"
-import CartStatus from "@/components/cart/Status"
-import Link from "next/link"
-import Home from "@public/home.svg"
-import Catalogue from "@public/catalogue.svg"
-import { BrandCache, CategoryCache } from "@/helpers/cache"
-import Search from "./search/Search"
-import SearchContainer from "./search/SearchContainer"
-import AuthContainer from "./auth/AuthContainer"
-import Auth from "./auth/Auth"
-import NavButton from "../ui/Navbutton"
+import React from "react";
+import CartStatus from "@/components/cart/Status";
+import Link from "next/link";
+import Home from "@public/home.svg";
+import Catalogue from "@public/catalogue.svg";
+import { BrandCache, CategoryCache } from "@/helpers/cache";
+import Search from "./search/Search";
+import SearchContainer from "./search/SearchContainer";
+import AuthContainer from "./auth/AuthContainer";
+import Auth from "./auth/Auth";
+import NavButton from "../ui/Navbutton";
 
 export default async function Navbar() {
 	const [brands, categories] = await Promise.all([
 		BrandCache.get(),
 		CategoryCache.get(),
-	])
+	]);
 	return (
 		<>
 			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
@@ -55,5 +55,5 @@ export default async function Navbar() {
 				<Auth className="" />
 			</AuthContainer>
 		</>
-	)
+	);
 }

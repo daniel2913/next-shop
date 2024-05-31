@@ -1,21 +1,21 @@
-import { auth } from "@/actions/common"
-import { getProductsByIdsAction } from "@/actions/product"
-import Cart from "@/components/cart"
-import { redirect } from "next/navigation"
+import { auth } from "@/actions/common";
+import { getProductsByIdsAction } from "@/actions/product";
+import Cart from "@/components/cart";
+import RequireAuth from "@/providers/RequireAuth";
+import { redirect } from "next/navigation";
 
 export default async function CartPage() {
 	try {
-		const user = await auth("user")
-		const prodIds = Object.keys(user.cart).map(Number)
-		const products = await getProductsByIdsAction(prodIds)
-		if ("error" in products) redirect("/shop/home")
+		const user = await auth("user");
+		const prodIds = Object.keys(user.cart).map(Number);
+		const products = await getProductsByIdsAction(prodIds);
+		if ("error" in products) redirect("/shop/home");
 		return (
-			<Cart
-				products={products}
-				initCart={user.cart}
-			/>
+			<RequireAuth>
+				<Cart products={products} initCart={user.cart} />
+			</RequireAuth>
 		)
 	} catch {
-		redirect("/shop/home")
+		redirect("/shop/home");
 	}
 }

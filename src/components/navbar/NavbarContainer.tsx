@@ -1,32 +1,32 @@
-"use client"
-import React from "react"
+"use client";
+import React from "react";
 
 type Props = {
-	children: React.ReactNode
-}
+	children: React.ReactNode;
+};
 function getScrollBarWidth() {
-	const el = document.createElement("div")
-	el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;"
-	document.body.appendChild(el)
-	const width = el.offsetWidth - el.clientWidth
-	el.remove()
-	return width
+	const el = document.createElement("div");
+	el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;";
+	document.body.appendChild(el);
+	const width = el.offsetWidth - el.clientWidth;
+	el.remove();
+	return width;
 }
 export default function NavBarContainer({ children }: Props) {
-	const offset = React.useRef(16)
+	const offset = React.useRef(16);
 	const hasScrollbar = React.useSyncExternalStore(
 		(onChange) => {
-			const test = new ResizeObserver(onChange)
-			test.observe(document.body)
-			return () => test.disconnect
+			const test = new ResizeObserver(onChange);
+			test.observe(document.body);
+			return () => test.disconnect;
 		},
 		() => document.body.scrollHeight > document.body.clientHeight,
-		() => true
-	)
+		() => true,
+	);
 
 	React.useEffect(() => {
-		offset.current = getScrollBarWidth()
-	}, [])
+		offset.current = getScrollBarWidth();
+	}, []);
 	return (
 		<>
 			<nav
@@ -39,5 +39,5 @@ export default function NavBarContainer({ children }: Props) {
 			</nav>
 			<div className="relative mt-6 h-12 md:mb-6 md:mt-0">.</div>
 		</>
-	)
+	);
 }

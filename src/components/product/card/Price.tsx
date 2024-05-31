@@ -1,9 +1,9 @@
-import calcPrice from "@/helpers/misc"
-import React from "react"
+import calcPrice from "@/helpers/misc";
+import React from "react";
 interface Props {
-	price: number
-	discount: number
-	className?: string
+	price: number;
+	discount: number;
+	className?: string;
 }
 
 const Price = React.memo(function Price({ price, discount, className }: Props) {
@@ -17,7 +17,7 @@ const Price = React.memo(function Price({ price, discount, className }: Props) {
 		</p>
 	) : (
 		<p className={`${className} font-bold`}>{calcPrice(price, discount)}$</p>
-	)
-})
+	);
+});
 
-export default Price
+export default Price;

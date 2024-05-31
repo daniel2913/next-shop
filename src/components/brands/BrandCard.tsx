@@ -1,11 +1,11 @@
-import { Brand } from "@/lib/Models/index"
-import Image from "next/image"
-import Link from "next/link"
+import type { Brand } from "@/lib/Models/index";
+import Image from "next/image";
+import Link from "next/link";
 type Props = {
-	brand: Brand
-	products: number
-	className?: string
-}
+	brand: Brand;
+	products: number;
+	className?: string;
+};
 export default function BrandCard({ brand, products, className }: Props) {
 	return (
 		<article
@@ -30,5 +30,5 @@ export default function BrandCard({ brand, products, className }: Props) {
 				</main>
 			</Link>
 		</article>
-	)
+	);
 }

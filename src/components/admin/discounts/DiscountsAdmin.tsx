@@ -1,41 +1,41 @@
-"use client"
+"use client";
 
-import { Discount } from "@/lib/Models"
-import { useRouter } from "next/navigation"
-import React, { isValidElement } from "react"
-import { Button } from "@/components/ui/Button"
-import Edit from "@public/edit.svg"
-import { deleteDiscountsAction } from "@/actions/discount"
-import DiscountForm from "@/components/forms/DiscountForm"
-import GenericSelectTable from "@/components/ui/GenericSelectTable"
-import { useModalStore } from "@/store/modalStore"
-import { useToastStore } from "@/store/ToastStore"
+import type { Discount } from "@/lib/Models";
+import { useRouter } from "next/navigation";
+import React, { isValidElement } from "react";
+import { Button } from "@/components/ui/Button";
+import Edit from "@public/edit.svg";
+import { deleteDiscountsAction } from "@/actions/discount";
+import DiscountForm from "@/components/forms/DiscountForm";
+import GenericSelectTable from "@/components/ui/GenericSelectTable";
+import { useToastStore } from "@/store/ToastStore";
+import { ModalContext } from "@/providers/ModalProvider";
 
 type Props = {
-	discounts: Discount[]
-	className?: string
-}
+	discounts: Discount[];
+	className?: string;
+};
 
 export default function DiscountsAdmin({ discounts, className }: Props) {
-	const [selected, setSelected] = React.useState<number[]>([])
-	const [loading, setLoading] = React.useState(false)
-	const show = useModalStore((s) => s.show)
-	const isValidResponse = useToastStore((s) => s.isValidResponse)
-	const router = useRouter()
-	const onChange = (ids: number[]) => setSelected(ids)
+	const [selected, setSelected] = React.useState<number[]>([]);
+	const [loading, setLoading] = React.useState(false);
+	const show = React.useContext(ModalContext)
+	const isValidResponse = useToastStore((s) => s.isValidResponse);
+	const router = useRouter();
+	const onChange = (ids: number[]) => setSelected(ids);
 	return (
 		<div className={`${className} flex flex-col`}>
 			<div className="flex gap-4">
 				<Button
 					disabled={loading || selected.length === 0}
 					onClick={async () => {
-						setLoading(true)
-						const res = await deleteDiscountsAction(selected)
+						setLoading(true);
+						const res = await deleteDiscountsAction(selected);
 						if (isValidResponse(res)) {
-							setSelected([])
-							router.refresh()
+							setSelected([]);
+							router.refresh();
 						}
-						setLoading(false)
+						setLoading(false);
 					}}
 				>
 					Delete
@@ -56,18 +56,18 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 					Edit: (s) => (
 						<Button
 							onClick={() =>
-								show(<DiscountForm discount={s} />).then(() => router.refresh())
+								show({
+									title: "Edit Discount",
+									children: () => <DiscountForm discount={s} />
+								}).then(router.refresh)
 							}
 							className="appearance-none bg-transparent hover:bg-transparent"
 						>
-							<Edit
-								width={30}
-								height={30}
-							/>
+							<Edit width={30} height={30} />
 						</Button>
 					),
 				}}
 			/>
 		</div>
-	)
+	);
 }

@@ -1,26 +1,27 @@
-import { ProductModel } from "@/lib/Models"
-import React from "react"
-import CategoryCard from "../../components/categories/CategoryCard"
-import { CategoryCache } from "@/helpers/cache"
-import { count } from "drizzle-orm"
-import HorizontalScrollList from "../../components/ui/HorizontalScrollList"
+import { ProductModel } from "@/lib/Models";
+import React from "react";
+import CategoryCard from "../../components/categories/CategoryCard";
+import { CategoryCache } from "@/helpers/cache";
+import { count } from "drizzle-orm";
+import HorizontalScrollList from "../../components/ui/HorizontalScrollList";
 
 type Props = {
-	className?: string
-}
+	className?: string;
+};
 
 export default async function CategoryList(props: Props) {
-	const categories = await CategoryCache.get()
+	const categories = await CategoryCache.get();
 	const stats = await ProductModel.model
 		.select({
 			category: ProductModel.table.category,
 			products: count(),
 		})
 		.from(ProductModel.table)
-		.groupBy(ProductModel.table.category)
+		.groupBy(ProductModel.table.category);
 	const products = Object.fromEntries(
-		stats.map((row) => [row.category, row.products])
-	)
+		stats.map((row) => [row.category, row.products]),
+	);
+	if (categories.length===0) return null
 	return (
 		<>
 			<h2>Categories</h2>
@@ -34,5 +35,5 @@ export default async function CategoryList(props: Props) {
 				))}
 			</HorizontalScrollList>
 		</>
-	)
+	);
 }

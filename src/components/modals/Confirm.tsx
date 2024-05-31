@@ -1,7 +1,7 @@
-import { Button } from "../ui/Button"
+import { Button } from "../ui/Button";
 export default function ModalConfirm(props: {
-	message: string
-	resolver: (ans: boolean) => void
+	message: string;
+	resolver: (ans: boolean) => void;
 }) {
 	return (
 		<div>
@@ -9,7 +9,7 @@ export default function ModalConfirm(props: {
 			<div className="flex justify-center gap-16">
 				<Button
 					onClick={() => {
-						props.resolver(true)
+						props.resolver(true);
 					}}
 				>
 					Yes
@@ -17,5 +17,5 @@ export default function ModalConfirm(props: {
 				<Button onClick={() => props.resolver(false)}>No</Button>
 			</div>
 		</div>
-	)
+	);
 }

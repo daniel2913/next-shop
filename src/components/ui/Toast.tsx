@@ -1,19 +1,23 @@
-"use client"
+"use client";
 
-import React from "react"
-import Exclaimation from "@/../public/exclaim.svg"
-import Info from "@/../public/info.svg"
-import { useToastStore } from "@/store/ToastStore"
-import { Alert, AlertTitle, AlertDescription } from "./Alert"
+import React from "react";
+import Exclaimation from "@/../public/exclaim.svg";
+import Info from "@/../public/info.svg";
+import { useToastStore } from "@/store/ToastStore";
+import { Alert, AlertTitle, AlertDescription } from "./Alert";
 
 export default function Toast() {
-	const { isVisible, description, title, type } = useToastStore()
-	const Icon = type === "error" ? Exclaimation : Info
+	const { isVisible, description, title, type } = useToastStore();
+	const Icon = type === "error" ? Exclaimation : Info;
 	return (
 		<Alert
 			onClick={() => useToastStore.setState({ isVisible: false })}
 			className={`
-				${type === "error" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"}
+				${
+					type === "error"
+						? "bg-destructive text-destructive-foreground"
+						: "bg-secondary text-secondary-foreground"
+				}
 				${isVisible ? "block" : "hidden"}
 				md:max-h-1/3 md:max-w-1/4
 				fixed bottom-12 left-0 right-0 z-[100] h-1/4
@@ -32,5 +36,5 @@ export default function Toast() {
 			</AlertTitle>
 			<AlertDescription className="text-xl">{description}</AlertDescription>
 		</Alert>
-	)
+	);
 }

@@ -1,48 +1,44 @@
-"use client"
-import Form from "./common.tsx"
-import React from "react"
-import { changeDiscountAction, createDiscountAction } from "@/actions/discount"
-import { Slider } from "../ui/Slider.tsx"
-import { Label } from "../ui/Label.tsx"
-import Input from "../ui/Input.tsx"
+"use client";
+import Form from "./common.tsx";
+import React from "react";
+import { changeDiscountAction, createDiscountAction } from "@/actions/discount";
+import { Slider } from "../ui/Slider.tsx";
+import { Label } from "../ui/Label.tsx";
+import Input from "../ui/Input.tsx";
 
 const validation = {
 	discount: (discount: number) => {
-		if (discount < 1) return "Greater than 0"
-		if (discount > 99) return "Less than 100"
-		if (Number.isInteger(discount)) return "Only integers"
-		return false
+		if (discount < 1) return "Greater than 0";
+		if (discount > 99) return "Less than 100";
+		if (Number.isInteger(discount)) return "Only integers";
+		return false;
 	},
-}
+};
 
 type Props = {
 	discount?: Partial<{
-		id: number
-		discount: number
-		brands: number[]
-		categories: number[]
-		products: number[]
-		expires: Date
-	}>
-}
+		id: number;
+		discount: number;
+		brands: number[];
+		categories: number[];
+		products: number[];
+		expires: Date;
+	}>;
+};
 
 export default function DiscountForm({ discount }: Props) {
 	const action =
 		discount?.id !== undefined
 			? (form: FormData) => changeDiscountAction(discount.id!, form)
-			: createDiscountAction
-	const [value, setValue] = React.useState(discount?.discount || 50)
+			: createDiscountAction;
+	const [value, setValue] = React.useState(discount?.discount || 50);
 	const [expires, setExpires] = React.useState(
 		discount?.expires?.toJSON().slice(0, 10) ||
-			new Date(Date.now() + 1000 * 60 * 60 * 24).toJSON().slice(0, 10)
-	)
+			new Date(Date.now() + 1000 * 60 * 60 * 24).toJSON().slice(0, 10),
+	);
 
 	return (
-		<Form
-			validations={validation}
-			className=""
-			action={action}
-		>
+		<Form validations={validation} className="" action={action}>
 			<span>
 				{`Discount will affect:\n`}
 				{(discount?.products?.length || "") &&
@@ -108,5 +104,5 @@ export default function DiscountForm({ discount }: Props) {
 				/>
 			))}
 		</Form>
-	)
+	);
 }

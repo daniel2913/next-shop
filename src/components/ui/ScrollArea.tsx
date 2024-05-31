@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import React from "react"
+import React from "react";
 
 const ScrollArea = React.forwardRef(function ScrollArea(
 	{ children, className }: { children: React.ReactNode; className: string },
-	ref: React.ForwardedRef<HTMLDivElement>
+	ref: React.ForwardedRef<HTMLDivElement>,
 ) {
 	return (
 		<div
@@ -17,7 +17,7 @@ const ScrollArea = React.forwardRef(function ScrollArea(
 		>
 			{children}
 		</div>
-	)
-})
+	);
+});
 
-export { ScrollArea }
+export { ScrollArea };

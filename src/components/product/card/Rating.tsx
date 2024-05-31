@@ -1,20 +1,20 @@
-"use client"
-import Star from "@public/star.svg"
-import { useSession } from "next-auth/react"
-import React from "react"
-import { useToastStore } from "@/store/ToastStore"
+"use client";
+import Star from "@public/star.svg";
+import { useSession } from "next-auth/react";
+import React from "react";
+import { useToastStore } from "@/store/ToastStore";
 
 type Props = {
-	id: number
-	voters: number
-	rating: number
-	value: number
-	onChange: (val: number) => void
-	className: string
-	size?: number
-}
+	id: number;
+	voters: number;
+	rating: number;
+	value: number;
+	onChange: (val: number) => void;
+	className: string;
+	size?: number;
+};
 
-const ratings = [1, 2, 3, 4, 5]
+const ratings = [1, 2, 3, 4, 5];
 const Rating = React.memo(function Rating({
 	voters,
 	value,
@@ -23,12 +23,12 @@ const Rating = React.memo(function Rating({
 	size = 30,
 	className,
 }: Props) {
-	const session = useSession()
-	const error = useToastStore((s) => s.error)
+	const session = useSession();
+	const error = useToastStore((s) => s.error);
 	async function handleRate(i: number) {
-		if (session?.data?.user?.id) onChange(i)
+		if (session?.data?.user?.id) onChange(i);
 		else {
-			error("Only authorized users can rate products!")
+			error("Only authorized users can rate products!");
 		}
 	}
 	return (
@@ -53,20 +53,22 @@ const Rating = React.memo(function Rating({
 						width={size}
 						height={size}
 						className={` aspect-square
-								${
-									value === 0
-										? "stroke-accent"
-										: i <= rating
-											? "stroke-foreground"
-											: "stroke-secondary"
-								}
-								${(i <= value && "fill-accent") || (i <= rating && "fill-foreground") || "fill-secondary"}
+								${value === 0
+								? "stroke-accent"
+								: i <= rating
+									? "stroke-foreground"
+									: "stroke-secondary"
+							}
+								${(i <= value && "fill-accent") ||
+							(i <= rating && "fill-foreground") ||
+							"fill-secondary"
+							}
 							`}
 					/>
 				</button>
 			))}
 		</div>
-	)
-})
+	);
+});
 
-export default Rating
+export default Rating;

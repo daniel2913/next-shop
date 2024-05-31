@@ -1,33 +1,37 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Drawer, DrawerContent, DrawerPortal, DrawerTitle } from "../ui/Drawer"
-import { useModalStore } from "@/store/modalStore"
+import React from "react";
+import { Drawer, DrawerContent, DrawerPortal, DrawerTitle } from "../ui/Drawer";
 
-export default function MobileModal() {
-	const { open, title, children, onClose, clear } = useModalStore()
+type Props = {
+	isOpen: boolean
+	title: string
+	children: React.ReactNode
+	onClose?: () => void
+	close: () => void
+}
+export default function MobileModal(props: Props) {
 	return (
 		<Drawer
-			open={open}
-			onOpenChange={(open) => {
-				useModalStore.setState({ open })
-				if (!open) clear()
+			open={props.isOpen}
+			onClose={() => {
+				props.onClose?.()
+				props.close()
 			}}
-			onClose={onClose}
 		>
 			<DrawerPortal>
 				<DrawerTitle className="text-center text-2xl font-bold capitalize">
-					{title}
+					{props.title}
 				</DrawerTitle>
 				<DrawerContent
 					onSubmit={() => {
-						clear()
+						props.close();
 					}}
 					className="flex h-dvh w-full content-start items-center border-x-0 bg-background px-4 pb-10 "
 				>
-					{children}
+					{props.children}
 				</DrawerContent>
 			</DrawerPortal>
 		</Drawer>
-	)
+	);
 }

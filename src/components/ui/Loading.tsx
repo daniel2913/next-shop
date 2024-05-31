@@ -1,11 +1,11 @@
-import React from "react"
-import Spinner from "@public/loading.svg"
+import React from "react";
+import Spinner from "@public/loading.svg";
 
 type Props = {
-	children: React.ReactNode
-	fallback?: React.ReactNode
-	loading?: boolean
-}
+	children: React.ReactNode;
+	fallback?: React.ReactNode;
+	loading?: boolean;
+};
 export default function Loading(props: Props) {
 	const fallback = props.fallback ? (
 		props.fallback
@@ -17,10 +17,10 @@ export default function Loading(props: Props) {
 				height={50}
 			/>
 		</div>
-	)
+	);
 	return props.loading ? (
 		fallback
 	) : (
 		<React.Suspense fallback={fallback}>{props.children}</React.Suspense>
-	)
+	);
 }

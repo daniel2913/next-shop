@@ -1,31 +1,36 @@
-"use client"
-import React from "react"
-import useConfirm from "@/hooks/modals/useConfirm"
-import Plus from "@public/plus.svg"
-import Minus from "@public/minus.svg"
+"use client";
+import React from "react";
+import Plus from "@public/plus.svg";
+import Minus from "@public/minus.svg";
+import { ModalContext } from "@/providers/ModalProvider";
+import ModalConfirm from "../modals/Confirm";
 
 interface Props {
-	className: string
-	value: number
-	onChange: (val: number) => void
-	confirm?: boolean
+	className: string;
+	value: number;
+	onChange: (val: number) => void;
+	confirmToDelete?: boolean;
 }
 
 export default function AmmountSelector({
 	className,
 	value,
 	onChange,
-	confirm: confirmation,
+	confirmToDelete
 }: Props) {
-	const confirm = useConfirm("Are you sure you want to discard this item?")
+	const show = React.useContext(ModalContext)
+	const confirm = () => show({
+		title: "Are you sure",
+		children: (close: (val: boolean) => void) => <ModalConfirm message="Are you sure you want to delete this item from your cart?" resolver={close} />
+	})
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
-			if (confirmation)
+			if (confirmToDelete)
 				confirm().then((ans) => {
-					return ans ? onChange(0) : false
-				})
-			else return onChange(0)
-		} else onChange(newAmount)
+					return ans ? onChange(0) : false;
+				});
+			else return onChange(0);
+		} else onChange(newAmount);
 	}
 	return (
 		<div className={`flex justify-between font-semibold ${className}`}>
@@ -55,5 +60,5 @@ export default function AmmountSelector({
 				/>
 			</button>
 		</div>
-	)
+	);
 }

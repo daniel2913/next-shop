@@ -1,19 +1,23 @@
-import Link from "next/link"
-import { ReactElement } from "react"
-import NavButton from "@/components/ui/Navbutton"
-import { auth } from "@/actions/common"
-import { redirect } from "next/navigation"
-import NavBarContainer from "@/components/navbar/NavbarContainer"
+import Link from "next/link";
+import type { ReactElement } from "react";
+import NavButton from "@/components/ui/Navbutton";
+import { auth } from "@/actions/common";
+import { redirect } from "next/navigation";
+import NavBarContainer from "@/components/navbar/NavbarContainer";
+import RequireAuth from "@/providers/RequireAuth";
+import { cookies } from "next/headers";
 
 export default async function AdminLayout({
 	children,
 }: {
-	children: ReactElement
+	children: ReactElement;
 }) {
 	try {
-		await auth("admin")
+		const cookie = cookies().get("cookie")
+		if (cookie) throw "Error"
+		await auth()
 		return (
-			<>
+			<RequireAuth admin>
 				<NavBarContainer>
 					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
@@ -61,9 +65,10 @@ export default async function AdminLayout({
 				<main className="flex h-full w-full justify-center p-4">
 					{children}
 				</main>
-			</>
-		)
+
+			</RequireAuth>
+		);
 	} catch {
-		redirect("/shop/home")
+		redirect("/shop/home");
 	}
 }

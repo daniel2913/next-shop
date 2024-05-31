@@ -1,22 +1,22 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/helpers/utils"
+import { cn } from "@/helpers/utils";
 
 export interface InputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {
-	error?: boolean
-	label?: string
+	error?: boolean;
+	label?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	({ className, type, ...props }, ref) => {
-		if (!props.id && props.label) props.id = Math.random().toString()
+		if (!props.id && props.label) props.id = Math.random().toString();
 		return (
 			<input
 				{...props}
 				aria-invalid={props.error ? "true" : undefined}
 				onKeyDown={(e) => {
-					if (e.key === "Escape") e.currentTarget.blur()
+					if (e.key === "Escape") e.currentTarget.blur();
 				}}
 				type={type}
 				className={cn(
@@ -29,13 +29,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 					disabled:cursor-not-allowed disabled:opacity-50
 					aria-[invalid]:border-destructive aria-[invalid]:text-destructive
 					`,
-					className || ""
+					className || "",
 				)}
 				ref={ref}
 			/>
-		)
-	}
-)
-Input.displayName = "Input"
-export { Input }
-export default Input
+		);
+	},
+);
+Input.displayName = "Input";
+export { Input };
+export default Input;

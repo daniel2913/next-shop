@@ -1,10 +1,10 @@
-"use client"
-import React from "react"
+"use client";
+import React from "react";
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement>
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
 const NavButton = React.forwardRef(function NavButton(
 	props: Props,
-	ref: React.ForwardedRef<HTMLButtonElement>
+	ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
 	return (
 		<button
@@ -15,7 +15,7 @@ const NavButton = React.forwardRef(function NavButton(
 		>
 			{props.children}
 		</button>
-	)
-})
+	);
+});
 
-export default NavButton
+export default NavButton;

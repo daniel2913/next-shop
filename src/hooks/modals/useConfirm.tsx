@@ -1,29 +1,11 @@
-import React from "react"
-import { useModalStore } from "@/store/modalStore"
-import ModalConfirm from "@/components/modals/Confirm"
+import React, { useContext } from "react";
+import ModalConfirm from "@/components/modals/Confirm";
+import { ModalContext } from "@/providers/ModalProvider";
 
-export default function useConfirm(defaultMessage = "Are you sure?") {
-	const show = React.useCallback(
-		(message?: string) => {
-			return new Promise((res) => {
-				useModalStore.setState({
-					children: (
-						<ModalConfirm
-							resolver={(val: boolean) => {
-								res(val)
-								useModalStore.getState().clear()
-							}}
-							message={message || defaultMessage}
-						/>
-					),
-					open: true,
-					title: "Confirmation",
-					forceWindow: true,
-					onClose: () => res(false),
-				})
-			})
-		},
-		[defaultMessage]
-	)
-	return show
+export default function useConfirm(defMessage = "Are you sure?", defTitle = "Confirmation") {
+	const show = useContext(ModalContext)
+	return (message?: string, title?: string) => show({
+		title: title || defTitle,
+		children: (close: (val: boolean) => void) => <ModalConfirm resolver={close} message={message || defMessage} />
+	})
 }

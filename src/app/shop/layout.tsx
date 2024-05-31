@@ -1,11 +1,10 @@
-import React from "react"
-import Navbar from "@/components/navbar/Navbar"
-import NavBarContainer from "@/components/navbar/NavbarContainer"
-import CartControllerServer from "@/components/cart/CartServerWrapper"
+import type React from "react";
+import Navbar from "@/components/navbar/Navbar";
+import NavBarContainer from "@/components/navbar/NavbarContainer";
 
 type Props = {
-	children: React.ReactNode
-}
+	children: React.ReactNode;
+};
 
 export default async function ShopLayout({ children }: Props) {
 	return (
@@ -14,7 +13,6 @@ export default async function ShopLayout({ children }: Props) {
 				<Navbar />
 			</NavBarContainer>
 			{children}
-			<CartControllerServer />
 		</div>
-	)
+	);
 }

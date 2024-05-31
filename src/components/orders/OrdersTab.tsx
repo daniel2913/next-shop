@@ -1,32 +1,26 @@
-"use client"
-import { PopulatedOrder, markOrderSeenAction } from "@/actions/order"
-import React from "react"
-import { useSession } from "next-auth/react"
+"use client";
+import { type PopulatedOrder, markOrderSeenAction } from "@/actions/order";
+import React from "react";
+import { useSession } from "next-auth/react";
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/Accordion"
-import { CartTable } from "../cart/CartTable"
+} from "@/components/ui/Accordion";
+import { CartTable } from "../cart/CartTable";
 
 export type OrdersTabProps = {
-	orders: PopulatedOrder[]
-}
+	orders: PopulatedOrder[];
+};
 
 export function OrdersTab({ orders }: OrdersTabProps) {
-	const [seen, setSeen] = React.useState<number[]>([])
-	const session = useSession()
+	const [seen, setSeen] = React.useState<number[]>([]);
+	const session = useSession();
 	return (
-		<Accordion
-			type="single"
-			collapsible
-		>
+		<Accordion type="single" collapsible>
 			{orders.map((order, orderIdx) => (
-				<AccordionItem
-					value={`${orderIdx}`}
-					key={order.order.id}
-				>
+				<AccordionItem value={`${orderIdx}`} key={order.order.id}>
 					<AccordionTrigger
 						onClick={() => {
 							if (
@@ -35,9 +29,9 @@ export function OrdersTab({ orders }: OrdersTabProps) {
 									!seen.includes(order.order.id)) ||
 								session.data?.user?.role !== "user"
 							)
-								return
-							markOrderSeenAction(order.order.id)
-							setSeen((seen) => [...seen, order.order.id])
+								return;
+							markOrderSeenAction(order.order.id);
+							setSeen((seen) => [...seen, order.order.id]);
 						}}
 						className="flex"
 					>
@@ -59,5 +53,5 @@ export function OrdersTab({ orders }: OrdersTabProps) {
 				</AccordionItem>
 			))}
 		</Accordion>
-	)
+	);
 }

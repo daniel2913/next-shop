@@ -1,22 +1,22 @@
-import React from "react"
-import Image from "next/image"
-import Arrow from "@public/arrowStraight.svg"
+import React from "react";
+import Image from "next/image";
+import Arrow from "@public/arrowStraight.svg";
 
 type Props = {
-	images: string[]
-	brand?: string
-	brandName?: string
-	className?: string
-	imageClassName?: string
-	imageWrapperClassName?: string
-	width: number
-	height: number
-	priority?: boolean
-}
+	images: string[];
+	brand?: string;
+	brandName?: string;
+	className?: string;
+	imageClassName?: string;
+	imageWrapperClassName?: string;
+	width: number;
+	height: number;
+	priority?: boolean;
+};
 
 const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
-	const ref = React.useRef<HTMLDivElement>(null)
-	const position = React.useRef(0)
+	const ref = React.useRef<HTMLDivElement>(null);
+	const position = React.useRef(0);
 	return (
 		<div
 			className={`relative size-full overflow-hidden rounded-lg ${props.className}`}
@@ -26,12 +26,12 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 				aria-label="previous image"
 				className="group absolute bottom-1/2 left-0 z-10 translate-y-1/2"
 				onClick={() => {
-					position.current = Math.max(--position.current, 0)
+					position.current = Math.max(--position.current, 0);
 					ref.current?.children[position.current].scrollIntoView({
 						behavior: "smooth",
 						block: "nearest",
 						inline: "nearest",
-					})
+					});
 				}}
 			>
 				<Arrow
@@ -47,11 +47,14 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 				{props.images.map((img, idx) => (
 					<div
 						key={`${img}-${idx}`}
-						className={`object-fit flex-shrink-0 ${props.imageWrapperClassName}`}
+						className={`h-full flex justify-center items-center w-full flex-shrink-0 ${props.imageWrapperClassName}`}
 					>
 						<Image
-							priority={idx === 0 && props.priority || (position.current>0 && Math.abs(position.current-idx)<=3)}
-							className={`h-full rounded-lg ${props.imageClassName}`}
+							priority={
+								(idx === 0 && props.priority) ||
+								(position.current > 0 && Math.abs(position.current - idx) <= 3)
+							}
+							className={`h-full object-cover rounded-lg ${props.imageClassName}`}
 							width={props.width}
 							height={props.height}
 							src={img.includes(":") ? img : `/products/${img}`}
@@ -67,13 +70,13 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 				onClick={() => {
 					position.current = Math.min(
 						++position.current,
-						props.images.length - 1
-					)
+						props.images.length - 1,
+					);
 					ref.current?.children[position.current].scrollIntoView({
 						behavior: "smooth",
 						block: "nearest",
 						inline: "nearest",
-					})
+					});
 				}}
 			>
 				<Arrow
@@ -92,7 +95,7 @@ const ProductCarousel = React.memo(function ProductCarousel(props: Props) {
 				/>
 			) : null}
 		</div>
-	)
-})
+	);
+});
 
-export default ProductCarousel
+export default ProductCarousel;

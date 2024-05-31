@@ -1,52 +1,53 @@
-"use client"
-import Edit from "@/../public/edit.svg"
-import Heart from "@/../public/heart.svg"
-import DetailedProduct from "@/components/modals/ProductDetailed"
-import Rating from "@/components/product/card/Rating"
-import { PopulatedProduct } from "@/lib/Models/Product"
-import useCartStore from "@/store/cartStore"
-import { useSession } from "next-auth/react"
-import dynamic from "next/dynamic"
-import React from "react"
-import BuyButton from "./BuyButton"
-import Price from "./Price"
-import ProductCarousel from "./ProductCarousel"
-import { useModalStore } from "@/store/modalStore"
-import { useToastStore } from "@/store/ToastStore"
+"use client";
+import Edit from "@/../public/edit.svg";
+import Heart from "@/../public/heart.svg";
+import DetailedProduct from "@/components/modals/ProductDetailed";
+import Rating from "@/components/product/card/Rating";
+import type { PopulatedProduct } from "@/lib/Models/Product";
+import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import React from "react";
+import BuyButton from "./BuyButton";
+import Price from "./Price";
+import ProductCarousel from "./ProductCarousel";
+import { useToastStore } from "@/store/ToastStore";
+import { useAppDispatch, useAppSelector } from "@/store/rtk";
+import { toggleSaved } from "@/store/savedSlice";
+import { setVote } from "@/store/votesSlice";
+import { LocalModal } from "@/components/modals/Base";
 
 type Props = PopulatedProduct & {
-	reload: (id: number) => void
-	update: (id: number, part: Partial<PopulatedProduct>) => void
-	idx?: number
-	fold?: number
-}
+	reload: (id: number) => void;
+	update: (id: number, part: Partial<PopulatedProduct>) => void;
+	idx?: number;
+	fold?: number;
+};
 
-const ProductForm = dynamic(() => import("@/components/forms/ProductForm"))
+const ProductForm = dynamic(() => import("@/components/forms/ProductForm"));
 
 const ProductCard = React.memo(function ProductCard(product: Props) {
-	const show = useModalStore((s) => s.show)
-	const isValidResponse = useToastStore((s) => s.isValidResponse)
-	const vote = useCartStore((state) => state.votes[product.id])
-	const setVote = useCartStore((state) => state.setVote)
+	const [show, setShow] = React.useState(false)
+	const isValidResponse = useToastStore((s) => s.isValidResponse);
+	const vote = useAppSelector(state => state.votes.votes[product.id]);
+	const dispatch = useAppDispatch()
 
 	const onVoteChange = React.useCallback(
 		async (val: number) => {
-			const res = await setVote(product.id, val)
-			if (!isValidResponse(res)) return
-			product.update(product.id, res)
+			const res = await dispatch(setVote({ id: product.id, val }));
+			if (!isValidResponse(res)) return;
+			product.update(product.id, res.payload);
 		},
-		[product.id, setVote, isValidResponse, product.update]
-	)
-	const showDetails = () => show(<DetailedProduct {...product} />, product.name)
+		[product.id, setVote, isValidResponse, product.update],
+	);
 
-	const priority = product.idx ? product.idx < (product.fold || 10) : false
+	const priority = product.idx ? product.idx < (product.fold || 10) : false;
 
 	return (
 		<article className="h-lgCardY  w-lgCardX rounded-lg border-2 bg-card text-card-foreground shadow-lg">
 			<main className="grid grid-cols-2 grid-rows-[12rem,1fr,1fr,1fr,2fr] px-4 pt-2">
 				<ProductCarousel
 					className="col-span-2 h-full p-0"
-					brand={product.brand.image}
+					brand={product.brand.images[0]}
 					images={product.images}
 					brandName={product.brand.name}
 					width={250}
@@ -62,7 +63,7 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 					className="col-span-2 justify-self-center"
 				/>
 				<button
-					onClick={showDetails}
+					onClick={() => setShow(true)}
 					type="button"
 					className="col-span-2 appearance-none"
 				>
@@ -83,16 +84,21 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 				/>
 				<Controls {...product} />
 			</main>
+			{show &&
+				<LocalModal isOpen={show} close={() => setShow(false)} title={product.name}>
+					<DetailedProduct {...product} />
+				</LocalModal>
+			}
 		</article>
-	)
-})
+	);
+});
 
 function Controls(product: Props) {
-	const session = useSession()
-	const show = useModalStore((s) => s.show)
+	const session = useSession();
+	const [show, setShow] = React.useState(false)
+	const dispatcher = useAppDispatch()
 
-	const saved = useCartStore((state) => state.saved.includes(product.id))
-	const toggleSaved = useCartStore((state) => state.toggleSaved)
+	const saved = useAppSelector(s => s.saved.saved.includes(product.id))
 
 	return (
 		<div className="flex items-center justify-end gap-2">
@@ -104,11 +110,7 @@ function Controls(product: Props) {
 				<button
 					type="button"
 					className={`ml-auto flex appearance-none justify-between bg-transparent p-0 hover:bg-transparent`}
-					onClick={() => {
-						show(<ProductForm product={product} />).then(() =>
-							product.reload(product.id)
-						)
-					}}
+					onClick={() => setShow(true)}
 				>
 					<Edit
 						className="*:fill-foreground *:stroke-foreground"
@@ -121,22 +123,32 @@ function Controls(product: Props) {
 					type="button"
 					className="group appearance-none justify-self-end bg-transparent p-0 hover:bg-transparent"
 					title={saved ? "Del from Favourite" : "Add to Favoutite"}
-					onClick={() => toggleSaved(product.id)}
+					onClick={async () => {
+						const res = await dispatcher(toggleSaved(product.id))
+					}
+					}
 				>
 					<Heart
-						className={`*:stroke-card-foreground *:stroke-1 ${
-							saved
-								? "fill-accent"
-								: "fill-transparent group-hover:fill-accent/70"
-						}
+						className={`*:stroke-card-foreground *:stroke-1 ${saved
+							? "fill-accent"
+							: "fill-transparent group-hover:fill-accent/70"
+							}
 				`}
 						width={"30px"}
 						height={"30px"}
 					/>
 				</button>
-			)}
-		</div>
-	)
+			)
+			}
+			{show &&
+				<LocalModal title="Edit product" isOpen={show} close={() => setShow(false)}>
+					<div onSubmit={() => (product.reload(product.id), setShow(false))}>
+						<ProductForm product={product} />
+					</div>
+				</LocalModal>
+			}
+		</div >
+	);
 }
 
-export default ProductCard
+export default ProductCard;

@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import React from "react"
-import Glass from "@public/search.svg"
-import NavButton from "../../ui/Navbutton"
-import { useModalStore } from "@/store/modalStore"
+import React from "react";
+import Glass from "@public/search.svg";
+import NavButton from "../../ui/Navbutton";
+import { LocalModal } from "@/components/modals/Base";
 
 type Props = {
-	children: React.ReactNode
-	className?: string
-}
+	children: React.ReactNode;
+	className?: string;
+};
 
 export default function SearchContainer({ children, className }: Props) {
-	const show = useModalStore((s) => s.show)
+	const [isOpen, setIsOpen] = React.useState(false)
 	return (
 		<>
 			<div className={`${className} hidden md:block`}>{children}</div>
 			<NavButton
 				className={`${className} md:hidden`}
-				onClick={() => show(children)}
+				onClick={() => setIsOpen(v => !v)}
 			>
 				<Glass
 					width="30px"
@@ -26,6 +26,10 @@ export default function SearchContainer({ children, className }: Props) {
 				/>
 				Search
 			</NavButton>
+			{isOpen && <LocalModal title="Search" isOpen={isOpen} close={() => setIsOpen(false)}>
+				{children}
+			</LocalModal>
+			}
 		</>
-	)
+	);
 }

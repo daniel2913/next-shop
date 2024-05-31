@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { LabelHTMLAttributes } from "react"
+import type { LabelHTMLAttributes } from "react";
 
 const Label = React.forwardRef(function Label(
 	{ className, ...props }: LabelHTMLAttributes<any>,
-	ref: React.ForwardedRef<HTMLLabelElement>
+	ref: React.ForwardedRef<HTMLLabelElement>,
 ) {
 	return (
 		<label
@@ -14,7 +14,7 @@ const Label = React.forwardRef(function Label(
 			className={`space-y-2 font-semibold ${className}`}
 			{...props}
 		/>
-	)
-})
+	);
+});
 
-export { Label }
+export { Label };

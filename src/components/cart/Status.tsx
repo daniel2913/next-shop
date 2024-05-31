@@ -1,43 +1,42 @@
-"use client"
-import useCartStore from "@/store/cartStore"
-import { useSession } from "next-auth/react"
-import dynamic from "next/dynamic"
-import CartIcon from "@public/cart.svg"
-import NavButton from "../ui/Navbutton"
-import useResponsive from "@/hooks/useResponsive"
-import { useRouter } from "next/navigation"
-import { useModalStore } from "@/store/modalStore"
+"use client";
+import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import CartIcon from "@public/cart.svg";
+import NavButton from "../ui/Navbutton";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store/rtk";
+import React from "react";
+import { LocalModal } from "../modals/Base";
 
-const Login = dynamic(() => import("@/components/modals/auth"))
+const Login = dynamic(() => import("@/components/modals/auth"));
 
 type Props = {
-	className: string
-}
+	className: string;
+};
 
-type Items = Record<string, number>
+type Items = Record<string, number>;
 
 export function mergeCarts(cart1: Items, cart2: Items) {
-	const result = structuredClone(cart1)
-	const included = Object.keys(result)
+	const result = structuredClone(cart1);
+	const included = Object.keys(result);
 	for (const [id, amount] of Object.entries(cart2)) {
-		if (included.includes(id)) result[id] = result[id] + amount
-		else result[id] = amount
+		if (included.includes(id)) result[id] = result[id] + amount;
+		else result[id] = amount;
 	}
-	return result
+	return result;
 }
 
 export default function CartStatus({ className }: Props) {
-	const session = useSession()
-	const router = useRouter()
-	const show = useModalStore((s) => s.show)
-	const close = useModalStore((s) => s.clear)
-	const cart = useCartStore((state) => state.items)
-	const itemsCount = Object.values(cart).reduce((sum, next) => sum + next, 0)
+	const session = useSession();
+	const router = useRouter();
+	const [isOpen, setIsOpen] = React.useState(false)
+	const cart = useAppSelector(s => s.cart.items)
+	const itemsCount = Object.values(cart).reduce((sum, next) => sum + next, 0);
 
 	async function cartClickHandler() {
 		if (session.data?.user?.role !== "user")
-			show(<Login close={() => close()} />)
-		else if (itemsCount > 0) router.push("/shop/cart")
+			setIsOpen(true)
+		else if (itemsCount > 0) router.push("/shop/cart");
 	}
 
 	return (
@@ -46,6 +45,11 @@ export default function CartStatus({ className }: Props) {
 			aria-label="go to cart contents list"
 			onClick={cartClickHandler}
 		>
+			{isOpen &&
+				<LocalModal isOpen={isOpen} title="Authentication" close={() => setIsOpen(false)}>
+					<Login close={() => setIsOpen(false)} />
+				</LocalModal>
+			}
 			<div className="relative h-fit w-fit">
 				<CartIcon
 					className="*:stroke-foreground *:stroke-2"
@@ -69,5 +73,5 @@ export default function CartStatus({ className }: Props) {
 			</div>
 			Cart
 		</NavButton>
-	)
+	);
 }

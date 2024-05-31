@@ -1,18 +1,18 @@
-"use client"
-import React from "react"
-import Arrow from "@public/arrowStraight.svg"
+"use client";
+import React from "react";
+import Arrow from "@public/arrowStraight.svg";
 type Props = {
-	children: React.ReactNode
-	className?: string
-	innerClassName?: string
-}
+	children: React.ReactNode;
+	className?: string;
+	innerClassName?: string;
+};
 export default function HorizontalScrollList({ children, className }: Props) {
-	const ref = React.useRef<HTMLDivElement>(null)
+	const ref = React.useRef<HTMLDivElement>(null);
 	function scroll(val: number) {
 		ref.current?.scroll({
 			left: ref.current.scrollLeft + val,
 			behavior: "smooth",
-		})
+		});
 	}
 	return (
 		<div className="relative">
@@ -50,5 +50,5 @@ export default function HorizontalScrollList({ children, className }: Props) {
 				/>
 			</button>
 		</div>
-	)
+	);
 }

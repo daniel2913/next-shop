@@ -1,12 +1,12 @@
-import React from "react"
-import { Category } from "@/lib/Models/index"
-import Image from "next/image"
-import Link from "next/link"
+import React from "react";
+import type { Category } from "@/lib/Models/index";
+import Image from "next/image";
+import Link from "next/link";
 type Props = {
-	category: Category
-	products: number
-	className?: string
-}
+	category: Category;
+	products: number;
+	className?: string;
+};
 export default function CategoryCard({ category, products, className }: Props) {
 	return (
 		<article
@@ -31,5 +31,5 @@ export default function CategoryCard({ category, products, className }: Props) {
 				</main>
 			</Link>
 		</article>
-	)
+	);
 }

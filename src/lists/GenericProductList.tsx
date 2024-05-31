@@ -1,14 +1,14 @@
-"use client"
-import { useItemsController } from "@/hooks/useItemsController"
-import type { PopulatedProduct } from "@/lib/Models/Product"
-import React from "react"
-import ProductCard from "../components/product/card"
-import Loading from "../components/ui/Loading"
-import { getProductsByIds } from "@/actions/product"
+"use client";
+import { useItemsController } from "@/hooks/useItemsController";
+import type { PopulatedProduct } from "@/lib/Models/Product";
+import React from "react";
+import ProductCard from "../components/product/card";
+import Loading from "../components/ui/Loading";
+import { getProductsByIds } from "@/actions/product";
 
 export type Props = {
-	products: PopulatedProduct[]
-}
+	products: PopulatedProduct[];
+};
 
 export function GenericProductList({ products: initProducts }: Props) {
 	const {
@@ -19,7 +19,7 @@ export function GenericProductList({ products: initProducts }: Props) {
 	} = useItemsController({
 		initItems: initProducts,
 		getItems: getProductsByIds,
-	})
+	});
 	return (
 		<Loading loading={loading}>
 			{products.map((product, idx) => (
@@ -33,5 +33,5 @@ export function GenericProductList({ products: initProducts }: Props) {
 				/>
 			))}
 		</Loading>
-	)
+	);
 }
