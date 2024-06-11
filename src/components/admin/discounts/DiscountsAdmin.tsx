@@ -2,13 +2,12 @@
 
 import type { Discount } from "@/lib/Models";
 import { useRouter } from "next/navigation";
-import React, { isValidElement } from "react";
+import React from "react";
 import { Button } from "@/components/ui/Button";
 import Edit from "@public/edit.svg";
 import { deleteDiscountsAction } from "@/actions/discount";
 import DiscountForm from "@/components/forms/DiscountForm";
 import GenericSelectTable from "@/components/ui/GenericSelectTable";
-import { useToastStore } from "@/store/ToastStore";
 import { ModalContext } from "@/providers/ModalProvider";
 
 type Props = {
@@ -20,7 +19,6 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [loading, setLoading] = React.useState(false);
 	const show = React.useContext(ModalContext)
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const router = useRouter();
 	const onChange = (ids: number[]) => setSelected(ids);
 	return (
@@ -30,11 +28,9 @@ export default function DiscountsAdmin({ discounts, className }: Props) {
 					disabled={loading || selected.length === 0}
 					onClick={async () => {
 						setLoading(true);
-						const res = await deleteDiscountsAction(selected);
-						if (isValidResponse(res)) {
-							setSelected([]);
-							router.refresh();
-						}
+						await deleteDiscountsAction(selected);
+						setSelected([]);
+						router.refresh();
 						setLoading(false);
 					}}
 				>

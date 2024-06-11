@@ -16,6 +16,7 @@ import AmmountSelector from "@/components/ui/AmmountSelector";
 import useResponsive from "@/hooks/useResponsive";
 import type { PopulatedProduct } from "@/lib/Models/Product";
 import { actions, useAppDispatch } from "@/store/rtk";
+import { calcDiscount, formatPrice } from "@/helpers/misc";
 
 type Props = {
 	className?: string;
@@ -30,6 +31,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 			() => getProductsByIds(Object.keys(order).map(Number)),
 			[],
 		).value;
+
 	const totalAmount = Object.values(order).reduce(
 		(sum, next) => sum + (next.amount || 0),
 		0,
@@ -43,10 +45,10 @@ export function CartTable({ className, products, order, interactive }: Props) {
 	if (mode === "desktop")
 		return (
 			<Table
-				className={`text-semibold rounded-lg text-foreground ${className} w-fit table-auto`}
+				className={`text-semibold rounded-lg text-foreground ${className} w-full table-auto`}
 			>
 				<TableHeader className="">
-					<TableRow className=" *:p-1 *:text-center *:text-xl *:text-foreground md:*:text-2xl">
+					<TableRow className=" *:p-1 *:text-center *:text-xl *:text-foreground md:*:text-xl">
 						<TableHead className="w-1/12">Image</TableHead>
 						<TableHead className="w-1/5">Product</TableHead>
 						<TableHead className="w-1/12">Price</TableHead>
@@ -64,7 +66,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						.map((product) => (
 							<TableRow
 								key={product.id}
-								className="w-full overflow-hidden *:text-ellipsis *:p-1 *:text-center *:text-xl *:text-foreground *:md:text-2xl"
+								className="w-full overflow-hidden *:text-ellipsis *:p-1 *:text-center *:text-xl *:text-foreground *:md:text-xl"
 							>
 								<TableCell className="flex items-center justify-center">
 									<Image
@@ -77,7 +79,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 								<TableCell className="text-md capitalize md:text-lg">
 									<h3>{product.name}</h3>
 								</TableCell>
-								<TableCell>{order[product.id].price}$</TableCell>
+								<TableCell>${order[product.id].price}</TableCell>
 								<TableCell>
 									{interactive ? (
 										<AmmountSelector
@@ -90,21 +92,19 @@ export function CartTable({ className, products, order, interactive }: Props) {
 									)}
 								</TableCell>
 								<TableCell>
-									{(order[product.id].price * order[product.id].amount).toFixed(
-										2,
-									)}
-									$
+									${(order[product.id].price * order[product.id].amount).toFixed(2)}
+									
 								</TableCell>
 							</TableRow>
 						))}
 				</TableBody>
 				<TableFooter>
-					<TableRow className="*:text-center *:text-3xl  *:font-bold  *:capitalize *:text-foreground">
+					<TableRow className="*:text-center *:text-2xl  *:font-bold  *:capitalize *:text-foreground border-t-black border-t">
 						<TableCell>Total:</TableCell>
 						<TableCell />
 						<TableCell />
 						<TableCell>{totalAmount}</TableCell>
-						<TableCell>{totalPrice.toFixed(2)}$</TableCell>
+						<TableCell>${totalPrice.toFixed(2)}</TableCell>
 					</TableRow>
 				</TableFooter>
 			</Table>
@@ -120,7 +120,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 				.map((product) => (
 					<div
 						key={product.id}
-						className="mt-1 flex gap-4 border-2 border-b-black pb-1 text-2xl first:mt-0"
+						className="mt-1 flex gap-4 border-2 border-b-black pb-1 text-xl first:mt-0"
 					>
 						<div className="relative flex items-center justify-center">
 							<Image
@@ -133,7 +133,7 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						<div className="basis-4/5 text-foreground">
 							<h3 className="font-semibold">{product.name}</h3>
 							<div className="flex justify-start text-xl font-semibold text-foreground">
-								{order[product.id].price}$
+								${formatPrice(order[product.id].price)}
 							</div>
 							<div className="flex justify-between">
 								{interactive ? (
@@ -147,21 +147,21 @@ export function CartTable({ className, products, order, interactive }: Props) {
 										{order[product.id].amount}
 									</span>
 								)}
-								<span className="text-2xl font-bold">
-									{(order[product.id].price * order[product.id].amount).toFixed(
+								<span className="text-xl font-bold">
+									${(order[product.id].price * order[product.id].amount).toFixed(
 										2,
 									)}
-									$
+									
 								</span>
 							</div>
 						</div>
 					</div>
 				))}
-			<div className="flex text-center text-3xl font-bold text-foreground">
-				<span className="block w-full basis-1/4">Total:</span>
+			<div className="flex text-center text-xl font-bold text-foreground">
+				<span className="block text-2xl w-full basis-1/4">Total:</span>
 				<div className="flex w-full basis-4/5 justify-between">
 					<span className="block w-[5ch]">{totalAmount}</span>
-					<span>{totalPrice.toFixed(2)}$</span>
+					<span>${totalPrice.toFixed(2)}</span>
 				</div>
 			</div>
 		</div>

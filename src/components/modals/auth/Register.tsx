@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/Label";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 export type Props = {
 	close?: () => void;
@@ -18,8 +19,6 @@ export function Register({ close, redirect }: Props) {
 	const [password, setPassword] = React.useState("");
 	const [loading, setLoading] = React.useState(false);
 	const router = useRouter();
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
-	const error = useToastStore((s) => s.error);
 	async function handleRegistration(creds: { name: string; password: string }) {
 		setLoading(true);
 		const res = await registerUserAction(creds.name, creds.password);
@@ -27,7 +26,7 @@ export function Register({ close, redirect }: Props) {
 		if (!isValidResponse(res)) return;
 		const signRes = await signIn("credentials", { ...creds, redirect: false });
 		if (!signRes?.ok) {
-			error("Unknown Error", "Internal Error");
+			error({ title: "Authentication Error", error: signRes?.error || "Unknown Error" });
 			return;
 		}
 		if (redirect) router.push(redirect);

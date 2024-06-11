@@ -1,26 +1,18 @@
 "use server";
-import type { Brand, Category, User } from "@/lib/Models";
+import type { Brand, Category } from "@/lib/Models";
 import { BrandCache, CategoryCache, DiscountCache } from "./cache";
 import type { PopulatedProduct, Product } from "@/lib/Models/Product";
 
 const unknownBrand: Brand = {
 	name: "unknown",
-	image: "template.jpg",
+	images: ["template.jpg"],
 	id: -1,
 };
 
 const unknownCategory: Category = {
 	name: "unknown",
-	image: "template.jpg",
+	images: ["template.jpg"],
 	id: -1,
-};
-
-const unknownUser: Omit<User, "passwordHash" | "cart"> = {
-	name: "Guest",
-	role: "guest",
-	id: -1,
-	saved: [],
-	votes: {},
 };
 
 export async function populateProducts(

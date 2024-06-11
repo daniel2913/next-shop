@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deffer } from "@/helpers/misc";
 import { SearchInput } from "./SearchInput";
 import { CategoryFilter, BrandFilter } from "./Filters";
+import useResponsive from "@/hooks/useResponsive";
 
 type Props = {
 	className?: string;
@@ -28,6 +29,8 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 	const [brands, setBrands] = React.useState(params.getAll("brand"));
 	const [categories, setCategories] = React.useState(params.getAll("category"));
 	const [name, setName] = React.useState(params.get("name") || "");
+	const [filterOpen, setFilterOpen] = React.useState(false)
+	const mode = useResponsive()
 
 	async function submitHandler(
 		{
@@ -56,21 +59,23 @@ export default function Search({ className, allBrands, allCategories }: Props) {
 			onSubmit={(e) => submitHandler({}, e)}
 			className={`group relative right-auto mt-8 flex w-full flex-col rounded-lg md:mt-0 md:border-2 ${className}`}
 		>
-			<SearchInput name={name} setName={setName} afterChange={submitHandler} />
-			<div className="bottom-full left-0 right-0 z-[100] flex gap-4 rounded-lg border-2 bg-secondary p-2 group-focus-within:flex md:absolute md:bottom-auto md:top-full md:hidden">
-				<CategoryFilter
-					allCategories={allCategories}
-					categories={categories}
-					setCategories={setCategories}
-					afterChange={submitHandler}
-				/>
-				<BrandFilter
-					allBrands={allBrands}
-					brands={brands}
-					setBrands={setBrands}
-					afterChange={submitHandler}
-				/>
-			</div>
+			<SearchInput openFilters={() => setFilterOpen(v => !v)} name={name} setName={setName} afterChange={submitHandler} />
+			{(filterOpen || mode === "mobile") &&
+				<div className="bottom-full left-0 right-0 z-[100] flex gap-4 rounded-lg border-2 bg-secondary p-2 group-focus-within:flex md:absolute  md:bottom-auto md:top-full md:hidden">
+					<CategoryFilter
+						allCategories={allCategories}
+						categories={categories}
+						setCategories={setCategories}
+						afterChange={submitHandler}
+					/>
+					<BrandFilter
+						allBrands={allBrands}
+						brands={brands}
+						setBrands={setBrands}
+						afterChange={submitHandler}
+					/>
+				</div>
+			}
 		</form>
 	);
 }

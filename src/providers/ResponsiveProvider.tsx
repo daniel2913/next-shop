@@ -6,7 +6,7 @@ type ResponsiveProps = {
 };
 
 export const ResponsiveContext = React.createContext({ mode: "desktop" });
-export function ResponsiveProvider({ children }: ResponsiveProps) {
+export function ResponsiveProvider(props: ResponsiveProps) {
 	const mode = React.useSyncExternalStore(
 		(onChange) => {
 			window.addEventListener("resize", onChange);
@@ -17,7 +17,7 @@ export function ResponsiveProvider({ children }: ResponsiveProps) {
 	) as "desktop" | "mobile";
 	return (
 		<ResponsiveContext.Provider value={{ mode }}>
-			{children}
+			{props.children}
 		</ResponsiveContext.Provider>
 	);
 }

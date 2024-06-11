@@ -1,25 +1,24 @@
 import { setCartAction } from "@/actions/cart";
 import { deffer } from "@/helpers/misc";
 import { createSlice } from "@reduxjs/toolkit";
-import { createTypedAsyncThunk } from "./helper";
+import { createTypedAsyncThunk, listenerMiddleware } from "./helper";
 
 const updateAccount = deffer(setCartAction, 500);
 
-const initialState: { items: Record<number, number>, syncing: boolean } = {
+const initialState: { items: Record<number, number> } = {
 	items: {},
-	syncing: false
 }
-
-
 
 export const setAmount = createTypedAsyncThunk<
 	void, { id: number, amnt: number, instant?: boolean }
 >
 	("cart/setAmmount", async (d, s) => {
 		s.dispatch(cartSlice.actions._setAmmount({ id: d.id, amnt: d.amnt }))
+
+		if (!s.getState().auth.id) return s.fulfillWithValue(undefined)
+
 		const res = await updateAccount(d.instant || false, s.getState().cart.items)
-		if (!s.signal.aborted && res && "error" in res) {
-			s.abort()
+		if (res && "error" in res) {
 			return s.rejectWithValue(res)
 		}
 		return s.fulfillWithValue(undefined)
@@ -31,6 +30,18 @@ export const clearCart = createTypedAsyncThunk<
 	("cart/setAmmount", async (d, s) => {
 		s.dispatch(cartSlice.actions._clearCart())
 		const res = await setCartAction({})
+		if (res && "error" in res) {
+			return s.rejectWithValue(res)
+		}
+		return s.fulfillWithValue(undefined)
+	})
+
+export const setCart = createTypedAsyncThunk<
+	void, Record<number, number>
+>
+	("cart/setCart", async (d, s) => {
+		s.dispatch(cartSlice.actions._setCart(d))
+		const res = await setCartAction(d)
 		if (res && "error" in res) {
 			return s.rejectWithValue(res)
 		}
@@ -49,26 +60,16 @@ export const cartSlice = createSlice({
 			else s.items[id] = amnt
 			return s
 		},
+		/**@warn Do not use dirrectly!*/
 		_clearCart: (s) => {
 			s.items = {}
 		},
-	},
-	extraReducers(builder) {
-		builder.addCase(setAmount.pending, (s, d) => {
-			s.syncing = true
+		/**@warn Do not use dirrectly!*/
+		_setCart: (s, d: { payload: Record<number, number> }) => {
+			s.items = d.payload
 			return s
-		})
-		builder.addCase(setAmount.rejected, (s, d) => {
-			s.syncing = false
-			return s
-		})
-		builder.addCase(setAmount.fulfilled, (s, d) => {
-			s.syncing = false
-			return s
-		})
+		}
 	},
 })
-
-
 
 export const cartReducers = cartSlice.reducer

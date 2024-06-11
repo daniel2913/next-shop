@@ -11,7 +11,7 @@ const Label = React.forwardRef(function Label(
 	return (
 		<label
 			ref={ref}
-			className={`space-y-2 font-semibold ${className}`}
+			className={`space-y-2 text-lg font-semibold ${className}`}
 			{...props}
 		/>
 	);

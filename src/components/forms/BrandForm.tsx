@@ -46,6 +46,7 @@ export default function BrandForm({ brand }: Props) {
 					onChange={(files: File[]) => setImage(files)}
 					accept="image/jpeg"
 				/>
+				{brand?.images && brand.images.filter(img => image.some(file => file.name === img)).map(img => <input key={img} hidden name="images" readOnly value={img} />)}
 			</Label>
 			<ImagesPreview
 				className="w-full"

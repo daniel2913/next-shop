@@ -1,4 +1,4 @@
-import { auth } from "@/actions/common";
+import { auth } from "@/actions/auth";
 import { getProductsByIdsAction } from "@/actions/product";
 import Cart from "@/components/cart";
 import RequireAuth from "@/providers/RequireAuth";

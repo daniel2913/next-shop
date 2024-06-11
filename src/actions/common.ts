@@ -1,28 +1,15 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import type { PgreModel } from "@/lib/Models/base";
-import { getServerSession } from "next-auth";
 import type { PostgresError } from "postgres";
 import { ZodError } from "zod";
-import { UserCache } from "@/helpers/cache";
-
-export async function auth(role?: string) {
-	const res = await getServerSession(authOptions);
-	if (!res?.user) throw ServerError.notAuthed();
-	if (role && res.user.role !== role) throw ServerError.notAllowed();
-	const user = await UserCache.get(res.user.name);
-	if (!user) throw ServerError.unknown("Error in UserCache");
-
-	return user;
-}
+import { parseFormData } from "@/helpers/misc";
+import { auth } from "./auth";
 
 export async function modelGeneralAction(
 	model: PgreModel<any, any>,
 	formOrProps: FormData | Record<string, unknown>,
 	id?: number,
 ) {
-	const session = await getServerSession(authOptions);
-	if (session?.user?.role !== "admin") return ServerError.notAllowed().emmit();
-
+	auth("admin")
 	return modelGeneralActionNoAuth(model, formOrProps, id);
 }
 export async function modelGeneralActionNoAuth(
@@ -36,13 +23,14 @@ export async function modelGeneralActionNoAuth(
 				? parseFormData(formOrProps)
 				: formOrProps;
 		const res =
-			id !== undefined
-				? await model.patch(id, props)
-				: await model.create(props);
+			id === undefined
+				? await model.create(props)
+				: await model.patch(id, props)
+			
 		if (!res) {
 			throw id ? ServerError.notFound() : ServerError.unknown();
 		}
-		return false;
+		return res;
 	} catch (error) {
 		return ServerError.fromError(error).emmit();
 	}
@@ -88,7 +76,7 @@ export class ServerError extends Error {
 		);
 	}
 	static unknown(desc?: string, title?: string) {
-		//console.trace(desc);
+		console.trace(desc);
 		return new ServerError(desc ?? "Unknown error", title ?? "Unknown Error");
 	}
 	static invalid(desc?: string, title?: string) {
@@ -134,14 +122,3 @@ export class ServerError extends Error {
 	}
 }
 
-export function parseFormData(formData: FormData) {
-	const object: Record<string, unknown> = {};
-	for (const [key, value] of formData.entries()) {
-		if (value instanceof File && value.size === 0) continue;
-		if (key in object) {
-			if (Array.isArray(object[key])) (object[key] as unknown[]).push(value);
-			else object[key] = [object[key], value];
-		} else object[key] = value;
-	}
-	return object;
-}

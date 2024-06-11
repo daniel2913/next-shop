@@ -9,10 +9,12 @@ import { useRouter } from "next/navigation";
 import ProductForm from "@/components/forms/ProductForm";
 import DiscountForm from "@/components/forms/DiscountForm";
 import { createRandomProductAction } from "@/actions/generate";
-import { useModalStore } from "@/store/modalStore";
-import { useToastStore } from "@/store/ToastStore";
 import { ModalContext } from "@/providers/ModalProvider";
 import useConfirm from "@/hooks/modals/useConfirm";
+import { actions, useAppDispatch } from "@/store/rtk";
+import { cleanUp } from "@/helpers/cleanUp";
+import { error, toast } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 type Props = {
 	products: PopulatedProduct[];
@@ -22,8 +24,7 @@ type Props = {
 export default function ProductsAdmin({ products, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [loading, setLoading] = React.useState(false);
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
-	const error = useToastStore((s) => s.error);
+	const dispatch = useAppDispatch()
 	const show = React.useContext(ModalContext)
 	const confirm = useConfirm()
 	const router = useRouter();
@@ -44,7 +45,16 @@ export default function ProductsAdmin({ products, className }: Props) {
 				<Button
 					onClick={async () => {
 						const product = await createRandomProductAction();
-						if (!product) error("Something went wrong", "Server Error");
+						if (!product) {
+							error({ error: "Something went wrong", title: "Server Error" });
+							return
+						}
+						toast({
+							type: "background",
+							title: "Success",
+							description: `${product.name}`,
+							action: <Button onClick={() => show({ title: "", children: () => <ProductForm product={product} /> })}>Edit</Button>
+						})
 						router.refresh();
 					}}
 				>
@@ -60,7 +70,7 @@ export default function ProductsAdmin({ products, className }: Props) {
 						if (isValidResponse(res)) {
 							setSelected([]);
 							router.refresh();
-						}
+						} else error(res)
 						setLoading(false);
 					}}
 				>
@@ -77,13 +87,17 @@ export default function ProductsAdmin({ products, className }: Props) {
 				>
 					Discount
 				</Button>
-			</div>
+				<Button
+					onClick={() => cleanUp().then(r => toast({ title: "Success", description: `${r} items deleted` }))}>
+					Delete unused images
+				</Button>
+			</div >
 			<ProductsAdminTabs
 				config
 				products={products}
 				value={selected}
 				onChange={onChange}
 			/>
-		</div>
+		</div >
 	);
 }

@@ -2,7 +2,8 @@
 
 import { UserCache } from "@/helpers/cache";
 import { ProductModel, UserModel } from "@/lib/Models";
-import { ServerError, auth } from "./common";
+import { ServerError } from "./common";
+import { auth } from "./auth";
 
 async function validateCart(cart: Record<number, number>) {
 	if (Object.keys(cart).length === 0) return cart;

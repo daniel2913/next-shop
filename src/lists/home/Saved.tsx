@@ -1,5 +1,5 @@
 import { getProductsByIds } from "@/actions/product";
-import { auth } from "@/actions/common";
+import { auth } from "@/actions/auth";
 import HorizontalScrollList from "../../components/ui/HorizontalScrollList";
 import { GenericProductList } from "../GenericProductList";
 

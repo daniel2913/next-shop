@@ -1,13 +1,10 @@
 import React from "react";
-import ImagesPreview from "./ImagesPreview";
-import { Input } from "@/components/ui/Input";
-import { Label } from "./Label";
 import { Button } from "./Button";
 
 function fileListAdapter(inp: File | FileList | null): File[] {
-	if (!inp) return [] as File[];
+	if (!inp || inp instanceof File && inp.size === 0) return [];
 	if (inp instanceof File) return [inp];
-	return Array.from(inp);
+	return Array.from(inp).filter(i => i.size > 0);
 }
 
 type Props = {
@@ -22,14 +19,13 @@ type Props = {
 };
 
 export default function ImageUpload({ multiple = false, ...props }: Props) {
-	const id = React.useId();
 	return (
 		<label className="h-fit w-fit cursor-pointer">
-			<Input
+			<input
 				name={props.name}
 				multiple={multiple}
 				accept={props.accept}
-				id={props.id || id}
+				id={props.id}
 				className="hidden"
 				type="file"
 				onChange={(e) => {
@@ -47,8 +43,7 @@ export default function ImageUpload({ multiple = false, ...props }: Props) {
 				className="pointer-events-none cursor-pointer font-bold"
 				type="button"
 			>
-				{" "}
-				UPLOAD{" "}
+				UPLOAD
 			</Button>
 		</label>
 	);

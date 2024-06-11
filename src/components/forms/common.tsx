@@ -1,17 +1,19 @@
 " use client";
-import React from "react";
+import React, { FormEvent } from "react";
 import { Button } from "../ui/Button";
 import type { ServerErrorType } from "@/hooks/useAction";
-import { toArray } from "@/helpers/misc";
-import { useToastStore } from "@/store/ToastStore";
+import { isValidResponse, toArray } from "@/helpers/misc";
+import { error, toast } from "../ui/use-toast";
+
 export const clientValidations = {
 	name: (value: FormFieldValue) => {
 		if (typeof value !== "string") return "Name can only be string!";
 
 		return value.length === 0 ? "Name Required!" : false;
 	},
-	images: (valueIn: File[] | File | null) => {
-		if (!valueIn) return false;
+	images: (valueIn: File[] | File | string | null, required = false) => {
+		if (typeof valueIn === "string") return false
+		if (!valueIn) return required ? "Image required" : false;
 		const value = toArray(valueIn);
 		if (value.length === 0) return false;
 		for (const file of value) {
@@ -31,7 +33,7 @@ export const clientValidations = {
 export type Props = {
 	className: string;
 	validations: Record<string, (val: any) => false | string>;
-	action: (payload: FormData) => Promise<false | ServerErrorType>;
+	action: (payload: FormData) => Promise< false | ServerErrorType>;
 	children: React.ReactNode;
 	preview?: React.ReactElement;
 };
@@ -46,31 +48,33 @@ export default function Form({
 	action,
 }: Props) {
 	const [loading, setLoading] = React.useState(false);
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
-	const showError = useToastStore((s) => s.error);
-	const showStatus = useToastStore((s) => s.info);
 
-	async function submitHandler(e: FormData) {
-		const payload = new FormData();
-		for (const [key, value] of e.entries()) {
+	async function submitHandler(e: FormEvent<HTMLFormElement>) {
+		e.preventDefault()
+		const payload = new FormData(e.currentTarget);
+		const req = new FormData()
+		for (const [key, value] of payload.entries()) {
+			if (value instanceof File && value.size === 0) continue
 			if (validations[key]) {
 				const entryInvalid = validations[key](value);
 				if (entryInvalid) {
-					showError(entryInvalid, `${key} validation`);
+					e.stopPropagation()
+					error({ error: entryInvalid, title: `${key} validation` });
 					return;
 				}
 			}
-			payload.append(key, value);
+			req.append(key, value);
 		}
 		setLoading(true);
-		const res = await action(payload);
-		if (isValidResponse(res)) showStatus("Successful");
+		const res = await action(req);
+		if (isValidResponse(res)) toast({ description: "Form accepted", title: "Successful" })
+		else error(res)
 		setLoading(false);
 	}
 
 	return (
-		<div className={`${className} flex items-center justify-center gap-4`}>
-			<form action={submitHandler} className="flex flex-col gap-3 ">
+		<div className={`${className} p-2 flex items-center min-w-[45rem] justify-between gap-4`}>
+			<form onSubmit={submitHandler} className="flex w-1/2 flex-col gap-3 ">
 				{children}
 				<Button disabled={loading} type="submit">
 					{loading ? "Loading..." : "Send"}

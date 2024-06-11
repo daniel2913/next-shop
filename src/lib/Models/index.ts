@@ -1,67 +1,23 @@
 import { PgreModel } from "./base";
 import { BrandPgreTable, BrandInsertValidation, type Brand } from "./Brand";
-import {
-	CategoryPgreTable,
-	CategoryInsertValidation,
-	type Category,
-} from "./Category";
-import {
-	ProductPgreTable,
-	ProductInsertValidation,
-	type Product,
-} from "./Product";
+import { CategoryPgreTable, CategoryInsertValidation, type Category, } from "./Category";
+import { ProductPgreTable, ProductInsertValidation, type Product, } from "./Product";
 import { UserPgreTable, UserInsertValidation, type User } from "./User";
-import {
-	type Discount,
-	DiscountPgreTable,
-	DiscountInsertValidation,
-} from "./Discount";
+import { type Discount, DiscountPgreTable, DiscountInsertValidation, } from "./Discount";
 import { type Order, OrderPgreTable, OrderInsertValidation } from "./Order";
 
 export type { Brand, Category, Product, User, Discount, Order };
 
-globalThis.BrandModel ||= new PgreModel(BrandPgreTable, BrandInsertValidation);
+export const BrandModel = globalThis.BrandModel as undefined || new PgreModel(BrandPgreTable, BrandInsertValidation)
+export const CategoryModel = globalThis.CategoryModel as undefined || new PgreModel(CategoryPgreTable, CategoryInsertValidation)
+export const ProductModel = globalThis.ProductModel as undefined || new PgreModel(ProductPgreTable, ProductInsertValidation)
+export const OrderModel = globalThis.OrderModel as undefined || new PgreModel(OrderPgreTable, OrderInsertValidation)
+export const DiscountModel = globalThis.DiscountModel as undefined || new PgreModel(DiscountPgreTable, DiscountInsertValidation)
+export const UserModel = globalThis.UserModel as undefined || new PgreModel(UserPgreTable, UserInsertValidation)
 
-globalThis.CategoryModel ||= new PgreModel(
-	CategoryPgreTable,
-	CategoryInsertValidation,
-);
-
-globalThis.ProductModel ||= new PgreModel(
-	ProductPgreTable,
-	ProductInsertValidation,
-);
-
-globalThis.UserModel ||= new PgreModel(UserPgreTable, UserInsertValidation);
-
-globalThis.DiscountModel ||= new PgreModel(
-	DiscountPgreTable,
-	DiscountInsertValidation,
-);
-globalThis.OrderModel ||= new PgreModel(OrderPgreTable, OrderInsertValidation);
-
-export const BrandModel = globalThis.BrandModel as PgreModel<
-	typeof BrandPgreTable,
-	typeof BrandInsertValidation
->;
-export const CategoryModel = globalThis.CategoryModel as PgreModel<
-	typeof CategoryPgreTable,
-	typeof CategoryInsertValidation
->;
-export const ProductModel = globalThis.ProductModel as PgreModel<
-	typeof ProductPgreTable,
-	typeof ProductInsertValidation
->;
-
-export const UserModel = globalThis.UserModel as PgreModel<
-	typeof UserPgreTable,
-	typeof UserInsertValidation
->;
-export const DiscountModel = globalThis.DiscountModel as PgreModel<
-	typeof DiscountPgreTable,
-	typeof DiscountInsertValidation
->;
-export const OrderModel = globalThis.OrderModel as PgreModel<
-	typeof OrderPgreTable,
-	typeof OrderInsertValidation
->;
+globalThis.BrandModel ||= BrandModel
+globalThis.CategoryModel ||= CategoryModel
+globalThis.ProductModel ||= ProductModel
+globalThis.OrderModel ||= OrderModel
+globalThis.UserModel ||= UserModel
+globalThis.DiscountModel ||= DiscountModel

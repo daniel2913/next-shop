@@ -2,6 +2,8 @@ import { FileStorage } from "@/lib/FileStorage";
 import { randomUUID } from "crypto";
 import _path from "path";
 import { toArray } from "./misc";
+import { resolveImageConflict } from "./resolveImagesConflict";
+import { ServerError } from "@/actions/common";
 
 export type ImageNameAndFile = { file: File | null; name: string };
 
@@ -55,4 +57,31 @@ export function deleteImage(name: string, path: string): void {
 	if (name === "template.jpg") return;
 	const fullPath = _path.join(path, name);
 	FileStorage.delete(fullPath);
+}
+
+
+export async function imagesHandler(path: string, _files: File[] | File | string | string[], prev?: string[]) {
+	const files = toArray(_files)
+	const { toKeep, toDelete, newFiles } = resolveImageConflict(files, prev)
+
+	const namedImages = await handleImages(newFiles, path)
+	const saved = await saveImages(namedImages, path)
+
+	const names = namedImages.map(r => r.name)
+
+	if (!saved || saved.length !== namedImages.length) {
+		deleteImages(names, path)
+		throw ServerError.unknown("Error while trying to save new images")
+	}
+
+	let newNames = [...names, ...toKeep]
+
+	if (newNames.length > 1) {
+		newNames = newNames.filter(n => n !== "template.jpg")
+	}
+	return {
+		names: newNames,
+		writeChanges: () => deleteImages(toDelete, path),
+		rollback: () => deleteImages(names, path)
+	}
 }

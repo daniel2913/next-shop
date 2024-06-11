@@ -2,7 +2,8 @@
 
 import { DiscountModel } from "@/lib/Models";
 import { DiscountCache } from "@/helpers/cache";
-import { ServerError, auth, modelGeneralAction } from "./common";
+import { ServerError, modelGeneralAction } from "./common";
+import { auth } from "./auth";
 import { inArray } from "drizzle-orm";
 import { toArray } from "@/helpers/misc";
 

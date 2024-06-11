@@ -1,7 +1,8 @@
 "use server";
 import { BrandCache } from "@/helpers/cache";
 import { BrandModel } from "@/lib/Models";
-import { ServerError, auth, modelGeneralAction } from "./common";
+import { ServerError, modelGeneralAction } from "./common";
+import { auth } from "./auth";
 import { inArray } from "drizzle-orm";
 import { toArray } from "@/helpers/misc";
 
@@ -29,6 +30,7 @@ export async function deleteBrandsAction(inp: number | number[]) {
 		ServerError.fromError(error).emmit();
 	}
 }
+
 export async function createBrandAction(form: FormData) {
 	const res = await modelGeneralAction(BrandModel, form);
 	if (!res) BrandCache.revalidate();

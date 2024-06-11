@@ -1,13 +1,12 @@
 "use server";
 
-import { type Order, OrderModel, ProductModel, UserModel } from "@/lib/Models";
-import { eq, inArray, sql, and, not } from "drizzle-orm";
+import { type Order, OrderModel, UserModel } from "@/lib/Models/index";
+import { inArray, } from "drizzle-orm";
 import {
 	ServerError,
-	auth,
 	modelGeneralAction,
-	modelGeneralActionNoAuth,
 } from "./common";
+import { auth } from "./auth";
 import { getProductsByIds } from "./product";
 import type { PopulatedProduct } from "@/lib/Models/Product";
 import { toArray } from "@/helpers/misc";
@@ -18,53 +17,75 @@ export type PopulatedOrder = {
 	products: PopulatedProduct[];
 };
 
+export async function getOrderByCodeAction(code: string) {
+	try {
+		const order = await OrderModel.findOne({ code })
+		if (!order) throw ServerError.notFound()
+		return (await populateOrders([order]))[0]
+	} catch (e) {
+		return ServerError.fromError(e).emmit()
+	}
+}
+
 export async function getOrdersAction() {
 	try {
 		const user = await auth();
-		let query = OrderModel.model.select().from(OrderModel.table).$dynamic();
-		if (user.role !== "admin")
-			query = query.where(eq(OrderModel.table.user, user.id));
-		const orders = await query;
-		const productSet = new Set(
-			orders.flatMap((order) => Object.keys(order.order).map(Number)),
-		);
 
-		const products = await getProductsByIds(Array.from(productSet));
+		const orders = await (user.role !== "admin"
+			? OrderModel.find({ user: user.id })
+			: OrderModel.find())
 
-		const populatedOrders: {
-			completed: PopulatedOrder[];
-			processing: PopulatedOrder[];
-		} = { completed: [], processing: [] };
-		for (const order of orders) {
-			const populatedProducts: PopulatedProduct[] = [];
-			for (const id in order.order) {
-				populatedProducts.push(products.find((prod) => +prod.id === +id)!);
-			}
-			if (order.status === "PROCESSING")
-				populatedOrders.processing.push({ products: populatedProducts, order });
-			else
-				populatedOrders.completed.push({ products: populatedProducts, order });
-		}
-		return populatedOrders;
+		const populatedOrders = await populateOrders(orders)
+
+		const separatedOrders = {
+			completed: populatedOrders.filter(o => o.order.status === "COMPLETED"),
+			processing: populatedOrders.filter(o => o.order.status !== "COMPLETED")
+		};
+
+		return separatedOrders;
 	} catch (error) {
 		return ServerError.fromError(error).emmit();
 	}
 }
 
+async function populateOrders(orders: Order[]): Promise<PopulatedOrder[]> {
+	const productSet = new Set(
+		orders.flatMap((order) => Object.keys(order.order).map(Number)),
+	);
+
+	const products = await getProductsByIds(Array.from(productSet));
+	const populatedOrders: PopulatedOrder[] = []
+	for (const order of orders) {
+		const populatedProducts: PopulatedProduct[] = [];
+		for (const id in order.order) {
+			populatedProducts.push(products.find((prod) => +prod.id === +id)!);
+		}
+		populatedOrders.push({ products: populatedProducts, order })
+	}
+	return populatedOrders
+}
+
 export async function createOrderAction(
 	order: Record<number, { price: number; amount: number }>,
 ) {
-	const user = await auth("user");
-	const props = {
-		order,
-		user: user.id,
-	};
-	return modelGeneralActionNoAuth(OrderModel, props);
+	try {
+		const user = await auth("user");
+		const props = {
+			order,
+			user: user.id,
+		};
+		const res = await OrderModel.create(props)
+		if (!res) throw ServerError.unknown()
+		return res.code
+	} catch (e) {
+		return ServerError.fromError(e).emmit()
+	}
 }
 
-export async function changeOrderAction(id: number, form: FormData) {
+export async function changeOrderAction(id: number, form: FormData | Partial<Order>) {
 	return modelGeneralAction(OrderModel, form, id);
 }
+
 
 export async function completeOrderAction(id: number) {
 	try {
@@ -82,17 +103,19 @@ export async function completeOrderAction(id: number) {
 				.map((prod) => [prod, 0]),
 		);
 		const votes = { ...user.votes, ...newVotes };
-		const [res, addedVotes] = await Promise.all([
+		const [res, updatedUser] = await Promise.all([
 			OrderModel.patch(id, { status: "COMPLETED" }),
-			UserModel.model.execute<{ votes: Record<string, number> }>(sql`
+			UserModel.patch(user.id, { votes })
+			/* UserModel.model.execute<{ votes: Record<string, number> }>(sql`
 				UPDATE shop.users
 				SET votes=${votes}
 				WHERE id=${order.user}
 				RETURNING votes
-			`),
+			`), */
 		]);
 		if (!res) throw ServerError.notFound();
-		UserCache.patch(user.name, { votes: addedVotes[0].votes });
+		if (updatedUser)
+			UserCache.patch(user.name, updatedUser);
 		return false;
 	} catch (error) {
 		return ServerError.fromError(error).emmit();
@@ -122,7 +145,7 @@ export async function markOrderSeenAction(id: number) {
 		]);
 		if (!order) throw ServerError.notFound("Order not found");
 		if (order.user !== user.id)
-			throw ServerError.notAllowed("You are not supposed to see that order :(");
+			throw ServerError.notAllowed("You were not supposed to see that order :(");
 		const res = await OrderModel.patch(id, { seen: true });
 		if (!res) throw ServerError.unknown("markOrderSeenAction after patch");
 	} catch (error) {

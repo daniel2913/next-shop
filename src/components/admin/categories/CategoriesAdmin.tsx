@@ -9,7 +9,6 @@ import DiscountForm from "@/components/forms/DiscountForm";
 import CategoryForm from "@/components/forms/CategoryForm";
 import { deleteCategoriesAction } from "@/actions/category";
 import GenericSelectTable from "@/components/ui/GenericSelectTable";
-import { useToastStore } from "@/store/ToastStore";
 import { ModalContext } from "@/providers/ModalProvider";
 
 type Props = {
@@ -21,7 +20,6 @@ export default function CategoriesAdmin({ categories, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [loading, setLoading] = React.useState(false);
 	const show = React.useContext(ModalContext)
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const router = useRouter();
 	const onChange = (ids: number[]) => setSelected(ids);
 	return (
@@ -41,11 +39,9 @@ export default function CategoriesAdmin({ categories, className }: Props) {
 					disabled={loading || selected.length === 0}
 					onClick={async () => {
 						setLoading(true);
-						const res = await deleteCategoriesAction(selected);
-						if (isValidResponse(res)) {
-							setSelected([]);
-							router.refresh();
-						}
+						await deleteCategoriesAction(selected);
+						setSelected([]);
+						router.refresh();
 						setLoading(false);
 					}}
 				>

@@ -1,6 +1,7 @@
 import { clearSavedAction, toggleSavedAction } from "@/actions/saved";
 import { createSlice } from "@reduxjs/toolkit";
 import { createTypedAsyncThunk } from "./helper";
+import { isValidResponse } from "@/helpers/misc";
 
 const initialState: { saved: number[] } = {
 	saved: []
@@ -10,6 +11,11 @@ export const toggleSaved = createTypedAsyncThunk<
 	boolean, number>
 
 	("saved/toggleSaved", async (id: number, api) => {
+		const sesh = api.getState().auth.id
+		if (!sesh) return api.rejectWithValue({
+			error: "You have to authenticate to save products",
+			title: "Not Authorized"
+		})
 		const prev = api.getState().saved.saved
 		const init = prev.includes(id)
 		api.dispatch(savedSlice.actions._setSaved({ id, val: !init }))
@@ -20,13 +26,14 @@ export const toggleSaved = createTypedAsyncThunk<
 		api.dispatch(savedSlice.actions._setSaved({ id, val: init }))
 		return api.rejectWithValue(val)
 	}, {})
-export const clearSaved = createTypedAsyncThunk<
-	boolean>
 
-	("saved/toggleSaved", async (_, api) => {
+export const clearSaved = createTypedAsyncThunk<
+	void>
+
+	("saved/clearSaved", async (_, api) => {
 		api.dispatch(savedSlice.actions._clearSaved())
 		const val = await clearSavedAction()
-		if (typeof val === "boolean") {
+		if (isValidResponse(val)) {
 			return api.fulfillWithValue(val)
 		}
 		return api.rejectWithValue(val)

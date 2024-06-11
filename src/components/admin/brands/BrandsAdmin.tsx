@@ -10,7 +10,6 @@ import { deleteBrandsAction } from "@/actions/brand";
 import DiscountForm from "@/components/forms/DiscountForm";
 import useConfirm from "@/hooks/modals/useConfirm";
 import GenericSelectTable from "@/components/ui/GenericSelectTable";
-import { useToastStore } from "@/store/ToastStore";
 import { ModalContext } from "@/providers/ModalProvider";
 
 type Props = {
@@ -23,7 +22,6 @@ export default function BrandsAdmin({ brands, className }: Props) {
 	const confirm = useConfirm();
 	const [loading, setLoading] = React.useState(false);
 	const show = React.useContext(ModalContext)
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const router = useRouter();
 	const onChange = (ids: number[]) => setSelected(ids);
 	return (
@@ -47,11 +45,9 @@ export default function BrandsAdmin({ brands, className }: Props) {
 						);
 						if (!ans) return;
 						setLoading(true);
-						const res = await deleteBrandsAction(selected);
-						if (isValidResponse(res)) {
-							setSelected([]);
-							router.refresh();
-						}
+						await deleteBrandsAction(selected);
+						setSelected([]);
+						router.refresh();
 						setLoading(false);
 					}}
 				>

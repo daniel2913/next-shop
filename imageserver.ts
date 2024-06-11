@@ -1,11 +1,9 @@
 import { Hono } from "hono";
-//import { compress } from "hono/compress"
 import fs from "node:fs/promises"
 import sharp from "sharp";
 
 
 const app = new Hono();
-//app.use(compress())
 app.get("/api/public", async (c) => {
 	const { src, w, q } = c.req.query();
 	const accept = c.req.header("accept");
@@ -24,17 +22,18 @@ app.get("/api/public", async (c) => {
 		"Cache-Control": `max-age=${60 * 5}, stale-while-revalidate=${60 * 60 * 24}`
 	}
 	try {
-		const file = Bun.file(optimized);
-		if (! await file.exists()) throw ""
+		const file = await fs.readFile(optimized);
+		if (!file) throw ""
 		return new Response(file, {
 			headers
 		});
 	} catch {
 		try {
-			const buf = Bun.file(`./public/${path}`);
-			const opt = sharp(await buf.arrayBuffer()).resize(+w);
+			const buf = await fs.readFile(`./public/${path}`);
+			const opt = sharp(buf).resize(+w);
 			const res = await opt.toFormat(format, { quality: +q }).toBuffer();
-			await Bun.write(optimized, res);
+
+			await fs.writeFile(optimized, res);
 			return new Response(res, {
 				status: 200,
 				headers

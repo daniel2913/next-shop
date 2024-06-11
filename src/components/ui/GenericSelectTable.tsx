@@ -69,11 +69,13 @@ export default function GenericSelectTable<
 								checked={props.value.includes(item.id)}
 							/>
 						</TableCell>
-						{columnNames.map((col, idx) => (
+						{columnNames.map((col, idx) =>
 							<TableCell key={`${col}-${idx}`}>
+								<div className="flex justify-center">
 								{props.columns[col](item)}
+								</div>
 							</TableCell>
-						))}
+						)}
 					</TableRow>
 				))}
 			</TableBody>

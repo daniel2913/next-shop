@@ -1,11 +1,11 @@
 "use client";
-import useResponsive from "@/hooks/useResponsive";
 import { useSession } from "next-auth/react";
 import React from "react";
 import Account from "@public/account.svg";
 import dynamic from "next/dynamic";
 import NavButton from "../../ui/Navbutton";
 import { LocalModal } from "@/components/modals/Base";
+import useResponsive from "@/hooks/useResponsive";
 
 const Login = dynamic(() => import("@/components/modals/auth"));
 
@@ -15,8 +15,8 @@ type Props = {
 };
 
 export default function AuthContainer({ children, className }: Props) {
-	const mode = useResponsive();
 	const [isOpen, setIsOpen] = React.useState(false)
+	const mode = useResponsive()
 	const session = useSession();
 	if (!session.data?.user?.name)
 		return (
@@ -27,13 +27,13 @@ export default function AuthContainer({ children, className }: Props) {
 					className={className}
 				>
 					<Account
-						className="*:stroke-foreground *:stroke-2"
-						width={"30px"}
-						height={"30px"}
+						className="*:stroke-foreground *:stroke-1"
+						width={"22px"}
+						height={"22px"}
 					/>
-					Log In
+					Sign In
 				</NavButton>
-				{{ isOpen } && <LocalModal title="Authentication" close={() => setIsOpen(false)} isOpen={isOpen}>
+				{isOpen && <LocalModal close={() => setIsOpen(false)} isOpen={isOpen}>
 					<Login close={() => setIsOpen(false)} />
 				</LocalModal>
 				}
@@ -46,7 +46,7 @@ export default function AuthContainer({ children, className }: Props) {
 					onClick={() => setIsOpen(v => !v)}
 					className="fixed inset-0 bg-transparent" />
 			}
-			<div className="relative">
+			<div className="relative h-full">
 				<NavButton
 					className={`${className}`}
 					aria-label="open account specific actions"
@@ -54,12 +54,12 @@ export default function AuthContainer({ children, className }: Props) {
 				>
 					<Account
 						className="*:stroke-foreground *:stroke-2"
-						width={"30px"}
-						height={"30px"}
+						width={"22px"}
+						height={"22px"}
 					/>
 					Account
 				</NavButton>
-				{isOpen && <Popover offset={40}>
+				{isOpen && <Popover close={() => setIsOpen(false)} offset={mode === "desktop" ? 40 : -60}>
 					{children}
 				</Popover>
 				}
@@ -71,6 +71,7 @@ export default function AuthContainer({ children, className }: Props) {
 type PopoverProps = {
 	children: React.ReactNode
 	offset: number
+	close: () => void
 }
 function Popover(props: PopoverProps) {
 	const ref = React.useRef<HTMLDivElement>(null)
@@ -82,22 +83,18 @@ function Popover(props: PopoverProps) {
 		const el = ref.current
 		if (!el) return
 		const rect = el?.getBoundingClientRect()
-		if (rect.left < 0) {
-			el.style.left = "0px"
-		} else if (rect.right > window.innerWidth) {
-			el.style.right = "0px"
-		}
+
+		if (rect.left < 0) el.style.left = "0px"
+		else if (rect.right > window.innerWidth) el.style.right = "0px"
+
+		if (rect.top + props.offset < 0) el.style.top = `${-props.offset}px`
+		else if (rect.bottom + props.offset > window.innerHeight) el.style.bottom = `${-props.offset}px`
+		else el.style.top = `${props.offset}px`
+
 	})
 	return (
-		<div style={{ top: `${props.offset}px` }} ref={ref} className="absolute w-fit bg-secondary border-2 border-black rounded-lg">
+		<div onClick={props.close} ref={ref} className="absolute w-fit bg-secondary border-2 border-black rounded-lg">
 			{props.children}
 		</div>
 	)
 }
-
-/* <div
-className="absolute items-center bg-secondary rounded-lg p-1 bottom-14 md:-bottom-24 border-2 border-black flex w-full flex-col gap-2 md:right-[calc(15vw_-_100%)] md:w-fit md:flex-row"
->
-{children}
-</div>
-} */

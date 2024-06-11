@@ -3,9 +3,9 @@ import type { ReactElement } from "react";
 import RootProviders from "../providers/RootProviders";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import ToastBase from "@/components/ui/Toast";
 import type { Metadata, Viewport } from "next";
 import { getInitState } from "@/actions/user";
+import AuthReduxAdapter from "@/helpers/AuthReduxAdapter";
 
 export const metadata: Metadata = {
 	title: "Next Shop",
@@ -23,7 +23,6 @@ export const viewport: Viewport = {
 type LayoutProps = {
 	children: ReactElement;
 };
-
 
 
 export default async function MainLayout({ children }: LayoutProps) {
@@ -51,7 +50,7 @@ export default async function MainLayout({ children }: LayoutProps) {
 				>
 					<RootProviders initProps={state} session={session}>
 						{children}
-						<ToastBase />
+						<AuthReduxAdapter />
 					</RootProviders>
 				</body>
 			</html>

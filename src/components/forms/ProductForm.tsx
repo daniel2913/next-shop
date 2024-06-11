@@ -21,6 +21,7 @@ import useAction from "@/hooks/useAction.ts";
 import { Textarea } from "../ui/Textarea.tsx";
 import { Label } from "../ui/Label.tsx";
 import ImagesPreview from "../ui/ImagesPreview.tsx";
+import { Button } from "../ui/Button.tsx";
 
 const validation = {
 	name: clientValidations.name,
@@ -100,7 +101,7 @@ export default function ProductForm({ product }: Props) {
 					<SelectTrigger>
 						<SelectValue placeholder="Brand" />
 					</SelectTrigger>
-					<SelectContent className="z-[1000]">
+					<SelectContent className="z-[100]">
 						{brands.map((brand, idx) => (
 							<SelectItem value={brand} key={brand + idx}>
 								{brand}
@@ -148,6 +149,7 @@ export default function ProductForm({ product }: Props) {
 					onChange={(files: File[]) => setImages(files)}
 					accept="image/jpeg"
 				/>
+				{product?.images && product.images.filter(img => images.some(file => file.name === img)).map(img => <input hidden name="images" key={img} readOnly value={img} />)}
 			</Label>
 			<ImagesPreview
 				className="w-full"

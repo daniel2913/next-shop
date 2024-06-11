@@ -48,6 +48,7 @@ export default function CategoryForm({ category }: Props) {
 					onChange={(files: File[]) => setImage(files)}
 					accept="image/jpeg"
 				/>
+				{category?.images && category.images.filter(img => image.some(file => file.name === img)).map(img => <input key={img} hidden name="images" readOnly value={img} />)}
 			</Label>
 			<ImagesPreview
 				className="w-full"

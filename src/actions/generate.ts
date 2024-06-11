@@ -5,6 +5,7 @@ import _path from "path";
 import { ProductModel } from "@/lib/Models";
 import { populateProducts } from "@/helpers/populateProducts";
 import { env } from "process";
+import { auth } from "./auth";
 
 const lorem = `Nulla facilisi. Aliquam erat volutpat. Phasellus dapibus est in turpis congue, nec suscipit nulla luctus. Nunc euismod metus turpis, vitae accumsan erat scelerisque sit amet. Aliquam justo lacus, sagittis non euismod sit amet, consequat id nibh. Maecenas ut nulla neque. Donec at facilisis erat. Donec a massa sem. Integer nec purus a mi rhoncus aliquet.
 Nam pretium, lorem ac iaculis gravida, purus odio accumsan odio, sed feugiat ligula ante et lacus. In quis leo nisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam vel mattis ipsum, ac tincidunt velit. Nunc gravida lacus in orci sollicitudin viverra. Vestibulum dolor mi, cursus nec ornare eget, cursus ac purus. Vestibulum non odio ligula. Ut dapibus ultrices odio, vel pellentesque nisl euismod non.
@@ -41,6 +42,7 @@ export async function generateProductAction() {
 		const [brands, categories] = await Promise.all([
 			BrandCache.get(),
 			CategoryCache.get(),
+			auth("")
 		]);
 		const brand = brands[Math.floor((Math.random() * 1000) % brands.length)];
 		let category =
@@ -99,7 +101,7 @@ export async function createRandomProductAction() {
 		const props = await generateProductAction();
 		if (!props) throw ":(";
 		const res = await ProductModel.create(props);
-		if (!res) throw "not res";
+		if (!res) throw "error";
 		return (await populateProducts([res]))[0];
 	} catch (error) {
 		console.error(error);

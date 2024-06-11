@@ -10,9 +10,6 @@ interface Props {
 const currentImageUrls: string[] = [];
 
 function previewImages(images: File[]) {
-	for (const image of currentImageUrls) {
-		URL.revokeObjectURL(image);
-	}
 	let res: string[] = [];
 	if (!images) res = [];
 	if (images instanceof File) res = [URL.createObjectURL(images)];

@@ -6,7 +6,8 @@ import { Button } from "../../ui/Button";
 import { type PopulatedOrder, deleteOrdersAction } from "@/actions/order";
 import OrdersAdminTabs from "./OrderAdminTabs";
 import useConfirm from "@/hooks/modals/useConfirm";
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 type Props = {
 	orders: {
@@ -19,7 +20,6 @@ type Props = {
 export default function OrdersAdmin({ orders, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [loading, setLoading] = React.useState(false);
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const confirm = useConfirm();
 	const router = useRouter();
 	const onChange = (ids: number[]) => setSelected(ids);
@@ -36,10 +36,10 @@ export default function OrdersAdmin({ orders, className }: Props) {
 						setLoading(true);
 						const res = await deleteOrdersAction(selected);
 						if (isValidResponse(res)) {
-							setSelected([]);
-							router.refresh();
-						}
-						setLoading(false);
+							setSelected([])
+							router.refresh()
+						} else error(res)
+						setLoading(false)
 					}}
 				>
 					Delete

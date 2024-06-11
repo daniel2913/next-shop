@@ -1,6 +1,6 @@
 import { getOrdersAction } from "@/actions/order";
 import { OrdersTabs } from "@/components/orders/OrdersTabs";
-import RequireAuth from "@/providers/RequireAuth";
+import RequireAuthClient from "@/providers/RequireAuth";
 import { redirect } from "next/navigation";
 
 export default async function OrdersPage() {
@@ -8,11 +8,11 @@ export default async function OrdersPage() {
 		const orders = await getOrdersAction();
 		if ("error" in orders) redirect("/shop/home");
 		return (
-			<RequireAuth>
+			<RequireAuthClient>
 				<main className="min-h-screen">
 					<OrdersTabs className="text-3xl" orders={orders} />
 				</main>
-			</RequireAuth>
+			</RequireAuthClient>
 		);
 	} catch {
 		redirect("/shop/home");

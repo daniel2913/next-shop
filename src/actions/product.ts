@@ -3,9 +3,10 @@ import { ProductModel } from "@/lib/Models";
 import { populateProducts } from "@/helpers/populateProducts";
 import { inArray } from "drizzle-orm";
 import { BrandCache, CategoryCache } from "@/helpers/cache";
-import { ServerError, auth, modelGeneralAction } from "./common";
+import { ServerError, modelGeneralAction } from "./common";
 import { z } from "zod";
 import { toArray } from "@/helpers/misc";
+import { auth } from "./auth";
 
 export async function getAllProductsAction() {
 	try {

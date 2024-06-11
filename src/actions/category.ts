@@ -1,7 +1,8 @@
 "use server";
 import { CategoryCache } from "@/helpers/cache";
 import { CategoryModel } from "@/lib/Models";
-import { ServerError, auth, modelGeneralAction } from "./common";
+import { ServerError, modelGeneralAction } from "./common";
+import { auth } from "./auth";
 import { inArray } from "drizzle-orm";
 import { toArray } from "@/helpers/misc";
 

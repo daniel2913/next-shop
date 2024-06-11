@@ -20,8 +20,8 @@ export default function SearchContainer({ children, className }: Props) {
 				onClick={() => setIsOpen(v => !v)}
 			>
 				<Glass
-					width="30px"
-					height="30px"
+					width="20px"
+					height="20px"
 					className="rounded-full opacity-80 *:fill-foreground *:stroke-foreground"
 				/>
 				Search

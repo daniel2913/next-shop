@@ -1,4 +1,4 @@
-import { type Column, bindIfParam, sql } from "drizzle-orm";
+import type { ServerErrorType } from "@/hooks/useAction";
 
 export function toArray<T>(inp: T | T[]) {
 	if (Array.isArray(inp)) return inp;
@@ -22,21 +22,32 @@ export function deffer<T extends unknown, A extends unknown[]>(func: (...args: A
 	return deffered
 }
 
+export function calcDiscount(price: number, discount?: number) {
+	const res = discount
+		? price - (price * discount / 100)
+		: price
+	return +(res/100).toFixed(2)
 
-export function betterInArray(column: Column, values: any[]) {
-	if (Array.isArray(values)) {
-		if (values.length === 0) {
-			return sql`0=1`;
-		}
-		return sql`${column} in ${values.map((v) => bindIfParam(v, column))}`;
+}
+export function formatPrice(price: number) {
+	const res = price.toString()
+	return res
+}
+
+export function parseFormData(formData: FormData) {
+	const object: Record<string, unknown> = {};
+	for (const [key, value] of formData.entries()) {
+		if (key in object) {
+			if (Array.isArray(object[key])) (object[key] as unknown[]).push(value);
+			else object[key] = [object[key], value];
+		} else object[key] = value;
 	}
-	return sql`${column} in ${bindIfParam(values, column)}`;
+	return object;
 }
 
-const dseparator = (1.1).toLocaleString().slice(1, 2)
-
-export default function calcPrice(price: number, discount?: number) {
-	const res = ((price - (price * (discount || 0)) / 100)).toString();
-	return (res.slice(0, -2) || "0") + dseparator + res.slice(-2)
+export function isValidResponse<T>(resp: T | ServerErrorType): resp is T {
+	if (resp && typeof resp === "object" && "error" in resp) {
+		return false;
+	}
+	return true;
 }
-

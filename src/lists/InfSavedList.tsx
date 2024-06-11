@@ -6,8 +6,9 @@ import React from "react";
 import ProductCard from "../components/product/card";
 import Loading from "../components/ui/Loading";
 import { getProductsByIdsAction } from "@/actions/product";
-import { useToastStore } from "@/store/ToastStore";
 import { useAppSelector } from "@/store/rtk";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 type Props = {
 	products: PopulatedProduct[];
@@ -15,31 +16,51 @@ type Props = {
 };
 
 export default function InfSavedList({ products: initProducts, saved: _saved }: Props) {
-	const saved = useAppSelector(s => s.saved.saved)// || _saved
+	const saved = useAppSelector(s => s.saved.saved)
 	const endRef = React.useRef<HTMLDivElement>(null);
 	const {
 		items: products,
 		updateOne,
 		reloadOne,
 		loading,
+		reload,
 		setItems: setProducts,
 	} = useItemsController({
 		initItems: initProducts,
 		getItems: getProductsByIdsAction,
 	});
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
+
+	const updating = React.useRef(false)
+
+
 
 	const loadMore = React.useCallback(
-		async (query: URLSearchParams, skip: number, page = 20) => {
+		async (_: URLSearchParams, skip: number, page = 20) => {
 			const newProducts = await getProductsByIdsAction(
 				saved.slice(skip, skip + page),
 			);
-			if (!isValidResponse(newProducts)) return 0;
+			if (!isValidResponse(newProducts)) {
+				error(newProducts)
+				return 0
+			}
 			if (newProducts.length) setProducts((old) => [...old, ...newProducts]);
 			return newProducts ? newProducts.length : 0;
 		},
 		[setProducts],
 	);
+
+	React.useEffect(() => {
+		if (updating.current) return
+		const loadedIds = initProducts.map(p => p.id)
+		const missing = saved.filter(v => !loadedIds.includes(v))
+		if (missing.length === 0) return
+		updating.current = true
+		getProductsByIdsAction(missing).then(r => {
+			if (isValidResponse(r))
+				setProducts(v => [...v, ...r])
+			updating.current = false
+		})
+	}, [])
 
 	useInfScroll(products, loadMore, endRef);
 	const initedProducts = products || initProducts;

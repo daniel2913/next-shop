@@ -1,4 +1,5 @@
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 import React from "react";
 
 export type ServerErrorType = { error: string; title: string };
@@ -9,7 +10,6 @@ export default function useAction<T>(
 ) {
 	const [value, setValue] = React.useState(init);
 	const [loading, setLoading] = React.useState(true);
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const [_, set] = React.useState(0);
 	React.useEffect(() => {
 		async function execute() {
@@ -17,6 +17,7 @@ export default function useAction<T>(
 			const res = await func();
 			setLoading(false);
 			if (isValidResponse(res)) setValue(res);
+			else error(res)
 		}
 		execute();
 	}, [_]);

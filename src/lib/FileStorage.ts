@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import _path from "path";
 
-interface IFileStorage {
+export interface IFileStorage {
 	exists: (path: string) => Promise<boolean>;
 	delete: (path: string) => Promise<boolean>;
 	write: (path: string, file: File) => Promise<boolean>;

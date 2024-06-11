@@ -11,9 +11,7 @@ import { fileSchema, MAX_SIZES, pgreDefaults, validations } from "./common.ts";
 import { shop } from "./common.ts";
 import { z } from "zod";
 import { BrandCache, CategoryCache } from "@/helpers/cache.ts";
-import { deleteImages, handleImages, saveImages } from "@/helpers/images.ts";
 import { toArray } from "@/helpers/misc.ts";
-import { ServerError } from "@/actions/common.ts";
 
 const brandSchema = z
 	.string()
@@ -40,29 +38,6 @@ const categorySchema = z
 	.refine((n) => n > -1, { message: "Category Does Not Exist" });
 
 
-export async function imagesHandler(path: string, _files: File[] | File, prev?: string[]) {
-	const files = toArray(_files)
-	let newImages: File[]
-	const imagesToKeep: string[] = []
-	const imagesToDelete: string[] = []
-	if (!prev)
-		newImages = files
-	else {
-		newImages = files.filter(file => !prev.includes(file.name))
-		const newNames = newImages.map(i => i.name)
-		imagesToKeep.push(...prev.filter(name => newNames.includes(name)))
-		imagesToDelete.push(...prev.filter(name => !newNames.includes(name)))
-	}
-	const namedImages = await handleImages(newImages, path)
-	const saved = await saveImages(namedImages, path)
-	if (!saved || saved.length !== namedImages.length) throw ServerError.unknown("Error while trying to save new images")
-	const names = namedImages.map(r => r.name)
-	return {
-		names: [...names, ...imagesToKeep],
-		writeChanges: () => deleteImages(imagesToDelete, path),
-		rollback: () => deleteImages(names, path)
-	}
-}
 
 const ProductInsertValidation = z.object({
 	name: validations.name,
@@ -73,7 +48,8 @@ const ProductInsertValidation = z.object({
 		.number()
 		.positive(),
 	images: z
-		.array(fileSchema)
+		.array(z.string().or(fileSchema))
+		.or(z.string())
 		.or(fileSchema)
 		.optional()
 		.transform((files) =>
@@ -98,7 +74,10 @@ const config = {
 	rating: real("rating").default(0).notNull(),
 };
 
+
 const ProductPgreTable = shop.table("products", config);
+
+type a = typeof ProductPgreTable["$inferSelect"]
 
 export type Product = typeof ProductPgreTable.$inferSelect;
 export type PopulatedProduct = Omit<Product, "brand" | "category" | "votes"> & {

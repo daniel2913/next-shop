@@ -9,6 +9,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+
 CREATE SCHEMA shop;
 
 SET default_tablespace = '';
@@ -62,6 +63,7 @@ CREATE INDEX discounts_value ON shop.discounts USING btree (discount DESC NULLS 
 
 CREATE TABLE shop.orders (
     id serial PRIMARY KEY,
+		code UUID DEFAULT gen_random_uuid(),
     order_content jsonb NOT NULL,
     rating smallint DEFAULT 0,
     status varchar(20) DEFAULT 'PROCESSING'  NOT NULL,

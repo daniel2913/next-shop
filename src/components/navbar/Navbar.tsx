@@ -17,41 +17,43 @@ export default async function Navbar() {
 	]);
 	return (
 		<>
-			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+			<NavButton tabIndex={-1} className=" me-8 justify-center font-semibold md:text-xl">
 				<Link
 					href="/shop/home"
 					aria-label="go to home page"
 					className=" absolute inset-0 size-full basis-0"
 				/>
 				<Home
+					tabIndex={-1}
 					className="*:fill-foreground *:stroke-transparent"
-					width={"30px"}
-					height={"30px"}
+					width={"20px"}
+					height={"20px"}
 				/>
 				Home
 			</NavButton>
-			<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+			<NavButton tabIndex={-1} className="me-8 justify-center font-semibold md:text-xl">
 				<Link
 					href="/shop"
 					aria-label="go to catalogue page"
 					className=" absolute inset-0 size-full basis-0"
 				/>
 				<Catalogue
+					tabIndex={-1}
 					className="*:fill-foreground *:stroke-foreground"
-					width={"30px"}
-					height={"30px"}
+					width={"20px"}
+					height={"20px"}
 				/>
 				Catalogue
 			</NavButton>
-			<SearchContainer className="flex-auto basis-0 justify-center font-semibold md:basis-1/4 md:text-2xl">
+			<SearchContainer className="justify-center font-semibold flex-shrink-0 md:basis-2/5 md:text-xl">
 				<Search
 					className="h-full font-semibold"
 					allBrands={brands}
 					allCategories={categories}
 				/>
 			</SearchContainer>
-			<CartStatus className=" flex-auto basis-0 justify-center font-semibold md:text-2xl" />
-			<AuthContainer className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+			<CartStatus className="ms-8 justify-center font-semibold md:text-xl" />
+			<AuthContainer className=" ms-8 justify-center font-semibold md:text-xl">
 				<Auth className="" />
 			</AuthContainer>
 		</>

@@ -1,23 +1,19 @@
-import { type Column, type SQLWrapper, and, eq, ilike } from "drizzle-orm";
-import {
-	type PgColumn,
-	type PgTableWithColumns,
-	getTableConfig,
-} from "drizzle-orm/pg-core";
+import { type Column, type SQLWrapper, and, eq, ilike, inArray } from "drizzle-orm";
+import { type PgColumn, type PgTableWithColumns, getTableConfig, } from "drizzle-orm/pg-core";
 import { type PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { UnknownKeysParam, ZodObject, ZodRawShape, ZodTypeAny, z } from "zod";
 import { ServerError } from "@/actions/common";
-import { betterInArray } from "@/helpers/misc";
-import { imagesHandler } from "./Product";
-import { deleteImages } from "@/helpers/images";
+import { deleteImages, imagesHandler } from "@/helpers/images";
+import { FileStorage, type IFileStorage } from "../FileStorage";
 
-type Query<T extends BasePgTable["$inferSelect"]> = {
+
+type Query<T extends Record<string, unknown>> = {
 	[Key in keyof T]?: T[Key] | T[Key][];
 };
 
-export interface DataModel<T extends BasePgTable["$inferSelect"]> {
-	filePath:string
+export interface DataModel<T extends Record<string, unknown>> {
+	filePath: string
 	create: (obj: unknown | T) => Promise<T | null>;
 	findOne: (query: Query<T>) => Promise<T | null>;
 	find: (query?: Query<T>, page?: number, skip?: number) => Promise<T[]>;
@@ -46,23 +42,27 @@ type BasePgTable = PgTableWithColumns<{
 }>;
 
 
+
 export class PgreModel<
 	U extends BasePgTable,
 	Z extends ZodObject<ZodRawShape, UnknownKeysParam, ZodTypeAny, U["$inferInsert"]>,
-> implements DataModel<U["$inferSelect"]>
-{
+> implements DataModel<U["$inferSelect"]> {
 	public table: U;
 	public filePath: string;
 	public model: PostgresJsDatabase;
 	private validations: Z;
+	private storage: IFileStorage
 
-	constructor(table: U, validations: Z) {
+	constructor(table: U, validations: Z, model = drizzle(postgres()), storage: IFileStorage = FileStorage) {
 		this.table = table;
 		const config = getTableConfig(table);
 		this.validations = validations;
 		this.filePath = config.name;
-		this.model = drizzle(postgres(), { logger: false });
+		this.model = model
+		this.storage = storage
+		drizzle(postgres(), { logger: false });
 	}
+
 
 	private makePgreQuery(query: Query<U["$inferSelect"]>) {
 		const sqlQueryWrappers: SQLWrapper[] = [];
@@ -71,7 +71,7 @@ export class PgreModel<
 
 			const column = this.table[key as keyof U] as Column;
 			if (Array.isArray(value))
-				sqlQueryWrappers.push(betterInArray(column, value));
+				sqlQueryWrappers.push(inArray(column, value));
 			else if (
 				typeof value === "string" &&
 				(value.at(0) === "%" || value.at(-1) === "%")
@@ -86,7 +86,7 @@ export class PgreModel<
 
 	async create(
 		obj: unknown | U["$inferSelect"],
-	): Promise<U["$inferSelect"] | null> {
+	): Promise<null | U["$inferSelect"]> {
 		const props = await this.validations.parseAsync(obj);
 		let rollback: null | (() => void) = null
 		if ("images" in props) {
@@ -110,7 +110,7 @@ export class PgreModel<
 	async patch(
 		targId: number,
 		patch: Partial<z.infer<Z>> | unknown,
-	): Promise<U["$inferSelect"] | null> {
+	): Promise<null | U["$inferSelect"]> {
 		if (!targId || typeof patch !== "object" || !patch)
 			throw ServerError.invalid();
 		const [original, props] = await Promise.all([
@@ -121,7 +121,6 @@ export class PgreModel<
 
 		let writeChanges: null | (() => void) = null
 		let rollback: null | (() => void) = null
-
 		if ("images" in props) {
 			if ("images" in original) {
 				const res = await imagesHandler(this.filePath, props.images as File[], original.images as string[])
@@ -151,6 +150,7 @@ export class PgreModel<
 	}
 
 	async findOne(query: Query<U["$inferSelect"]>) {
+		const test = this.model.select().from(this.table).where(this.makePgreQuery(query))
 		const res = await this.model
 			.select()
 			.from(this.table)

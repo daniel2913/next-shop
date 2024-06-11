@@ -1,10 +1,11 @@
+import { toArray } from "@/helpers/misc";
 import { pgSchema, serial, varchar } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 export const shop = pgSchema("shop");
 
 export const MAX_SIZES = {
-	uuid: 8,
+	uuid: 7,
 	image: 12,
 	name: 64,
 	hash: 64,
@@ -43,7 +44,19 @@ export const validations = {
 	id: z
 		.number()
 		.nonnegative(),
-	image: fileSchema,
+	images: z.union([z.string(), fileSchema, z.array(z.union([z.string(), fileSchema]))])
+		.optional()
+		.transform((files) =>
+			(files ? toArray(files) : undefined) as unknown as string[],
+		),
+
+	image: z.union([z.string(), fileSchema, z.array(z.union([z.string(), fileSchema]))])
+		.optional()
+		.transform((files) =>
+			(files ? toArray(files) : undefined),
+		)
+		.transform(files => (files ? [files.find(f => f instanceof File) || files[0]] : undefined) as unknown as string[]),
+
 	name: z.string().max(MAX_SIZES.name),
 	description: z.string().max(MAX_SIZES.description),
 	match(name: string, pattern: RegExp) {
@@ -53,6 +66,7 @@ export const validations = {
 			return false;
 		};
 	},
+
 	imageName: z
 		.string()
 		.max(MAX_SIZES.image)

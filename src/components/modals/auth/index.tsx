@@ -1,5 +1,5 @@
 "use client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@comps/ui/Tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import React from "react";
 import { Register } from "./Register";
 import { Login } from "./Login";

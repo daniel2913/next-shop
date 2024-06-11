@@ -1,16 +1,17 @@
 "use client";
 import React from "react";
 import { Accordion, AccordionContent } from "@/components/ui/Accordion";
-import { AccordionItem, AccordionTrigger } from "@comps/ui/Accordion";
+import { AccordionItem, AccordionTrigger } from "@/components/ui/Accordion";
 import type { Props } from "./OrderAdminTabs";
-import { type PopulatedOrder, completeOrderAction } from "@/actions/order";
+import { type PopulatedOrder, completeOrderAction, changeOrderAction } from "@/actions/order";
 import { useRouter } from "next/navigation";
 import { CartTable } from "@/components/cart/CartTable";
 import { Button } from "../../ui/Button";
 import GenericSelectTable from "../../ui/GenericSelectTable";
-import { useModalStore } from "@/store/modalStore";
-import { useToastStore } from "@/store/ToastStore";
 import { ModalContext } from "@/providers/ModalProvider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 export function OrderTab({ group, props }: OrderTabProps) {
 	return (
@@ -36,7 +37,6 @@ function OrderTable(
 	props: Omit<Props, "orders"> & { orders: PopulatedOrder[] },
 ) {
 	const router = useRouter();
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const [loading, setLoading] = React.useState(false);
 	const show = React.useContext(ModalContext)
 	return (
@@ -66,14 +66,38 @@ function OrderTable(
 						Details
 					</Button>
 				),
+				"Set Status": (order) => (
+					<Select
+						defaultValue={order.status}
+						disabled={loading}
+						onValueChange={async (status) => {
+							setLoading(true)
+							const res = await changeOrderAction(order.id, { status })
+							if (!isValidResponse(res)) error(res)
+							setLoading(false)
+						}}
+					>
+						<SelectTrigger className="w-48" >
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent className="w-48">
+							{["PREPARING", "DELIVERING", "PROCESSING"].map(stat =>
+								<SelectItem key={stat} value={stat}>
+									{stat}
+								</SelectItem>
+							)}
+						</SelectContent>
+					</Select>
+				),
 				Complete: (order) => (
 					<Button
-						disabled={loading || order.status !== "PROCESSING"}
+						disabled={loading || order.status === "COMPLETED"}
 						className=""
 						onClick={async () => {
 							setLoading(true);
 							const res = await completeOrderAction(order.id);
 							if (isValidResponse(res)) router.refresh();
+							else	error(res)
 							setLoading(false);
 						}}
 					>

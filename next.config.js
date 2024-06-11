@@ -1,4 +1,3 @@
-
 import { env } from "node:process";
 
 const URL = env.PUBLIC_API_URL || "";
@@ -20,8 +19,8 @@ const cspHeader = `
 export default {
 	experimental: {
 	},
-	/* async headers() {
-		return [
+	async headers() {
+		return env.NODE_ENV === "" ? [
 			{
 				source: "/(.*)",
 				headers: [
@@ -31,8 +30,8 @@ export default {
 					},
 				],
 			},
-		];
-	}, */
+		] : [];
+	},
 	typescript: {
 		ignoreBuildErrors: true,
 	},

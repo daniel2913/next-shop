@@ -2,12 +2,13 @@
 import { createOrderAction } from "@/actions/order";
 import { CartTable } from "./CartTable";
 import { Button } from "@/components/ui/Button";
-import calcPrice from "@/helpers/misc";
+import {calcDiscount, isValidResponse } from "@/helpers/misc";
 import type { PopulatedProduct } from "@/lib/Models/Product";
 import React from "react";
-import { useToastStore } from "@/store/ToastStore";
 import { actions, useAppDispatch, useAppSelector } from "@/store/rtk";
-import { cartSlice } from "@/store/cartSlice";
+import { getProductsByIds as getProductsByIdsAction } from "@/actions/product";
+import { useRouter } from "next/navigation";
+import { error } from "../ui/use-toast";
 
 type Props = {
 	products: PopulatedProduct[];
@@ -15,44 +16,73 @@ type Props = {
 };
 
 export default function Cart(props: Props) {
+
 	const items = useAppSelector(s => s.cart.items);
 	const [loadingOrder, setLoadingOrder] = React.useState(false);
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
-	const error = useToastStore((s) => s.error);
+	const syncing = React.useRef(false)
 	const dispatch = useAppDispatch()
+	const [products, setProducts] = React.useState(props.products)
+	const router = useRouter()
+
+	React.useEffect(() => {
+		if (syncing.current) return
+		syncing.current = true
+		const missingProductIds: number[] = []
+		for (const id in items) {
+			if (!products.some(p => p.id === +id))
+				missingProductIds.push(+id)
+		}
+		if (missingProductIds.length > 0) {
+			getProductsByIdsAction(missingProductIds).then(r => {
+				setProducts(p => {
+					syncing.current = false
+					return p.concat(r)
+				})
+			})
+		}
+	}, [items])
+
 	async function handleClick() {
 		if (Object.keys(items).length === 0) return false;
 		setLoadingOrder(true);
 		const order: Record<number, { price: number; amount: number }> = {};
 		for (const id in items) {
-			const product = props.products.find((product) => product.id === +id);
+			const product = products.find((product) => product.id === +id);
 			if (!product) {
-				error(
-					"Some of the products are no longer available",
-					"Catalog changed",
-				);
+				error({
+					error: "Some of the products are no longer available",
+					title: "Catalog changed",
+				});
 				setLoadingOrder(false);
 				return;
 			}
-			const price = +calcPrice(product.price, product.discount);
+			const price = calcDiscount(product.price, product.discount);
 			const amount = items[+id];
 			if (!amount) continue;
-			order[+id] = { price, amount };
+			order[id] = { price, amount };
 		}
+
 		if (Object.keys(order).length !== Object.keys(items).length) {
-			error("Internal Error", "Internal Error");
+			error({ error: "Internal Error", title: "Internal Error" });
 			setLoadingOrder(false);
 			return;
 		}
+
 		const res = await createOrderAction(order);
+
 		setLoadingOrder(false);
-		if (isValidResponse(res)) dispatch(actions.cart.clearCart());
+		if (isValidResponse(res)) {
+			router.push(`/shop/cart/thankyou?code=${res}`)
+			dispatch(actions.cart.clearCart());
+		}
+		else error(res)
 	}
+
 	const order: Record<string, { price: number; amount: number }> = {};
-	for (const product of props.products) {
+	for (const product of products) {
 		if (!items[product.id]) continue;
 		order[product.id] = {
-			price: +calcPrice(product.price, product.discount),
+			price: calcDiscount(product.price, product.discount),
 			amount: items[product.id],
 		};
 	}
@@ -65,24 +95,29 @@ export default function Cart(props: Props) {
 		);
 	}
 	return (
-		<main className="p-4">
-			<div className="rounded-md bg-secondary p-2">
+		<main className="p-6 md:w-4/5 sm:w-full mx-auto">
+			<div className="rounded-md border-white border-2 bg-secondary p-2">
 				<CartTable
 					interactive
 					className="rounded-md"
-					products={props.products}
+					products={products}
 					order={order}
 				/>
-				<div className="flex justify-end gap-4 px-8">
+				<div className="flex mx-8 pt-2 mt-4 border-transparent border-t-black border-2 justify-end gap-4">
 					<Button
-						className="px-4  text-3xl font-bold"
-						onClick={() => dispatch(cartSlice.actions._clearCart())}
+						variant="outline"
+						className="p-3  text-3xl"
+						onClick={() => {
+							router.push("/shop/home")
+							dispatch(actions.cart.clearCart())
+						}}
 						type="submit"
 					>
 						Clear
 					</Button>
 					<Button
-						className="px-4  text-3xl font-bold"
+						variant="outline"
+						className="p-3  text-3xl"
 						disabled={loadingOrder || Object.keys(order).length === 0}
 						onClick={handleClick}
 						type="submit"

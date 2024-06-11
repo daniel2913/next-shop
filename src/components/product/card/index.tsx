@@ -10,11 +10,12 @@ import React from "react";
 import BuyButton from "./BuyButton";
 import Price from "./Price";
 import ProductCarousel from "./ProductCarousel";
-import { useToastStore } from "@/store/ToastStore";
-import { useAppDispatch, useAppSelector } from "@/store/rtk";
+import { actions, useAppDispatch, useAppSelector } from "@/store/rtk";
 import { toggleSaved } from "@/store/savedSlice";
 import { setVote } from "@/store/votesSlice";
 import { LocalModal } from "@/components/modals/Base";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 type Props = PopulatedProduct & {
 	reload: (id: number) => void;
@@ -27,17 +28,16 @@ const ProductForm = dynamic(() => import("@/components/forms/ProductForm"));
 
 const ProductCard = React.memo(function ProductCard(product: Props) {
 	const [show, setShow] = React.useState(false)
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const vote = useAppSelector(state => state.votes.votes[product.id]);
 	const dispatch = useAppDispatch()
 
 	const onVoteChange = React.useCallback(
 		async (val: number) => {
-			const res = await dispatch(setVote({ id: product.id, val }));
-			if (!isValidResponse(res)) return;
+			const res = await dispatch(actions.votes.setVote({ id: product.id, val }));
+			if (!isValidResponse(res.payload)) error(res.payload);
 			product.update(product.id, res.payload);
 		},
-		[product.id, setVote, isValidResponse, product.update],
+		[product.id, setVote, product.update],
 	);
 
 	const priority = product.idx ? product.idx < (product.fold || 10) : false;
@@ -85,7 +85,7 @@ const ProductCard = React.memo(function ProductCard(product: Props) {
 				<Controls {...product} />
 			</main>
 			{show &&
-				<LocalModal isOpen={show} close={() => setShow(false)} title={product.name}>
+				<LocalModal isOpen={show} close={() => setShow(false)}>
 					<DetailedProduct {...product} />
 				</LocalModal>
 			}
@@ -141,7 +141,7 @@ function Controls(product: Props) {
 			)
 			}
 			{show &&
-				<LocalModal title="Edit product" isOpen={show} close={() => setShow(false)}>
+				<LocalModal isOpen={show} close={() => setShow(false)}>
 					<div onSubmit={() => (product.reload(product.id), setShow(false))}>
 						<ProductForm product={product} />
 					</div>

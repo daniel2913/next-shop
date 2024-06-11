@@ -2,7 +2,7 @@
 import Star from "@public/star.svg";
 import { useSession } from "next-auth/react";
 import React from "react";
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
 
 type Props = {
 	id: number;
@@ -24,11 +24,10 @@ const Rating = React.memo(function Rating({
 	className,
 }: Props) {
 	const session = useSession();
-	const error = useToastStore((s) => s.error);
 	async function handleRate(i: number) {
 		if (session?.data?.user?.id) onChange(i);
 		else {
-			error("Only authorized users can rate products!");
+			error({ error: "Only authorized users can rate products!", title: "Not Authorized" })
 		}
 	}
 	return (

@@ -22,23 +22,28 @@ export function ReloadOnUserChange() {
 	return null;
 }
 
-export default function Auth({ className }: Props) {
+export default function Auth(props: Props) {
 	const session = useSession();
 	return (
 		<div
-			className={`${className} flex flex-col items-center gap-2 md:flex-row`}
+
+			className={`${props.className} flex flex-col justify-center items-center gap-2 md:flex-row`}
 		>
 			{session.data?.user?.role === "admin" ? (
-				<Link className="appearence-none" href={"/admin/orders"}>
+				<Link
+					tabIndex={-1}
+					className="appearence-none" href={"/admin/orders"}
+				>
 					<Button
 						className="flex h-full flex-col p-1"
 						type="button"
 						variant="link"
 					>
 						<Admin
+							tabIndex={-1}
 							className="*:fill-accent *:stroke-foreground"
-							width="30px"
-							height="30px"
+							width="20px"
+							height="20px"
 						/>
 						Admin Panel
 					</Button>
@@ -46,15 +51,19 @@ export default function Auth({ className }: Props) {
 			) : (
 				<>
 					<OrderMenu className="flex h-full flex-col gap-0 p-1 underline-offset-4 hover:underline" />
-					<Link className="appearence-none h-fit w-fit" href={"/shop/saved"}>
+					<Link
+						tabIndex={-1}
+						className="appearence-none h-fit w-fit" href={"/shop/saved"}
+					>
+
 						<Button
 							className="flex h-full flex-col p-1"
 							type="button"
 							variant="link"
 						>
 							<Heart
-								width="30px"
-								height="30px"
+								width="25px"
+								height="25px"
 								className={`fill-accent *:stroke-card-foreground *:stroke-1`}
 							/>
 							Saved
@@ -71,8 +80,8 @@ export default function Auth({ className }: Props) {
 			>
 				<Exit
 					className=" *:fill-accent *:stroke-accent"
-					height="30px"
-					width="30px"
+					height="25px"
+					width="25px"
 				/>
 				Sign Out
 			</Button>

@@ -5,7 +5,6 @@ import { Drawer, DrawerContent, DrawerPortal, DrawerTitle } from "../ui/Drawer";
 
 type Props = {
 	isOpen: boolean
-	title: string
 	children: React.ReactNode
 	onClose?: () => void
 	close: () => void
@@ -21,7 +20,6 @@ export default function MobileModal(props: Props) {
 		>
 			<DrawerPortal>
 				<DrawerTitle className="text-center text-2xl font-bold capitalize">
-					{props.title}
 				</DrawerTitle>
 				<DrawerContent
 					onSubmit={() => {

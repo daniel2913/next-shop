@@ -12,12 +12,16 @@ type Props = {
 export default function RequireAuth(props: Props) {
 	const router = useRouter()
 	const session = useSession({
-		required: true, onUnauthenticated() {
+		required: true,
+		onUnauthenticated() {
 			router.push("/shop/home")
 			if (props.onUnAuth) return props.onUnAuth()
+			return null
 		},
 	})
-	if (props.admin && session.data?.user?.role !== "admin")
-		throw "No admin"
+	if (props.admin && session.data?.user?.role !== "admin"){
+		router.push("/shop/home")
+		return null
+	}
 	return props.children
 }

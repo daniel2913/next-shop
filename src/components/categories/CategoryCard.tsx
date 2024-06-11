@@ -20,7 +20,7 @@ export default function CategoryCard({ category, products, className }: Props) {
 						width={245}
 						height={195}
 						alt={category.name}
-						src={`/categories/${category.image}`}
+						src={`/categories/${category.images[0]}`}
 					/>
 					<h2 className="w-full overflow-hidden text-nowrap whitespace-nowrap overflow-ellipsis text-center text-2xl font-semibold">
 						{category.name}

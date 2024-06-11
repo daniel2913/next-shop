@@ -34,29 +34,8 @@
       "@/*": [
         "./src/*"
       ],
-      "@comps/*": [
-        "./src/components/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@styles/*": [
-        "./src/styles/*"
-      ],
-      "@app/*": [
-        "./src/app/*"
-      ],
-      "@nodems/*": [
-        "./node_modules/*"
-      ],
       "@public/*": [
         "./public/*"
-      ],
-      "@store/*": [
-        "./src/store/*"
-      ],
-      "@lib/*": [
-        "./src/lib/*"
       ]
     },
     "skipLibCheck": true

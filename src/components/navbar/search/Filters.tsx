@@ -1,4 +1,3 @@
-"use client";
 import type React from "react";
 import Image from "next/image";
 import type { Brand, Category } from "@/lib/Models";
@@ -29,7 +28,7 @@ export function CategoryFilter({
 				});
 			}}
 		>
-			<span>Category</span>
+			<span className="font-medium text-lg">Category</span>
 			<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 				{allCategories.map((category) => (
 					<ToggleGroupItem
@@ -40,8 +39,9 @@ export function CategoryFilter({
 					>
 						<div className="relative size-8 object-contain">
 							<Image
+								className="rounded-full"
 								alt={category.name}
-								src={`/categories/${category.image}`}
+								src={`/categories/${category.images[0]}`}
 								width={40}
 								height={40}
 							/>
@@ -86,7 +86,7 @@ export function BrandFilter({
 				});
 			}}
 		>
-			<span>Brand</span>
+			<span className="font-medium text-lg">Brand</span>
 			<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 				{allBrands.map((brand) => (
 					<ToggleGroupItem
@@ -97,8 +97,9 @@ export function BrandFilter({
 					>
 						<div className="relative size-8 object-contain">
 							<Image
+								className="rounded-full"
 								alt={brand.name}
-								src={`/brands/${brand.image}`}
+								src={`/brands/${brand.images[0]}`}
 								width={40}
 								height={40}
 							/>

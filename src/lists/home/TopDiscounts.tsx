@@ -1,10 +1,11 @@
 import { DiscountCache } from "@/helpers/cache";
 import { populateProducts } from "@/helpers/populateProducts";
 import { ProductModel, type Product } from "@/lib/Models";
-import { or, desc, and, not } from "drizzle-orm";
+import { or, desc, and, not, Column } from "drizzle-orm";
 import HorizontalScrollList from "../../components/ui/HorizontalScrollList";
 import { GenericProductList } from "../GenericProductList";
-import { betterInArray } from "@/helpers/misc";
+import { bindIfParam, sql } from "drizzle-orm";
+import { ServerError } from "@/actions/common";
 
 type Props = {
 	className?: string;
@@ -24,12 +25,12 @@ export default async function TopDiscountProducts(props: Props) {
 				.where(
 					and(
 						or(
-							betterInArray(ProductModel.table.brand, discount.brands),
-							betterInArray(ProductModel.table.category, discount.categories),
-							betterInArray(ProductModel.table.id, discount.products),
+							inArrayNoThrow(ProductModel.table.brand, discount.brands),
+							inArrayNoThrow(ProductModel.table.category, discount.categories),
+							inArrayNoThrow(ProductModel.table.id, discount.products),
 						),
 						not(
-							betterInArray(
+							inArrayNoThrow(
 								ProductModel.table.id,
 								topDiscounted.map((prod) => prod.id),
 							),
@@ -50,4 +51,14 @@ export default async function TopDiscountProducts(props: Props) {
 			</HorizontalScrollList>
 		</>
 	);
+}
+
+function inArrayNoThrow(column: Column, values: any[]) {
+	if (Array.isArray(values)) {
+		if (values.length === 0) {
+			return sql`1 = 0`
+		}
+		return sql`${column} in ${values.map((v) => bindIfParam(v, column))}`;
+	}
+	return sql`${column} in ${bindIfParam(values, column)}`;
 }

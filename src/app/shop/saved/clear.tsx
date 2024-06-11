@@ -15,7 +15,8 @@ export default function ClearSaved(props: Props) {
 		<Button
 			className={`${props.className} font-bold fixed left-4 top-4 z-10 md:top-14`}
 			onClick={async () => {
-				dispatch(actions.saved.clearSaved()).then(_ => router.push("/shop/home"));
+				router.push("/shop/home");
+				dispatch(actions.saved.clearSaved())
 			}}
 		>
 			Clear Saved

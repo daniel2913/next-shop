@@ -1,7 +1,8 @@
 import React from "react";
 import type { PopulatedProduct } from "@/lib/Models/Product";
 import type { ServerErrorType } from "./useAction";
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
+import { isValidResponse } from "@/helpers/misc";
 
 type ItemsProps<T extends { id: number }> = {
 	initItems?: T[];
@@ -11,7 +12,6 @@ type ItemsProps<T extends { id: number }> = {
 export function useItemsController<T extends { id: number }>(
 	props: ItemsProps<T>,
 ) {
-	const isValidResponse = useToastStore((s) => s.isValidResponse);
 	const [items, setItems] = React.useState(props.initItems || []);
 	const [loading, setLoading] = React.useState(false);
 
@@ -19,25 +19,31 @@ export function useItemsController<T extends { id: number }>(
 		setLoading(true);
 		const oldIds = items.map((prod) => prod.id);
 		const newItems = await props.getItems(oldIds);
-		if (!isValidResponse(newItems)) return;
+		if (!isValidResponse(newItems)) {
+			error(newItems)
+			return
+		};
 		const newIds = newItems.map((prod) => prod.id);
 		const persisted = oldIds.filter((id) => newIds.includes(id));
 		setItems(
 			persisted.map((prod) => newItems.find((newProd) => newProd.id === prod)!),
 		);
 		setLoading(false);
-	}, [items, isValidResponse, props.getItems]);
+	}, [items, props.getItems]);
 
 	const reloadOne = React.useCallback(
 		async (id: number) => {
 			const newItem = await props.getItems([id]);
-			if (!isValidResponse(newItem)) return;
+			if (!isValidResponse(newItem)) {
+				error(newItem)
+				return;
+			}
 			setItems((products) => {
 				const idx = products.findIndex((prod) => prod.id === id);
 				return products.with(idx, newItem[0]);
 			});
 		},
-		[isValidResponse, props.getItems],
+		[ props.getItems],
 	);
 
 	const updateOne = React.useCallback(

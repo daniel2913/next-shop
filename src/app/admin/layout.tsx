@@ -1,10 +1,9 @@
 import Link from "next/link";
 import type { ReactElement } from "react";
 import NavButton from "@/components/ui/Navbutton";
-import { auth } from "@/actions/common";
+import { auth } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import NavBarContainer from "@/components/navbar/NavbarContainer";
-import RequireAuth from "@/providers/RequireAuth";
 import { cookies } from "next/headers";
 
 export default async function AdminLayout({
@@ -15,46 +14,46 @@ export default async function AdminLayout({
 	try {
 		const cookie = cookies().get("cookie")
 		if (cookie) throw "Error"
-		await auth()
+		await auth("admin")
 		return (
-			<RequireAuth admin>
+			<>
 				<NavBarContainer>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/shop/home"
 							className="absolute inset-0 size-full basis-0"
 						/>
 						Shop
 					</NavButton>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/admin/orders"
 							className="absolute inset-0 size-full basis-0"
 						/>
 						Orders
 					</NavButton>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/admin/products"
 							className="absolute inset-0 size-full basis-0"
 						/>
 						Products
 					</NavButton>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/admin/brands"
 							className="absolute inset-0 size-full basis-0"
 						/>
 						Brands
 					</NavButton>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/admin/categories"
 							className="absolute inset-0 size-full basis-0"
 						/>
 						Categories
 					</NavButton>
-					<NavButton className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
+					<NavButton tabIndex={-1} className="flex-auto basis-0 justify-center font-semibold md:text-2xl">
 						<Link
 							href="/admin/discounts"
 							className="absolute inset-0 size-full basis-0"
@@ -65,8 +64,7 @@ export default async function AdminLayout({
 				<main className="flex h-full w-full justify-center p-4">
 					{children}
 				</main>
-
-			</RequireAuth>
+			</>
 		);
 	} catch {
 		redirect("/shop/home");

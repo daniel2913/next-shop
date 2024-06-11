@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import { makeStore } from "@/store/rtk";
 import { getInitState } from "@/actions/user";
 import GlobalModalProvider from "./ModalProvider";
-import { revalidatePath } from "next/cache";
+import { Toaster } from "@/components/ui/toaster";
 
 type SessionProps = {
 	session: Session | null;
@@ -16,13 +16,14 @@ type SessionProps = {
 	initProps: Parameters<typeof makeStore>[0]
 };
 
-export default function RootProviders({ children, session, initProps }: SessionProps) {
+export default function RootProviders(props: SessionProps) {
 	return (
-		<SessionProvider refetchOnWindowFocus={false} session={session}>
-			<StoreProvider initProps={initProps}>
+		<SessionProvider refetchOnWindowFocus={false} session={props.session}>
+			<StoreProvider initProps={props.initProps}>
 				<ResponsiveProvider>
 					<GlobalModalProvider>
-						{children}
+						{props.children}
+						<Toaster />
 					</GlobalModalProvider>
 				</ResponsiveProvider>
 			</StoreProvider>
@@ -52,8 +53,4 @@ function StoreProvider(props: StoreProps) {
 			{props.children}
 		</Provider>
 	)
-}
-
-function ToastProvider(){
-	
 }

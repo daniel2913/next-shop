@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/Label";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useToastStore } from "@/store/ToastStore";
+import { error } from "@/components/ui/use-toast";
 
 export type Props = {
 	close?: () => void;
@@ -17,7 +17,6 @@ export function Login({ close, redirect }: Props) {
 	const [password, setPassword] = React.useState("");
 	const [loading, setLoading] = React.useState(false);
 	const router = useRouter();
-	const error = useToastStore((s) => s.error);
 	async function handleLogin(creds: { name: string; password: string }) {
 		const res = await signIn("credentials", { ...creds, redirect: false });
 		if (res?.ok) {
@@ -25,7 +24,7 @@ export function Login({ close, redirect }: Props) {
 			else if (close) close();
 			return;
 		}
-		error("Invalid username or password", "Authentication Error");
+		error({ error: "Invalid username or password", title: "Authentication Error" });
 	}
 	return (
 		<form
