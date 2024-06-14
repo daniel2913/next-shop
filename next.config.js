@@ -20,7 +20,7 @@ export default {
 	experimental: {
 	},
 	async headers() {
-		return env.NODE_ENV === "" ? [
+		return env.NODE_ENV === "production" ? [
 			{
 				source: "/(.*)",
 				headers: [
