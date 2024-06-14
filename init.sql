@@ -11,9 +11,7 @@ SET row_security = off;
 
 
 CREATE SCHEMA shop;
-
 SET default_tablespace = '';
-
 SET default_table_access_method = heap;
 
 CREATE TABLE shop.users (
@@ -27,7 +25,6 @@ CREATE TABLE shop.users (
 
 		CONSTRAINT name_len CHECK ((char_length((name)::text) > 0)) NOT VALID
 );
-
 
 
 CREATE TABLE shop.brands (
@@ -98,7 +95,8 @@ VALUES ('user', 'user','user');
 INSERT INTO shop.brands (name)
 VALUES
 ('Lorem'),
-('Ipsum');
+('Ipsum'),
+('Subcapitalia');
 
 INSERT INTO shop.categories (name)
 VALUES

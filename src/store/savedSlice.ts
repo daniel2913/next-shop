@@ -57,7 +57,3 @@ export const savedSlice = createSlice({
 		}
 	},
 })
-
-
-export const savedReducers = savedSlice.reducer
-

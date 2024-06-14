@@ -1,6 +1,7 @@
 import { updateVoteAction } from "@/actions/rating";
 import { createSlice } from "@reduxjs/toolkit";
 import { createTypedAsyncThunk } from "./helper";
+import { isValidResponse } from "@/helpers/misc";
 
 
 const initialState: { votes: Record<number, number> } = {
@@ -31,8 +32,10 @@ export const setVote = createTypedAsyncThunk<
 		const old = votes[id]
 		api.dispatch(votesSlice.actions._setVote({ id, val }))
 		const res = await updateVoteAction(id, val)
+		if (!isValidResponse(res)) {
 
-		if (!res || "error" in res) {
+		}
+		if (!res || !isValidResponse(res)) {
 			api.dispatch(votesSlice.actions._setVote({ id, val: old }))
 			return api.rejectWithValue(res || { title: "Unknown Error", error: "Something bad happened" })
 		}
@@ -56,6 +59,3 @@ export const votesSlice = createSlice({
 		})
 	},
 })
-
-export const votesReducers = votesSlice.reducer
-
