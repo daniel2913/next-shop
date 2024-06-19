@@ -11,7 +11,6 @@ import DiscountForm from "@/components/forms/DiscountForm";
 import { createRandomProductAction } from "@/actions/generate";
 import { ModalContext } from "@/providers/ModalProvider";
 import useConfirm from "@/hooks/modals/useConfirm";
-import { actions, useAppDispatch } from "@/store/rtk";
 import { cleanUp } from "@/helpers/cleanUp";
 import { error, toast } from "@/components/ui/use-toast";
 import { isValidResponse } from "@/helpers/misc";
@@ -24,7 +23,6 @@ type Props = {
 export default function ProductsAdmin({ products, className }: Props) {
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [loading, setLoading] = React.useState(false);
-	const dispatch = useAppDispatch()
 	const show = React.useContext(ModalContext)
 	const confirm = useConfirm()
 	const router = useRouter();

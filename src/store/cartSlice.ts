@@ -1,7 +1,7 @@
 import { setCartAction } from "@/actions/cart";
-import { deffer } from "@/helpers/misc";
+import { deffer, isValidResponse } from "@/helpers/misc";
 import { createSlice } from "@reduxjs/toolkit";
-import { createTypedAsyncThunk, listenerMiddleware } from "./helper";
+import { createTypedAsyncThunk } from "./helper";
 
 const updateAccount = deffer(setCartAction, 500);
 
@@ -15,10 +15,9 @@ export const setAmount = createTypedAsyncThunk<
 	("cart/setAmmount", async (d, s) => {
 		s.dispatch(cartSlice.actions._setAmmount({ id: d.id, amnt: d.amnt }))
 
-		if (!s.getState().auth.id) return s.fulfillWithValue(undefined)
-
 		const res = await updateAccount(d.instant || false, s.getState().cart.items)
-		if (res && "error" in res) {
+		if (!isValidResponse(res)) {
+			if (res.title === "Not Allowed") return s.fulfillWithValue(undefined)
 			return s.rejectWithValue(res)
 		}
 		return s.fulfillWithValue(undefined)

@@ -48,18 +48,20 @@ function OrderTable(
 					Object.values(order.order).reduce(
 						(sum, order) => sum + order.price * order.amount,
 						0,
-					),
+					).toFixed(2),
 				Details: (order) => (
 					<Button
 						onClick={() =>
 							show({
 								title: "",
 								children: () =>
-									<CartTable
-										products={order.products}
-										order={order.order}
-										className="bg-border"
-									/>,
+									<div className="w-[45rem]">
+										<CartTable
+											products={order.products}
+											order={order.order}
+											className="bg-border"
+										/>
+									</div>
 							})
 						}
 					>
@@ -77,7 +79,7 @@ function OrderTable(
 							setLoading(false)
 						}}
 					>
-						<SelectTrigger className="w-48" >
+						<SelectTrigger disabled={loading || order.status === "COMPLETED"} className="w-48" >
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent className="w-48">
@@ -97,7 +99,7 @@ function OrderTable(
 							setLoading(true);
 							const res = await completeOrderAction(order.id);
 							if (isValidResponse(res)) router.refresh();
-							else	error(res)
+							else error(res)
 							setLoading(false);
 						}}
 					>

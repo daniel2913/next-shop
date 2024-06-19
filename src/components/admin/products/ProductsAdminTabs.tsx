@@ -12,17 +12,8 @@ const ProductsAdminTabs = React.memo(function ProductList(props: Props) {
 		prod.name.toLowerCase().includes(filter.toLowerCase()),
 	);
 	const grouped = React.useMemo(() => {
-		const productsByBrand: Record<string, PopulatedProduct[]> = {};
-		const productsByCategory: Record<string, PopulatedProduct[]> = {};
-		if (!products) return { productsByBrand, productsByCategory };
-		for (const product of products) {
-			if (productsByBrand[product.brand.name])
-				productsByBrand[product.brand.name].push(product);
-			else productsByBrand[product.brand.name] = [product];
-			if (productsByCategory[product.category.name])
-				productsByCategory[product.category.name].push(product);
-			else productsByCategory[product.category.name] = [product];
-		}
+		const productsByBrand = Object.groupBy(products, v => v.brand.name)
+		const productsByCategory = Object.groupBy(products, v => v.category.name)
 		return { productsByBrand, productsByCategory };
 	}, [products]);
 	return (

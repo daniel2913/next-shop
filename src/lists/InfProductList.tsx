@@ -57,6 +57,8 @@ export default function InfProductList({ products: initProducts }: Props) {
 		setItems: setProducts,
 		setLoading,
 	});
+
+
 	return (
 		<>
 			<Loading loading={loading}>

@@ -1,4 +1,4 @@
-import { getProductsByIds } from "@/actions/product";
+import { getProductsByIdsAction } from "@/actions/product";
 import { auth } from "@/actions/auth";
 import HorizontalScrollList from "../../components/ui/HorizontalScrollList";
 import { GenericProductList } from "../GenericProductList";
@@ -13,7 +13,7 @@ export default async function SavedProducts(props: Props) {
 		const user = await auth("user");
 		if (user.saved.length === 0) return null;
 		const saved = user.saved.slice(0, props.num || 10);
-		const savedProducts = await getProductsByIds(saved);
+		const savedProducts = await getProductsByIdsAction(saved);
 		if (savedProducts.length === 0) return null;
 		return (
 			<>

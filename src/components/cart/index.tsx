@@ -2,11 +2,11 @@
 import { createOrderAction } from "@/actions/order";
 import { CartTable } from "./CartTable";
 import { Button } from "@/components/ui/Button";
-import {calcDiscount, isValidResponse } from "@/helpers/misc";
+import { calcDiscount, isValidResponse } from "@/helpers/misc";
 import type { PopulatedProduct } from "@/lib/Models/Product";
 import React from "react";
 import { actions, useAppDispatch, useAppSelector } from "@/store/rtk";
-import { getProductsByIds as getProductsByIdsAction } from "@/actions/product";
+import { getProductsByIdsAction as getProductsByIdsAction } from "@/actions/product";
 import { useRouter } from "next/navigation";
 import { error } from "../ui/use-toast";
 
@@ -34,10 +34,13 @@ export default function Cart(props: Props) {
 		}
 		if (missingProductIds.length > 0) {
 			getProductsByIdsAction(missingProductIds).then(r => {
-				setProducts(p => {
-					syncing.current = false
-					return p.concat(r)
-				})
+				if (isValidResponse(r)) {
+					setProducts(p => {
+						syncing.current = false
+						return p.concat(r)
+					})
+				}
+				else error(r)
 			})
 		}
 	}, [items])
@@ -95,20 +98,19 @@ export default function Cart(props: Props) {
 		);
 	}
 	return (
-		<main className="p-6 md:w-4/5 sm:w-full mx-auto">
-			<div className="rounded-md border-white border-2 bg-secondary p-2">
+		<main className="md:p-6 w-screen md:px-12">
+			<div className="rounded-md md:border-white border-2 bg-secondary p-2">
 				<CartTable
 					interactive
-					className="rounded-md"
 					products={products}
 					order={order}
 				/>
-				<div className="flex mx-8 pt-2 mt-4 border-transparent border-t-black border-2 justify-end gap-4">
+				<div className="flex pt-2 border-transparent border-t-black border-2 justify-end gap-4">
 					<Button
 						variant="outline"
-						className="p-3  text-3xl"
+						className="px-1 py-0 md:py-1 text-lg  md:text-3xl"
 						onClick={() => {
-							router.push("/shop/home")
+							router.replace("/shop/home")
 							dispatch(actions.cart.clearCart())
 						}}
 						type="submit"
@@ -117,7 +119,7 @@ export default function Cart(props: Props) {
 					</Button>
 					<Button
 						variant="outline"
-						className="p-3  text-3xl"
+						className="px-1 py-0 md:py-1 text-lg  md:text-3xl"
 						disabled={loadingOrder || Object.keys(order).length === 0}
 						onClick={handleClick}
 						type="submit"

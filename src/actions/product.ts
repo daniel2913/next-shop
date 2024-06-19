@@ -18,6 +18,10 @@ export async function getAllProductsAction() {
 	}
 }
 
+export async function getProductDescriptionAction(id: number) {
+	return ProductModel.findOne({ id }).then(r => r.description)
+}
+
 export async function getProductsByIds(inp: number | number[]) {
 	const query = z.number().or(z.array(z.number())).parse(inp);
 	if (Array.isArray(query) && query.length === 0) return [];

@@ -40,8 +40,8 @@ export default function CartStatus({ className }: Props) {
 				<div className="relative h-fit w-fit">
 					<CartIcon
 						className="*:stroke-foreground *:stroke-2"
-						width="25px"
-						height="25px"
+						width="22px"
+						height="22px"
 					/>
 					{itemsCount ? (
 						<div

@@ -34,7 +34,7 @@ export default function DiscountForm({ discount }: Props) {
 	const [value, setValue] = React.useState(discount?.discount || 50);
 	const [expires, setExpires] = React.useState(
 		discount?.expires?.toJSON().slice(0, 10) ||
-			new Date(Date.now() + 1000 * 60 * 60 * 24).toJSON().slice(0, 10),
+		new Date(Date.now() + 1000 * 60 * 60 * 24).toJSON().slice(0, 10),
 	);
 
 	return (

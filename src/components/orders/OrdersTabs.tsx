@@ -16,7 +16,7 @@ export const OrdersTabs = React.memo(function OrderList({
 	className,
 }: Props) {
 	return (
-		<Tabs className={`${className} w-2/3 mx-auto text-black`} defaultValue="proc">
+		<Tabs className={`${className} md:w-2/3 px-4 md:px-0  md:mx-auto`} defaultValue="proc">
 			<TabsList className="flex w-full justify-center">
 				<TabsTrigger value="proc">Processing</TabsTrigger>
 				<TabsTrigger value="comp">Completed</TabsTrigger>

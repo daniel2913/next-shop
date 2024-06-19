@@ -1,6 +1,5 @@
-import { env } from "node:process";
 
-const URL = env.PUBLIC_API_URL || "";
+const URL = process.env.NEXT_PUBLIC_PUBLIC_API_URL || "";
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -20,7 +19,7 @@ export default {
 	experimental: {
 	},
 	async headers() {
-		return env.NODE_ENV === "production" ? [
+		return process.env.NODE_ENV === "production" ? [
 			{
 				source: "/(.*)",
 				headers: [
@@ -42,6 +41,7 @@ export default {
 		loader: "custom",
 		loaderFile: "./src/helpers/imageLoader.ts",
 	},
+	/**@param config {import("next/dist/server/config-shared").NextJsWebpackConfig} */
 	webpack(config) {
 		const fileLoaderRule = config.module.rules.find((rule) =>
 			rule.test?.test?.(".svg"),
@@ -63,6 +63,8 @@ export default {
 			topLevelAwait: true,
 			layers: true,
 		};
+
 		return config;
 	},
+
 };

@@ -4,7 +4,7 @@ import type { PopulatedProduct } from "@/lib/Models/Product";
 import React from "react";
 import ProductCard from "../components/product/card";
 import Loading from "../components/ui/Loading";
-import { getProductsByIds } from "@/actions/product";
+import { getProductsByIdsAction } from "@/actions/product";
 
 export type Props = {
 	products: PopulatedProduct[];
@@ -18,7 +18,7 @@ export function GenericProductList({ products: initProducts }: Props) {
 		loading,
 	} = useItemsController({
 		initItems: initProducts,
-		getItems: getProductsByIds,
+		getItems: getProductsByIdsAction,
 	});
 	return (
 		<Loading loading={loading}>

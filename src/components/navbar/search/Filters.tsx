@@ -32,12 +32,12 @@ export function CategoryFilter({
 			<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 				{allCategories.map((category) => (
 					<ToggleGroupItem
-						className="flex w-full justify-start gap-4"
+						className="flex w-full justify-start gap-2"
 						name="category"
 						value={category.name}
 						key={category.name}
 					>
-						<div className="relative size-8 object-contain">
+						<div className="relative flex-shrink-0 size-8 object-contain">
 							<Image
 								className="rounded-full"
 								alt={category.name}
@@ -90,12 +90,12 @@ export function BrandFilter({
 			<ScrollArea className="h-[30dvh] w-full overflow-x-hidden">
 				{allBrands.map((brand) => (
 					<ToggleGroupItem
-						className="flex w-full justify-start gap-4"
+						className="flex w-full justify-start gap-2"
 						name="brand"
 						value={brand.name}
 						key={brand.name}
 					>
-						<div className="relative size-8 object-contain">
+						<div className="relative shrink-0 size-8 object-contain">
 							<Image
 								className="rounded-full"
 								alt={brand.name}

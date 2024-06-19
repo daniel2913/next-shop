@@ -18,7 +18,7 @@ export default function AuthContainer({ children, className }: Props) {
 	const [isOpen, setIsOpen] = React.useState(false)
 	const mode = useResponsive()
 	const session = useSession();
-	if (!session.data?.user?.name)
+	if (!session.data?.user)
 		return (
 			<>
 				<NavButton
@@ -33,7 +33,7 @@ export default function AuthContainer({ children, className }: Props) {
 					/>
 					Sign In
 				</NavButton>
-				{isOpen && <LocalModal close={() => setIsOpen(false)} isOpen={isOpen}>
+				{isOpen && <LocalModal onClose={() => setIsOpen(false)} close={() => setIsOpen(false)} isOpen={isOpen}>
 					<Login close={() => setIsOpen(false)} />
 				</LocalModal>
 				}
@@ -43,12 +43,12 @@ export default function AuthContainer({ children, className }: Props) {
 		<>
 			{isOpen &&
 				<div
-					onClick={() => setIsOpen(v => !v)}
+					onClick={() => setIsOpen(false)}
 					className="fixed inset-0 bg-transparent" />
 			}
-			<div className="relative h-full">
+			<div className={`${className} relative h-full`}>
 				<NavButton
-					className={`${className}`}
+					className="size-full"
 					aria-label="open account specific actions"
 					onClick={() => setIsOpen(v => !v)}
 				>
@@ -59,9 +59,10 @@ export default function AuthContainer({ children, className }: Props) {
 					/>
 					Account
 				</NavButton>
-				{isOpen && <Popover close={() => setIsOpen(false)} offset={mode === "desktop" ? 40 : -60}>
-					{children}
-				</Popover>
+				{isOpen &&
+					<Popover close={() => setIsOpen(false)} offset={mode === "desktop" ? 40 : -60}>
+						{children}
+					</Popover>
 				}
 			</div>
 		</>

@@ -23,16 +23,11 @@ export default function InfSavedList({ products: initProducts, saved: _saved }: 
 		updateOne,
 		reloadOne,
 		loading,
-		reload,
 		setItems: setProducts,
 	} = useItemsController({
 		initItems: initProducts,
 		getItems: getProductsByIdsAction,
 	});
-
-	const updating = React.useRef(false)
-
-
 
 	const loadMore = React.useCallback(
 		async (_: URLSearchParams, skip: number, page = 20) => {
@@ -49,18 +44,6 @@ export default function InfSavedList({ products: initProducts, saved: _saved }: 
 		[setProducts],
 	);
 
-	React.useEffect(() => {
-		if (updating.current) return
-		const loadedIds = initProducts.map(p => p.id)
-		const missing = saved.filter(v => !loadedIds.includes(v))
-		if (missing.length === 0) return
-		updating.current = true
-		getProductsByIdsAction(missing).then(r => {
-			if (isValidResponse(r))
-				setProducts(v => [...v, ...r])
-			updating.current = false
-		})
-	}, [])
 
 	useInfScroll(products, loadMore, endRef);
 	const initedProducts = products || initProducts;

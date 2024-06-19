@@ -45,6 +45,7 @@ export async function populateProducts(
 
 		return {
 			...product,
+			description: "",
 			brand: brand || unknownBrand,
 			category: category || unknownCategory,
 			discount,

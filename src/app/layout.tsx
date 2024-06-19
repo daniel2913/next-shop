@@ -4,8 +4,7 @@ import RootProviders from "../providers/RootProviders";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import type { Metadata, Viewport } from "next";
-import { getInitState } from "@/actions/user";
-import AuthReduxAdapter from "@/helpers/AuthReduxAdapter";
+import { getInitStateAction } from "@/actions/user";
 
 export const metadata: Metadata = {
 	title: "Next Shop",
@@ -28,7 +27,7 @@ type LayoutProps = {
 export default async function MainLayout({ children }: LayoutProps) {
 	const [session, state] = await Promise.all([
 		getServerSession(authOptions),
-		getInitState()
+		getInitStateAction()
 	])
 
 	return (
@@ -50,7 +49,6 @@ export default async function MainLayout({ children }: LayoutProps) {
 				>
 					<RootProviders initProps={state} session={session}>
 						{children}
-						<AuthReduxAdapter />
 					</RootProviders>
 				</body>
 			</html>

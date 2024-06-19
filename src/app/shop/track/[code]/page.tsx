@@ -11,16 +11,16 @@ export default async function TrackPage(props: {
 	const status = order.order.status
 	return (
 		<>
-			<div className="flex flex-col w-full items-center justify-center">
-				<div className="min-w-[45rem] w-3/4">
-					<CartTable interactive={false} products={order.products} order={order.order.order} />
-					<div className="w-full justify-end mt-4 flex px-4">
-						<div className={`px-4 text-2xl rounded-lg  py-2 ${status === "COMPLETED" ? "bg-green-400" : status === "DELIVERING" ? "bg-blue-400" : "bg-yellow-400"}`}>
+			<main className="size-full flex flex-col items-center justify-center bg-background p-5">
+				<div className="md:min-w-[45rem] md:w-3/4">
+					<div className="w-full justify-center mb-4 flex">
+						<div className={`px-2 md:text-xl rounded-md md:rounded-lg  md:py-1 ${status === "COMPLETED" ? "bg-green-400" : status === "DELIVERING" ? "bg-blue-400" : "bg-yellow-400"}`}>
 							{order.order.status}
 						</div>
 					</div>
+					<CartTable interactive={false} products={order.products} order={order.order.order} />
 				</div>
-			</div>
+			</main>
 		</>
 	)
 }

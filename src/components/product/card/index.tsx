@@ -103,7 +103,7 @@ function Controls(product: Props) {
 	return (
 		<div className="flex items-center justify-end gap-2">
 			<BuyButton
-				className="w-full self-center justify-self-center"
+				className="w-full text-2xl self-center justify-self-center"
 				id={product.id}
 			/>
 			{session.data?.user?.role === "admin" ? (

@@ -6,8 +6,12 @@ import React from "react";
 import BuyButton from "../product/card/BuyButton";
 import useResponsive from "@/hooks/useResponsive";
 import Price from "../product/card/Price";
+import { getProductDescriptionAction} from "@/actions/product";
+import useAction from "@/hooks/useAction";
+
 
 export default function DetailedProduct(product: PopulatedProduct) {
+	const { value: description } = useAction(() => getProductDescriptionAction(product.id),"Loading...")
 	const mode = useResponsive();
 	if (mode === "desktop")
 		return (
@@ -20,10 +24,10 @@ export default function DetailedProduct(product: PopulatedProduct) {
 							price={product.price}
 							discount={product.discount}
 						/>
-						<BuyButton id={product.id} className="h-12 w-1/3 max-w-32" />
+						<BuyButton id={product.id} size="md" />
 					</div>
 					<ScrollArea className="h-full w-full overflow-y-hidden pr-1">
-						<p className="text-2xl">{product.description}</p>
+						<p className="text-2xl">{description}</p>
 					</ScrollArea>
 				</section>
 			</article>
@@ -51,11 +55,11 @@ export default function DetailedProduct(product: PopulatedProduct) {
 						price={product.price}
 						discount={product.discount}
 					/>
-					<BuyButton id={product.id} className="h-12 w-1/3 max-w-32" />
+					<BuyButton id={product.id} size="sm" />
 				</div>
 				<section>
 					<p className="h-fit w-full text-wrap break-words text-2xl">
-						{product.description}
+						{description}
 					</p>
 				</section>
 			</section>

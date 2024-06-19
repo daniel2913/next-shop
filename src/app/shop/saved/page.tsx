@@ -1,14 +1,16 @@
 import { redirect } from "next/navigation";
-import { getProductsByIds } from "@/actions/product";
+import { getProductsByIdsAction } from "@/actions/product";
 import { auth } from "@/actions/auth";
 import InfSavedList from "@/lists/InfSavedList";
 import ClearSaved from "./clear";
 import RequireAuthClient from "@/providers/RequireAuth";
+import { isValidResponse } from "@/helpers/misc";
 
 export default async function SavedPage() {
 	try {
 		const user = await auth("user");
-		const saved = await getProductsByIds(user.saved.slice(0, 20));
+		const saved = await getProductsByIdsAction(user.saved.slice(0, 20));
+		if (!isValidResponse(saved)) throw ""
 		return (
 			<RequireAuthClient>
 				<main

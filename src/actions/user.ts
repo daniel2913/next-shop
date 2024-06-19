@@ -9,7 +9,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import type { RootState } from "@/store/rtk";
 
-export async function getInitState(): Promise<RootState> {
+export async function getInitStateAction(): Promise<RootState> {
 	const session = await getServerSession(authOptions);
 	const user = session?.user ? await UserCache.get(session.user!.name) : null
 	return {
@@ -22,10 +22,6 @@ export async function getInitState(): Promise<RootState> {
 		cart: {
 			items: user?.cart || {},
 		},
-		auth: {
-			id: user?.id || null,
-			role: user?.role || "user"
-		}
 	}
 }
 

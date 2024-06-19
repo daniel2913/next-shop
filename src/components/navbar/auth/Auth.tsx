@@ -45,7 +45,7 @@ export default function Auth(props: Props) {
 							width="20px"
 							height="20px"
 						/>
-						Admin Panel
+						Admin
 					</Button>
 				</Link>
 			) : (
@@ -83,7 +83,7 @@ export default function Auth(props: Props) {
 					height="25px"
 					width="25px"
 				/>
-				Sign Out
+				Exit
 			</Button>
 		</div>
 	);

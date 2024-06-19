@@ -22,7 +22,7 @@ export default async function Shop({
 
 	return (
 		<>
-		<main className="grid size-full grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] items-center justify-items-start gap-y-4 bg-background p-5">
+		<main className="grid size-full grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] items-center justify-items-center md:justify-items-start gap-y-4 bg-background p-5">
 			<InfProductList products={initProducts} />
 		</main>
 		</>

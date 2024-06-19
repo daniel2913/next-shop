@@ -1,23 +1,31 @@
 "use client";
 import React from "react";
-import Plus from "@public/plus.svg";
-import Minus from "@public/minus.svg";
 import { ModalContext } from "@/providers/ModalProvider";
 import ModalConfirm from "../modals/Confirm";
+import { VariantProps, cva } from "class-variance-authority";
+import { cn } from "@/helpers/utils";
 
-interface Props {
+const variants = cva("", {
+	variants: {
+		size: {
+			sm: "text-xl",
+			md: "text-2xl",
+			lg: "text-3xl",
+		},
+	},
+	defaultVariants: {
+		size: "md"
+	}
+})
+
+type Props = {
 	className: string;
 	value: number;
 	onChange: (val: number) => void;
 	confirmToDelete?: boolean;
-}
+} & VariantProps<typeof variants>
 
-export default function AmmountSelector({
-	className,
-	value,
-	onChange,
-	confirmToDelete
-}: Props) {
+export default function AmmountSelector(props: Props) {
 	const show = React.useContext(ModalContext)
 	const confirm = () => show({
 		title: "Are you sure",
@@ -25,39 +33,32 @@ export default function AmmountSelector({
 	})
 	function clickHandler(newAmount: number) {
 		if (newAmount <= 0) {
-			if (confirmToDelete)
+			if (props.confirmToDelete)
 				confirm().then((ans) => {
-					return ans ? onChange(0) : false;
+					return ans ? props.onChange(0) : false;
 				});
-			else return onChange(0);
-		} else onChange(newAmount);
+			else return props.onChange(0);
+		} else props.onChange(newAmount);
 	}
+	//`flex justify-between font-semibold ${className}`}>
 	return (
-		<div className={`flex justify-between font-semibold ${className}`}>
+		<div className={cn("flex justify-between font-semibold", variants({ size: props.size }))}>
 			<button
 				type="button"
 				className="mr-auto flex flex-grow items-center justify-center leading-4 text-inherit"
-				onClick={() => clickHandler(value - 1)}
+				onClick={() => clickHandler(props.value - 1)}
 			>
-				<Minus
-					className="*:stroke-foreground *:stroke-2"
-					width="15px"
-					height="15px"
-				/>
+				-
 			</button>
-			<span className="w-[3ch] grow-0 basis-8 overflow-clip text-center text-3xl font-bold text-foreground">
-				{value}
+			<span className="w-[3ch] grow-0 basis-8 overflow-clip text-center  font-bold text-foreground">
+				{props.value}
 			</span>
 			<button
 				type="button"
 				className="ml-auto flex flex-grow items-center justify-center leading-4 text-inherit "
-				onClick={() => clickHandler(value + 1)}
+				onClick={() => clickHandler(props.value + 1)}
 			>
-				<Plus
-					className="*:stroke-foreground *:stroke-2"
-					width="15px"
-					height="15px"
-				/>
+				+
 			</button>
 		</div>
 	);

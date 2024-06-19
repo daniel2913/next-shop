@@ -19,7 +19,7 @@ app.get("/api/public", async (c) => {
 		}w${w}q${q}.${format.toLowerCase()}`;
 	const headers = {
 		"Content-Type": `image/${format.toLowerCase()}`,
-		"Cache-Control": `max-age=${60 * 5}, stale-while-revalidate=${60 * 60 * 24}`
+		"Cache-Control": `max-age=${60 * 60 * 24}, stale-while-revalidate=${60 * 60 * 24 * 5}`
 	}
 	try {
 		const file = await fs.readFile(optimized);
