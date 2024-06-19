@@ -17,7 +17,8 @@ export const setAmount = createTypedAsyncThunk<
 
 		const res = await updateAccount(d.instant || false, s.getState().cart.items)
 		if (!isValidResponse(res)) {
-			if (res.title === "Not Allowed") return s.fulfillWithValue(undefined)
+			if (res.title === "Not Authenticated")
+				return s.fulfillWithValue(undefined)
 			return s.rejectWithValue(res)
 		}
 		return s.fulfillWithValue(undefined)

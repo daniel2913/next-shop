@@ -46,5 +46,5 @@ app.get("/api/public", async (c) => {
 
 export default {
 	fetch: app.fetch,
-	port: 3005
+	port: process.env.IMAGE_SERVER_PORT
 }

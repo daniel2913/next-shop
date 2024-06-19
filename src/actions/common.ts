@@ -26,7 +26,7 @@ export async function modelGeneralActionNoAuth(
 			id === undefined
 				? await model.create(props)
 				: await model.patch(id, props)
-			
+
 		if (!res) {
 			throw id ? ServerError.notFound() : ServerError.unknown();
 		}
@@ -109,6 +109,10 @@ export class ServerError extends Error {
 			return err;
 		}
 		if (error instanceof ServerError) return error;
+		if (error && typeof error === "object" && "error" in error && "title" in error
+			&& typeof error.error === "string" && typeof error.title === "string") {
+			return new ServerError(error.error, error.title)
+		}
 		const err = ServerError.unknown()
 		err.error = error;
 		console.error(err);

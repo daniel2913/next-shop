@@ -124,7 +124,12 @@ function Controls(product: Props) {
 					className="group appearance-none justify-self-end bg-transparent p-0 hover:bg-transparent"
 					title={saved ? "Del from Favourite" : "Add to Favoutite"}
 					onClick={async () => {
-						const res = await dispatcher(toggleSaved(product.id))
+						if (!session.data?.user) {
+							error({
+								error: "You have to authenticate to save products",
+								title: "Not Authorized"
+							})
+						} else await dispatcher(toggleSaved(product.id))
 					}
 					}
 				>

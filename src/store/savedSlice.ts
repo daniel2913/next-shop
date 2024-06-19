@@ -11,19 +11,14 @@ export const toggleSaved = createTypedAsyncThunk<
 	boolean, number>
 
 	("saved/toggleSaved", async (id: number, api) => {
-		const sesh = api.getState().auth.id
-		if (!sesh) return api.rejectWithValue({
-			error: "You have to authenticate to save products",
-			title: "Not Authorized"
-		})
 		const prev = api.getState().saved.saved
-		const init = prev.includes(id)
-		api.dispatch(savedSlice.actions._setSaved({ id, val: !init }))
+		const old = prev.includes(id)
+		api.dispatch(savedSlice.actions._setSaved({ id, val: !old }))
 		const val = await toggleSavedAction(id)
 		if (typeof val === "boolean") {
 			return api.fulfillWithValue(val)
 		}
-		api.dispatch(savedSlice.actions._setSaved({ id, val: init }))
+		api.dispatch(savedSlice.actions._setSaved({ id, val: old }))
 		return api.rejectWithValue(val)
 	}, {})
 
