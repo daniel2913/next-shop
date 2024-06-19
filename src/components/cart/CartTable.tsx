@@ -82,8 +82,8 @@ export function CartTable({ className, products, order, interactive }: Props) {
 						))}
 				</TableBody>
 			</Table>
-			<div className="text-end w-full md:text-3xl my-2">
-				Total: ${totalPrice.toFixed(2)}
+			<div className="text-end w-full text-xl md:text-3xl my-2">
+				Total:  ${totalPrice.toFixed(2)}
 			</div>
 		</>
 	)

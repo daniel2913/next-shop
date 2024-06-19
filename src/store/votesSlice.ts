@@ -12,11 +12,6 @@ export const setVote = createTypedAsyncThunk<
 	{ voters: number, rating: number }, { id: number, val: number }
 >
 	("votes/setVote", async ({ id, val }, api) => {
-		const sesh = api.getState().auth.id
-		if (!sesh) return api.rejectWithValue({
-			error: "You have to authenticate to rate products",
-			title: "Not Authorized"
-		})
 		const votes = api.getState().votes.votes
 
 		if (val < 1 || val > 5) return api.rejectWithValue({
@@ -38,6 +33,7 @@ export const setVote = createTypedAsyncThunk<
 		if (!res || !isValidResponse(res)) {
 			api.dispatch(votesSlice.actions._setVote({ id, val: old }))
 			return api.rejectWithValue(res || { title: "Unknown Error", error: "Something bad happened" })
+
 		}
 
 		return api.fulfillWithValue(res)

@@ -108,7 +108,7 @@ export default function Cart(props: Props) {
 				<div className="flex pt-2 border-transparent border-t-black border-2 justify-end gap-4">
 					<Button
 						variant="outline"
-						className="px-1 py-0 md:py-1 text-lg  md:text-3xl"
+						className="p-2 text-lg  md:text-3xl"
 						onClick={() => {
 							router.replace("/shop/home")
 							dispatch(actions.cart.clearCart())
@@ -119,7 +119,7 @@ export default function Cart(props: Props) {
 					</Button>
 					<Button
 						variant="outline"
-						className="px-1 py-0 md:py-1 text-lg  md:text-3xl"
+						className="p-2 text-lg  md:text-3xl"
 						disabled={loadingOrder || Object.keys(order).length === 0}
 						onClick={handleClick}
 						type="submit"
